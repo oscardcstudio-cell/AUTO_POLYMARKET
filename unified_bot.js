@@ -43,13 +43,43 @@ let botState = {
     newsSentiment: [], // Stockage des news
     momentumData: {}, // Suivi des accélérations
     apiStatus: {
-        gamma: 'OFFLINE',
-        clob: 'OFFLINE',
-        pizzint: 'OFFLINE',
-        alpha: 'OFFLINE'
+        gamma: 'Checking...',
+        clob: 'Checking...',
+        pizzint: 'Checking...',
+        alpha: 'Checking...'
     },
     wizards: [] // Nouveautés: Paris "Long Shot" à haut potentiel
 };
+
+// --- CHECK CONNECTIVITY SEPARATELY ---
+async function checkConnectivity() {
+    // 1. Check Gamma/Polymarket
+    try {
+        const r = await fetch('https://gamma-api.polymarket.com/markets?limit=1');
+        botState.apiStatus.gamma = r.ok ? 'ONLINE' : 'ERROR';
+        botState.apiStatus.clob = r.ok ? 'ONLINE' : 'ERROR'; // CLOB uses same API for now
+    } catch (e) {
+        botState.apiStatus.gamma = 'OFFLINE';
+        botState.apiStatus.clob = 'OFFLINE';
+    }
+
+    // 2. Check PizzINT
+    try {
+        const r = await fetch('https://www.pizzint.watch/api/dashboard-data', { method: 'HEAD' });
+        botState.apiStatus.pizzint = r.ok ? 'ONLINE' : 'ERROR';
+    } catch (e) {
+        // HEAD might fail, try GET if HEAD fails
+        try {
+            const r2 = await fetch('https://www.pizzint.watch/api/dashboard-data');
+            botState.apiStatus.pizzint = r2.ok ? 'ONLINE' : 'ERROR';
+        } catch (ex) {
+            botState.apiStatus.pizzint = 'OFFLINE';
+        }
+    }
+
+    // 3. Alpha (Mock)
+    botState.apiStatus.alpha = 'ONLINE';
+}
 
 // --- ÉTAT TURBO ---
 let turboState = {
@@ -537,6 +567,9 @@ async function run() {
         saveState();
     }
 
+    // Initial Check
+    await checkConnectivity();
+
     // Migration : Récupérer les slugs et eventSlugs manquants
     console.log('🔍 Vérification des slugs et liens pour les trades existants...');
     for (const trade of [...botState.activeTrades, ...botState.closedTrades]) {
@@ -640,6 +673,9 @@ async function run() {
             // Tâches de fond additionnelles
             await detectWhales();
             await scanArbitrage();
+
+            // Verification connectivité indépendante
+            await checkConnectivity();
 
             await new Promise(r => setTimeout(r, CONFIG.POLL_INTERVAL_MINUTES * 60 * 1000));
         } catch (e) {
