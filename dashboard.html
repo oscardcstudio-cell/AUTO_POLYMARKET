@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto Polymarket Bot Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg: #0b0e11;
+            --card-bg: #151a21;
+            --text: #e1e1e1;
+            --primary: #3b82f6;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --success: #10b981;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            border: 1px solid #2d3748;
+        }
+
+        .status-dot {
+            height: 10px;
+            width: 10px;
+            background-color: var(--success);
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+        }
+
+        h2 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            color: #a0aec0;
+        }
+
+        .big-number {
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .defcon-1 {
+            color: var(--danger);
+        }
+
+        .defcon-2 {
+            color: var(--warning);
+        }
+
+        .defcon-3 {
+            color: #facc15;
+        }
+
+        .defcon-4 {
+            color: var(--primary);
+        }
+
+        .defcon-5 {
+            color: var(--success);
+        }
+
+        .log-container {
+            height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', Courier, monospace;
+            background: #000;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .log-entry {
+            margin-bottom: 5px;
+            border-bottom: 1px solid #222;
+            padding-bottom: 2px;
+        }
+
+        .log-ts {
+            color: #666;
+            font-size: 0.8rem;
+        }
+
+        .log-msg {
+            margin-left: 10px;
+        }
+
+        .log-level-info {
+            color: #aaa;
+        }
+
+        .log-level-warn {
+            color: var(--warning);
+        }
+
+        .log-level-trade {
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button.stop {
+            background: var(--danger);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>🍕 Auto Polymarket Bot</h1>
+            <div class="controls">
+                <div id="bot-status"><span class="status-dot"></span> Simulation Mode</div>
+                <button id="start-btn">Start Bot</button>
+                <button id="stop-btn" class="stop">Stop Bot</button>
+            </div>
+        </header>
+
+        <div class="grid">
+            <!-- Pizza Index Card -->
+            <div class="card">
+                <h2>PizzINT Overall Index</h2>
+                <div id="pizza-index" class="big-number">--</div>
+                <div id="defcon-status">DOUGHCON Level: --</div>
+            </div>
+
+            <!-- Bot Stats Card -->
+            <div class="card">
+                <h2>Bot Performance</h2>
+                <div class="stat-item">Simulated Profit: <span id="sim-profit" class="defcon-5">$0.00</span></div>
+                <div class="stat-item">Trades Executed: <span id="trade-count">0</span></div>
+                <div class="stat-item">Last Pulse: <span id="last-pulse">--</span></div>
+            </div>
+
+            <!-- Chart Card -->
+            <div class="card" style="grid-column: span 2;">
+                <h2>Index History</h2>
+                <canvas id="indexChart" height="100"></canvas>
+            </div>
+
+            <!-- Logs Card -->
+            <div class="card" style="grid-column: span 3;">
+                <h2>Activity Logs</h2>
+                <div id="logs" class="log-container">
+                    <div class="log-entry"><span class="log-ts">[INITIALIZING]</span><span class="log-msg">Waiting for
+                            bot synchronization...</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const logs = document.getElementById('logs');
+        const pizzaIndex = document.getElementById('pizza-index');
+        const defconStatus = document.getElementById('defcon-status');
+        const tradeCount = document.getElementById('trade-count');
+        const lastPulse = document.getElementById('last-pulse');
+
+        function addLog(msg, level = 'info') {
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-level-${level}`;
+            entry.innerHTML = `<span class="log-ts">[${new Date().toLocaleTimeString()}]</span><span class="log-msg">${msg}</span>`;
+            logs.prepend(entry);
+            // Limit logs
+            if (logs.children.length > 50) logs.removeChild(logs.lastChild);
+        }
+
+        async function updateData() {
+            try {
+                const res = await fetch('/api/status');
+                const state = await res.json();
+
+                if (state.last_update) {
+                    const data = state.last_update.pizza;
+                    pizzaIndex.innerText = data.index;
+                    pizzaIndex.className = 'big-number defcon-' + data.defcon;
+                    defconStatus.innerText = 'DOUGHCON Level: ' + data.defcon;
+                    lastPulse.innerText = new Date(state.last_update.timestamp).toLocaleTimeString();
+                    tradeCount.innerText = state.trade_count;
+                }
+
+                if (state.trades && state.trades.length > 0) {
+                    // Update logs with new trades if not already there
+                    const lastTrade = state.trades[state.trades.length - 1];
+                    // (Simplistic check for newness)
+                    if (logs.children.length < 5 || !logs.innerHTML.includes(lastTrade.marketId)) {
+                        addLog(`SIMULATED TRADE: ${lastTrade.question} at ${lastTrade.entryPrice}`, 'trade');
+                    }
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        setInterval(updateData, 10000);
+        updateData();
+    </script>
+</body>
+
+</html>

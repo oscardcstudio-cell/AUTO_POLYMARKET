@@ -1,0 +1,12 @@
+node_modules
+.env
+bot_data.json
+*.log
+# Fichiers JavaScript gérés par Next.js ou générés avec des hashes
+[0-9]*-*.js
+page_chunk.js
+# Fichiers de plan et de debug
+implementation_plan.md
+scraper_debug.js
+test_*.js
+extract_next.js

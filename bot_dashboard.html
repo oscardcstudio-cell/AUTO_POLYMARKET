@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intelligence Dashboard - Polymarket Bot</title>
+    <style>
+        :root {
+            --bg-deep: #020617;
+            --accent-blue: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --glass: rgba(15, 23, 42, 0.7);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', 'Segoe UI', sans-serif;
+            background: var(--bg-deep);
+            background-image:
+                radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.15) 0px, transparent 50%);
+            color: #f8fafc;
+            min-height: 100vh;
+            padding: 40px 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        h1 {
+            font-size: 3.5em;
+            font-weight: 800;
+            background: linear-gradient(to right, #60a5fa, #a78bfa, #f472b6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+            letter-spacing: -2px;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 10px 20px;
+            border-radius: 100px;
+            font-size: 0.85em;
+            border: 1px solid var(--border);
+            color: #94a3b8;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background: #4ade80;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #4ade80;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.5);
+                opacity: 0.5;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .server-down::after {
+            content: "⚠️ SYSTEM OFFLINE - RELANCEZ LE BOT (node unified_bot.js)";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: #ef4444;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            font-weight: 800;
+            z-index: 10000;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border-radius: 32px;
+            padding: 30px;
+            border: 1px solid var(--border);
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-label {
+            font-size: 0.85em;
+            color: #94a3b8;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 600;
+        }
+
+        .stat-value {
+            font-size: 2.8em;
+            font-weight: 800;
+        }
+
+        .positive {
+            color: #4ade80;
+        }
+
+        .negative {
+            color: #f87171;
+        }
+
+        /* API Matrix Table */
+        .api-matrix-card {
+            background: var(--glass);
+            border-radius: 24px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            margin-bottom: 30px;
+        }
+
+        .api-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9em;
+        }
+
+        .api-table th {
+            text-align: left;
+            color: #94a3b8;
+            padding: 10px;
+            border-bottom: 1px solid var(--border);
+            text-transform: uppercase;
+            font-size: 0.75em;
+            letter-spacing: 1px;
+        }
+
+        .api-table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .status-online {
+            color: #4ade80;
+            font-weight: 700;
+        }
+
+        .status-offline {
+            color: #f87171;
+            font-weight: 700;
+        }
+
+        /* --- LAYOUT & RESPONSIVITÉ --- */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .left-col,
+        .right-col {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            min-width: 0;
+        }
+
+        @media (max-width: 1200px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .right-col {
+                order: 2;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 2.5em;
+            }
+        }
+
+        /* --- DASHBOARD COMPONENTS --- */
+        .chart-section {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border-radius: 32px;
+            padding: 30px;
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .chart-container {
+            height: 400px;
+            position: relative;
+        }
+
+        .terminal-container {
+            background: #000;
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        }
+
+        .terminal-header {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px 20px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.8em;
+            color: #94a3b8;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .terminal-body {
+            padding: 20px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.85em;
+            overflow-y: auto;
+            flex-grow: 1;
+            line-height: 1.6;
+        }
+
+        .trades-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .trade-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border-radius: 28px;
+            padding: 25px;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .trade-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-blue);
+        }
+
+        .defcon-badge {
+            padding: 10px 25px;
+            border-radius: 100px;
+            font-weight: 800;
+            font-size: 1.1em;
+            display: inline-block;
+            transition: all 0.5s;
+        }
+
+        .defcon-1,
+        .defcon-2 {
+            background: #ef4444;
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+        }
+
+        .defcon-3 {
+            background: #f59e0b;
+        }
+
+        .defcon-4,
+        .defcon-5 {
+            background: #22c55e;
+        }
+
+        .empty-state {
+            padding: 40px;
+            text-align: center;
+            color: #64748b;
+            font-family: monospace;
+            border: 1px dashed var(--border);
+            border-radius: 20px;
+            margin: 20px 0;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="refresh-indicator">
+        <div class="spinner"></div>
+        <span>LIVE UPDATING</span>
+    </div>
+
+    <div class="container">
+        <header>
+            <div class="status-badge">
+                <div class="pulse-dot"></div>
+                POLYMARKET INTELLIGENCE ENGINE v3.0 // SIMULATION MODE
+            </div>
+            <h1>Neural Trader Dashboard</h1>
+        </header>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Total Portfolio</div>
+                <div class="stat-value" id="totalCapital">$0.00</div>
+                <div style="font-size: 0.8em; color: #64748b; margin-top: 10px; font-weight: 600;">
+                    ROI: <span id="profitPercent" class="positive">0</span>%
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Net Realized PnL</div>
+                <div class="stat-value" id="profit">$0.00</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Win Strategy</div>
+                <div class="stat-value" id="winRate">0%</div>
+                <div style="font-size: 0.8em; color: #64748b; margin-top: 10px; font-weight: 600;">
+                    <span id="winningTrades">0</span> SUCCESS / <span id="losingTrades">0</span> FAILED
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Open Risk</div>
+                <div class="stat-value" id="moneySpent">$0.00</div>
+            </div>
+        </div>
+
+        <div class="main-layout">
+            <!-- COLONNE GAUCHE -->
+            <div class="left-col">
+                <div class="section-title">👨‍🍳 The Money Kitchen</div>
+                <div class="kitchen-viewport">
+                    <!-- Les 5 Chefs Animés -->
+                    <div id="chef-sentiment" class="chef">
+                        <div class="bubble">SENTIMENT HACKER</div>
+                    </div>
+                    <div id="chef-arb" class="chef">
+                        <div class="bubble">ARBITRAGE MIXER</div>
+                    </div>
+                    <div id="chef-whale" class="chef">
+                        <div class="bubble">LIQUIDITY FISHER</div>
+                    </div>
+                    <div id="chef-pizza" class="chef">
+                        <div class="bubble">RISK BAKER</div>
+                    </div>
+                    <div id="chef-wizard" class="chef">
+                        <div class="bubble">LONG SHOT ALCHEMIST</div>
+                    </div>
+                </div>
+
+                <!-- API Intelligence Matrix -->
+                <div class="api-matrix-card">
+                    <div class="stat-label" style="margin-bottom: 15px;">🔗 Intelligence Connectivity Matrix</div>
+                    <table class="api-table">
+                        <thead>
+                            <tr>
+                                <th>Module</th>
+                                <th>Provider</th>
+                                <th>Status/Latency</th>
+                                <th>Alpha Impact</th>
+                            </tr>
+                        </thead>
+                        <tbody id="apiMatrixBody">
+                            <tr>
+                                <td>Gamma Engine</td>
+                                <td>Polymarket API</td>
+                                <td class="status-offline" id="api-gamma">OFFLINE</td>
+                                <td>Structural Data</td>
+                            </tr>
+                            <tr>
+                                <td>Liquidity CLOB</td>
+                                <td>Polygon Chain</td>
+                                <td class="status-offline" id="api-clob">OFFLINE</td>
+                                <td>Real-time Pricing</td>
+                            </tr>
+                            <tr>
+                                <td>PizzINT Index</td>
+                                <td>PizzaWatch OSINT</td>
+                                <td class="status-offline" id="api-pizzint">OFFLINE</td>
+                                <td>Global Risk</td>
+                            </tr>
+                            <tr>
+                                <td>AlphaMatrix AI</td>
+                                <td>CryptoPanic/Momentum</td>
+                                <td class="status-offline" id="api-alpha">OFFLINE</td>
+                                <td>Sentiment/Trends</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Capital History -->
+                <div class="chart-section">
+                    <div class="stat-label" style="margin-bottom: 25px;">Capital Performance History</div>
+                    <div class="chart-container">
+                        <canvas id="mainChart"></canvas>
+                    </div>
+                    <div style="margin-top: 30px; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div id="defconLevel" class="defcon-badge">DEFCON 5</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div class="stat-label" style="margin-bottom: 5px;">PizzINT Index</div>
+                            <div style="font-size: 1.8em; font-weight: 800; color: #60a5fa;" id="pizzaIndex">0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- COLONNE DROITE -->
+            <div class="right-col">
+                <!-- Terminal Graphique -->
+                <div class="terminal-container" style="height: 480px; border-color: #60a5fa;">
+                    <div class="terminal-header" style="background: rgba(59, 130, 246, 0.2);">
+                        <span>📡 ALPHA_NEWS_MATRIX</span>
+                    </div>
+                    <div id="newsFeed"
+                        style="padding: 20px; font-family: monospace; font-size: 0.85em; overflow-y: auto; color: #94a3b8;">
+                        <div style="color: #64748b;">Awaiting intelligence stream...</div>
+                    </div>
+                </div>
+
+                <!-- Arbitrage Terminal -->
+                <div class="terminal-container" style="height: 400px; border-color: rgba(139, 92, 246, 0.3);">
+                    <div class="terminal-header" style="background: #2e1065;">
+                        <span>>_ ARB_SCANNER_v1.0</span>
+                    </div>
+                    <div id="arbList"
+                        style="padding: 20px; font-family: monospace; font-size: 0.85em; overflow-y: auto;">
+                        <div style="color: #64748b;">Awaiting market imbalances...</div>
+                    </div>
+                </div>
+
+                <!-- Live Terminal Log -->
+                <div class="terminal-container" style="height: 350px;">
+                    <div class="terminal-header">
+                        <span>>_ BOT_LOG_SUBSCRIPTION</span>
+                        <span id="terminalClock">00:00:00</span>
+                    </div>
+                    <div id="terminalBody">
+                        <div class="log-entry"><span class="log-info">Kernel initialized. Awaiting market data...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Info Supp (Whales & Wizards) -->
+        <div class="main-layout">
+            <!-- COLONNE GAUCHE -->
+            <div class="left-col">
+                <!-- Top Signal Area -->
+                <div id="topSignalSection" style="display: none;">
+                    <div class="stat-card"
+                        style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1)); border: 1px solid var(--accent-blue);">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div style="max-width: 70%;">
+                                <div id="signalQuestion"
+                                    style="font-size: 1.8em; font-weight: 800; margin-bottom: 12px; line-height: 1.2;">
+                                    --</div>
+                                <div id="signalReason"
+                                    style="color: #94a3b8; font-family: monospace; font-size: 1.1em;">--</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div class="stat-label">Alpha Score</div>
+                                <div id="signalScore" style="font-size: 3.5em; font-weight: 900; color: #60a5fa;">0
+                                </div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 30px; text-align: right;">
+                            <a id="signalLink" href="#" target="_blank" class="view-btn">Deep Analysis / Deploy</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Capital History / Main Pulse -->
+                <div class="chart-section">
+                    <div class="stat-label" style="margin-bottom: 25px;">📊 Intelligence Pulse - Capital performance
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="mainChart"></canvas>
+                    </div>
+                    <div style="margin-top: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div>
+                            <div class="stat-label" style="margin-bottom: 10px;">Market Security</div>
+                            <div id="defconLevel" class="defcon-badge">DEFCON 5</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div class="stat-label" style="margin-bottom: 10px;">PizzINT Index</div>
+                            <div style="font-size: 1.8em; font-weight: 800; color: #60a5fa;" id="pizzaIndex">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- API Intelligence Matrix -->
+                <div class="api-matrix-card">
+                    <div class="stat-label" style="margin-bottom: 15px;">🔗 System Connectivity Matrix</div>
+                    <table class="api-table">
+                        <thead>
+                            <tr>
+                                <th>Module</th>
+                                <th>Provider</th>
+                                <th>Status</th>
+                                <th>Impact</th>
+                            </tr>
+                        </thead>
+                        <tbody id="apiMatrixBody">
+                            <tr>
+                                <td>Gamma Engine</td>
+                                <td>Polymarket API</td>
+                                <td class="status-offline" id="api-gamma">OFFLINE</td>
+                                <td>Structural Data</td>
+                            </tr>
+                            <tr>
+                                <td>Liquidity CLOB</td>
+                                <td>Polygon Chain</td>
+                                <td class="status-offline" id="api-clob">OFFLINE</td>
+                                <td>Real-time Pricing</td>
+                            </tr>
+                            <tr>
+                                <td>PizzINT Index</td>
+                                <td>OSINT</td>
+                                <td class="status-offline" id="api-pizzint">OFFLINE</td>
+                                <td>Global Risk</td>
+                            </tr>
+                            <tr>
+                                <td>AlphaMatrix AI</td>
+                                <td>Sentiment</td>
+                                <td class="status-offline" id="api-alpha">OFFLINE</td>
+                                <td>Trends</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- COLONNE DROITE -->
+            <div class="right-col">
+                <div class="terminal-container" style="flex-grow: 1; min-height: 500px;">
+                    <div class="terminal-header" style="background: rgba(59, 130, 246, 0.1);">
+                        <span>📡 ALPHA_NEWS_MATRIX</span>
+                    </div>
+                    <div id="newsFeed" class="terminal-body">
+                        <div style="color: #64748b;">Awaiting intelligence stream...</div>
+                    </div>
+                </div>
+
+                <div class="terminal-container" style="height: 300px;">
+                    <div class="terminal-header">
+                        <span>🛰️ ARB_SCANNER</span>
+                    </div>
+                    <div id="arbList" class="terminal-body" style="font-size: 0.8em; color: #94a3b8;">
+                        <div style="color: #64748b;">Scanning for imbalances...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Logs Full Width -->
+        <div class="terminal-container" style="margin-top: 30px; height: 300px;">
+            <div class="terminal-header">
+                <span>💻 SYSTEM_LOGS</span>
+                <span id="terminalClock" style="font-family: monospace;">--:--:--</span>
+            </div>
+            <div id="terminalBody" class="terminal-body" style="font-size: 0.8em;"></div>
+        </div>
+
+        <div
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 40px;">
+            <div class="chart-section" style="border-color: rgba(59, 130, 246, 0.2);">
+                <div class="stat-label">🐳 Whale Alerts</div>
+                <div id="whaleAlertsList" style="margin-top: 15px;"></div>
+            </div>
+            <div class="chart-section" style="border-color: rgba(139, 92, 246, 0.2);">
+                <div class="stat-label">🧙 Wizard Long Shots</div>
+                <div id="wizardList" style="margin-top: 15px;"></div>
+            </div>
+            <div class="chart-section" style="border-color: #f472b6;">
+                <div class="stat-label">🚀 Turbo Engine</div>
+                <div
+                    style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px; margin-bottom: 20px;">
+                    <div>
+                        <div class="stat-label" style="font-size: 0.7em;">PnL</div>
+                        <div id="turboProfit" style="font-size: 1.5em; font-weight: 800;">$0.00</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div class="stat-label" style="font-size: 0.7em;">Ops</div>
+                        <div id="turboTrades" style="font-size: 1.5em; font-weight: 800;">0</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div class="stat-label" style="font-size: 0.7em;">Active</div>
+                        <div id="turboActive" style="font-size: 1.5em; font-weight: 800; color: #fbbf24;">0</div>
+                    </div>
+                </div>
+
+                <div class="stat-label"
+                    style="font-size: 0.6em; margin-bottom: 10px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px;">
+                    Recent Turbo Settlements</div>
+                <div id="turboHistoryList"
+                    style="font-size: 0.75em; display: flex; flex-direction: column; gap: 8px; max-height: 150px; overflow-y: auto;">
+                    <div style="color: #64748b; font-style: italic;">Awaiting turbo cycles...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Trades -->
+        <div class="section-title">🚀 Real-Time Operations</div>
+        <div id="activeTradesList" class="trades-grid">
+            <div class="empty-state">Scanning liquidity pools for optimal entry...</div>
+        </div>
+
+        <!-- History -->
+        <div class="section-title">📜 Archives & Settlements</div>
+        <div id="closedTradesList" class="trades-grid">
+            <div class="empty-state">No history recorded in this session.</div>
+        </div>
+
+        <footer
+            style="text-align: center; margin: 80px 0 40px 0; color: #475569; font-size: 0.85em; letter-spacing: 1px;">
+            SECURE NEURAL LINK ESTABLISHED // REFRESH: <span id="lastUpdate">--</span>
+        </footer>
+    </div>
+
+    <script>
+        let botData = {};
+        let mainChart = null;
+        let miniCharts = {}; // Stocker les instances de graphiques pour les détruire proprement
+
+        function initMainChart() {
+            const ctx = document.getElementById('mainChart').getContext('2d');
+            mainChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Capital',
+                        data: [],
+                        borderColor: '#60a5fa',
+                        backgroundColor: 'rgba(96, 165, 250, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 3,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { display: false },
+                        y: {
+                            grid: { color: 'rgba(255,255,255,0.05)' },
+                            ticks: { color: '#64748b' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createMiniChart(id, history, entryPrice, color) {
+            const ctx = document.getElementById(`chart-${id}`).getContext('2d');
+
+            // Créer les labels (index)
+            const labels = history.map((_, i) => i);
+
+            return new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            data: history,
+                            borderColor: color,
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            tension: 0.3,
+                            fill: false
+                        },
+                        {
+                            // Ligne de base (Entry Price)
+                            data: Array(history.length).fill(entryPrice),
+                            borderColor: 'rgba(255,255,255,0.2)',
+                            borderWidth: 1,
+                            borderDash: [5, 5],
+                            pointRadius: 0,
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false }, tooltip: { enabled: false } },
+                    scales: { x: { display: false }, y: { display: false } }
+                }
+            });
+        }
+
+        function updateTerminal(logs) {
+            const body = document.getElementById('terminalBody');
+            if (!logs || logs.length === 0) return;
+
+            body.innerHTML = logs.map(log => {
+                const time = new Date(log.timestamp).toLocaleTimeString();
+                return `<div class="log-entry">
+                    <span class="log-time">[${time}]</span>
+                    <span class="log-${log.type}">> ${log.message}</span>
+                </div>`;
+            }).join('');
+
+            // Scroll to top instead of bottom as newest are first
+            // body.scrollTop = 0; 
+        }
+
+        function updateDashboard() {
+            // API Status
+            if (botData.apiStatus) {
+                Object.keys(botData.apiStatus).forEach(key => {
+                    const el = document.getElementById(`api-${key}`);
+                    if (el) {
+                        const status = botData.apiStatus[key];
+                        el.textContent = status;
+                        el.className = status === 'ONLINE' ? 'status-online' : 'status-offline';
+                    }
+                });
+            }
+
+            if (!botData.capital) return;
+
+            // Stats
+            document.getElementById('totalCapital').textContent = `$${botData.capital.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            document.getElementById('profit').textContent = `$${botData.profit.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            document.getElementById('profit').className = 'stat-value ' + (botData.profit >= 0 ? 'positive' : 'negative');
+            document.getElementById('profitPercent').textContent = botData.profitPercent;
+
+            const winRate = ((botData.winningTrades / (botData.winningTrades + botData.losingTrades)) * 100) || 0;
+            document.getElementById('winRate').textContent = `${winRate.toFixed(1)}%`;
+            document.getElementById('winningTrades').textContent = botData.winningTrades;
+            document.getElementById('losingTrades').textContent = botData.losingTrades;
+
+            const moneySpent = botData.activeTrades.reduce((sum, t) => sum + t.size, 0);
+            document.getElementById('moneySpent').textContent = `$${moneySpent.toLocaleString()}`;
+
+            // Terminal
+            updateTerminal(botData.logs);
+            document.getElementById('terminalClock').textContent = new Date().toLocaleTimeString();
+
+            // PizzINT
+            document.getElementById('pizzaIndex').textContent = botData.lastPizzaData?.index || 0;
+            const defLevel = botData.lastPizzaData?.defcon || 5;
+            const defEl = document.getElementById('defconLevel');
+            defEl.textContent = `DEFCON ${defLevel}`;
+            defEl.className = `defcon-badge defcon-${defLevel}`;
+
+            // Top Signal
+            const signalSection = document.getElementById('topSignalSection');
+            if (botData.topSignal) {
+                signalSection.style.display = 'block';
+                document.getElementById('signalQuestion').textContent = botData.topSignal.question;
+                document.getElementById('signalReason').textContent = botData.topSignal.reason;
+                document.getElementById('signalScore').textContent = botData.topSignal.score;
+
+                // Correction URL Top Signal
+                const link = botData.topSignal.eventSlug
+                    ? `https://polymarket.com/event/${botData.topSignal.eventSlug}`
+                    : `https://polymarket.com/market/${botData.topSignal.slug}`;
+                document.getElementById('signalLink').href = link;
+            }
+
+            // Main Chart
+            if (botData.capitalHistory && mainChart) {
+                mainChart.data.labels = botData.capitalHistory.map(h => h.t);
+                mainChart.data.datasets[0].data = botData.capitalHistory.map(h => h.v);
+                mainChart.update();
+            }
+
+            // Wizards
+            const wizardList = document.getElementById('wizardList');
+            if (botData.wizards && botData.wizards.length > 0) {
+                wizardList.innerHTML = botData.wizards.map(w => `
+                    <div class="stat-card" style="margin: 0; padding: 15px; border-left: 4px solid #a78bfa; background: rgba(139, 92, 246, 0.05);">
+                        <div style="font-size: 0.9em; font-weight: 700; color: #e2e8f0;">${w.question}</div>
+                        <div style="display: flex; justify-content: space-between; margin-top: 10px; font-size: 0.8em;">
+                            <span style="color: #60a5fa;">PRICE: $${w.price}</span>
+                            <span style="color: #a78bfa; font-weight: 800;">ALPHA: ${w.alpha}%</span>
+                        </div>
+                        <div style="font-size: 0.75em; color: #64748b; margin-top: 5px;">${w.reason}</div>
+                    </div>
+                `).join('');
+            } else {
+                wizardList.innerHTML = '<div class="empty-state">No wizards detected currently.</div>';
+            }
+
+            // Terminal Clock
+            document.getElementById('terminalClock').textContent = new Date().toLocaleTimeString();
+
+            // Nettoyer les anciens graphiques
+            Object.values(miniCharts).forEach(c => c.destroy());
+            miniCharts = {};
+
+            // Turbo
+            if (botData.turbo) {
+                document.getElementById('turboProfit').textContent = `$${botData.turbo.profit.toFixed(2)}`;
+                document.getElementById('turboProfit').className = (botData.turbo.profit >= 0 ? 'positive' : 'negative');
+                document.getElementById('turboTrades').textContent = botData.turbo.totalTrades;
+                document.getElementById('turboActive').textContent = botData.turbo.activeTrades.length;
+
+                // Turbo History
+                const turboHistory = document.getElementById('turboHistoryList');
+                if (botData.turbo.closedTrades && botData.turbo.closedTrades.length > 0) {
+                    turboHistory.innerHTML = botData.turbo.closedTrades.slice(0, 10).map(t => `
+                        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.03); padding-bottom: 5px;">
+                            <span style="color: #cbd5e1; max-width: 60%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${t.question}</span>
+                            <div style="text-align: right;">
+                                <div style="color: #64748b; font-size: 0.8em;">In: $${(t.entryPrice || 0).toFixed(3)} | Out: $${(t.exitPrice || 0).toFixed(3)}</div>
+                                <div style="color: ${t.profit >= 0 ? '#34d399' : '#f87171'}; font-weight: 700;">${t.profit >= 0 ? '+' : ''}$${t.profit.toFixed(2)}</div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            }
+
+            // Whale Alerts
+            const whaleList = document.getElementById('whaleAlertsList');
+            if (botData.whaleAlerts && botData.whaleAlerts.length > 0) {
+                whaleList.innerHTML = botData.whaleAlerts.map(a => `
+                    <div class="stat-card" style="margin: 0; padding: 15px; border-left: 4px solid #3b82f6; background: rgba(59, 130, 246, 0.05);">
+                        <div style="font-size: 0.9em; font-weight: 700;">${a.question}</div>
+                        <div style="display: flex; justify-content: space-between; margin-top: 10px; font-size: 0.8em; color: #94a3b8;">
+                            <span>VOL 24H: $${parseFloat(a.volume).toLocaleString()}</span>
+                            <a href="https://polymarket.com/market/${a.slug}" target="_blank" style="color: #60a5fa; text-decoration: none;">FOLLOW WHALE</a>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                whaleList.innerHTML = '<div class="empty-state">Watching order books...</div>';
+            }
+
+            // Alpha News Matrix
+            const newsFeed = document.getElementById('newsFeed');
+            if (botData.newsSentiment && botData.newsSentiment.length > 0) {
+                newsFeed.innerHTML = botData.newsSentiment.map(n => `
+                    <div style="margin-bottom: 15px; border-left: 3px solid ${n.sentiment === 'bullish' ? '#34d399' : '#f87171'}; padding-left: 12px; background: rgba(255,255,255,0.02); border-radius: 0 8px 8px 0; padding: 10px;">
+                        <span style="color: ${n.sentiment === 'bullish' ? '#34d399' : '#f87171'}; font-weight: 800;">[${n.sentiment.toUpperCase()}]</span> 
+                        <span style="color: #e2e8f0;">${n.title}</span>
+                        <div style="font-size: 0.8em; color: #64748b; margin-top: 5px;">SOURCE: ${n.source} | ${new Date(n.timestamp).toLocaleTimeString()}</div>
+                    </div>
+                `).join('');
+            }
+
+            // Arbitrage
+            const arbList = document.getElementById('arbList');
+            if (botData.arbitrageOpportunities && botData.arbitrageOpportunities.length > 0) {
+                arbList.innerHTML = botData.arbitrageOpportunities.map(o => `
+                    <div style="margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px dashed rgba(139, 92, 246, 0.2);">
+                        <div style="color: #a78bfa;">> MATCH DETECTED</div>
+                        <div style="color: #fff;">MARKET: ${o.question}</div>
+                        <div style="color: #34d399;">SUM: ${o.sum} | PROFIT: +${o.profit}%</div>
+                        <a href="https://polymarket.com/market/${o.slug}" target="_blank" style="color: #60a5fa; font-size: 0.8em;">[EXECUTE ARBITRAGE]</a>
+                    </div>
+                `).join('');
+            } else {
+                arbList.innerHTML = '<div style="color: #64748b;">> Scanning for imbalances...</div>';
+            }
+
+            // Active Trades
+            const activeList = document.getElementById('activeTradesList');
+            if (botData.activeTrades.length === 0) {
+                activeList.innerHTML = '<div class="empty-state">SCANNING MARKET DEPTH FOR ANOMALIES...</div>';
+            } else {
+                activeList.innerHTML = botData.activeTrades.map(t => {
+                    const currentPrice = t.priceHistory[t.priceHistory.length - 1];
+                    const diff = ((currentPrice - t.entryPrice) / t.entryPrice * 100).toFixed(1);
+                    const color = diff >= 0 ? '#4ade80' : '#f87171';
+                    return `
+                    <div class="trade-card">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:15px">
+                            <div class="trade-title" style="font-size:1.1em; font-weight:700">${t.question}</div>
+                            <div style="color:${t.side === 'YES' ? '#4ade80' : '#f87171'}; font-weight:800; border:1px solid; padding:4px 12px; border-radius:8px; font-size:0.8em">${t.side}</div>
+                        </div>
+                        <div class="mini-chart-container" style="height:80px; margin-bottom:15px">
+                            <canvas id="chart-${t.id}"></canvas>
+                        </div>
+                        <div class="trade-metrics" style="background:rgba(255,255,255,0.03); padding:15px; border-radius:16px; margin-bottom:20px">
+                            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px">
+                                <div>
+                                    <div class="metric-label" style="font-size:0.6em">PURCHASE PRICE</div>
+                                    <div class="metric-value" style="font-size:0.9em">${t.entryPrice.toFixed(3)}</div>
+                                </div>
+                                <div>
+                                    <div class="metric-label" style="font-size:0.6em">MARKET PRICE</div>
+                                    <div class="metric-value" style="font-size:0.9em; color:${color}">${currentPrice.toFixed(3)}</div>
+                                </div>
+                                <div>
+                                    <div class="metric-label" style="font-size:0.6em">PnL %</div>
+                                    <div class="metric-value" style="font-size:0.9em; color:${color}">${diff >= 0 ? '+' : ''}${diff}%</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center">
+                            <div style="font-size:0.8em; color:#64748b">VOL: ${t.size.toFixed(0)} USDC</div>
+                            <a href="${t.eventSlug ? `https://polymarket.com/event/${t.eventSlug}` : `https://polymarket.com/market/${t.slug}`}" target="_blank" class="view-btn" style="padding:8px 16px; font-size:0.8em">VIEW</a>
+                        </div>
+                    </div>`;
+                }).join('');
+
+                botData.activeTrades.forEach(t => {
+                    const diff = t.priceHistory[t.priceHistory.length - 1] - t.entryPrice;
+                    miniCharts[t.id] = createMiniChart(t.id, t.priceHistory, t.entryPrice, diff >= 0 ? '#4ade80' : '#f87171');
+                });
+            }
+
+            // Closed Trades
+            const closedList = document.getElementById('closedTradesList');
+            if (botData.closedTrades.length === 0) {
+                closedList.innerHTML = '<div class="empty-state">ARCHIVES EMPTY.</div>';
+            } else {
+                closedList.innerHTML = botData.closedTrades.slice(0, 8).map(t => {
+                    const color = t.profit >= 0 ? '#4ade80' : '#f87171';
+                    return `
+                    <div class="trade-card" style="opacity:0.7; padding:20px">
+                        <div style="display:flex; justify-content:space-between; align-items:center">
+                            <div style="font-weight:700; font-size:0.9em; max-width:60%">${t.question.substring(0, 40)}...</div>
+                            <div style="color:${color}; font-weight:900; font-size:1.1em">${t.profit >= 0 ? '+' : ''}${t.profit.toFixed(2)}</div>
+                        </div>
+                    </div>`;
+                }).join('');
+            }
+
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
+        }
+
+        async function fetchRealData() {
+            try {
+                const response = await fetch('/api/bot-data', { cache: 'no-store' });
+                if (response.ok) {
+                    botData = await response.json();
+                    document.body.classList.remove('server-down');
+                    updateDashboard();
+                } else {
+                    throw new Error('Server response error');
+                }
+            } catch (error) {
+                console.error('Fetch error:', error);
+                document.body.classList.add('server-down');
+            }
+        }
+
+        window.onload = () => {
+            initMainChart();
+            fetchRealData();
+            setInterval(fetchRealData, 5000); // 5s refresh for more reactiveness
+        };
+    </script>
+</body>
+
+</html>
