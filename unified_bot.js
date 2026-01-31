@@ -51,11 +51,46 @@ let botState = {
     wizards: [] // Nouveautés: Paris "Long Shot" à haut potentiel
 };
 
+// --- ROBUST FETCH WRAPPER ---
+async function fetchWithRetry(url, options = {}, retries = 3) {
+    const timeout = 10000; // 10 seconds timeout
+
+    for (let attempt = 1; attempt <= retries; attempt++) {
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+            const response = await fetch(url, {
+                ...options,
+                signal: controller.signal,
+                headers: {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                    ...options.headers
+                }
+            });
+
+            clearTimeout(timeoutId);
+            return response;
+        } catch (error) {
+            const isLastAttempt = attempt === retries;
+
+            if (isLastAttempt) {
+                throw error;
+            }
+
+            // Exponential backoff: 1s, 2s, 4s
+            const delay = Math.pow(2, attempt - 1) * 1000;
+            console.log(`⚠️ Fetch attempt ${attempt} failed for ${url}, retrying in ${delay}ms...`);
+            await new Promise(r => setTimeout(r, delay));
+        }
+    }
+}
+
 // --- CHECK CONNECTIVITY SEPARATELY ---
 async function checkConnectivity() {
     // 1. Check Gamma/Polymarket
     try {
-        const r = await fetch('https://gamma-api.polymarket.com/markets?limit=1');
+        const r = await fetchWithRetry('https://gamma-api.polymarket.com/markets?limit=1');
         botState.apiStatus.gamma = r.ok ? 'ONLINE' : 'ERROR';
         botState.apiStatus.clob = r.ok ? 'ONLINE' : 'ERROR'; // CLOB uses same API for now
     } catch (e) {
@@ -65,12 +100,12 @@ async function checkConnectivity() {
 
     // 2. Check PizzINT
     try {
-        const r = await fetch('https://www.pizzint.watch/api/dashboard-data', { method: 'HEAD' });
+        const r = await fetchWithRetry('https://www.pizzint.watch/api/dashboard-data', { method: 'HEAD' });
         botState.apiStatus.pizzint = r.ok ? 'ONLINE' : 'ERROR';
     } catch (e) {
         // HEAD might fail, try GET if HEAD fails
         try {
-            const r2 = await fetch('https://www.pizzint.watch/api/dashboard-data');
+            const r2 = await fetchWithRetry('https://www.pizzint.watch/api/dashboard-data');
             botState.apiStatus.pizzint = r2.ok ? 'ONLINE' : 'ERROR';
         } catch (ex) {
             botState.apiStatus.pizzint = 'OFFLINE';
@@ -149,7 +184,7 @@ function loadState() {
 
 async function getPizzaData() {
     try {
-        const response = await fetch('https://www.pizzint.watch/api/dashboard-data', {
+        const response = await fetchWithRetry('https://www.pizzint.watch/api/dashboard-data', {
             headers: { 'Referer': 'https://www.pizzint.watch/' }
         });
         const data = await response.json();
@@ -169,7 +204,7 @@ async function getPizzaData() {
 async function getEventSlug(marketId, question) {
     try {
         const q = encodeURIComponent(question.substring(0, 30)); // Plus précis
-        const response = await fetch(`https://gamma-api.polymarket.com/events?active=true&closed=false&q=${q}`);
+        const response = await fetchWithRetry(`https://gamma-api.polymarket.com/events?active=true&closed=false&q=${q}`);
         if (response.ok) {
             const events = await response.json();
             if (Array.isArray(events)) {
@@ -188,7 +223,7 @@ async function getEventSlug(marketId, question) {
 
 async function getRelevantMarkets() {
     try {
-        const response = await fetch('https://gamma-api.polymarket.com/markets?active=true&closed=false&limit=100');
+        const response = await fetchWithRetry('https://gamma-api.polymarket.com/markets?active=true&closed=false&limit=100');
         const markets = await response.json();
         if (!Array.isArray(markets)) return [];
 
@@ -247,7 +282,7 @@ async function detectWhales() {
 
 async function scanArbitrage() {
     try {
-        const response = await fetch('https://gamma-api.polymarket.com/markets?active=true&closed=false&limit=100');
+        const response = await fetchWithRetry('https://gamma-api.polymarket.com/markets?active=true&closed=false&limit=100');
         if (!response.ok) return;
         const markets = await response.json();
         if (!Array.isArray(markets)) return;
@@ -304,7 +339,7 @@ async function fetchNewsSentiment() {
 
 async function detectWizards() {
     try {
-        const response = await fetch('https://gamma-api.polymarket.com/markets?active=true&closed=false&limit=100');
+        const response = await fetchWithRetry('https://gamma-api.polymarket.com/markets?active=true&closed=false&limit=100');
         if (!response.ok) throw new Error('Gamma Down');
         const markets = await response.json();
 
@@ -578,7 +613,7 @@ async function run() {
         // 1. Récupérer le slug du marché si manquant
         if (!trade.slug && trade.marketId) {
             try {
-                const response = await fetch(`https://gamma-api.polymarket.com/markets/${trade.marketId}`);
+                const response = await fetchWithRetry(`https://gamma-api.polymarket.com/markets/${trade.marketId}`);
                 if (response.ok) {
                     const marketData = await response.json();
                     if (marketData.slug) {
@@ -707,7 +742,7 @@ async function runTurboMode() {
 
                 if (!alreadyTraded) {
                     // RÉCUPÉRATION DU PRIX RÉEL (CLOB)
-                    const response = await fetch(`https://gamma-api.polymarket.com/markets/${best.id}`);
+                    const response = await fetchWithRetry(`https://gamma-api.polymarket.com/markets/${best.id}`);
                     const liveData = await response.json();
 
                     const entryPrice = parseFloat(liveData.bestAsk || liveData.lastTradePrice || 0.5);

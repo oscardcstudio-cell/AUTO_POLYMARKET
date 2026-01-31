@@ -231,6 +231,26 @@
             h1 {
                 font-size: 2.5em;
             }
+
+            .section-title {
+                font-size: 0.9em !important;
+                flex-direction: column !important;
+                align-items: flex-start !important;
+            }
+
+            .section-title>div {
+                width: 100%;
+                margin-top: 10px;
+            }
+
+            .section-title input,
+            .section-title select {
+                width: 100%;
+            }
+
+            .trades-grid {
+                grid-template-columns: 1fr !important;
+            }
         }
 
         /* --- DASHBOARD COMPONENTS --- */
@@ -324,6 +344,14 @@
             background: #22c55e;
         }
 
+        .section-title {
+            font-size: 1.2em;
+            font-weight: 700;
+            margin: 40px 0 20px 0;
+            color: #e2e8f0;
+            letter-spacing: 0.5px;
+        }
+
         .empty-state {
             padding: 40px;
             text-align: center;
@@ -376,6 +404,41 @@
             <div class="stat-card">
                 <div class="stat-label">Open Risk</div>
                 <div class="stat-value" id="moneySpent">$0.00</div>
+            </div>
+        </div>
+
+        <!-- Performance Statistics Section -->
+        <div class="chart-section" style="margin-bottom: 30px;">
+            <div class="stat-label" style="margin-bottom: 20px;">📈 Performance Analytics</div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                <div
+                    style="text-align: center; padding: 15px; background: rgba(255,255,255,0.02); border-radius: 16px;">
+                    <div
+                        style="font-size: 0.7em; color: #94a3b8; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;">
+                        Avg Profit/Trade</div>
+                    <div id="avgProfit" style="font-size: 1.8em; font-weight: 800; color: #60a5fa;">$0.00</div>
+                </div>
+                <div
+                    style="text-align: center; padding: 15px; background: rgba(255,255,255,0.02); border-radius: 16px;">
+                    <div
+                        style="font-size: 0.7em; color: #94a3b8; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;">
+                        Largest Win</div>
+                    <div id="largestWin" style="font-size: 1.8em; font-weight: 800; color: #4ade80;">$0.00</div>
+                </div>
+                <div
+                    style="text-align: center; padding: 15px; background: rgba(255,255,255,0.02); border-radius: 16px;">
+                    <div
+                        style="font-size: 0.7em; color: #94a3b8; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;">
+                        Largest Loss</div>
+                    <div id="largestLoss" style="font-size: 1.8em; font-weight: 800; color: #f87171;">$0.00</div>
+                </div>
+                <div
+                    style="text-align: center; padding: 15px; background: rgba(255,255,255,0.02); border-radius: 16px;">
+                    <div
+                        style="font-size: 0.7em; color: #94a3b8; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;">
+                        Avg Duration</div>
+                    <div id="avgDuration" style="font-size: 1.8em; font-weight: 800; color: #a78bfa;">0m</div>
+                </div>
             </div>
         </div>
 
@@ -554,8 +617,21 @@
             <div class="empty-state">Scanning liquidity pools for optimal entry...</div>
         </div>
 
-        <!-- History -->
-        <div class="section-title">📜 Archives & Settlements</div>
+        <!-- History with Filters -->
+        <div class="section-title"
+            style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+            <span>📜 Archives & Settlements</span>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <input type="text" id="searchTrades" placeholder="Search markets..."
+                    style="padding: 8px 15px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 20px; color: #f8fafc; font-size: 0.85em; outline: none;">
+                <select id="filterProfit"
+                    style="padding: 8px 15px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 20px; color: #f8fafc; font-size: 0.85em; outline: none;">
+                    <option value="all">All Trades</option>
+                    <option value="profit">Profitable Only</option>
+                    <option value="loss">Losses Only</option>
+                </select>
+            </div>
+        </div>
         <div id="closedTradesList" class="trades-grid">
             <div class="empty-state">No history recorded in this session.</div>
         </div>
@@ -686,6 +762,30 @@
 
             const moneySpent = botData.activeTrades.reduce((sum, t) => sum + t.size, 0);
             document.getElementById('moneySpent').textContent = `$${moneySpent.toLocaleString()}`;
+
+            // Performance Analytics
+            if (botData.closedTrades && botData.closedTrades.length > 0) {
+                const profits = botData.closedTrades.map(t => t.profit || 0);
+                const avgProfit = profits.reduce((a, b) => a + b, 0) / profits.length;
+                const largestWin = Math.max(...profits);
+                const largestLoss = Math.min(...profits);
+
+                // Calculate average duration
+                const durations = botData.closedTrades
+                    .filter(t => t.closedAt && t.timestamp)
+                    .map(t => (new Date(t.closedAt) - new Date(t.timestamp)) / 1000 / 60); // minutes
+                const avgDuration = durations.length > 0
+                    ? durations.reduce((a, b) => a + b, 0) / durations.length
+                    : 0;
+
+                document.getElementById('avgProfit').textContent = `$${avgProfit.toFixed(2)}`;
+                document.getElementById('avgProfit').style.color = avgProfit >= 0 ? '#4ade80' : '#f87171';
+                document.getElementById('largestWin').textContent = `$${largestWin.toFixed(2)}`;
+                document.getElementById('largestLoss').textContent = `$${largestLoss.toFixed(2)}`;
+                document.getElementById('avgDuration').textContent = avgDuration >= 60
+                    ? `${(avgDuration / 60).toFixed(1)}h`
+                    : `${avgDuration.toFixed(0)}m`;
+            }
 
             // Terminal
             updateTerminal(botData.logs);
@@ -856,31 +956,100 @@
                 });
             }
 
-            // Closed Trades
+            // Closed Trades with Filtering
             const closedList = document.getElementById('closedTradesList');
             if (botData.closedTrades.length === 0) {
                 closedList.innerHTML = '<div class="empty-state">ARCHIVES EMPTY.</div>';
             } else {
-                closedList.innerHTML = botData.closedTrades.slice(0, 8).map(t => {
-                    const color = t.profit >= 0 ? '#4ade80' : '#f87171';
-                    return `
-                    <div class="trade-card" style="opacity:0.7; padding:20px">
-                        <div style="display:flex; justify-content:space-between; align-items:center">
-                            <div style="font-weight:700; font-size:0.9em; max-width:60%">${t.question.substring(0, 40)}...</div>
-                            <div style="color:${color}; font-weight:900; font-size:1.1em">${t.profit >= 0 ? '+' : ''}${t.profit.toFixed(2)}</div>
-                        </div>
-                    </div>`;
-                }).join('');
+                // Get filter values
+                const searchTerm = document.getElementById('searchTrades')?.value.toLowerCase() || '';
+                const profitFilter = document.getElementById('filterProfit')?.value || 'all';
+
+                // Apply filters
+                let filteredTrades = botData.closedTrades.filter(t => {
+                    const matchesSearch = t.question.toLowerCase().includes(searchTerm);
+                    const matchesProfit = profitFilter === 'all' ||
+                        (profitFilter === 'profit' && t.profit >= 0) ||
+                        (profitFilter === 'loss' && t.profit < 0);
+                    return matchesSearch && matchesProfit;
+                });
+
+                if (filteredTrades.length === 0) {
+                    closedList.innerHTML = '<div class="empty-state">No trades match your filters.</div>';
+                } else {
+                    closedList.innerHTML = filteredTrades.slice(0, 12).map(t => {
+                        const color = t.profit >= 0 ? '#4ade80' : '#f87171';
+                        const duration = t.closedAt && t.timestamp
+                            ? Math.round((new Date(t.closedAt) - new Date(t.timestamp)) / 1000 / 60)
+                            : 0;
+                        return `
+                        <div class="trade-card" style="opacity:0.8; padding:20px">
+                            <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom: 15px;">
+                                <div style="font-weight:700; font-size:0.9em; max-width:65%; line-height: 1.4;">${t.question.substring(0, 60)}...</div>
+                                <div style="color:${color}; font-weight:900; font-size:1.3em">${t.profit >= 0 ? '+' : ''}$${t.profit.toFixed(2)}</div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-size: 0.75em; color: #64748b;">
+                                <span>${t.side} @ $${(t.entryPrice || 0).toFixed(3)}</span>
+                                <span>${duration}m duration</span>
+                            </div>
+                        </div>`;
+                    }).join('');
+                }
             }
 
             document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
+        }
+
+        // Sound Notification System
+        let lastTradeCount = 0;
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playNotification(type = 'trade') {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            if (type === 'trade') {
+                oscillator.frequency.value = 800;
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.3);
+            } else if (type === 'profit') {
+                oscillator.frequency.value = 1200;
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.2);
+            } else if (type === 'loss') {
+                oscillator.frequency.value = 400;
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.4);
+            }
         }
 
         async function fetchRealData() {
             try {
                 const response = await fetch('/api/bot-data', { cache: 'no-store' });
                 if (response.ok) {
-                    botData = await response.json();
+                    const newData = await response.json();
+
+                    // Check for new trades and play sound
+                    if (botData.totalTrades && newData.totalTrades > botData.totalTrades) {
+                        playNotification('trade');
+                    }
+
+                    // Check for closed trades
+                    if (botData.closedTrades && newData.closedTrades.length > botData.closedTrades.length) {
+                        const latestTrade = newData.closedTrades[0];
+                        playNotification(latestTrade.profit >= 0 ? 'profit' : 'loss');
+                    }
+
+                    botData = newData;
                     document.body.classList.remove('server-down');
                     updateDashboard();
                 } else {
@@ -892,10 +1061,15 @@
             }
         }
 
+        // Event listeners for filters
         window.onload = () => {
             initMainChart();
             fetchRealData();
             setInterval(fetchRealData, 5000); // 5s refresh for more reactiveness
+
+            // Add filter event listeners
+            document.getElementById('searchTrades')?.addEventListener('input', updateDashboard);
+            document.getElementById('filterProfit')?.addEventListener('change', updateDashboard);
         };
     </script>
 </body>
