@@ -1387,5 +1387,5 @@ async function runTurboMode() {
     }
 }
 
-run();
+main();
 runTurboMode(); // Lancement en parallèle
