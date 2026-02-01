@@ -285,8 +285,8 @@ function loadState() {
 const priceCache = new Map();
 const PRICE_CACHE_TTL = 30000; // 30 secondes
 
-async function getRealMarketPrice(marketId) {
-    const cacheKey = `price_${marketId}`;
+async function getRealMarketPrice(marketId, side = 'YES') {
+    const cacheKey = `price_${marketId}_${side}`;
     const cached = priceCache.get(cacheKey);
 
     if (cached && Date.now() - cached.timestamp < PRICE_CACHE_TTL) {
@@ -299,10 +299,16 @@ async function getRealMarketPrice(marketId) {
             const market = await response.json();
             let price = 0;
 
-            if (market.lastTradePrice) {
+            // Utiliser le bon prix selon le side du trade
+            if (market.outcomePrices && market.outcomePrices.length >= 2) {
+                const prices = JSON.parse(market.outcomePrices);
+                price = parseFloat(prices[side === 'YES' ? 0 : 1]);
+            } else if (market.lastTradePrice) {
+                // Fallback sur lastTradePrice (assume YES)
                 price = parseFloat(market.lastTradePrice);
-            } else if (market.outcomePrices && market.outcomePrices.length > 0) {
-                price = parseFloat(market.outcomePrices[0]);
+                if (side === 'NO') {
+                    price = 1 - price; // Inverser pour NO
+                }
             }
 
             if (price > 0 && price < 1) {
@@ -996,8 +1002,8 @@ async function checkAndCloseTrades() {
 
         if (!trade.priceHistory) trade.priceHistory = [trade.entryPrice];
 
-        // Récupérer le VRAI prix depuis Polymarket
-        const realPrice = await getRealMarketPrice(trade.marketId);
+        // Récupérer le VRAI prix depuis Polymarket (selon le side du trade)
+        const realPrice = await getRealMarketPrice(trade.marketId, trade.side);
 
         if (realPrice !== null && realPrice > 0) {
             trade.priceHistory.push(realPrice);
