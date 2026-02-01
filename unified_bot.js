@@ -7,6 +7,7 @@ import fs from 'fs';
 import path from 'path';
 import express from 'express';
 import { fileURLToPath } from 'url';
+import { execSync } from 'child_process';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -1122,7 +1123,6 @@ function displayStatus() {
 }
 
 // --- GITHUB AUTO-SYNC (Persistence sur Railway) ---
-const { execSync } = require('child_process');
 
 async function syncDataToGitHub() {
     try {
