@@ -1185,11 +1185,14 @@ async function run() {
     saveState();
 
     // Démarrer le serveur API
-    const HOST = process.env.RAILWAY_ENVIRONMENT ? '0.0.0.0' : 'localhost';
+    // Railway détecté si PORT est défini en env (Railway le définit automatiquement)
+    const isRailway = !!process.env.PORT;
+    const HOST = isRailway ? '0.0.0.0' : 'localhost';
+
     app.listen(CONFIG.PORT, HOST, () => {
         console.log(`\n🚀 DASHBOARD DISPONIBLE SUR: http://${HOST}:${CONFIG.PORT}`);
-        if (process.env.RAILWAY_ENVIRONMENT) {
-            console.log(`🌐 Public URL: https://${process.env.RAILWAY_PUBLIC_DOMAIN || 'your-app.railway.app'}`);
+        if (isRailway) {
+            console.log(`🌐 Running on Railway - Public URL should be accessible`);
         }
     });
 
