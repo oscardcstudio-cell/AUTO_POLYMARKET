@@ -604,20 +604,66 @@ async function scanArbitrage() {
 
 async function fetchNewsSentiment() {
     try {
-        // Simulation d'un flux de news (en attendant une clé API CryptoPanic)
-        const trendingKeywords = ['Trump', 'Rate Cut', 'War', 'Strike', 'Bitcoin', 'GDP', 'Elon'];
-        const mockNews = trendingKeywords.map(kw => ({
-            title: `Breaking: Impact of ${kw} on global markets`,
-            sentiment: Math.random() > 0.4 ? 'bullish' : 'bearish',
-            source: 'AlphaMatrix AI',
-            timestamp: new Date().toISOString()
-        }));
+        // CryptoPanic API (gratuite, pas de clé pour usage basique)
+        const response = await fetchWithRetry('https://cryptopanic.com/api/free/v1/posts/?public=true&kind=news', {
+            headers: { 'User-Agent': 'Mozilla/5.0' }
+        });
 
-        botState.newsSentiment = mockNews;
-        botState.apiStatus.alpha = 'ONLINE';
+        if (!response.ok) {
+            throw new Error('CryptoPanic API failed');
+        }
+
+        const data = await response.json();
+
+        if (data.results && Array.isArray(data.results)) {
+            const realNews = data.results.slice(0, 10).map(post => {
+                // Analyse du sentiment basé sur votes et keywords
+                const positiveVotes = post.votes?.positive || 0;
+                const negativeVotes = post.votes?.negative || 0;
+                const totalVotes = positiveVotes + negativeVotes;
+
+                let sentiment = 'neutral';
+                if (totalVotes > 0) {
+                    sentiment = positiveVotes > negativeVotes ? 'bullish' : 'bearish';
+                } else {
+                    // Analyse par keywords si pas de votes
+                    const title = post.title.toLowerCase();
+                    const bullishWords = ['surge', 'rally', 'gains', 'up', 'bullish', 'moon', 'profit', 'win'];
+                    const bearishWords = ['crash', 'dump', 'falls', 'down', 'bearish', 'loss', 'plunge'];
+
+                    const bullishCount = bullishWords.filter(w => title.includes(w)).length;
+                    const bearishCount = bearishWords.filter(w => title.includes(w)).length;
+
+                    if (bullishCount > bearishCount) sentiment = 'bullish';
+                    else if (bearishCount > bullishCount) sentiment = 'bearish';
+                }
+
+                return {
+                    title: post.title,
+                    sentiment: sentiment,
+                    source: post.source?.title || 'CryptoPanic',
+                    timestamp: post.created_at,
+                    url: post.url,
+                    votes: { positive: positiveVotes, negative: negativeVotes }
+                };
+            });
+
+            botState.newsSentiment = realNews;
+            botState.apiStatus.alpha = 'ONLINE';
+            addLog(`📰 ${realNews.length} vraies news chargées (${realNews.filter(n => n.sentiment === 'bullish').length} bullish)`, 'info');
+        }
     } catch (e) {
         console.error('Error news fetch:', e.message);
-        botState.apiStatus.alpha = 'OFFLINE';
+        // Fallback: garder les anciennes news ou utiliser un minimum
+        if (!botState.newsSentiment || botState.newsSentiment.length === 0) {
+            botState.newsSentiment = [{
+                title: 'News API temporarily unavailable',
+                sentiment: 'neutral',
+                source: 'System',
+                timestamp: new Date().toISOString()
+            }];
+        }
+        botState.apiStatus.alpha = 'DEGRADED';
     }
 }
 
@@ -943,18 +989,118 @@ async function checkAndCloseTrades() {
         if (realPrice !== null && realPrice > 0) {
             trade.priceHistory.push(realPrice);
             if (trade.priceHistory.length > 20) trade.priceHistory.shift();
+        } else {
+            // Logger quand le prix échoue
+            if (Math.random() < 0.1) { // Log 10% du temps pour ne pas spammer
+                addLog(`⚠️ Échec récupération prix pour marché ${trade.marketId}`, 'warning');
+            }
         }
-        // Si l'API échoue, on garde le dernier prix (pas de message d'erreur)
 
-        const tradeAge = (now - new Date(trade.timestamp)) / 1000 / 60;
-        // On ferme les trades en 30-60 minutes
-        if (tradeAge > 30 && Math.random() < 0.1) {
-            const closedTrade = simulateTradeResolution(trade);
-            botState.closedTrades.unshift(closedTrade);
-            botState.activeTrades.splice(i, 1);
-            if (botState.closedTrades.length > 50) botState.closedTrades = botState.closedTrades.slice(0, 50);
-            saveState();
+        // Vérifier si le marché a expiré (date de fin dépassée)
+        const marketEndDate = new Date(trade.endDate);
+        const isExpired = now > marketEndDate;
+
+        if (isExpired) {
+            // Vérifier si le marché est résolu sur Polymarket
+            try {
+                const resolution = await resolveTradeWithRealOutcome(trade);
+                if (resolution) {
+                    botState.closedTrades.unshift(resolution);
+                    botState.activeTrades.splice(i, 1);
+                    if (botState.closedTrades.length > 50) {
+                        botState.closedTrades = botState.closedTrades.slice(0, 50);
+                    }
+                    saveState();
+                }
+                // Si résolution === null, le marché n'est pas encore résolu (on attend)
+            } catch (e) {
+                console.error(`Erreur résolution trade ${trade.id}:`, e.message);
+            }
         }
+    }
+}
+
+// Nouvelle fonction: Résoudre un trade basé sur l'outcome réel du marché
+async function resolveTradeWithRealOutcome(trade) {
+    try {
+        // Fetch les données du marché pour vérifier s'il est résolu
+        const response = await fetchWithRetry(`https://gamma-api.polymarket.com/markets/${trade.marketId}`);
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch market data');
+        }
+
+        const market = await response.json();
+
+        // Vérifier si le marché est résolu
+        if (!market.closed || market.enableOrderBook) {
+            // Marché pas encore fermé ou encore actif
+            addLog(`⏳ Marché ${trade.marketId.substring(0, 8)}... expiré mais pas encore résolu`, 'info');
+            return null; // On attend la résolution officielle
+        }
+
+        // Déterminer l'outcome
+        // NOTE: Polymarket API peut utiliser différents champs selon le type de marché
+        let wonTrade = false;
+
+        // Méthode 1: Utiliser acceptingOrders comme proxy du statut
+        if (market.acceptingOrders === false && market.outcomePrices) {
+            const prices = JSON.parse(market.outcomePrices);
+            const yesPrice = parseFloat(prices[0]);
+            const noPrice = parseFloat(prices[1]);
+
+            // Si YES = 1.0 (ou proche), YES a gagné
+            // Si NO = 1.0 (ou proche), NO a gagné
+            if (yesPrice > 0.99 && trade.side === 'YES') wonTrade = true;
+            if (noPrice > 0.99 && trade.side === 'NO') wonTrade = true;
+        }
+
+        // Calculer le profit basé sur l'outcome réel
+        let profit = 0;
+        let exitPrice = 0;
+
+        if (wonTrade) {
+            // Gagné: payout de 1.0 par share
+            const rawReturn = trade.shares * 1.0;
+            const exitFees = rawReturn * 0.001;
+            const entryFees = trade.size * (0.001 / (1 - 0.001));
+            const initialInvestment = trade.size + entryFees;
+
+            profit = (rawReturn - exitFees) - initialInvestment;
+            exitPrice = 1.0;
+
+            botState.winningTrades++;
+            addLog(`✅ Trade gagné: ${trade.question.substring(0, 30)}... (+${profit.toFixed(2)} USDC)`, 'success');
+        } else {
+            // Perdu: payout de 0.0
+            const entryFees = trade.size * (0.001 / (1 - 0.001));
+            const initialInvestment = trade.size + entryFees;
+
+            profit = -initialInvestment;
+            exitPrice = 0.0;
+
+            botState.losingTrades++;
+            addLog(`❌ Trade perdu: ${trade.question.substring(0, 30)}... (${profit.toFixed(2)} USDC)`, 'warning');
+        }
+
+        botState.capital += (wonTrade ? trade.shares : 0) - (wonTrade ? 0 : 0); // Ajuster capital
+
+        return {
+            ...trade,
+            status: 'CLOSED',
+            exitPrice: exitPrice,
+            profit: profit,
+            closedAt: new Date().toISOString(),
+            resolvedOutcome: wonTrade ? 'WON' : 'LOST',
+            resolutionMethod: 'REAL_MARKET_OUTCOME'
+        };
+
+    } catch (error) {
+        console.error(`Erreur résolution marché ${trade.marketId}:`, error.message);
+
+        // Fallback: résolution basée sur le dernier prix connu
+        addLog(`⚠️ Fallback: résolution basée sur prix final pour ${trade.marketId.substring(0, 8)}...`, 'warning');
+        return simulateTradeResolution(trade);
     }
 }
 
