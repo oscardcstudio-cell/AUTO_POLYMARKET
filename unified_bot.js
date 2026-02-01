@@ -18,9 +18,11 @@ const CONFIG = {
     DEFCON_THRESHOLD: 5,
     MIN_TRADE_SIZE: 10,
     MAX_TRADE_SIZE_PERCENT: 0.05,
-    KEYWORDS: ['Pentagon', 'Israel', 'Iran', 'Hezbollah', 'War', 'Strike', 'Attack', 'Military', 'Trump', 'Conflict', 'Ukraine', 'Russia', 'China', 'Taiwan', 'Bitcoin', 'Crypto', 'Election', 'US', 'President', 'GDP', 'Economy', 'Fed', 'Rates', 'SpaceX', 'Elon', 'Tesla', 'Apple', 'Nvidia', 'AI', 'GPT', 'Movie', 'Box Office', 'Sports', 'NBA', 'NFL'],
+    KEYWORDS: [], // Sera rempli dynamiquement
+    FALLBACK_KEYWORDS: ['War', 'Strike', 'Election', 'Bitcoin', 'Economy'], // Fallback si aucune extraction
     DATA_FILE: 'bot_data.json',
-    PORT: process.env.PORT || 3000
+    PORT: process.env.PORT || 3000,
+    KEYWORD_UPDATE_INTERVAL: 60 * 60 * 1000 // 1 heure
 };
 
 // --- ÉTAT DU BOT ---
@@ -48,7 +50,8 @@ let botState = {
         pizzint: 'Checking...',
         alpha: 'Checking...'
     },
-    wizards: [] // Nouveautés: Paris "Long Shot" à haut potentiel
+    wizards: [], // Nouveautés: Paris "Long Shot" à haut potentiel
+    keywordScores: {} // Tracking: { keyword: { score, lastSeen, frequency } }
 };
 
 // --- ROBUST FETCH WRAPPER ---
@@ -350,6 +353,156 @@ async function getEventSlug(marketId, question) {
         console.error('❌ Erreur getEventSlug:', error.message);
     }
     return null;
+}
+
+// --- SYSTÈME DE KEYWORDS DYNAMIQUES ---
+
+// Extraire les entités nommées d'un texte (NLP simple)
+function extractEntities(text) {
+    const entities = new Set();
+
+    // Regex pour capturer les mots capitalisés (potentiellement des noms propres)
+    const capitalizedWords = text.match(/\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)?\b/g) || [];
+    capitalizedWords.forEach(word => {
+        // Filtrer les mots communs en début de phrase
+        if (!['Will', 'The', 'Is', 'Are', 'Does', 'Has', 'When', 'What', 'Who'].includes(word)) {
+            entities.add(word);
+        }
+    });
+
+    // Mots-clés économiques/politiques (insensibles à la casse)
+    const economicKeywords = ['bitcoin', 'crypto', 'GDP', 'inflation', 'recession', 'fed', 'rates', 'economy'];
+    const politicalKeywords = ['election', 'president', 'congress', 'senate', 'vote', 'policy'];
+    const geopoliticalKeywords = ['war', 'strike', 'military', 'conflict', 'peace', 'treaty', 'sanctions'];
+
+    const lowerText = text.toLowerCase();
+    [...economicKeywords, ...politicalKeywords, ...geopoliticalKeywords].forEach(kw => {
+        if (lowerText.includes(kw)) {
+            entities.add(kw.charAt(0).toUpperCase() + kw.slice(1));
+        }
+    });
+
+    return Array.from(entities);
+}
+
+// Mettre à jour les scores de keywords avec time decay
+function updateKeywordScore(keyword, baseScore = 1.0) {
+    if (!botState.keywordScores[keyword]) {
+        botState.keywordScores[keyword] = {
+            score: baseScore,
+            lastSeen: Date.now(),
+            frequency: 1
+        };
+    } else {
+        const data = botState.keywordScores[keyword];
+        data.frequency += 1;
+        data.lastSeen = Date.now();
+        // Augmenter le score avec la fréquence (log scale)
+        data.score = Math.min(10, baseScore * Math.log(data.frequency + 1));
+    }
+}
+
+// Calculer la pertinence d'un keyword avec time decay
+function getKeywordRelevance(keyword) {
+    const data = botState.keywordScores[keyword];
+    if (!data) return 0;
+
+    const daysSinceLastSeen = (Date.now() - data.lastSeen) / (1000 * 60 * 60 * 24);
+    const timeDecay = Math.exp(-daysSinceLastSeen / 3); // Half-life 3 jours
+
+    return data.score * timeDecay * Math.log(data.frequency + 1);
+}
+
+// Extraire les trending keywords depuis plusieurs sources
+async function extractTrendingKeywords() {
+    const keywordCandidates = new Map(); // keyword -> score
+
+    try {
+        // 1. Depuis les marchés à haut volume (top 20)
+        const response = await fetchWithRetry('https://gamma-api.polymarket.com/markets?active=true&closed=false&limit=50');
+        if (response.ok) {
+            const markets = await response.json();
+            if (Array.isArray(markets)) {
+                // Trier par volume 24h
+                const topMarkets = markets
+                    .sort((a, b) => parseFloat(b.volume24hr || 0) - parseFloat(a.volume24hr || 0))
+                    .slice(0, 20);
+
+                for (const market of topMarkets) {
+                    const entities = extractEntities(market.question);
+                    const volumeScore = Math.log(parseFloat(market.volume24hr || 1) + 1) / 10;
+
+                    entities.forEach(entity => {
+                        const currentScore = keywordCandidates.get(entity) || 0;
+                        keywordCandidates.set(entity, currentScore + volumeScore);
+                        updateKeywordScore(entity, volumeScore);
+                    });
+                }
+            }
+        }
+
+        // 2. Depuis les news sentiment (si disponibles)
+        if (botState.newsSentiment && botState.newsSentiment.length > 0) {
+            for (const news of botState.newsSentiment.slice(0, 10)) {
+                const entities = extractEntities(news.title);
+                entities.forEach(entity => {
+                    const currentScore = keywordCandidates.get(entity) || 0;
+                    const sentimentBonus = news.sentiment === 'bullish' ? 1.5 : 1.0;
+                    keywordCandidates.set(entity, currentScore + sentimentBonus);
+                    updateKeywordScore(entity, sentimentBonus);
+                });
+            }
+        }
+
+        // 3. Bonus pour les keywords liés au DEFCON
+        if (botState.lastPizzaData && botState.lastPizzaData.defcon <= 3) {
+            const crisisKeywords = ['War', 'Strike', 'Military', 'Conflict', 'Iran', 'China', 'Russia'];
+            crisisKeywords.forEach(kw => {
+                const currentScore = keywordCandidates.get(kw) || 0;
+                const defconBonus = (5 - botState.lastPizzaData.defcon) * 2;
+                keywordCandidates.set(kw, currentScore + defconBonus);
+                updateKeywordScore(kw, defconBonus);
+            });
+        }
+
+        // 4. Appliquer le time decay sur tous les keywords existants
+        for (const [keyword, data] of Object.entries(botState.keywordScores)) {
+            const relevance = getKeywordRelevance(keyword);
+            if (relevance > 0.1) { // Seuil minimum
+                const currentScore = keywordCandidates.get(keyword) || 0;
+                keywordCandidates.set(keyword, currentScore + relevance);
+            }
+        }
+
+        // 5. Trier par score et prendre le top 30
+        const sortedKeywords = Array.from(keywordCandidates.entries())
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 30)
+            .map(([keyword, _]) => keyword);
+
+        if (sortedKeywords.length === 0) {
+            addLog('⚠️ Aucun keyword dynamique trouvé, utilisation du fallback', 'warning');
+            return CONFIG.FALLBACK_KEYWORDS;
+        }
+
+        return sortedKeywords;
+
+    } catch (error) {
+        console.error('❌ Erreur extraction keywords:', error.message);
+        return CONFIG.FALLBACK_KEYWORDS;
+    }
+}
+
+// Mettre à jour les keywords dynamiques
+async function updateDynamicKeywords() {
+    const newKeywords = await extractTrendingKeywords();
+    const oldCount = CONFIG.KEYWORDS.length;
+    CONFIG.KEYWORDS = newKeywords;
+
+    const preview = newKeywords.slice(0, 8).join(', ');
+    addLog(`🔄 Keywords mis à jour (${oldCount} → ${newKeywords.length}): ${preview}...`, 'info');
+
+    return newKeywords;
 }
 
 async function getRelevantMarkets() {
@@ -824,6 +977,19 @@ async function run() {
 
     // Initial Check
     await checkConnectivity();
+
+    // Initialiser les keywords dynamiques
+    console.log('🔍 Extraction des keywords dynamiques depuis les marchés...');
+    await updateDynamicKeywords();
+
+    // Rafraîchir les keywords toutes les heures
+    setInterval(async () => {
+        try {
+            await updateDynamicKeywords();
+        } catch (e) {
+            console.error('Erreur rafraîchissement keywords:', e.message);
+        }
+    }, CONFIG.KEYWORD_UPDATE_INTERVAL);
 
     // Migration : Récupérer les slugs et eventSlugs manquants
     console.log('🔍 Vérification des slugs et liens pour les trades existants...');
