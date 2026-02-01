@@ -192,6 +192,64 @@ app.get('/api/bot-data', (req, res) => {
     res.json(data);
 });
 
+// Endpoint pour réinitialiser la simulation
+app.post('/api/reset', (req, res) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+
+    // Réinitialiser l'état
+    botState = {
+        startTime: new Date().toISOString(),
+        capital: CONFIG.STARTING_CAPITAL,
+        startingCapital: CONFIG.STARTING_CAPITAL,
+        totalTrades: 0,
+        winningTrades: 0,
+        losingTrades: 0,
+        activeTrades: [],
+        closedTrades: [],
+        capitalHistory: [],
+        lastPizzaData: null,
+        topSignal: null,
+        lastUpdate: new Date().toISOString(),
+        logs: [],
+        whaleAlerts: [],
+        arbitrageOpportunities: [],
+        newsSentiment: [],
+        momentumData: {},
+        apiStatus: {
+            gamma: 'Checking...',
+            clob: 'Checking...',
+            pizzint: 'Checking...',
+            alpha: 'Checking...'
+        },
+        wizards: []
+    };
+
+    // Réinitialiser Turbo state
+    turboState = {
+        capital: 5000,
+        activeTrades: [],
+        closedTrades: [],
+        totalTrades: 0,
+        profit: 0
+    };
+
+    addLog('♻️ SIMULATION RESET: Portefeuille réinitialisé à $1000', 'warning');
+    saveState();
+
+    res.json({ success: true, message: "Simulation reset successful" });
+});
+
+// Health check endpoint pour Railway
+app.get('/health', (req, res) => {
+    res.json({
+        status: 'healthy',
+        uptime: process.uptime(),
+        timestamp: new Date().toISOString(),
+        capital: botState.capital,
+        activeTrades: botState.activeTrades.length
+    });
+});
+
 // --- LOGIQUE DU BOT ---
 
 function saveState() {

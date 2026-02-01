@@ -379,6 +379,10 @@
                 POLYMARKET INTELLIGENCE ENGINE v3.0 // SIMULATION MODE
             </div>
             <h1>Neural Trader Dashboard</h1>
+            <button onclick="resetSimulation()"
+                style="background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.5); color: #fca5a5; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-family: inherit; font-size: 0.8em; margin-top: 10px; transition: all 0.2s;">
+                ♻️ RESTART SIMULATION
+            </button>
         </header>
 
         <!-- Stats Grid -->
@@ -748,6 +752,25 @@
 
             // Scroll to top instead of bottom as newest are first
             // body.scrollTop = 0; 
+        }
+
+        async function resetSimulation() {
+            if (!confirm("Are you sure you want to reset the simulation? All data and trades will be wiped.")) return;
+
+            try {
+                const response = await fetch('/api/reset', { method: 'POST' });
+                const data = await response.json();
+
+                if (data.success) {
+                    alert("Simulation reset successfully!");
+                    window.location.reload();
+                } else {
+                    alert("Error resetting simulation");
+                }
+            } catch (e) {
+                console.error("Reset error:", e);
+                alert("Failed to connect to bot server");
+            }
         }
 
         function updateDashboard() {
