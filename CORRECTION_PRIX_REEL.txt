@@ -1,0 +1,44 @@
+// FONCTION CORRIGÉE pour getRealMarketPrice
+// Remplacer la fonction existante (lignes 200-246) par celle-ci
+
+// Cache pour les prix réels de Polymarket (évite les appels API excessifs)
+const priceCache = new Map();
+const PRICE_CACHE_TTL = 30000; // 30 secondes
+
+async function getRealMarketPrice(marketId) {
+    const cacheKey = `price_${marketId}`;
+    const cached = priceCache.get(cacheKey);
+    
+    // Utiliser le cache si disponible et récent
+    if (cached && Date.now() - cached.timestamp < PRICE_CACHE_TTL) {
+        return cached.price;
+    }
+    
+    try {
+        // Utiliser l'API Gamma qui retourne les VRAIS prix de Polymarket
+        const response = await fetchWithRetry(`https://gamma-api.polymarket.com/markets/${marketId}`);
+        
+        if (response.ok) {
+            const market = await response.json();
+            let price = 0;
+            
+            // 1. Priorité au dernier prix de trade (le plus récent et réel)
+            if (market.lastTradePrice) {
+                price = parseFloat(market.lastTradePrice);
+            }
+            // 2. Sinon utiliser les prix des outcomes (YES price)
+            else if (market.outcomePrices && market.outcomePrices.length > 0) {
+                price = parseFloat(market.outcomePrices[0]);
+            }
+            
+            if (price > 0 && price < 1) {
+                priceCache.set(cacheKey, { price, timestamp: Date.now() });
+                return price;
+            }
+        }
+    } catch (e) {
+        console.error(`❌ Erreur fetch prix pour market ${marketId}:`, e.message);
+    }
+    
+    return null; // Retourne null si échec
+}

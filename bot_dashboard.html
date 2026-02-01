@@ -568,9 +568,9 @@
         <div class="terminal-container" style="margin-top: 30px; height: 300px;">
             <div class="terminal-header">
                 <span>💻 SYSTEM_LOGS</span>
-                <span id="terminalClock" style="font-family: monospace;">--:--:--</span>
+                <span id="systemLogsClock" style="font-family: monospace;">--:--:--</span>
             </div>
-            <div id="terminalBody" class="terminal-body" style="font-size: 0.8em;"></div>
+            <div id="systemLogsBody" class="terminal-body" style="font-size: 0.8em;"></div>
         </div>
 
         <div
@@ -720,110 +720,145 @@
 
         function updateTerminal(logs) {
             const body = document.getElementById('terminalBody');
+            const systemLogsBody = document.getElementById('systemLogsBody');
             if (!logs || logs.length === 0) return;
 
-            body.innerHTML = logs.map(log => {
-                const time = new Date(log.timestamp).toLocaleTimeString();
+            const logsHtml = logs.map(log => {
+                // Gérer les anciens logs qui sont des strings simples
+                if (typeof log === 'string') {
+                    return `<div class="log-entry">
+                        <span class="log-info">${log}</span>
+                    </div>`;
+                }
+
+                // Gérer les nouveaux logs qui sont des objets
+                const time = log.timestamp || '--:--:--';
+                const message = log.message || '';
+                const type = log.type || 'info';
+
                 return `<div class="log-entry">
                     <span class="log-time">[${time}]</span>
-                    <span class="log-${log.type}">> ${log.message}</span>
+                    <span class="log-${type}"> ${message}</span>
                 </div>`;
             }).join('');
+
+            // Mettre à jour les deux terminaux
+            if (body) body.innerHTML = logsHtml;
+            if (systemLogsBody) systemLogsBody.innerHTML = logsHtml;
 
             // Scroll to top instead of bottom as newest are first
             // body.scrollTop = 0; 
         }
 
         function updateDashboard() {
-            // API Status
-            if (botData.apiStatus) {
-                Object.keys(botData.apiStatus).forEach(key => {
-                    const el = document.getElementById(`api-${key}`);
-                    if (el) {
-                        const status = botData.apiStatus[key];
-                        el.textContent = status;
-                        el.className = status === 'ONLINE' ? 'status-online' : 'status-offline';
+            try {
+                console.log('🔄 updateDashboard called, botData:', botData);
+
+                // API Status
+                if (botData && botData.apiStatus) {
+                    Object.keys(botData.apiStatus).forEach(key => {
+                        const el = document.getElementById(`api-${key}`);
+                        if (el) {
+                            const status = botData.apiStatus[key];
+                            el.textContent = status;
+                            el.className = status === 'ONLINE' ? 'status-online' : 'status-offline';
+                        }
+                    });
+                }
+
+                if (!botData || !botData.capital) {
+                    console.warn('⚠️ No botData or capital');
+                    return;
+                }
+
+                console.log('📊 Active trades count:', botData.activeTrades?.length || 0);
+
+                // Stats
+                document.getElementById('totalCapital').textContent = `$${botData.capital.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                document.getElementById('profit').textContent = `$${(botData.profit || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                document.getElementById('profit').className = 'stat-value ' + ((botData.profit || 0) >= 0 ? 'positive' : 'negative');
+                document.getElementById('profitPercent').textContent = botData.profitPercent || '0';
+
+                const winRate = ((botData.winningTrades / (botData.winningTrades + botData.losingTrades)) * 100) || 0;
+                document.getElementById('winRate').textContent = `${winRate.toFixed(1)}%`;
+                document.getElementById('winningTrades').textContent = botData.winningTrades || 0;
+                document.getElementById('losingTrades').textContent = botData.losingTrades || 0;
+
+                const moneySpent = (botData.activeTrades || []).reduce((sum, t) => sum + t.size, 0);
+                document.getElementById('moneySpent').textContent = `$${moneySpent.toLocaleString()}`;
+
+                // Performance Analytics
+                if (botData.closedTrades && botData.closedTrades.length > 0) {
+                    const profits = botData.closedTrades.map(t => t.profit || 0);
+                    const avgProfit = profits.reduce((a, b) => a + b, 0) / profits.length;
+                    const largestWin = Math.max(...profits);
+                    const largestLoss = Math.min(...profits);
+
+                    // Calculate average duration
+                    const durations = botData.closedTrades
+                        .filter(t => t.closedAt && t.timestamp)
+                        .map(t => (new Date(t.closedAt) - new Date(t.timestamp)) / 1000 / 60); // minutes
+                    const avgDuration = durations.length > 0
+                        ? durations.reduce((a, b) => a + b, 0) / durations.length
+                        : 0;
+
+                    document.getElementById('avgProfit').textContent = `$${avgProfit.toFixed(2)}`;
+                    document.getElementById('avgProfit').style.color = avgProfit >= 0 ? '#4ade80' : '#f87171';
+                    document.getElementById('largestWin').textContent = `$${largestWin.toFixed(2)}`;
+                    document.getElementById('largestLoss').textContent = `$${largestLoss.toFixed(2)}`;
+                    document.getElementById('avgDuration').textContent = avgDuration >= 60
+                        ? `${(avgDuration / 60).toFixed(1)}h`
+                        : `${avgDuration.toFixed(0)}m`;
+                }
+
+                // Terminal
+                updateTerminal(botData.logs);
+                const termClock = document.getElementById('terminalClock');
+                const sysClock = document.getElementById('systemLogsClock');
+                const currentTime = new Date().toLocaleTimeString();
+                if (termClock) termClock.textContent = currentTime;
+                if (sysClock) sysClock.textContent = currentTime;
+
+                // PizzINT
+                document.getElementById('pizzaIndex').textContent = botData.lastPizzaData?.index || 0;
+                const defLevel = botData.lastPizzaData?.defcon || 5;
+                const defEl = document.getElementById('defconLevel');
+                defEl.textContent = `DEFCON ${defLevel}`;
+                defEl.className = `defcon-badge defcon-${defLevel}`;
+
+                // Top Signal
+                const signalSection = document.getElementById('topSignalSection');
+                if (signalSection && botData.topSignal) {
+                    signalSection.style.display = 'block';
+                    const signalQuestion = document.getElementById('signalQuestion');
+                    const signalReason = document.getElementById('signalReason');
+                    const signalScore = document.getElementById('signalScore');
+                    const signalLink = document.getElementById('signalLink');
+
+                    if (signalQuestion) signalQuestion.textContent = botData.topSignal.question;
+                    if (signalReason) signalReason.textContent = botData.topSignal.reason;
+                    if (signalScore) signalScore.textContent = botData.topSignal.score;
+
+                    // Correction URL Top Signal
+                    if (signalLink) {
+                        const link = botData.topSignal.eventSlug
+                            ? `https://polymarket.com/event/${botData.topSignal.eventSlug}`
+                            : `https://polymarket.com/market/${botData.topSignal.slug}`;
+                        signalLink.href = link;
                     }
-                });
-            }
+                }
 
-            if (!botData.capital) return;
+                // Main Chart
+                if (botData.capitalHistory && mainChart) {
+                    mainChart.data.labels = botData.capitalHistory.map(h => h.t);
+                    mainChart.data.datasets[0].data = botData.capitalHistory.map(h => h.v);
+                    mainChart.update();
+                }
 
-            // Stats
-            document.getElementById('totalCapital').textContent = `$${botData.capital.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-            document.getElementById('profit').textContent = `$${botData.profit.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-            document.getElementById('profit').className = 'stat-value ' + (botData.profit >= 0 ? 'positive' : 'negative');
-            document.getElementById('profitPercent').textContent = botData.profitPercent;
-
-            const winRate = ((botData.winningTrades / (botData.winningTrades + botData.losingTrades)) * 100) || 0;
-            document.getElementById('winRate').textContent = `${winRate.toFixed(1)}%`;
-            document.getElementById('winningTrades').textContent = botData.winningTrades;
-            document.getElementById('losingTrades').textContent = botData.losingTrades;
-
-            const moneySpent = botData.activeTrades.reduce((sum, t) => sum + t.size, 0);
-            document.getElementById('moneySpent').textContent = `$${moneySpent.toLocaleString()}`;
-
-            // Performance Analytics
-            if (botData.closedTrades && botData.closedTrades.length > 0) {
-                const profits = botData.closedTrades.map(t => t.profit || 0);
-                const avgProfit = profits.reduce((a, b) => a + b, 0) / profits.length;
-                const largestWin = Math.max(...profits);
-                const largestLoss = Math.min(...profits);
-
-                // Calculate average duration
-                const durations = botData.closedTrades
-                    .filter(t => t.closedAt && t.timestamp)
-                    .map(t => (new Date(t.closedAt) - new Date(t.timestamp)) / 1000 / 60); // minutes
-                const avgDuration = durations.length > 0
-                    ? durations.reduce((a, b) => a + b, 0) / durations.length
-                    : 0;
-
-                document.getElementById('avgProfit').textContent = `$${avgProfit.toFixed(2)}`;
-                document.getElementById('avgProfit').style.color = avgProfit >= 0 ? '#4ade80' : '#f87171';
-                document.getElementById('largestWin').textContent = `$${largestWin.toFixed(2)}`;
-                document.getElementById('largestLoss').textContent = `$${largestLoss.toFixed(2)}`;
-                document.getElementById('avgDuration').textContent = avgDuration >= 60
-                    ? `${(avgDuration / 60).toFixed(1)}h`
-                    : `${avgDuration.toFixed(0)}m`;
-            }
-
-            // Terminal
-            updateTerminal(botData.logs);
-            document.getElementById('terminalClock').textContent = new Date().toLocaleTimeString();
-
-            // PizzINT
-            document.getElementById('pizzaIndex').textContent = botData.lastPizzaData?.index || 0;
-            const defLevel = botData.lastPizzaData?.defcon || 5;
-            const defEl = document.getElementById('defconLevel');
-            defEl.textContent = `DEFCON ${defLevel}`;
-            defEl.className = `defcon-badge defcon-${defLevel}`;
-
-            // Top Signal
-            const signalSection = document.getElementById('topSignalSection');
-            if (botData.topSignal) {
-                signalSection.style.display = 'block';
-                document.getElementById('signalQuestion').textContent = botData.topSignal.question;
-                document.getElementById('signalReason').textContent = botData.topSignal.reason;
-                document.getElementById('signalScore').textContent = botData.topSignal.score;
-
-                // Correction URL Top Signal
-                const link = botData.topSignal.eventSlug
-                    ? `https://polymarket.com/event/${botData.topSignal.eventSlug}`
-                    : `https://polymarket.com/market/${botData.topSignal.slug}`;
-                document.getElementById('signalLink').href = link;
-            }
-
-            // Main Chart
-            if (botData.capitalHistory && mainChart) {
-                mainChart.data.labels = botData.capitalHistory.map(h => h.t);
-                mainChart.data.datasets[0].data = botData.capitalHistory.map(h => h.v);
-                mainChart.update();
-            }
-
-            // Wizards
-            const wizardList = document.getElementById('wizardList');
-            if (botData.wizards && botData.wizards.length > 0) {
-                wizardList.innerHTML = botData.wizards.map(w => `
+                // Wizards
+                const wizardList = document.getElementById('wizardList');
+                if (botData.wizards && botData.wizards.length > 0) {
+                    wizardList.innerHTML = botData.wizards.map(w => `
                     <div class="stat-card" style="margin: 0; padding: 15px; border-left: 4px solid #a78bfa; background: rgba(139, 92, 246, 0.05);">
                         <div style="font-size: 0.9em; font-weight: 700; color: #e2e8f0;">${w.question}</div>
                         <div style="display: flex; justify-content: space-between; margin-top: 10px; font-size: 0.8em;">
@@ -833,28 +868,28 @@
                         <div style="font-size: 0.75em; color: #64748b; margin-top: 5px;">${w.reason}</div>
                     </div>
                 `).join('');
-            } else {
-                wizardList.innerHTML = '<div class="empty-state">No wizards detected currently.</div>';
-            }
+                } else {
+                    wizardList.innerHTML = '<div class="empty-state">No wizards detected currently.</div>';
+                }
 
-            // Terminal Clock
-            document.getElementById('terminalClock').textContent = new Date().toLocaleTimeString();
+                // Terminal Clock
+                document.getElementById('terminalClock').textContent = new Date().toLocaleTimeString();
 
-            // Nettoyer les anciens graphiques
-            Object.values(miniCharts).forEach(c => c.destroy());
-            miniCharts = {};
+                // Nettoyer les anciens graphiques
+                Object.values(miniCharts).forEach(c => c.destroy());
+                miniCharts = {};
 
-            // Turbo
-            if (botData.turbo) {
-                document.getElementById('turboProfit').textContent = `$${botData.turbo.profit.toFixed(2)}`;
-                document.getElementById('turboProfit').className = (botData.turbo.profit >= 0 ? 'positive' : 'negative');
-                document.getElementById('turboTrades').textContent = botData.turbo.totalTrades;
-                document.getElementById('turboActive').textContent = botData.turbo.activeTrades.length;
+                // Turbo
+                if (botData.turbo) {
+                    document.getElementById('turboProfit').textContent = `$${botData.turbo.profit.toFixed(2)}`;
+                    document.getElementById('turboProfit').className = (botData.turbo.profit >= 0 ? 'positive' : 'negative');
+                    document.getElementById('turboTrades').textContent = botData.turbo.totalTrades;
+                    document.getElementById('turboActive').textContent = botData.turbo.activeTrades.length;
 
-                // Turbo History
-                const turboHistory = document.getElementById('turboHistoryList');
-                if (botData.turbo.closedTrades && botData.turbo.closedTrades.length > 0) {
-                    turboHistory.innerHTML = botData.turbo.closedTrades.slice(0, 10).map(t => `
+                    // Turbo History
+                    const turboHistory = document.getElementById('turboHistoryList');
+                    if (botData.turbo.closedTrades && botData.turbo.closedTrades.length > 0) {
+                        turboHistory.innerHTML = botData.turbo.closedTrades.slice(0, 10).map(t => `
                         <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.03); padding-bottom: 5px;">
                             <span style="color: #cbd5e1; max-width: 60%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${t.question}</span>
                             <div style="text-align: right;">
@@ -863,13 +898,13 @@
                             </div>
                         </div>
                     `).join('');
+                    }
                 }
-            }
 
-            // Whale Alerts
-            const whaleList = document.getElementById('whaleAlertsList');
-            if (botData.whaleAlerts && botData.whaleAlerts.length > 0) {
-                whaleList.innerHTML = botData.whaleAlerts.map(a => `
+                // Whale Alerts
+                const whaleList = document.getElementById('whaleAlertsList');
+                if (botData.whaleAlerts && botData.whaleAlerts.length > 0) {
+                    whaleList.innerHTML = botData.whaleAlerts.map(a => `
                     <div class="stat-card" style="margin: 0; padding: 15px; border-left: 4px solid #3b82f6; background: rgba(59, 130, 246, 0.05);">
                         <div style="font-size: 0.9em; font-weight: 700;">${a.question}</div>
                         <div style="display: flex; justify-content: space-between; margin-top: 10px; font-size: 0.8em; color: #94a3b8;">
@@ -878,26 +913,26 @@
                         </div>
                     </div>
                 `).join('');
-            } else {
-                whaleList.innerHTML = '<div class="empty-state">Watching order books...</div>';
-            }
+                } else {
+                    whaleList.innerHTML = '<div class="empty-state">Watching order books...</div>';
+                }
 
-            // Alpha News Matrix
-            const newsFeed = document.getElementById('newsFeed');
-            if (botData.newsSentiment && botData.newsSentiment.length > 0) {
-                newsFeed.innerHTML = botData.newsSentiment.map(n => `
+                // Alpha News Matrix
+                const newsFeed = document.getElementById('newsFeed');
+                if (botData.newsSentiment && botData.newsSentiment.length > 0) {
+                    newsFeed.innerHTML = botData.newsSentiment.map(n => `
                     <div style="margin-bottom: 15px; border-left: 3px solid ${n.sentiment === 'bullish' ? '#34d399' : '#f87171'}; padding-left: 12px; background: rgba(255,255,255,0.02); border-radius: 0 8px 8px 0; padding: 10px;">
                         <span style="color: ${n.sentiment === 'bullish' ? '#34d399' : '#f87171'}; font-weight: 800;">[${n.sentiment.toUpperCase()}]</span> 
                         <span style="color: #e2e8f0;">${n.title}</span>
-                        <div style="font-size: 0.8em; color: #64748b; margin-top: 5px;">SOURCE: ${n.source} | ${new Date(n.timestamp).toLocaleTimeString()}</div>
+                        <div style="font-size: 0.8em; color: #64748b; margin-top: 5px;">SOURCE: ${n.source}</div>
                     </div>
                 `).join('');
-            }
+                }
 
-            // Arbitrage
-            const arbList = document.getElementById('arbList');
-            if (botData.arbitrageOpportunities && botData.arbitrageOpportunities.length > 0) {
-                arbList.innerHTML = botData.arbitrageOpportunities.map(o => `
+                // Arbitrage
+                const arbList = document.getElementById('arbList');
+                if (botData.arbitrageOpportunities && botData.arbitrageOpportunities.length > 0) {
+                    arbList.innerHTML = botData.arbitrageOpportunities.map(o => `
                     <div style="margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px dashed rgba(139, 92, 246, 0.2);">
                         <div style="color: #a78bfa;">> MATCH DETECTED</div>
                         <div style="color: #fff;">MARKET: ${o.question}</div>
@@ -905,20 +940,20 @@
                         <a href="https://polymarket.com/market/${o.slug}" target="_blank" style="color: #60a5fa; font-size: 0.8em;">[EXECUTE ARBITRAGE]</a>
                     </div>
                 `).join('');
-            } else {
-                arbList.innerHTML = '<div style="color: #64748b;">> Scanning for imbalances...</div>';
-            }
+                } else {
+                    arbList.innerHTML = '<div style="color: #64748b;">> Scanning for imbalances...</div>';
+                }
 
-            // Active Trades
-            const activeList = document.getElementById('activeTradesList');
-            if (botData.activeTrades.length === 0) {
-                activeList.innerHTML = '<div class="empty-state">SCANNING MARKET DEPTH FOR ANOMALIES...</div>';
-            } else {
-                activeList.innerHTML = botData.activeTrades.map(t => {
-                    const currentPrice = t.priceHistory[t.priceHistory.length - 1];
-                    const diff = ((currentPrice - t.entryPrice) / t.entryPrice * 100).toFixed(1);
-                    const color = diff >= 0 ? '#4ade80' : '#f87171';
-                    return `
+                // Active Trades
+                const activeList = document.getElementById('activeTradesList');
+                if (!botData.activeTrades || botData.activeTrades.length === 0) {
+                    activeList.innerHTML = '<div class="empty-state">SCANNING MARKET DEPTH FOR ANOMALIES...</div>';
+                } else {
+                    activeList.innerHTML = botData.activeTrades.map(t => {
+                        const currentPrice = t.priceHistory[t.priceHistory.length - 1];
+                        const diff = ((currentPrice - t.entryPrice) / t.entryPrice * 100).toFixed(1);
+                        const color = diff >= 0 ? '#4ade80' : '#f87171';
+                        return `
                     <div class="trade-card">
                         <div style="display:flex; justify-content:space-between; margin-bottom:15px">
                             <div class="trade-title" style="font-size:1.1em; font-weight:700">${t.question}</div>
@@ -948,41 +983,41 @@
                             <a href="${t.eventSlug ? `https://polymarket.com/event/${t.eventSlug}` : `https://polymarket.com/market/${t.slug}`}" target="_blank" class="view-btn" style="padding:8px 16px; font-size:0.8em">VIEW</a>
                         </div>
                     </div>`;
-                }).join('');
+                    }).join('');
 
-                botData.activeTrades.forEach(t => {
-                    const diff = t.priceHistory[t.priceHistory.length - 1] - t.entryPrice;
-                    miniCharts[t.id] = createMiniChart(t.id, t.priceHistory, t.entryPrice, diff >= 0 ? '#4ade80' : '#f87171');
-                });
-            }
+                    botData.activeTrades.forEach(t => {
+                        const diff = t.priceHistory[t.priceHistory.length - 1] - t.entryPrice;
+                        miniCharts[t.id] = createMiniChart(t.id, t.priceHistory, t.entryPrice, diff >= 0 ? '#4ade80' : '#f87171');
+                    });
+                }
 
-            // Closed Trades with Filtering
-            const closedList = document.getElementById('closedTradesList');
-            if (botData.closedTrades.length === 0) {
-                closedList.innerHTML = '<div class="empty-state">ARCHIVES EMPTY.</div>';
-            } else {
-                // Get filter values
-                const searchTerm = document.getElementById('searchTrades')?.value.toLowerCase() || '';
-                const profitFilter = document.getElementById('filterProfit')?.value || 'all';
-
-                // Apply filters
-                let filteredTrades = botData.closedTrades.filter(t => {
-                    const matchesSearch = t.question.toLowerCase().includes(searchTerm);
-                    const matchesProfit = profitFilter === 'all' ||
-                        (profitFilter === 'profit' && t.profit >= 0) ||
-                        (profitFilter === 'loss' && t.profit < 0);
-                    return matchesSearch && matchesProfit;
-                });
-
-                if (filteredTrades.length === 0) {
-                    closedList.innerHTML = '<div class="empty-state">No trades match your filters.</div>';
+                // Closed Trades with Filtering
+                const closedList = document.getElementById('closedTradesList');
+                if (botData.closedTrades.length === 0) {
+                    closedList.innerHTML = '<div class="empty-state">ARCHIVES EMPTY.</div>';
                 } else {
-                    closedList.innerHTML = filteredTrades.slice(0, 12).map(t => {
-                        const color = t.profit >= 0 ? '#4ade80' : '#f87171';
-                        const duration = t.closedAt && t.timestamp
-                            ? Math.round((new Date(t.closedAt) - new Date(t.timestamp)) / 1000 / 60)
-                            : 0;
-                        return `
+                    // Get filter values
+                    const searchTerm = document.getElementById('searchTrades')?.value.toLowerCase() || '';
+                    const profitFilter = document.getElementById('filterProfit')?.value || 'all';
+
+                    // Apply filters
+                    let filteredTrades = botData.closedTrades.filter(t => {
+                        const matchesSearch = t.question.toLowerCase().includes(searchTerm);
+                        const matchesProfit = profitFilter === 'all' ||
+                            (profitFilter === 'profit' && t.profit >= 0) ||
+                            (profitFilter === 'loss' && t.profit < 0);
+                        return matchesSearch && matchesProfit;
+                    });
+
+                    if (filteredTrades.length === 0) {
+                        closedList.innerHTML = '<div class="empty-state">No trades match your filters.</div>';
+                    } else {
+                        closedList.innerHTML = filteredTrades.slice(0, 12).map(t => {
+                            const color = t.profit >= 0 ? '#4ade80' : '#f87171';
+                            const duration = t.closedAt && t.timestamp
+                                ? Math.round((new Date(t.closedAt) - new Date(t.timestamp)) / 1000 / 60)
+                                : 0;
+                            return `
                         <div class="trade-card" style="opacity:0.8; padding:20px">
                             <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom: 15px;">
                                 <div style="font-weight:700; font-size:0.9em; max-width:65%; line-height: 1.4;">${t.question.substring(0, 60)}...</div>
@@ -993,11 +1028,14 @@
                                 <span>${duration}m duration</span>
                             </div>
                         </div>`;
-                    }).join('');
+                        }).join('');
+                    }
                 }
-            }
 
-            document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
+                document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
+            } catch (error) {
+                console.error('Dashboard update error:', error);
+            }
         }
 
         // Sound Notification System
@@ -1034,9 +1072,17 @@
 
         async function fetchRealData() {
             try {
-                const response = await fetch('/api/bot-data', { cache: 'no-store' });
+                const response = await fetch('/api/bot-data', {
+                    cache: 'no-store',
+                    headers: { 'Cache-Control': 'no-cache' }
+                });
                 if (response.ok) {
                     const newData = await response.json();
+                    console.log('✅ Fetched data:', {
+                        activeTrades: newData.activeTrades?.length || 0,
+                        capital: newData.capital,
+                        totalTrades: newData.totalTrades
+                    });
 
                     // Check for new trades and play sound
                     if (botData.totalTrades && newData.totalTrades > botData.totalTrades) {
@@ -1065,11 +1111,13 @@
         window.onload = () => {
             initMainChart();
             fetchRealData();
-            setInterval(fetchRealData, 5000); // 5s refresh for more reactiveness
+            setInterval(fetchRealData, 3000); // 3s refresh pour plus de réactivité
 
             // Add filter event listeners
             document.getElementById('searchTrades')?.addEventListener('input', updateDashboard);
             document.getElementById('filterProfit')?.addEventListener('change', updateDashboard);
+
+            console.log('🎯 Dashboard initialized - Auto-refresh every 3s');
         };
     </script>
 </body>
