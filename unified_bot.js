@@ -1121,8 +1121,41 @@ function displayStatus() {
     console.log(`\n📊 [${new Date().toLocaleTimeString()}] Capital: ${botState.capital.toFixed(2)} (${profit > 0 ? '+' : ''}${profit.toFixed(2)}) | Trades: ${botState.totalTrades} | WinRate: ${((botState.winningTrades / botState.totalTrades) * 100 || 0).toFixed(1)}%`);
 }
 
-// --- DÉMARRAGE ---
-async function run() {
+// --- GITHUB AUTO-SYNC (Persistence sur Railway) ---
+const { execSync } = require('child_process');
+
+async function syncDataToGitHub() {
+    try {
+        // Vérifier si on est sur Railway (sinon skip)
+        if (!process.env.PORT) {
+            return; // Local mode, pas besoin de sync
+        }
+
+        // Sauvegarder l'état actuel
+        saveState();
+
+        // Git operations
+        execSync('git config user.email "bot@polymarket.auto"', { stdio: 'ignore' });
+        execSync('git config user.name "Polymarket Bot"', { stdio: 'ignore' });
+        execSync('git add bot_data.json', { stdio: 'ignore' });
+
+        try {
+            execSync('git commit -m "Auto-save: Capital $' + botState.capital.toFixed(2) + ' | Trades: ' + botState.activeTrades.length + '"', { stdio: 'ignore' });
+            execSync('git push origin main', { stdio: 'ignore' });
+            addLog('💾 Données sauvegardées sur GitHub', 'info');
+        } catch (e) {
+            // Pas de changements à commit (normal)
+        }
+    } catch (error) {
+        // Échec silencieux (éviter de spammer les logs)
+        if (Math.random() < 0.1) { // Log 10% du temps
+            console.error('GitHub sync skip:', error.message);
+        }
+    }
+}
+
+// --- MAIN LOOP ---
+async function main() {
     loadState();
 
     // Initialisation immédiate du premier signal
@@ -1195,6 +1228,14 @@ async function run() {
             console.log(`🌐 Running on Railway - Public URL should be accessible`);
         }
     });
+
+    // GitHub Auto-Sync toutes les 5 minutes
+    setInterval(async () => {
+        await syncDataToGitHub();
+    }, 5 * 60 * 1000); // 5 minutes
+
+    // Sync initial au démarrage
+    await syncDataToGitHub();
 
     // Boucle de trading
     while (true) {
