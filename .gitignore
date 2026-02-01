@@ -1,12 +1,28 @@
-node_modules
+# Puppeteer dependencies
+node_modules/
+.cache/
+puppeteer/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Env
 .env
-bot_data.json
+.env.local
+
+# Logs
 *.log
-# Fichiers JavaScript gérés par Next.js ou générés avec des hashes
-[0-9]*-*.js
-page_chunk.js
-# Fichiers de plan et de debug
-implementation_plan.md
-scraper_debug.js
-test_*.js
-extract_next.js
+npm-debug.log*
+
+# Data
+bot_data.json
+trade_decisions.jsonl
+
+# Build
+dist/
+build/
