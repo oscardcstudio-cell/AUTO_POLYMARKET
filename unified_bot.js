@@ -1185,8 +1185,12 @@ async function run() {
     saveState();
 
     // Démarrer le serveur API
-    app.listen(CONFIG.PORT, () => {
-        console.log(`\n🚀 DASHBOARD DISPONIBLE SUR: http://localhost:${CONFIG.PORT}`);
+    const HOST = process.env.RAILWAY_ENVIRONMENT ? '0.0.0.0' : 'localhost';
+    app.listen(CONFIG.PORT, HOST, () => {
+        console.log(`\n🚀 DASHBOARD DISPONIBLE SUR: http://${HOST}:${CONFIG.PORT}`);
+        if (process.env.RAILWAY_ENVIRONMENT) {
+            console.log(`🌐 Public URL: https://${process.env.RAILWAY_PUBLIC_DOMAIN || 'your-app.railway.app'}`);
+        }
     });
 
     // Boucle de trading
