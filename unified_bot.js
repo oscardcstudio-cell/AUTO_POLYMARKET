@@ -1174,17 +1174,23 @@ function simulateTrade(market, pizzaData, isFreshMarket = false) {
 
     // --- EXECUTION 100% REALISTE ---
     // Au lieu de prendre le prix "moyen", on prend le Best Ask (le prix disponible à l'achat)
-    const bestAsk = parseFloat(market.bestAsk || yesPrice || 0);
-    const bestBid = parseFloat(market.bestBid || (1 - noPrice) || 0);
+    const bestAsk = parseFloat(market.bestAsk || 0);
+    const bestBid = parseFloat(market.bestBid || 0);
 
     let executionPrice;
     if (side === 'YES') {
         // On achète au prix demandé par les vendeurs (Best Ask)
+        // Fallback vers yesPrice si bestAsk n'est pas disponible
         executionPrice = bestAsk > 0 ? bestAsk : yesPrice;
     } else {
         // Acheter NO est équivalent à vendre YES, ou au prix inverse
-        // Simplification: on prend l'inverse du bid ou le prix de base NO
-        executionPrice = noPrice;
+        // Fallback vers noPrice si bestBid n'est pas disponible
+        executionPrice = bestBid > 0 ? (1 - bestBid) : noPrice;
+    }
+
+    // SAFETY: Si executionPrice est toujours 0, utiliser entryPrice directement
+    if (executionPrice === 0 || isNaN(executionPrice)) {
+        executionPrice = entryPrice;
     }
 
     // Ajout de "micro-slippage" pour la taille de l'ordre
