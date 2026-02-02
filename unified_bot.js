@@ -875,17 +875,47 @@ function simulateTrade(market, pizzaData) {
             confidence = 0.45;
             decisionReasons.push(`DEFCON ${pizzaData.defcon} + autre catégorie`);
         }
-    } else if (yesPrice < 0.15) {
+    }
+    // Prix très bas (long shots)
+    else if (yesPrice < 0.15 && yesPrice >= 0.01) {
         side = 'YES';
         entryPrice = yesPrice;
         confidence = 0.25; // Risqué mais potentiel
         decisionReasons.push(`Prix bas YES: ${yesPrice.toFixed(3)}`);
-    } else if (noPrice < 0.2) {
+    } else if (noPrice < 0.2 && noPrice >= 0.01) {
         side = 'NO';
         entryPrice = noPrice;
         confidence = 0.35;
         decisionReasons.push(`Prix bas NO: ${noPrice.toFixed(3)}`);
-    } else {
+    }
+    // NOUVEAU: Prix moyens (0.20-0.40 pour YES ou 0.60-0.80 pour NO)
+    else if (yesPrice >= 0.20 && yesPrice <= 0.40) {
+        side = 'YES';
+        entryPrice = yesPrice;
+        confidence = 0.40;
+        decisionReasons.push(`Prix moyen YES: ${yesPrice.toFixed(3)}`);
+    } else if (noPrice >= 0.20 && noPrice <= 0.40) {
+        side = 'NO';
+        entryPrice = noPrice;
+        confidence = 0.40;
+        decisionReasons.push(`Prix moyen NO: ${noPrice.toFixed(3)}`);
+    }
+    // NOUVEAU: Trading basé sur le momentum (volume élevé)
+    else if (market.volume24hr && parseFloat(market.volume24hr) > 1000) {
+        // Choisir le côté le moins cher
+        if (yesPrice < noPrice) {
+            side = 'YES';
+            entryPrice = yesPrice;
+            confidence = 0.35;
+            decisionReasons.push(`Momentum élevé (vol24h: ${market.volume24hr}) - YES favori`);
+        } else {
+            side = 'NO';
+            entryPrice = noPrice;
+            confidence = 0.35;
+            decisionReasons.push(`Momentum élevé (vol24h: ${market.volume24hr}) - NO favori`);
+        }
+    }
+    else {
         decisionReasons.push('Aucune condition de trade remplie');
         logTradeDecision(market, null, decisionReasons, pizzaData);
         return null;
