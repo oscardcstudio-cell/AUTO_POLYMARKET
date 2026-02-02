@@ -285,8 +285,8 @@ function loadState() {
 const priceCache = new Map();
 const PRICE_CACHE_TTL = 30000; // 30 secondes
 
-async function getRealMarketPrice(marketId, side = 'YES') {
-    const cacheKey = `price_${marketId}_${side}`;
+async function getRealMarketPrice(marketId) {
+    const cacheKey = `price_${marketId}`;
     const cached = priceCache.get(cacheKey);
 
     if (cached && Date.now() - cached.timestamp < PRICE_CACHE_TTL) {
@@ -299,16 +299,13 @@ async function getRealMarketPrice(marketId, side = 'YES') {
             const market = await response.json();
             let price = 0;
 
-            // Utiliser le bon prix selon le side du trade
-            if (market.outcomePrices && market.outcomePrices.length >= 2) {
-                const prices = JSON.parse(market.outcomePrices);
-                price = parseFloat(prices[side === 'YES' ? 0 : 1]);
-            } else if (market.lastTradePrice) {
-                // Fallback sur lastTradePrice (assume YES)
+            // 1. Priorité au dernier prix de trade (le plus récent et réel)
+            if (market.lastTradePrice) {
                 price = parseFloat(market.lastTradePrice);
-                if (side === 'NO') {
-                    price = 1 - price; // Inverser pour NO
-                }
+            }
+            // 2. Sinon utiliser les prix des outcomes (YES price) - outcomePrices est déjà un array!
+            else if (market.outcomePrices && market.outcomePrices.length > 0) {
+                price = parseFloat(market.outcomePrices[0]);
             }
 
             if (price > 0 && price < 1) {
@@ -582,9 +579,9 @@ async function scanArbitrage() {
         for (const m of markets) {
             if (!m.outcomePrices) continue;
             try {
-                const prices = JSON.parse(m.outcomePrices);
-                const yes = parseFloat(prices[0]);
-                const no = parseFloat(prices[1]);
+                // outcomePrices est déjà un array, pas besoin de JSON.parse!
+                const yes = parseFloat(m.outcomePrices[0]);
+                const no = parseFloat(m.outcomePrices[1]);
                 const sum = yes + no;
 
                 // Seuil plus large (0.985) pour voir plus d'opportunités
@@ -696,7 +693,8 @@ async function detectWizards() {
         const pizzaData = botState.lastPizzaData;
 
         for (const m of markets) {
-            const prices = m.outcomePrices ? JSON.parse(m.outcomePrices) : [0.5, 0.5];
+            // outcomePrices est déjà un array, pas besoin de JSON.parse!
+            const prices = m.outcomePrices || [0.5, 0.5];
             const yesPrice = parseFloat(prices[0]);
 
             if (yesPrice < 0.15 && yesPrice > 0.01) {
@@ -851,9 +849,9 @@ function calculateTradeSize() {
 }
 
 function simulateTrade(market, pizzaData) {
-    const prices = JSON.parse(market.outcomePrices);
-    const yesPrice = parseFloat(prices[0]);
-    const noPrice = parseFloat(prices[1]);
+    // outcomePrices est déjà un array, pas besoin de JSON.parse!
+    const yesPrice = parseFloat(market.outcomePrices[0]);
+    const noPrice = parseFloat(market.outcomePrices[1]);
     let side, entryPrice, confidence;
     const category = categorizeMarket(market.question);
     const decisionReasons = [];
@@ -1002,8 +1000,8 @@ async function checkAndCloseTrades() {
 
         if (!trade.priceHistory) trade.priceHistory = [trade.entryPrice];
 
-        // Récupérer le VRAI prix depuis Polymarket (selon le side du trade)
-        const realPrice = await getRealMarketPrice(trade.marketId, trade.side);
+        // Récupérer le VRAI prix depuis Polymarket
+        const realPrice = await getRealMarketPrice(trade.marketId);
 
         if (realPrice !== null && realPrice > 0) {
             trade.priceHistory.push(realPrice);
@@ -1064,9 +1062,9 @@ async function resolveTradeWithRealOutcome(trade) {
 
         // Méthode 1: Utiliser acceptingOrders comme proxy du statut
         if (market.acceptingOrders === false && market.outcomePrices) {
-            const prices = JSON.parse(market.outcomePrices);
-            const yesPrice = parseFloat(prices[0]);
-            const noPrice = parseFloat(prices[1]);
+            // outcomePrices est déjà un array, pas besoin de JSON.parse!
+            const yesPrice = parseFloat(market.outcomePrices[0]);
+            const noPrice = parseFloat(market.outcomePrices[1]);
 
             // Si YES = 1.0 (ou proche), YES a gagné
             // Si NO = 1.0 (ou proche), NO a gagné
