@@ -697,9 +697,10 @@ async function detectWizards() {
             const prices = m.outcomePrices || [0.5, 0.5];
             const yesPrice = parseFloat(prices[0]);
 
+            // Relaxed threshold: alpha > 50 instead of 70
             if (yesPrice < 0.15 && yesPrice > 0.01) {
                 const alpha = calculateAlphaScore(m, pizzaData);
-                if (alpha > 70) {
+                if (alpha > 50) {
                     botState.wizards.push({
                         id: m.id,
                         question: m.question,
@@ -1289,7 +1290,8 @@ async function main() {
             }
 
             await checkAndCloseTrades();
-            await detectWizards(); // Nouveau
+            await detectWizards(); // Détection des long shots
+            await detectWhales(); // Détection des whale alerts
 
             // Mise à jour du signal du jour au démarrage et toutes les 10 minutes
             if (botState.capitalHistory.length % 10 === 0) {
