@@ -9,6 +9,15 @@ import express from 'express';
 import { fileURLToPath } from 'url';
 import { execSync } from 'child_process';
 
+// Import new API modules
+import { getBestExecutionPrice, getCLOBOrderBook, checkCLOBHealth } from './clob_api.js';
+import {
+    getAllMarketsWithPagination,
+    getTrendingMarkets,
+    getContextualMarkets,
+    fetchAvailableTags
+} from './market_discovery.js';
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -53,7 +62,13 @@ let botState = {
     },
     wizards: [], // Nouveautés: Paris "Long Shot" à haut potentiel
     freshMarkets: [], // Nouveaux marchés < 24h avec scoring API
-    keywordScores: {} // Tracking: { keyword: { score, lastSeen, frequency } }
+    keywordScores: {}, // Tracking: { keyword: { score, lastSeen, frequency } }
+    deepScanData: { // NEW: Deep scan results with pagination
+        lastScan: null,
+        marketCount: 0,
+        scanDuration: 0
+    },
+    clobSpreadWarnings: [] // NEW: Markets with high slippage
 };
 
 // --- ROBUST FETCH WRAPPER ---
@@ -97,9 +112,15 @@ async function checkConnectivity() {
     try {
         const r = await fetchWithRetry('https://gamma-api.polymarket.com/markets?limit=1');
         botState.apiStatus.gamma = r.ok ? 'ONLINE' : 'ERROR';
-        botState.apiStatus.clob = r.ok ? 'ONLINE' : 'ERROR'; // CLOB uses same API for now
     } catch (e) {
         botState.apiStatus.gamma = 'OFFLINE';
+    }
+
+    // 1b. Check CLOB separately (using dedicated health check)
+    try {
+        const clobHealthy = await checkCLOBHealth();
+        botState.apiStatus.clob = clobHealthy ? 'ONLINE' : 'OFFLINE';
+    } catch (e) {
         botState.apiStatus.clob = 'OFFLINE';
     }
 
@@ -286,8 +307,8 @@ function loadState() {
 const priceCache = new Map();
 const PRICE_CACHE_TTL = 30000; // 30 secondes
 
-async function getRealMarketPrice(marketId) {
-    const cacheKey = `price_${marketId}`;
+async function getRealMarketPrice(marketId, side = 'buy') {
+    const cacheKey = `price_${marketId}_${side}`;
     const cached = priceCache.get(cacheKey);
 
     if (cached && Date.now() - cached.timestamp < PRICE_CACHE_TTL) {
@@ -295,9 +316,56 @@ async function getRealMarketPrice(marketId) {
     }
 
     try {
+        // First, try to get market data from Gamma to get clobTokenIds
         const response = await fetchWithRetry(`https://gamma-api.polymarket.com/markets/${marketId}`);
         if (response.ok) {
             const market = await response.json();
+
+            // NEW: Try to use CLOB order book for better pricing if available
+            if (market.clobTokenIds && botState.apiStatus.clob === 'ONLINE') {
+                try {
+                    let tokenIds = market.clobTokenIds;
+                    if (typeof tokenIds === 'string') {
+                        tokenIds = JSON.parse(tokenIds);
+                    }
+
+                    // Use YES token (first in array)
+                    const tokenId = tokenIds[0];
+                    const execPrice = await getBestExecutionPrice(tokenId, side);
+
+                    if (execPrice && execPrice.price > 0 && execPrice.price < 1) {
+                        const priceData = {
+                            price: execPrice.price,
+                            source: 'CLOB',
+                            spread: execPrice.spreadPercent,
+                            liquidity: execPrice.liquidity,
+                            warning: execPrice.warning
+                        };
+
+                        // Store spread warning if critical
+                        if (execPrice.warning && execPrice.spreadPercent > 10) {
+                            botState.clobSpreadWarnings.unshift({
+                                marketId,
+                                question: market.question,
+                                spread: execPrice.spreadPercent,
+                                warning: execPrice.warning,
+                                timestamp: new Date().toISOString()
+                            });
+                            if (botState.clobSpreadWarnings.length > 5) {
+                                botState.clobSpreadWarnings.pop();
+                            }
+                        }
+
+                        priceCache.set(cacheKey, { price: priceData.price, timestamp: Date.now() });
+                        return priceData.price;
+                    }
+                } catch (clobError) {
+                    // Fallback to Gamma pricing if CLOB fails
+                    console.log(`⚠️ CLOB pricing failed for ${marketId}, using Gamma fallback`);
+                }
+            }
+
+            // FALLBACK: Use Gamma API prices
             let price = 0;
 
             // 1. Priorité au dernier prix de trade (le plus récent et réel)
@@ -510,29 +578,92 @@ async function updateDynamicKeywords() {
     return newKeywords;
 }
 
-async function getRelevantMarkets() {
-    try {
-        const response = await fetchWithRetry('https://gamma-api.polymarket.com/markets?active=true&closed=false&limit=100');
-        const markets = await response.json();
-        if (!Array.isArray(markets)) return [];
+// NEW: Deep scan function using pagination
+async function performDeepScan() {
+    const startTime = Date.now();
+    addLog('🔍 Deep Scan: Scanning ALL markets with pagination...', 'info');
 
+    const defconLevel = botState.lastPizzaData?.defcon || 5;
+
+    // Use contextual markets based on DEFCON
+    const allMarkets = await getContextualMarkets(defconLevel, 1000);
+
+    const duration = ((Date.now() - startTime) / 1000).toFixed(1);
+
+    botState.deepScanData = {
+        lastScan: new Date().toISOString(),
+        marketCount: allMarkets.length,
+        scanDuration: duration
+    };
+
+    addLog(`✅ Deep Scan complete: ${allMarkets.length} markets in ${duration}s`, 'success');
+
+    return allMarkets;
+}
+
+// ENHANCED: Quick scan using trending markets
+async function getRelevantMarkets(useDeepScan = false) {
+    try {
+        // If deep scan requested, use pagination
+        if (useDeepScan) {
+            return await performDeepScan();
+        }
+
+        // Otherwise, quick scan with trending markets
+        const defconLevel = botState.lastPizzaData?.defcon || 5;
+
+        // If crisis mode (DEFCON 1-2), use contextual filtering
+        if (defconLevel <= 2) {
+            const contextualMarkets = await getContextualMarkets(defconLevel, 100);
+            addLog(`🚨 Crisis mode: Using ${contextualMarkets.length} geo/eco markets`, 'warning');
+            return contextualMarkets;
+        }
+
+        // Normal mode: use trending markets
+        const trendingMarkets = await getTrendingMarkets(50);
+
+        // Apply keyword filtering on top
         const now = new Date();
-        return markets.filter(m => {
+        const filtered = trendingMarkets.filter(m => {
             const text = (m.question + ' ' + (m.description || '')).toLowerCase();
-            const hasKeyword = CONFIG.KEYWORDS.some(kw => text.includes(kw.toLowerCase()));
+            const hasKeyword = CONFIG.KEYWORDS.length === 0 ||
+                CONFIG.KEYWORDS.some(kw => text.includes(kw.toLowerCase()));
             const hasLiquidity = parseFloat(m.liquidityNum || 0) > 100;
 
             // Calculer l'expiration : on veut du court-moyen terme
             const expiry = new Date(m.endDate);
             const daysToExpiry = (expiry - now) / (1000 * 60 * 60 * 24);
-            const isRelevantTerm = daysToExpiry < 14 && daysToExpiry > -1; // Un peu plus large
+            const isRelevantTerm = daysToExpiry < 14 && daysToExpiry > -1;
 
             return hasKeyword && hasLiquidity && isRelevantTerm;
-        }).sort((a, b) => Math.random() - 0.5) // Mélange un peu pour la diversité
-            .slice(0, 40);
+        });
+
+        return filtered.slice(0, 40);
     } catch (error) {
-        console.error('❌ Erreur Polymarket:', error.message);
-        return [];
+        console.error('❌ Erreur getRelevantMarkets:', error.message);
+
+        // Fallback to old method
+        try {
+            const response = await fetchWithRetry('https://gamma-api.polymarket.com/markets?active=true&closed=false&limit=100');
+            const markets = await response.json();
+            if (!Array.isArray(markets)) return [];
+
+            const now = new Date();
+            return markets.filter(m => {
+                const text = (m.question + ' ' + (m.description || '')).toLowerCase();
+                const hasKeyword = CONFIG.KEYWORDS.some(kw => text.includes(kw.toLowerCase()));
+                const hasLiquidity = parseFloat(m.liquidityNum || 0) > 100;
+
+                const expiry = new Date(m.endDate);
+                const daysToExpiry = (expiry - now) / (1000 * 60 * 60 * 24);
+                const isRelevantTerm = daysToExpiry < 14 && daysToExpiry > -1;
+
+                return hasKeyword && hasLiquidity && isRelevantTerm;
+            }).slice(0, 40);
+        } catch (fallbackError) {
+            console.error('❌ Fallback also failed:', fallbackError.message);
+            return [];
+        }
     }
 }
 
