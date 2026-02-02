@@ -972,40 +972,54 @@
                 if (!botData.activeTrades || botData.activeTrades.length === 0) {
                     activeList.innerHTML = '<div class="empty-state">SCANNING MARKET DEPTH FOR ANOMALIES...</div>';
                 } else {
+                    console.log('📊 Rendering', botData.activeTrades.length, 'active trades');
                     activeList.innerHTML = botData.activeTrades.map(t => {
-                        const currentPrice = t.priceHistory[t.priceHistory.length - 1];
-                        const diff = ((currentPrice - t.entryPrice) / t.entryPrice * 100).toFixed(1);
-                        const color = diff >= 0 ? '#4ade80' : '#f87171';
-                        return `
-                    <div class="trade-card">
-                        <div style="display:flex; justify-content:space-between; margin-bottom:15px">
-                            <div class="trade-title" style="font-size:1.1em; font-weight:700">${t.question}</div>
-                            <div style="color:${t.side === 'YES' ? '#4ade80' : '#f87171'}; font-weight:800; border:1px solid; padding:4px 12px; border-radius:8px; font-size:0.8em">${t.side}</div>
-                        </div>
-                        <div class="mini-chart-container" style="height:80px; margin-bottom:15px">
-                            <canvas id="chart-${t.id}"></canvas>
-                        </div>
-                        <div class="trade-metrics" style="background:rgba(255,255,255,0.03); padding:15px; border-radius:16px; margin-bottom:20px">
-                            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px">
-                                <div>
-                                    <div class="metric-label" style="font-size:0.6em">PURCHASE PRICE</div>
-                                    <div class="metric-value" style="font-size:0.9em">${t.entryPrice.toFixed(3)}</div>
-                                </div>
-                                <div>
-                                    <div class="metric-label" style="font-size:0.6em">MARKET PRICE</div>
-                                    <div class="metric-value" style="font-size:0.9em; color:${color}">${currentPrice.toFixed(3)}</div>
-                                </div>
-                                <div>
-                                    <div class="metric-label" style="font-size:0.6em">PnL %</div>
-                                    <div class="metric-value" style="font-size:0.9em; color:${color}">${diff >= 0 ? '+' : ''}${diff}%</div>
+                        try {
+                            // Defensive checks
+                            if (!t.priceHistory || t.priceHistory.length === 0) {
+                                console.warn('⚠️ Trade missing priceHistory:', t.id);
+                                t.priceHistory = [t.entryPrice || 0];
+                            }
+
+                            const currentPrice = t.priceHistory[t.priceHistory.length - 1] || t.entryPrice || 0;
+                            const entryPrice = t.entryPrice || 0;
+                            const diff = entryPrice > 0 ? ((currentPrice - entryPrice) / entryPrice * 100).toFixed(1) : '0.0';
+                            const color = diff >= 0 ? '#4ade80' : '#f87171';
+
+                            return `
+                        <div class="trade-card">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:15px">
+                                <div class="trade-title" style="font-size:1.1em; font-weight:700">${t.question || 'Unknown Market'}</div>
+                                <div style="color:${t.side === 'YES' ? '#4ade80' : '#f87171'}; font-weight:800; border:1px solid; padding:4px 12px; border-radius:8px; font-size:0.8em">${t.side || 'N/A'}</div>
+                            </div>
+                            <div class="mini-chart-container" style="height:80px; margin-bottom:15px">
+                                <canvas id="chart-${t.id}"></canvas>
+                            </div>
+                            <div class="trade-metrics" style="background:rgba(255,255,255,0.03); padding:15px; border-radius:16px; margin-bottom:20px">
+                                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px">
+                                    <div>
+                                        <div class="metric-label" style="font-size:0.6em">PURCHASE PRICE</div>
+                                        <div class="metric-value" style="font-size:0.9em">${entryPrice.toFixed(3)}</div>
+                                    </div>
+                                    <div>
+                                        <div class="metric-label" style="font-size:0.6em">MARKET PRICE</div>
+                                        <div class="metric-value" style="font-size:0.9em; color:${color}">${currentPrice.toFixed(3)}</div>
+                                    </div>
+                                    <div>
+                                        <div class="metric-label" style="font-size:0.6em">PnL %</div>
+                                        <div class="metric-value" style="font-size:0.9em; color:${color}">${diff >= 0 ? '+' : ''}${diff}%</div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div style="display:flex; justify-content:space-between; align-items:center">
-                            <div style="font-size:0.8em; color:#64748b">VOL: ${t.size.toFixed(0)} USDC</div>
-                            <a href="${t.eventSlug ? `https://polymarket.com/event/${t.eventSlug}` : `https://polymarket.com/market/${t.slug}`}" target="_blank" class="view-btn" style="padding:8px 16px; font-size:0.8em">VIEW</a>
-                        </div>
-                    </div>`;
+                            <div style="display:flex; justify-content:space-between; align-items:center">
+                                <div style="font-size:0.8em; color:#64748b">VOL: ${(t.size || 0).toFixed(0)} USDC</div>
+                                <a href="${t.eventSlug ? `https://polymarket.com/event/${t.eventSlug}` : `https://polymarket.com/market/${t.slug || ''}`}" target="_blank" class="view-btn" style="padding:8px 16px; font-size:0.8em">VIEW</a>
+                            </div>
+                        </div>`;
+                        } catch (err) {
+                            console.error('❌ Error rendering trade card:', t.id, err);
+                            return '<div class="empty-state">Error rendering trade</div>';
+                        }
                     }).join('');
 
                     botData.activeTrades.forEach(t => {
