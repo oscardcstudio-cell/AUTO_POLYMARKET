@@ -52,6 +52,7 @@ let botState = {
         alpha: 'Checking...'
     },
     wizards: [], // Nouveautés: Paris "Long Shot" à haut potentiel
+    freshMarkets: [], // Nouveaux marchés < 24h avec scoring API
     keywordScores: {} // Tracking: { keyword: { score, lastSeen, frequency } }
 };
 
@@ -719,6 +720,100 @@ async function detectWizards() {
     }
 }
 
+async function detectFreshMarkets() {
+    try {
+        const now = new Date();
+        const yesterday = new Date(now - 24 * 60 * 60 * 1000);
+
+        // Utiliser le filtre StartDateMin pour obtenir les marchés récents
+        const url = `https://gamma-api.polymarket.com/markets?active=true&closed=false&limit=200&StartDateMin=${yesterday.toISOString()}`;
+
+        const response = await fetchWithRetry(url);
+        if (!response.ok) throw new Error('Gamma API error');
+        const markets = await response.json();
+
+        botState.freshMarkets = [];
+
+        for (const market of markets) {
+            // Utiliser startDate ou createdAt comme proxy pour l'âge
+            const createdAt = new Date(market.createdAt || market.startDate || now);
+            const ageHours = (now - createdAt) / (1000 * 60 * 60);
+
+            // Ne considérer que les marchés < 24h
+            if (ageHours < 24 && ageHours >= 0) {
+                const score = calculateFreshScore(market, ageHours);
+
+                if (score > 60) {
+                    botState.freshMarkets.push({
+                        id: market.id,
+                        question: market.question,
+                        slug: market.slug,
+                        outcomePrices: market.outcomePrices,
+                        volume24hr: market.volume24hr,
+                        liquidityNum: market.liquidityNum,
+                        volumeNum: market.volumeNum,
+                        endDate: market.endDate,
+                        endDateIso: market.endDateIso,
+                        freshScore: score,
+                        ageHours: ageHours.toFixed(1)
+                    });
+                }
+            }
+        }
+
+        // Top 5 par score
+        botState.freshMarkets.sort((a, b) => b.freshScore - a.freshScore);
+        if (botState.freshMarkets.length > 5) {
+            botState.freshMarkets = botState.freshMarkets.slice(0, 5);
+        }
+
+        botState.apiStatus.gamma = 'ONLINE';
+    } catch (e) {
+        console.error('Error detectFreshMarkets:', e.message);
+        botState.apiStatus.gamma = 'OFFLINE';
+    }
+}
+
+function calculateFreshScore(market, ageHours) {
+    let score = 50; // Base
+
+    // 1. TIMING BONUS (fresher = better)
+    if (ageHours < 6) score += 25;        // < 6h = très frais
+    else if (ageHours < 12) score += 15;  // < 12h = frais
+    else score += 5;                       // < 24h = récent
+
+    // 2. PIZZINT CORRELATION
+    const pizzaData = botState.lastPizzaData;
+    if (pizzaData && pizzaData.defcon <= 2) {
+        const category = categorizeMarket(market.question);
+        if (category === 'geopolitical' || category === 'economic') {
+            score += 30;
+        }
+    }
+
+    // 3. NEWS SENTIMENT MATCH
+    const keywords = extractEntities(market.question);
+    const newsMatch = botState.newsSentiment.some(n =>
+        keywords.some(k => n.title.toLowerCase().includes(k.toLowerCase()))
+    );
+    if (newsMatch) score += 20;
+
+    // 4. EARLY VOLUME (sign of interest)
+    const vol24h = parseFloat(market.volume24hr || 0);
+    if (vol24h > 2000) score += 15;
+    else if (vol24h > 500) score += 5;
+
+    // 5. KEYWORD TRENDING
+    const relevance = keywords.reduce((sum, kw) => {
+        const kwRelevance = getKeywordRelevance(kw);
+        return sum + (kwRelevance || 0);
+    }, 0);
+    score += Math.min(10, relevance * 2);
+
+    return Math.min(100, score);
+}
+
+
 // Catégorisation des marchés
 function categorizeMarket(question) {
     const text = question.toLowerCase();
@@ -849,7 +944,7 @@ function calculateTradeSize() {
     return Math.max(CONFIG.MIN_TRADE_SIZE, Math.min(maxSize, 50));
 }
 
-function simulateTrade(market, pizzaData) {
+function simulateTrade(market, pizzaData, isFreshMarket = false) {
     // outcomePrices est déjà un array, pas besoin de JSON.parse!
     const yesPrice = parseFloat(market.outcomePrices[0]);
     const noPrice = parseFloat(market.outcomePrices[1]);
@@ -927,7 +1022,23 @@ function simulateTrade(market, pizzaData) {
         return null;
     }
 
-    const tradeSize = calculateTradeSize();
+    let tradeSize = calculateTradeSize();
+
+    // FRESH MARKET ADJUSTMENTS
+    if (isFreshMarket) {
+        // Position 50% plus petite pour réduire le risque
+        tradeSize = tradeSize * 0.5;
+
+        // Confiance minimum plus élevée pour fresh markets
+        if (confidence < 0.40) {
+            decisionReasons.push('Fresh market: confidence trop faible');
+            logTradeDecision(market, null, decisionReasons, pizzaData);
+            return null;
+        }
+
+        decisionReasons.push(`🚀 FRESH MARKET (age: ${market.ageHours}h, score: ${market.freshScore})`);
+    }
+
     if (tradeSize > botState.capital) return null;
 
     // --- EXECUTION 100% REALISTE ---
@@ -1292,10 +1403,40 @@ async function main() {
             await checkAndCloseTrades();
             await detectWizards(); // Détection des long shots
             await detectWhales(); // Détection des whale alerts
+            await detectFreshMarkets(); // Détection des nouveaux marchés
 
             // Mise à jour du signal du jour au démarrage et toutes les 10 minutes
             if (botState.capitalHistory.length % 10 === 0) {
                 await updateTopSignal(pizzaData);
+            }
+
+            // FRESH MARKET TRADING (prioritaire)
+            if (botState.freshMarkets.length > 0 && pizzaData && botState.capital >= CONFIG.MIN_TRADE_SIZE) {
+                const freshCount = botState.activeTrades.filter(t => t.isFresh).length;
+
+                // Max 2 fresh markets simultanés, max 7 trades au total
+                if (freshCount < 2 && botState.activeTrades.length < 7) {
+                    const freshMarket = botState.freshMarkets[0];
+                    const alreadyTraded = botState.activeTrades.some(t => t.marketId === freshMarket.id);
+
+                    if (!alreadyTraded) {
+                        const trade = simulateTrade(freshMarket, pizzaData, true);
+                        if (trade) {
+                            trade.isFresh = true; // Marquer le trade comme fresh
+                            trade.freshScore = freshMarket.freshScore;
+                            trade.ageHours = freshMarket.ageHours;
+                            addLog(`🚀 Fresh market trade: ${trade.question.substring(0, 40)}...`, 'success');
+
+                            // Récupérer l'eventSlug
+                            getEventSlug(trade.marketId, trade.question).then(s => {
+                                if (s) {
+                                    trade.eventSlug = s;
+                                    saveState();
+                                }
+                            });
+                        }
+                    }
+                }
             }
 
             if (pizzaData && botState.capital >= CONFIG.MIN_TRADE_SIZE) {
