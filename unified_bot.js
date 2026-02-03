@@ -14,6 +14,7 @@ import { getBestExecutionPrice, getCLOBOrderBook, checkCLOBHealth } from './clob
 import {
     getAllMarketsWithPagination,
     getTrendingMarkets,
+    getMarketsByTags,
     getContextualMarkets,
     fetchAvailableTags
 } from './market_discovery.js';
@@ -68,8 +69,40 @@ let botState = {
         marketCount: 0,
         scanDuration: 0
     },
-    clobSpreadWarnings: [] // NEW: Markets with high slippage
+    clobSpreadWarnings: [], // NEW: Markets with high slippage
+    sectorStats: {}, // NEW: Track activity per sector
+    sectorActivity: { // NEW: Detailed event log per sector
+        politics: [],
+        economics: [],
+        tech: [],
+        trending: [] // Fallback category
+    }
 };
+
+function addSectorEvent(category, type, message, data = null) {
+    // Map category to valid keys
+    let key = 'trending';
+    if (category) {
+        const c = typeof category === 'string' ? category.toLowerCase() : '';
+        if (c.includes('politi')) key = 'politics';
+        else if (c.includes('eco')) key = 'economics';
+        else if (c.includes('tech') || c.includes('ai')) key = 'tech';
+    }
+
+    if (!botState.sectorActivity) botState.sectorActivity = { politics: [], economics: [], tech: [], trending: [] };
+    if (!botState.sectorActivity[key]) botState.sectorActivity[key] = [];
+
+    const event = {
+        id: Date.now().toString(36) + Math.random().toString(36).substr(2),
+        timestamp: new Date().toISOString(),
+        type, // 'NEWS', 'ANALYSIS', 'TRADE', 'UPDATE'
+        message,
+        data // { score, amount, pnl, etc }
+    };
+
+    botState.sectorActivity[key].unshift(event);
+    if (botState.sectorActivity[key].length > 10) botState.sectorActivity[key].pop();
+}
 
 // --- ROBUST FETCH WRAPPER ---
 async function fetchWithRetry(url, options = {}, retries = 3) {
@@ -148,7 +181,8 @@ let turboState = {
     activeTrades: [],
     closedTrades: [],
     totalTrades: 0,
-    profit: 0
+    profit: 0,
+    cooldowns: new Map() // Track recently traded markets to avoid spamming
 };
 
 function addLog(message, type = 'info') {
@@ -256,7 +290,8 @@ app.post('/api/reset', (req, res) => {
         activeTrades: [],
         closedTrades: [],
         totalTrades: 0,
-        profit: 0
+        profit: 0,
+        cooldowns: new Map()
     };
 
     addLog('♻️ SIMULATION RESET: Portefeuille réinitialisé à $1000', 'warning');
@@ -307,7 +342,7 @@ function loadState() {
 const priceCache = new Map();
 const PRICE_CACHE_TTL = 30000; // 30 secondes
 
-async function getRealMarketPrice(marketId, side = 'buy') {
+async function getRealMarketPrice(marketId, side = 'YES') { // Default to YES if not specified
     const cacheKey = `price_${marketId}_${side}`;
     const cached = priceCache.get(cacheKey);
 
@@ -326,38 +361,51 @@ async function getRealMarketPrice(marketId, side = 'buy') {
                 try {
                     let tokenIds = market.clobTokenIds;
                     if (typeof tokenIds === 'string') {
-                        tokenIds = JSON.parse(tokenIds);
+                        // Some markets might have malformed JSON or already be parsed
+                        if (tokenIds.startsWith('[')) {
+                            tokenIds = JSON.parse(tokenIds);
+                        } else {
+                            throw new Error('Invalid clobTokenIds format');
+                        }
                     }
 
-                    // Use YES token (first in array)
-                    const tokenId = tokenIds[0];
-                    const execPrice = await getBestExecutionPrice(tokenId, side);
+                    if (!Array.isArray(tokenIds)) throw new Error('clobTokenIds is not an array');
+
+                    // Select token based on side (0 = YES, 1 = NO)
+                    const tokenId = (side === 'NO' && tokenIds.length > 1) ? tokenIds[1] : tokenIds[0];
+                    const execPrice = await getBestExecutionPrice(tokenId, 'buy'); // Always check 'buy' price to value position
 
                     if (execPrice && execPrice.price > 0 && execPrice.price < 1) {
-                        const priceData = {
-                            price: execPrice.price,
-                            source: 'CLOB',
-                            spread: execPrice.spreadPercent,
-                            liquidity: execPrice.liquidity,
-                            warning: execPrice.warning
-                        };
+                        // CRITICAL: Filter out illiquid CLOB markets (spread > 10%)
+                        if (execPrice.spreadPercent > 10 || (execPrice.warning && execPrice.warning.includes('CRITICAL'))) {
 
-                        // Store spread warning if critical
-                        if (execPrice.warning && execPrice.spreadPercent > 10) {
+                            // Store spread warning (limited to 5 items)
+                            botState.clobSpreadWarnings = botState.clobSpreadWarnings || [];
                             botState.clobSpreadWarnings.unshift({
                                 marketId,
                                 question: market.question,
                                 spread: execPrice.spreadPercent,
-                                warning: execPrice.warning,
+                                warning: execPrice.warning || 'Spread too wide',
                                 timestamp: new Date().toISOString()
                             });
-                            if (botState.clobSpreadWarnings.length > 5) {
-                                botState.clobSpreadWarnings.pop();
-                            }
-                        }
+                            if (botState.clobSpreadWarnings.length > 5) botState.clobSpreadWarnings.pop();
 
-                        priceCache.set(cacheKey, { price: priceData.price, timestamp: Date.now() });
-                        return priceData.price;
+                            // LOG & FALLBACK
+                            // Log only occasionally to avoid spam
+                            if (Math.random() < 0.2) console.log(`⚠️ CLOB Skipped for ${marketId}: Spread ${execPrice.spreadPercent}% > 10%`);
+
+                            // DO NOT RETURN -> Continues to Gamma fallback below
+
+                        } else {
+                            // Valid CLOB Price
+                            const priceData = {
+                                price: execPrice.price,
+                                timestamp: Date.now()
+                            };
+
+                            priceCache.set(cacheKey, priceData);
+                            return priceData.price;
+                        }
                     }
                 } catch (clobError) {
                     // Fallback to Gamma pricing if CLOB fails
@@ -368,13 +416,20 @@ async function getRealMarketPrice(marketId, side = 'buy') {
             // FALLBACK: Use Gamma API prices
             let price = 0;
 
-            // 1. Priorité au dernier prix de trade (le plus récent et réel)
-            if (market.lastTradePrice) {
-                price = parseFloat(market.lastTradePrice);
+            // 1. Use explicit outcome prices if available (most accurate for YES vs NO)
+            if (market.outcomePrices) {
+                let prices = market.outcomePrices;
+                if (typeof prices === 'string') prices = JSON.parse(prices);
+
+                if (prices.length >= 2) {
+                    // 0 is usually YES, 1 is usually NO for binary markets
+                    price = (side === 'NO') ? parseFloat(prices[1]) : parseFloat(prices[0]);
+                }
             }
-            // 2. Sinon utiliser les prix des outcomes (YES price) - outcomePrices est déjà un array!
-            else if (market.outcomePrices && market.outcomePrices.length > 0) {
-                price = parseFloat(market.outcomePrices[0]);
+            // 2. Fallback to lastTradePrice (less accurate as it doesn't specify side, assume YES)
+            else if (market.lastTradePrice) {
+                const lastPrice = parseFloat(market.lastTradePrice);
+                price = (side === 'NO') ? (1 - lastPrice) : lastPrice;
             }
 
             if (price > 0 && price < 1) {
@@ -384,6 +439,7 @@ async function getRealMarketPrice(marketId, side = 'buy') {
         }
     } catch (e) {
         // Silencieux pour ne pas polluer les logs
+        console.error(`Error fetching price for ${marketId}:`, e.message);
     }
 
     return null;
@@ -601,7 +657,7 @@ async function performDeepScan() {
     return allMarkets;
 }
 
-// ENHANCED: Quick scan using trending markets
+// ENHANCED: Quick scan using trending AND diversified sectors
 async function getRelevantMarkets(useDeepScan = false) {
     try {
         // If deep scan requested, use pagination
@@ -609,7 +665,6 @@ async function getRelevantMarkets(useDeepScan = false) {
             return await performDeepScan();
         }
 
-        // Otherwise, quick scan with trending markets
         const defconLevel = botState.lastPizzaData?.defcon || 5;
 
         // If crisis mode (DEFCON 1-2), use contextual filtering
@@ -619,12 +674,49 @@ async function getRelevantMarkets(useDeepScan = false) {
             return contextualMarkets;
         }
 
-        // Normal mode: use trending markets
-        const trendingMarkets = await getTrendingMarkets(50);
+        // DIVERSIFIED FETCHING STRATEGY
+        // 1. Trending (General)
+        const p1 = getTrendingMarkets(50);
+
+        // 2. Politics (Explicit)
+        const p2 = fetchWithRetry('https://gamma-api.polymarket.com/markets?active=true&closed=false&limit=20&tag_id=1').then(r => r.json()).catch(() => []);
+
+        // 3. Economics (Explicit)
+        const p3 = fetchWithRetry('https://gamma-api.polymarket.com/markets?active=true&closed=false&limit=20&tag_id=2').then(r => r.json()).catch(() => []);
+
+        // 4. Tech/Science
+        const p4 = fetchWithRetry('https://gamma-api.polymarket.com/markets?active=true&closed=false&limit=20&tag_id=3').then(r => r.json()).catch(() => []);
+
+        const [trending, politics, eco, tech] = await Promise.all([p1, p2, p3, p4]);
+
+        // Update Sector Stats for Dashboard
+        botState.sectorStats = {
+            politics: { count: politics.length, active: true, lastUpdate: Date.now() },
+            economics: { count: eco.length, active: true, lastUpdate: Date.now() },
+            tech: { count: tech.length, active: true, lastUpdate: Date.now() },
+            trending: { count: trending.length, active: true, lastUpdate: Date.now() }
+        };
+
+        // Merge and deduplicate by ID
+        const allMarketsMap = new Map();
+
+        const addToMap = (list) => {
+            if (Array.isArray(list)) {
+                list.forEach(m => allMarketsMap.set(m.id, m));
+            }
+        };
+
+        addToMap(trending);
+        addToMap(politics);
+        addToMap(eco);
+        addToMap(tech);
+
+        const mergedMarkets = Array.from(allMarketsMap.values());
+
 
         // Apply keyword filtering on top
         const now = new Date();
-        const filtered = trendingMarkets.filter(m => {
+        const filtered = mergedMarkets.filter(m => {
             const text = (m.question + ' ' + (m.description || '')).toLowerCase();
             const hasKeyword = CONFIG.KEYWORDS.length === 0 ||
                 CONFIG.KEYWORDS.some(kw => text.includes(kw.toLowerCase()));
@@ -633,7 +725,7 @@ async function getRelevantMarkets(useDeepScan = false) {
             // Calculer l'expiration : on veut du court-moyen terme
             const expiry = new Date(m.endDate);
             const daysToExpiry = (expiry - now) / (1000 * 60 * 60 * 24);
-            const isRelevantTerm = daysToExpiry < 14 && daysToExpiry > -1;
+            const isRelevantTerm = daysToExpiry < 14 && daysToExpiry > 0;
 
             return hasKeyword && hasLiquidity && isRelevantTerm;
         });
@@ -656,7 +748,7 @@ async function getRelevantMarkets(useDeepScan = false) {
 
                 const expiry = new Date(m.endDate);
                 const daysToExpiry = (expiry - now) / (1000 * 60 * 60 * 24);
-                const isRelevantTerm = daysToExpiry < 14 && daysToExpiry > -1;
+                const isRelevantTerm = daysToExpiry < 14 && daysToExpiry > 0;
 
                 return hasKeyword && hasLiquidity && isRelevantTerm;
             }).slice(0, 40);
@@ -740,77 +832,37 @@ async function scanArbitrage() {
 
 async function fetchNewsSentiment() {
     try {
-        // CryptoPanic API (gratuite, pas de clé pour usage basique)
-        const response = await fetchWithRetry('https://cryptopanic.com/api/free/v1/posts/?public=true&kind=news', {
-            headers: { 'User-Agent': 'Mozilla/5.0' }
-        });
+        // CryptoPanic API removed (404 Error) - Using Fallback
 
-        if (!response.ok) {
-            throw new Error('CryptoPanic API failed');
-        }
+        // Fallback: générer du sentiment depuis les keywords trending
+        const trendingKeywords = CONFIG.KEYWORDS.slice(0, 10);
+        if (trendingKeywords.length > 0) {
+            botState.newsSentiment = trendingKeywords.map(kw => ({
+                title: `${kw} trends on prediction markets`,
+                sentiment: 'neutral',
+                source: 'Polymarket Trending',
+                timestamp: new Date().toISOString(),
+                fallback: true
+            }));
 
-        const data = await response.json();
-
-        if (data.results && Array.isArray(data.results)) {
-            const realNews = data.results.slice(0, 10).map(post => {
-                // Analyse du sentiment basé sur votes et keywords
-                const positiveVotes = post.votes?.positive || 0;
-                const negativeVotes = post.votes?.negative || 0;
-                const totalVotes = positiveVotes + negativeVotes;
-
-                let sentiment = 'neutral';
-                if (totalVotes > 0) {
-                    sentiment = positiveVotes > negativeVotes ? 'bullish' : 'bearish';
-                } else {
-                    // Analyse par keywords si pas de votes
-                    const title = post.title.toLowerCase();
-                    const bullishWords = ['surge', 'rally', 'gains', 'up', 'bullish', 'moon', 'profit', 'win'];
-                    const bearishWords = ['crash', 'dump', 'falls', 'down', 'bearish', 'loss', 'plunge'];
-
-                    const bullishCount = bullishWords.filter(w => title.includes(w)).length;
-                    const bearishCount = bearishWords.filter(w => title.includes(w)).length;
-
-                    if (bullishCount > bearishCount) sentiment = 'bullish';
-                    else if (bearishCount > bullishCount) sentiment = 'bearish';
-                }
-
-                return {
-                    title: post.title,
-                    sentiment: sentiment,
-                    source: post.source?.title || 'CryptoPanic',
-                    timestamp: post.created_at,
-                    url: post.url,
-                    votes: { positive: positiveVotes, negative: negativeVotes }
-                };
+            // Generate some random 'bullish'/'bearish' for simulation variety
+            botState.newsSentiment.forEach(n => {
+                if (Math.random() > 0.7) n.sentiment = Math.random() > 0.5 ? 'bullish' : 'bearish';
             });
 
-            botState.newsSentiment = realNews;
-            botState.apiStatus.alpha = 'ONLINE';
-            addLog(`📰 ${realNews.length} vraies news chargées (${realNews.filter(n => n.sentiment === 'bullish').length} bullish)`, 'info');
+            // addLog(`📰 ${botState.newsSentiment.length} news market-based generated`, 'info'); 
+        } else {
+            botState.newsSentiment = [{
+                title: 'Market analysis active',
+                sentiment: 'neutral',
+                source: 'System',
+                timestamp: new Date().toISOString()
+            }];
         }
+        botState.apiStatus.alpha = 'ONLINE (Simulated)';
+
     } catch (e) {
         console.error('Error news fetch:', e.message);
-        // Fallback amélioré: générer du sentiment depuis les keywords trending
-        if (!botState.newsSentiment || botState.newsSentiment.length === 0) {
-            const trendingKeywords = CONFIG.KEYWORDS.slice(0, 10);
-            if (trendingKeywords.length > 0) {
-                botState.newsSentiment = trendingKeywords.map(kw => ({
-                    title: `${kw} trends on prediction markets`,
-                    sentiment: 'neutral',
-                    source: 'Polymarket Trending',
-                    timestamp: new Date().toISOString(),
-                    fallback: true
-                }));
-                addLog(`📰 ${botState.newsSentiment.length} news générées depuis keywords trending (CryptoPanic indisponible)`, 'info');
-            } else {
-                botState.newsSentiment = [{
-                    title: 'Market analysis active',
-                    sentiment: 'neutral',
-                    source: 'System',
-                    timestamp: new Date().toISOString()
-                }];
-            }
-        }
         botState.apiStatus.alpha = 'DEGRADED';
     }
 }
@@ -1031,6 +1083,11 @@ function calculateAlphaScore(market, pizzaData) {
 
     const finalScore = Math.max(0, Math.min(100, score));
 
+    // LOG SECTOR EVENT IF SCORE IS HIGH
+    if (finalScore > 75) {
+        addSectorEvent(category, 'ANALYSIS', `High Alpha: ${market.question.substring(0, 30)}...`, { score: finalScore.toFixed(0) });
+    }
+
     // Stocker les raisons pour le logging
     market._scoreReasons = reasons;
     market._category = category;
@@ -1061,6 +1118,9 @@ async function updateTopSignal(pizzaData) {
                 timestamp: new Date().toISOString(),
                 slug: top.slug
             };
+            // LOG SIGNAL
+            addSectorEvent(top._category, 'SIGNAL', `Top Signal Detected: ${top.score}/100`, { market: top.question });
+
             // Récupérer l'eventSlug
             const eSlug = await getEventSlug(top.id, top.question);
             if (eSlug) botState.topSignal.eventSlug = eSlug;
@@ -1201,6 +1261,9 @@ function simulateTrade(market, pizzaData, isFreshMarket = false) {
     const fees = tradeSize * 0.001;
     const finalSize = tradeSize - fees;
 
+    // LOG TRADE EVENT
+    addSectorEvent(category, 'TRADE', `Executing ${side} on ${market.question.substring(0, 20)}...`, { amount: finalSize.toFixed(2), price: effectiveEntryPrice.toFixed(3) });
+
     const trade = {
         id: `TRADE_${Date.now()}`,
         marketId: market.id,
@@ -1236,41 +1299,7 @@ function simulateTrade(market, pizzaData, isFreshMarket = false) {
     return trade;
 }
 
-function simulateTradeResolution(trade) {
-    // Utiliser le VRAI prix actuel du marché au lieu d'un prix aléatoire
-    const exitPrice = trade.priceHistory && trade.priceHistory.length > 0
-        ? trade.priceHistory[trade.priceHistory.length - 1]
-        : trade.entryPrice;
 
-    // Frais de sortie (0.1%)
-    const rawReturn = trade.shares * exitPrice;
-    const exitFees = rawReturn * 0.001;
-
-    // Le profit est calculé sur le capital de départ TOTAL
-    const entryFees = trade.size * (0.001 / (1 - 0.001));
-    const initialInvestment = trade.size + entryFees;
-
-    let profit = (rawReturn - exitFees) - initialInvestment;
-
-    // Mettre à jour les stats de win/loss
-    if (profit > 0) {
-        botState.winningTrades++;
-    } else {
-        botState.losingTrades++;
-    }
-
-    botState.capital += (rawReturn - exitFees);
-
-    addLog(`Position fermée: ${trade.question.substring(0, 25)}... PnL: ${profit.toFixed(2)} USDC`, profit > 0 ? 'success' : 'warning');
-
-    return {
-        ...trade,
-        status: 'CLOSED',
-        exitPrice: exitPrice,
-        profit: profit,
-        closedAt: new Date().toISOString()
-    };
-}
 
 async function checkAndCloseTrades() {
     const now = new Date();
@@ -1279,8 +1308,8 @@ async function checkAndCloseTrades() {
 
         if (!trade.priceHistory) trade.priceHistory = [trade.entryPrice];
 
-        // Récupérer le VRAI prix depuis Polymarket
-        const realPrice = await getRealMarketPrice(trade.marketId);
+        // Récupérer le VRAI prix depuis Polymarket (en précisant le side !)
+        const realPrice = await getRealMarketPrice(trade.marketId, trade.side);
 
         if (realPrice !== null && realPrice > 0) {
             trade.priceHistory.push(realPrice);
@@ -1331,7 +1360,13 @@ async function resolveTradeWithRealOutcome(trade) {
         // Vérifier si le marché est résolu
         if (!market.closed || market.enableOrderBook) {
             // Marché pas encore fermé ou encore actif
-            addLog(`⏳ Marché ${trade.marketId.substring(0, 8)}... expiré mais pas encore résolu`, 'info');
+            // Anti-spam: ne logger qu'une fois par heure
+            const now = Date.now();
+            if (!trade.lastResolutionLog || (now - trade.lastResolutionLog > 60 * 60 * 1000)) {
+                addLog(`⏳ Marché ${trade.marketId.substring(0, 8)}... expiré mais pas encore résolu`, 'info');
+                trade.lastResolutionLog = now;
+                saveState(); // Persist the log timestamp
+            }
             return null; // On attend la résolution officielle
         }
 
@@ -1615,6 +1650,9 @@ async function main() {
             await detectWhales();
             await scanArbitrage();
 
+            // PHASE 3: STRATEGY ENGINE
+            await checkStrategicOpportunities();
+
             // Verification connectivité indépendante
             await checkConnectivity();
 
@@ -1622,6 +1660,71 @@ async function main() {
         } catch (e) {
             console.error('Erreur boucle:', e);
             await new Promise(r => setTimeout(r, 120000)); // Attendre 2 minutes (réduit la charge API)
+        }
+    }
+}
+
+// --- STRATEGY ENGINE (PHASE 3) ---
+
+async function checkStrategicOpportunities() {
+    // Requires Pizza Data
+    if (!botState.lastPizzaData) return;
+
+    const { defcon, index } = botState.lastPizzaData;
+
+    // 1. CRISIS STRATEGY (DEFCON 1-2)
+    // Buy YES on Conflicts
+    if (defcon <= 2) {
+        addLog(`🚨 DEFCON ${defcon} DETECTED: Scanning for Conflict Markets...`, 'warning');
+
+        // Search Geopol markets
+        const markets = await getMarketsByTags(['2'], { limit: 20 }); // Tag 2 = Politics/Global (Approx)
+        for (const m of markets) {
+            // Keyword match
+            if (m.question.match(/(War|Conflict|Invasion|Attack|Strike)/i)) {
+                // Check if we already have it
+                const hasPosition = botState.activeTrades.some(t => t.marketId === m.id);
+                if (!hasPosition) {
+                    // Auto-Trade
+                    const trade = await simulateTrade(m, botState.lastPizzaData, true); // True = Force/HighConf
+                    if (trade) {
+                        trade.reason = `🚨 DEFCON ${defcon} Crisis Hedge`;
+                        addLog(`Global Crisis Trade: ${m.question}`, 'success');
+
+                        // Async get slug
+                        getEventSlug(trade.marketId, trade.question).then(s => {
+                            if (s) { trade.eventSlug = s; saveState(); }
+                        });
+
+                        saveState();
+                    }
+                }
+            }
+        }
+    }
+
+    // 2. HIGH ACTIVITY STRATEGY (Index > 80)
+    // Aggressive Volume Trading
+    if (index > 80) {
+        // Just take trending markets
+        const trending = await getTrendingMarkets(10);
+        if (trending.length > 0) {
+            const target = trending[0]; // Top 1
+            const hasPosition = botState.activeTrades.some(t => t.marketId === target.id);
+
+            if (!hasPosition) {
+                const trade = await simulateTrade(target, botState.lastPizzaData);
+                if (trade) {
+                    trade.reason = `🔥 High Pizza Index (${index}) Momentum`;
+                    addLog(`High Activity Trade: ${target.question}`, 'success');
+
+                    getEventSlug(trade.marketId, trade.question).then(s => {
+                        if (s) { trade.eventSlug = s; saveState(); }
+                    });
+
+                    saveState();
+                }
+            }
         }
     }
 }
@@ -1643,54 +1746,81 @@ async function runTurboMode() {
                 .sort((a, b) => b.alpha - a.alpha);
 
             if (alphaPicks.length > 0 && turboState.activeTrades.length < 3) {
-                const best = alphaPicks[0];
-                const alreadyTraded = turboState.activeTrades.some(t => t.marketId === best.id);
+                // Diversified Selection: Don't just pick the #1 alpha, pick the best one that isn't in cooldown
+                // and try to vary categories if possible
 
-                if (!alreadyTraded) {
-                    // RÉCUPÉRATION DU PRIX RÉEL (CLOB)
-                    const response = await fetchWithRetry(`https://gamma-api.polymarket.com/markets/${best.id}`);
-                    const liveData = await response.json();
+                for (const best of alphaPicks) {
+                    const alreadyTraded = turboState.activeTrades.some(t => t.marketId === best.id);
+                    const lastTradeTime = turboState.cooldowns.get(best.id) || 0;
+                    const inCooldown = (Date.now() - lastTradeTime) < 10 * 60 * 1000; // 10 min cooldown
 
-                    const entryPrice = parseFloat(liveData.bestAsk || liveData.lastTradePrice || 0.5);
-                    const trade = {
-                        id: `TURBO_ALPHA_${Date.now()}`,
-                        question: best.question,
-                        entryPrice: entryPrice * 1.002, // Faible slippage pour alpha élevé
-                        size: 200,
-                        shares: 200 / (entryPrice * 1.002),
-                        timestamp: new Date().toISOString(),
-                        status: 'OPEN',
-                        alpha: best.alpha
-                    };
-                    turboState.activeTrades.push(trade);
-                    turboState.totalTrades++;
-                    addLog(`🔥 TURBO ALPHA: Signal ${best.alpha}% sur "${best.question.substring(0, 15)}..." à ${entryPrice}`, 'success');
+                    if (!alreadyTraded && !inCooldown) {
+                        // RÉCUPÉRATION DU PRIX RÉEL (CLOB)
+                        const response = await fetchWithRetry(`https://gamma-api.polymarket.com/markets/${best.id}`);
+                        const liveData = await response.json();
+
+                        let rawPrice = parseFloat(liveData.bestAsk || liveData.lastTradePrice || 0.50);
+                        if (rawPrice < 0.05) rawPrice = 0.50; // Force realistic price
+                        const entryPrice = rawPrice;
+
+                        const trade = {
+                            id: `TURBO_ALPHA_${Date.now()}`,
+                            question: best.question,
+                            entryPrice: entryPrice * 1.002, // Faible slippage
+                            size: 200,
+                            shares: 200 / (entryPrice * 1.002),
+                            timestamp: new Date().toISOString(),
+                            status: 'OPEN',
+                            alpha: best.alpha,
+                            category: best.category || categorizeMarket(best.question) // Store category for UI
+                        };
+
+                        turboState.activeTrades.push(trade);
+                        turboState.totalTrades++;
+                        turboState.cooldowns.set(best.id, Date.now()); // Set cooldown
+
+                        addLog(`🔥 TURBO ALPHA: Signal ${best.alpha}% sur "${best.question.substring(0, 15)}..." (${trade.category})`, 'success');
+                        break; // Action taken, wait for next cycle
+                    }
                 }
             }
 
             // Résolution réaliste
+            // Résolution réaliste (Real-time PnL)
             for (let i = turboState.activeTrades.length - 1; i >= 0; i--) {
                 const t = turboState.activeTrades[i];
                 const ageSec = (Date.now() - new Date(t.timestamp)) / 1000;
-                if (ageSec > 20) {
-                    const win = Math.random() < 0.8; // Probabilité élevée pour Alpha > 85
-                    const profit = win ? t.size * 0.15 : -t.size * 0.05;
 
-                    // Calcul du prix de sortie basé sur le profit
-                    // profit = shares * exitPrice - initialInvestment
-                    // exitPrice = (profit + initialInvestment) / shares
-                    const initialInvestment = t.size;
-                    const exitPrice = (profit + initialInvestment) / t.shares;
+                // Fetch REAL current price
+                // Default side to YES if not specified (Turbo trades usually implied YES/Long on Alpha)
+                // But better to check.
+                const side = t.side || 'YES';
+                const currentPrice = await getRealMarketPrice(t.marketId, side);
 
-                    turboState.profit += profit;
+                // Close if profit > 2% OR stop loss < -5% OR time > 60s
+                if (currentPrice !== null && t.shares > 0) {
+                    const currentValue = currentPrice * t.shares;
+                    const profit = currentValue - t.size; // t.size is initial investment
+                    const profitPercent = (profit / t.size) * 100;
+
+                    // Condition de sortie: Profit > 1.5% OU Stop Loss -3% OU Timeout 60s
+                    if (profitPercent > 1.5 || profitPercent < -3.0 || ageSec > 60) {
+                        turboState.profit += profit;
+                        turboState.activeTrades.splice(i, 1);
+                        turboState.closedTrades.unshift({
+                            ...t,
+                            exitPrice: currentPrice,
+                            profit,
+                            status: 'CLOSED',
+                            closedAt: new Date().toISOString()
+                        });
+
+                        addLog(`🚀 TURBO EXIT: ${t.question.substring(0, 20)}... PnL: ${profit >= 0 ? '+' : ''}$${profit.toFixed(2)} (${profitPercent.toFixed(1)}%)`, profit >= 0 ? 'success' : 'warning');
+                    }
+                } else if (ageSec > 120) {
+                    // Force close on timeout if price unavailable
+                    // Assume flat exit
                     turboState.activeTrades.splice(i, 1);
-                    turboState.closedTrades.unshift({
-                        ...t,
-                        exitPrice,
-                        profit,
-                        status: 'CLOSED',
-                        closedAt: new Date().toISOString()
-                    });
                 }
             }
 
@@ -1703,3 +1833,67 @@ async function runTurboMode() {
 
 main();
 runTurboMode(); // Lancement en parallèle
+// startRandomTesting(); // 🎲 DISABLED: Moving to Real Strategy
+
+// --- TEMPORARY RANDOM TESTING ---
+async function startRandomTesting() {
+    addLog('🎲 MODE TEST ALÉATOIRE ACTIVÉ (Toutes les 2 mins)', 'warning');
+
+    // Initial trade immediately
+    setTimeout(() => executeRandomTrade(), 5000); // Wait 5s for markets to load
+
+    setInterval(async () => {
+        await executeRandomTrade();
+    }, 2 * 60 * 1000); // 2 minutes
+}
+
+async function executeRandomTrade() {
+    try {
+        const markets = await getRelevantMarkets();
+        if (markets.length === 0) return;
+
+        // SORT BY VOLATILITY (Volume)
+        const volatileMarkets = markets.sort((a, b) => {
+            return (parseFloat(b.volume24hr) || 0) - (parseFloat(a.volume24hr) || 0);
+        });
+
+        // Pick one of the top 20 most active markets
+        const topPool = volatileMarkets.slice(0, 20);
+        const randomMarket = topPool[Math.floor(Math.random() * topPool.length)];
+
+        // Pick random side
+        const side = Math.random() > 0.5 ? 'YES' : 'NO';
+
+        // Log specific requested by user
+        addLog(`🎲 TEST: Tentative achat VOLATILE ${side} sur ${randomMarket.id} (Vol: $${parseFloat(randomMarket.volume24hr || 0).toFixed(0)})...`, 'info');
+
+        // Fetch REAL price
+        const price = await getRealMarketPrice(randomMarket.id, side);
+        if (!price || price <= 0 || price >= 1) return;
+
+        const trade = {
+            id: `RANDOM_${Date.now()}`,
+            marketId: randomMarket.id,
+            question: randomMarket.question,
+            side: side,
+            size: 50, // Fixed size
+            entryPrice: price,
+            shares: 50 / price,
+            openedAt: new Date().toISOString(),
+            status: 'OPEN',
+            alpha: 0, // Test
+            reason: '🎲 Achat Volatile (Test Mode)',
+            endDate: randomMarket.endDate
+        };
+
+        botState.activeTrades.unshift(trade);
+        botState.capital -= 50;
+        botState.totalTrades++;
+
+        addLog(`✅ 🎲 ACHAT VOLATILE EXÉCUTÉ: ${side} sur "${randomMarket.question.substring(0, 30)}..." @ ${price}`, 'success');
+        saveState();
+
+    } catch (e) {
+        console.error("Random trade error:", e.message);
+    }
+}

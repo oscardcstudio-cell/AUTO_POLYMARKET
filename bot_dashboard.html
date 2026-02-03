@@ -446,6 +446,84 @@
             </div>
         </div>
 
+        <!-- SECTOR SURVEILLANCE GRID -->
+        <div class="chart-section" style="margin-bottom: 30px; border-color: rgba(255, 255, 255, 0.1);">
+            <div class="stat-label" style="display: flex; justify-content: space-between; align-items: center;">
+                <span>🌍 Multi-Sector Global Surveillance</span>
+                <span style="font-size: 0.8em; color: #4ade80;" id="sectorPulse">● MONITORING ACTIVE</span>
+            </div>
+            <div
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-top: 15px;">
+
+                <!-- SECTOR CARD TEMPLATE -->
+                <div id="sector-politics" class="sector-card" onclick="toggleSector('politics')"
+                    style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 12px; cursor: pointer; overflow: hidden; transition: all 0.3s;">
+                    <div style="padding: 15px; text-align: center;">
+                        <div style="font-size: 2em; margin-bottom: 5px;">🏛️</div>
+                        <div style="font-weight: 700; color: #60a5fa; font-size: 0.9em;">POLITICS</div>
+                        <div class="sector-count" style="font-size: 0.8em; color: #94a3b8;">Scanning...</div>
+                        <div style="font-size: 0.7em; color: #64748b; margin-top: 5px;">▼ EXPAND INTEL</div>
+                    </div>
+                    <!-- HIDDEN DETAILS -->
+                    <div id="details-politics" class="sector-details"
+                        style="display: none; background: rgba(0,0,0,0.3); padding: 15px; border-top: 1px solid rgba(255,255,255,0.05);">
+                        <div style="font-size: 0.7em; color: #94a3b8; margin-bottom: 8px;">LIVE FEED:</div>
+                        <div class="sector-feed"
+                            style="font-size: 0.75em; display: flex; flex-direction: column; gap: 8px;"></div>
+                    </div>
+                </div>
+
+                <div id="sector-economics" class="sector-card" onclick="toggleSector('economics')"
+                    style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; cursor: pointer; overflow: hidden; transition: all 0.3s;">
+                    <div style="padding: 15px; text-align: center;">
+                        <div style="font-size: 2em; margin-bottom: 5px;">📉</div>
+                        <div style="font-weight: 700; color: #34d399; font-size: 0.9em;">ECONOMICS</div>
+                        <div class="sector-count" style="font-size: 0.8em; color: #94a3b8;">Scanning...</div>
+                        <div style="font-size: 0.7em; color: #64748b; margin-top: 5px;">▼ EXPAND INTEL</div>
+                    </div>
+                    <div id="details-economics" class="sector-details"
+                        style="display: none; background: rgba(0,0,0,0.3); padding: 15px; border-top: 1px solid rgba(255,255,255,0.05);">
+                        <div style="font-size: 0.7em; color: #94a3b8; margin-bottom: 8px;">LIVE FEED:</div>
+                        <div class="sector-feed"
+                            style="font-size: 0.75em; display: flex; flex-direction: column; gap: 8px;"></div>
+                    </div>
+                </div>
+
+                <div id="sector-tech" class="sector-card" onclick="toggleSector('tech')"
+                    style="background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 12px; cursor: pointer; overflow: hidden; transition: all 0.3s;">
+                    <div style="padding: 15px; text-align: center;">
+                        <div style="font-size: 2em; margin-bottom: 5px;">🤖</div>
+                        <div style="font-weight: 700; color: #a78bfa; font-size: 0.9em;">TECH & AI</div>
+                        <div class="sector-count" style="font-size: 0.8em; color: #94a3b8;">Scanning...</div>
+                        <div style="font-size: 0.7em; color: #64748b; margin-top: 5px;">▼ EXPAND INTEL</div>
+                    </div>
+                    <div id="details-tech" class="sector-details"
+                        style="display: none; background: rgba(0,0,0,0.3); padding: 15px; border-top: 1px solid rgba(255,255,255,0.05);">
+                        <div style="font-size: 0.7em; color: #94a3b8; margin-bottom: 8px;">LIVE FEED:</div>
+                        <div class="sector-feed"
+                            style="font-size: 0.75em; display: flex; flex-direction: column; gap: 8px;"></div>
+                    </div>
+                </div>
+
+                <div id="sector-trending" class="sector-card" onclick="toggleSector('trending')"
+                    style="background: rgba(244, 114, 182, 0.1); border: 1px solid rgba(244, 114, 182, 0.3); border-radius: 12px; cursor: pointer; overflow: hidden; transition: all 0.3s;">
+                    <div style="padding: 15px; text-align: center;">
+                        <div style="font-size: 2em; margin-bottom: 5px;">🔥</div>
+                        <div style="font-weight: 700; color: #f472b6; font-size: 0.9em;">VIRAL TRENDS</div>
+                        <div class="sector-count" style="font-size: 0.8em; color: #94a3b8;">Scanning...</div>
+                        <div style="font-size: 0.7em; color: #64748b; margin-top: 5px;">▼ EXPAND INTEL</div>
+                    </div>
+                    <div id="details-trending" class="sector-details"
+                        style="display: none; background: rgba(0,0,0,0.3); padding: 15px; border-top: 1px solid rgba(255,255,255,0.05);">
+                        <div style="font-size: 0.7em; color: #94a3b8; margin-bottom: 8px;">LIVE FEED:</div>
+                        <div class="sector-feed"
+                            style="font-size: 0.75em; display: flex; flex-direction: column; gap: 8px;"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
         <div class="main-layout">
             <!-- COLONNE GAUCHE -->
             <div class="left-col">
@@ -606,11 +684,27 @@
                 </div>
 
                 <div class="stat-label"
-                    style="font-size: 0.6em; margin-bottom: 10px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px;">
+                    style="font-size: 0.6em; margin-bottom: 15px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px;">
                     Recent Turbo Settlements</div>
-                <div id="turboHistoryList"
-                    style="font-size: 0.75em; display: flex; flex-direction: column; gap: 8px; max-height: 150px; overflow-y: auto;">
-                    <div style="color: #64748b; font-style: italic;">Awaiting turbo cycles...</div>
+
+                <div style="max-height: 200px; overflow-y: auto;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 0.75em;">
+                        <thead style="position: sticky; top: 0; background: var(--glass); z-index: 1;">
+                            <tr>
+                                <th style="text-align: left; padding: 5px; color: #94a3b8;">Market</th>
+                                <th style="text-align: right; padding: 5px; color: #94a3b8;">Entry</th>
+                                <th style="text-align: right; padding: 5px; color: #94a3b8;">Exit</th>
+                                <th style="text-align: right; padding: 5px; color: #94a3b8;">PnL</th>
+                            </tr>
+                        </thead>
+                        <tbody id="turboHistoryList">
+                            <tr>
+                                <td colspan="4" style="text-align: center; color: #64748b; padding: 20px;">
+                                    Awaiting turbo cycles...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -773,6 +867,22 @@
             }
         }
 
+        function toggleSector(sector) {
+            const details = document.getElementById(`details-${sector}`);
+            const card = document.getElementById(`sector-${sector}`);
+
+            if (!details || !card) return;
+
+            if (details.style.display === 'none' || details.style.display === '') {
+                details.style.display = 'block';
+                // Subtle highlight
+                card.style.borderColor = card.style.borderColor.replace('0.3', '0.8');
+            } else {
+                details.style.display = 'none';
+                card.style.borderColor = card.style.borderColor.replace('0.8', '0.3');
+            }
+        }
+
         function updateDashboard() {
             try {
                 console.log('🔄 updateDashboard called, botData:', botData);
@@ -913,13 +1023,14 @@
                     const turboHistory = document.getElementById('turboHistoryList');
                     if (botData.turbo.closedTrades && botData.turbo.closedTrades.length > 0) {
                         turboHistory.innerHTML = botData.turbo.closedTrades.slice(0, 10).map(t => `
-                        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.03); padding-bottom: 5px;">
-                            <span style="color: #cbd5e1; max-width: 60%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${t.question}</span>
-                            <div style="text-align: right;">
-                                <div style="color: #64748b; font-size: 0.8em;">In: $${(t.entryPrice || 0).toFixed(3)} | Out: $${(t.exitPrice || 0).toFixed(3)}</div>
-                                <div style="color: ${t.profit >= 0 ? '#34d399' : '#f87171'}; font-weight: 700;">${t.profit >= 0 ? '+' : ''}$${t.profit.toFixed(2)}</div>
-                            </div>
-                        </div>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
+                            <td style="padding: 8px 5px; color: #cbd5e1; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${t.question}</td>
+                            <td style="padding: 8px 5px; text-align: right; color: #94a3b8;">$${(t.entryPrice || 0).toFixed(3)}</td>
+                            <td style="padding: 8px 5px; text-align: right; color: #cbd5e1;">$${(t.exitPrice || 0).toFixed(3)}</td>
+                            <td style="padding: 8px 5px; text-align: right; font-weight: 700; color: ${t.profit >= 0 ? '#34d399' : '#f87171'};">
+                                ${t.profit >= 0 ? '+' : ''}$${t.profit.toFixed(2)}
+                            </td>
+                        </tr>
                     `).join('');
                     }
                 }
@@ -965,6 +1076,120 @@
                 `).join('');
                 } else {
                     arbList.innerHTML = '<div style="color: #64748b;">> Scanning for imbalances...</div>';
+                }
+
+                // Sector Surveillance Updates
+                if (botData.sectorStats) {
+                    Object.keys(botData.sectorStats).forEach(sector => {
+                        const stat = botData.sectorStats[sector];
+                        const el = document.getElementById(`sector-${sector}`);
+                        if (el) {
+                            // Update Count
+                            const countEl = el.querySelector('.sector-count');
+                            if (countEl) countEl.textContent = `${stat.count} ACTIVE PAIRS`;
+
+                            // Pulse effect if updated recently (< 1 min)
+                            const isFresh = (Date.now() - new Date(stat.lastUpdate).getTime()) < 60000;
+                            el.style.boxShadow = isFresh ? `0 0 15px ${el.style.backgroundColor}` : 'none';
+
+                            // UPDATE FEED
+                            const feedEl = el.querySelector('.sector-feed');
+                            const activities = (botData.sectorActivity || {})[sector] || [];
+
+                            if (feedEl && activities.length > 0) {
+                                feedEl.innerHTML = activities.slice(0, 5).map(event => {
+                                    let icon = '🔹';
+                                    let color = '#94a3b8';
+                                    let extra = '';
+
+                                    if (event.type === 'NEWS') { icon = '📰'; color = '#60a5fa'; }
+                                    else if (event.type === 'ANALYSIS') { icon = '⚡'; color = '#fbbf24'; }
+                                    else if (event.type === 'TRADE') { icon = '🚀'; color = '#34d399'; }
+                                    else if (event.type === 'SIGNAL') { icon = '🎯'; color = '#f472b6'; }
+
+                                    // Format extra data
+                                    if (event.data) {
+                                        if (event.data.score) extra = `SCORE: ${event.data.score}`;
+                                        if (event.data.amount) extra = `AMT: $${event.data.amount} @ $${event.data.price}`;
+                                        if (event.data.sentiment) extra = `SENTIMENT: ${event.data.sentiment}`;
+                                    }
+
+                                    return `
+                                    <div style="display: flex; gap: 10px; align-items: flex-start; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed rgba(255,255,255,0.05);">
+                                        <div style="font-size: 1.1em;">${icon}</div>
+                                        <div style="flex: 1;">
+                                            <div style="color: #e2e8f0; font-size: 0.95em; line-height: 1.3;">${event.message}</div>
+                                            <div style="display: flex; justify-content: space-between; margin-top: 4px;">
+                                                <span style="color: ${color}; font-weight: 700; font-size: 0.85em;">${extra}</span>
+                                                <span style="color: #64748b; font-size: 0.75em;">${new Date(event.timestamp).toLocaleTimeString()}</span>
+                                            </div>
+                                        </div>
+                                    </div>`;
+                                }).join('');
+                            } else if (feedEl) {
+                                feedEl.innerHTML = '<div style="color: #64748b; font-style: italic; text-align: center; padding: 10px;">Waiting for intel...</div>';
+                            }
+                        }
+                    });
+                }
+
+                // Sector Surveillance Updates
+                if (botData.sectorStats) {
+                    Object.keys(botData.sectorStats).forEach(sector => {
+                        const stat = botData.sectorStats[sector];
+                        const el = document.getElementById(`sector-${sector}`);
+                        if (el) {
+                            // Update Count
+                            const countEl = el.querySelector('.sector-count');
+                            if (countEl) countEl.textContent = `${stat.count} ACTIVE PAIRS`;
+
+                            // Pulse effect if updated recently (< 1 min)
+                            const isFresh = (Date.now() - new Date(stat.lastUpdate).getTime()) < 60000;
+                            // Reset border only if not expanded (to avoid override)
+                            if (document.getElementById(`details-${sector}`).style.display === 'none') {
+                                el.style.borderColor = isFresh ? 'rgba(59, 130, 246, 0.8)' : 'rgba(59, 130, 246, 0.3)';
+                            }
+                            el.style.boxShadow = isFresh ? `0 0 15px ${getComputedStyle(el).backgroundColor}` : 'none';
+
+                            // UPDATE FEED
+                            const feedEl = el.querySelector('.sector-feed');
+                            const activities = (botData.sectorActivity || {})[sector] || [];
+
+                            if (feedEl && activities.length > 0) {
+                                feedEl.innerHTML = activities.slice(0, 5).map(event => {
+                                    let icon = '🔹';
+                                    let color = '#94a3b8';
+                                    let extra = '';
+
+                                    if (event.type === 'NEWS') { icon = '📰'; color = '#60a5fa'; }
+                                    else if (event.type === 'ANALYSIS') { icon = '⚡'; color = '#fbbf24'; }
+                                    else if (event.type === 'TRADE') { icon = '🚀'; color = '#34d399'; }
+                                    else if (event.type === 'SIGNAL') { icon = '🎯'; color = '#f472b6'; }
+
+                                    // Format extra data
+                                    if (event.data) {
+                                        if (event.data.score) extra = `SCORE: ${event.data.score}`;
+                                        if (event.data.amount) extra = `AMT: $${event.data.amount} @ $${event.data.price}`;
+                                        if (event.data.sentiment) extra = `SENTIMENT: ${event.data.sentiment}`;
+                                    }
+
+                                    return `
+                                    <div style="display: flex; gap: 10px; align-items: flex-start; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed rgba(255,255,255,0.05);">
+                                        <div style="font-size: 1.1em;">${icon}</div>
+                                        <div style="flex: 1;">
+                                            <div style="color: #e2e8f0; font-size: 0.95em; line-height: 1.3;">${event.message}</div>
+                                            <div style="display: flex; justify-content: space-between; margin-top: 4px;">
+                                                <span style="color: ${color}; font-weight: 700; font-size: 0.85em;">${extra}</span>
+                                                <span style="color: #64748b; font-size: 0.75em;">${new Date(event.timestamp).toLocaleTimeString()}</span>
+                                            </div>
+                                        </div>
+                                    </div>`;
+                                }).join('');
+                            } else if (feedEl) {
+                                feedEl.innerHTML = '<div style="color: #64748b; font-style: italic; text-align: center; padding: 10px;">Waiting for intel...</div>';
+                            }
+                        }
+                    });
                 }
 
                 // Active Trades
@@ -1013,7 +1238,7 @@
                             </div>
                             <div style="display:flex; justify-content:space-between; align-items:center">
                                 <div style="font-size:0.8em; color:#64748b">VOL: ${(t.size || 0).toFixed(0)} USDC</div>
-                                <a href="${t.eventSlug ? `https://polymarket.com/event/${t.eventSlug}` : `https://polymarket.com/market/${t.slug || ''}`}" target="_blank" class="view-btn" style="padding:8px 16px; font-size:0.8em">VIEW</a>
+                                <a href="https://polymarket.com/event/${t.slug || ''}" target="_blank" class="view-btn" style="padding:6px 14px; font-size:0.75em; background:rgba(96, 165, 250, 0.1); color:#60a5fa; border:1px solid rgba(96, 165, 250, 0.3); border-radius:8px; text-decoration:none; transition:all 0.2s;">VIEW ↗</a>
                             </div>
                         </div>`;
                         } catch (err) {
@@ -1060,9 +1285,9 @@
                                 <div style="font-weight:700; font-size:0.9em; max-width:65%; line-height: 1.4;">${t.question.substring(0, 60)}...</div>
                                 <div style="color:${color}; font-weight:900; font-size:1.3em">${t.profit >= 0 ? '+' : ''}$${t.profit.toFixed(2)}</div>
                             </div>
-                            <div style="display: flex; justify-content: space-between; font-size: 0.75em; color: #64748b;">
-                                <span>${t.side} @ $${(t.entryPrice || 0).toFixed(3)}</span>
-                                <span>${duration}m duration</span>
+                            <div style="display: flex; justify-content: space-between; font-size: 0.75em; color: #64748b; margin-top: 10px; align-items: center;">
+                                <span>${t.side} @ $${(t.entryPrice || 0).toFixed(3)} • ${duration}m</span>
+                                <a href="https://polymarket.com/event/${t.slug || ''}" target="_blank" style="color: #94a3b8; text-decoration: none; border-bottom: 1px dashed #64748b;">VIEW</a>
                             </div>
                         </div>`;
                         }).join('');

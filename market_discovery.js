@@ -241,11 +241,12 @@ export async function getTrendingMarkets(limit = 50) {
         limit
     });
 
-    // Additional filtering for quality
+    // Additional filtering for quality and ACTIVE status
     return markets.filter(m => {
         const volume = parseFloat(m.volume24hr || 0);
         const liquidity = parseFloat(m.liquidityNum || 0);
-        return volume > 1000 && liquidity > 500;
+        const isActive = new Date(m.endDate) > new Date();
+        return volume > 1000 && liquidity > 500 && isActive;
     });
 }
 
@@ -318,13 +319,16 @@ export async function getContextualMarkets(defconLevel, limit = 100) {
         return await getTrendingMarkets(limit);
     }
 
-    return await getMarketsByTags(targetTags, {
+    const results = await getMarketsByTags(targetTags, {
         active: true,
         closed: false,
         order: 'volume24hr',
         ascending: false,
         limit
     });
+
+    // STRICT FILTER: Remove expired markets
+    return results.filter(m => new Date(m.endDate) > new Date());
 }
 
 /**

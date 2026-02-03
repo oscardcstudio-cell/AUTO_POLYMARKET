@@ -79,6 +79,11 @@ export async function getCLOBOrderBook(tokenId) {
         const url = `${CLOB_BASE_URL}/book?token_id=${tokenId}`;
         const response = await fetchWithRetry(url);
 
+        if (response.status === 404) {
+            // 404 means the order book doesn't exist (e.g. expired market), just return null silently
+            return null;
+        }
+
         if (!response.ok) {
             throw new Error(`CLOB /book returned ${response.status}`);
         }
@@ -93,7 +98,9 @@ export async function getCLOBOrderBook(tokenId) {
 
         return null;
     } catch (error) {
-        console.error(`❌ CLOB Order Book Error (${tokenId}):`, error.message);
+        if (!error.message.includes('404')) {
+            console.warn(`⚠️ CLOB Order Book Warning (${tokenId}): ${error.message}`);
+        }
         return null;
     }
 }
