@@ -658,6 +658,9 @@ async function performDeepScan() {
 }
 
 // ENHANCED: Quick scan using trending AND diversified sectors
+let relevantMarketsCache = null;
+let lastRelevantScanCalls = 0;
+
 async function getRelevantMarkets(useDeepScan = false) {
     try {
         // If deep scan requested, use pagination
@@ -665,9 +668,15 @@ async function getRelevantMarkets(useDeepScan = false) {
             return await performDeepScan();
         }
 
+        // CACHE CHECK (60 seconds)
+        const tsNow = Date.now();
+        if (relevantMarketsCache && (tsNow - lastRelevantScanCalls < 60000)) {
+            return relevantMarketsCache;
+        }
+
         const defconLevel = botState.lastPizzaData?.defcon || 5;
 
-        // If crisis mode (DEFCON 1-2), use contextual filtering
+        // If crisis mode (DEFCON 1-2), use contextual filtering (No cache for crisis mode urgency)
         if (defconLevel <= 2) {
             const contextualMarkets = await getContextualMarkets(defconLevel, 100);
             addLog(`🚨 Crisis mode: Using ${contextualMarkets.length} geo/eco markets`, 'warning');
@@ -698,24 +707,14 @@ async function getRelevantMarkets(useDeepScan = false) {
         };
 
         // Merge and deduplicate by ID
-        const allMarketsMap = new Map();
-
-        const addToMap = (list) => {
-            if (Array.isArray(list)) {
-                list.forEach(m => allMarketsMap.set(m.id, m));
-            }
-        };
-
-        addToMap(trending);
-        addToMap(politics);
-        addToMap(eco);
-        addToMap(tech);
-
-        const mergedMarkets = Array.from(allMarketsMap.values());
-
+        const uniqueMap = new Map();
+        [...trending, ...politics, ...eco, ...tech].forEach(m => {
+            if (m && m.id) uniqueMap.set(m.id, m);
+        });
+        const mergedMarkets = Array.from(uniqueMap.values());
 
         // Apply keyword filtering on top
-        const now = new Date();
+        const dateNow = new Date();
         const filtered = mergedMarkets.filter(m => {
             const text = (m.question + ' ' + (m.description || '')).toLowerCase();
             const hasKeyword = CONFIG.KEYWORDS.length === 0 ||
@@ -724,38 +723,20 @@ async function getRelevantMarkets(useDeepScan = false) {
 
             // Calculer l'expiration : on veut du court-moyen terme
             const expiry = new Date(m.endDate);
-            const daysToExpiry = (expiry - now) / (1000 * 60 * 60 * 24);
-            const isRelevantTerm = daysToExpiry < 14 && daysToExpiry > 0;
+            const daysToExpiry = (expiry - dateNow) / (1000 * 60 * 60 * 24);
+            const isRelevantTerm = daysToExpiry < 30 && daysToExpiry > 0;
 
-            return hasKeyword && hasLiquidity && isRelevantTerm;
+            return (hasKeyword || hasLiquidity) && isRelevantTerm;
         });
 
-        return filtered.slice(0, 40);
-    } catch (error) {
-        console.error('❌ Erreur getRelevantMarkets:', error.message);
+        // Update Cache
+        relevantMarketsCache = filtered;
+        lastRelevantScanCalls = tsNow;
 
-        // Fallback to old method
-        try {
-            const response = await fetchWithRetry('https://gamma-api.polymarket.com/markets?active=true&closed=false&limit=100');
-            const markets = await response.json();
-            if (!Array.isArray(markets)) return [];
-
-            const now = new Date();
-            return markets.filter(m => {
-                const text = (m.question + ' ' + (m.description || '')).toLowerCase();
-                const hasKeyword = CONFIG.KEYWORDS.some(kw => text.includes(kw.toLowerCase()));
-                const hasLiquidity = parseFloat(m.liquidityNum || 0) > 100;
-
-                const expiry = new Date(m.endDate);
-                const daysToExpiry = (expiry - now) / (1000 * 60 * 60 * 24);
-                const isRelevantTerm = daysToExpiry < 14 && daysToExpiry > 0;
-
-                return hasKeyword && hasLiquidity && isRelevantTerm;
-            }).slice(0, 40);
-        } catch (fallbackError) {
-            console.error('❌ Fallback also failed:', fallbackError.message);
-            return [];
-        }
+        return filtered;
+    } catch (e) {
+        console.error('Error in getRelevantMarkets:', e);
+        return [];
     }
 }
 
@@ -1680,8 +1661,8 @@ async function checkStrategicOpportunities() {
         // Search Geopol markets
         const markets = await getMarketsByTags(['2'], { limit: 20 }); // Tag 2 = Politics/Global (Approx)
         for (const m of markets) {
-            // Keyword match
-            if (m.question.match(/(War|Conflict|Invasion|Attack|Strike)/i)) {
+            // Keyword match (Broadened)
+            if (m.question.match(/(War|Conflict|Invad|Attack|Strike|Military)/i)) {
                 // Check if we already have it
                 const hasPosition = botState.activeTrades.some(t => t.marketId === m.id);
                 if (!hasPosition) {
