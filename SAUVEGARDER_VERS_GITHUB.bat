@@ -15,6 +15,7 @@ git commit -m "Mise a jour automatique : %current_date%"
 
 :: Envoi vers GitHub
 echo [+] Envoi vers GitHub...
+git pull origin main --rebase
 git push origin main
 
 echo.
