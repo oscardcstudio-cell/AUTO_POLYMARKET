@@ -1238,7 +1238,7 @@
                             </div>
                             <div style="display:flex; justify-content:space-between; align-items:center">
                                 <div style="font-size:0.8em; color:#64748b">VOL: ${(t.size || 0).toFixed(0)} USDC</div>
-                                <a href="https://polymarket.com/event/${t.slug || ''}" target="_blank" class="view-btn" style="padding:6px 14px; font-size:0.75em; background:rgba(96, 165, 250, 0.1); color:#60a5fa; border:1px solid rgba(96, 165, 250, 0.3); border-radius:8px; text-decoration:none; transition:all 0.2s;">VIEW ↗</a>
+                                <a href="https://polymarket.com/market/${t.slug || t.eventSlug || t.marketId}" target="_blank" class="view-btn" style="padding:6px 14px; font-size:0.75em; background:rgba(96, 165, 250, 0.1); color:#60a5fa; border:1px solid rgba(96, 165, 250, 0.3); border-radius:8px; text-decoration:none; transition:all 0.2s;">VIEW ↗</a>
                             </div>
                         </div>`;
                         } catch (err) {
@@ -1287,7 +1287,7 @@
                             </div>
                             <div style="display: flex; justify-content: space-between; font-size: 0.75em; color: #64748b; margin-top: 10px; align-items: center;">
                                 <span>${t.side} @ $${(t.entryPrice || 0).toFixed(3)} • ${duration}m</span>
-                                <a href="https://polymarket.com/event/${t.slug || ''}" target="_blank" style="color: #94a3b8; text-decoration: none; border-bottom: 1px dashed #64748b;">VIEW</a>
+                                <a href="https://polymarket.com/market/${t.slug || t.eventSlug || t.marketId}" target="_blank" style="color: #94a3b8; text-decoration: none; border-bottom: 1px dashed #64748b;">VIEW</a>
                             </div>
                         </div>`;
                         }).join('');
