@@ -1171,6 +1171,13 @@ function simulateTrade(market, pizzaData, isFreshMarket = false) {
         confidence = 0.40;
         decisionReasons.push(`Prix moyen NO: ${noPrice.toFixed(3)}`);
     }
+    // NOUVEAU: TREND FOLLOWING (Suivre la foule si volume élevé + conviction)
+    else if (market.volume24hr > 5000 && yesPrice > 0.60 && yesPrice < 0.85) {
+        side = 'YES';
+        entryPrice = yesPrice;
+        confidence = 0.60;
+        decisionReasons.push(`🚀 Trend Following (Vol: ${parseInt(market.volume24hr)} | Price: ${yesPrice.toFixed(2)})`);
+    }
     // NOUVEAU: Trading basé sur le momentum (volume élevé)
     else if (market.volume24hr && parseFloat(market.volume24hr) > 1000) {
         // Choisir le côté le moins cher
