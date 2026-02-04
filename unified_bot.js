@@ -1554,7 +1554,18 @@ async function syncDataToGitHub() {
 
 // --- MAIN LOOP ---
 async function main() {
+    // 1. START SERVER IMMEDIATELY (Fix 502 Error)
+    const isRailway = !!process.env.PORT;
+    const HOST = isRailway ? '0.0.0.0' : 'localhost';
+
+    app.listen(CONFIG.PORT, HOST, () => {
+        console.log(`\n🚀 DASHBOARD DISPONIBLE SUR: http://${HOST}:${CONFIG.PORT}`);
+        if (isRailway) console.log(`🌐 Running on Railway - Public URL should be accessible`);
+    });
+
     loadState();
+
+    // ... (rest of the logic)
 
     // Initialisation immédiate du premier signal
     const initialPizza = await getPizzaData();
@@ -1614,18 +1625,6 @@ async function main() {
         }
     }
     saveState();
-
-    // Démarrer le serveur API
-    // Railway détecté si PORT est défini en env (Railway le définit automatiquement)
-    const isRailway = !!process.env.PORT;
-    const HOST = isRailway ? '0.0.0.0' : 'localhost';
-
-    app.listen(CONFIG.PORT, HOST, () => {
-        console.log(`\n🚀 DASHBOARD DISPONIBLE SUR: http://${HOST}:${CONFIG.PORT}`);
-        if (isRailway) {
-            console.log(`🌐 Running on Railway - Public URL should be accessible`);
-        }
-    });
 
     // GitHub Auto-Sync toutes les 5 minutes
     setInterval(async () => {
