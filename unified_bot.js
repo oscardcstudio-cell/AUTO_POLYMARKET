@@ -1197,6 +1197,12 @@ function simulateTrade(market, pizzaData, isFreshMarket = false) {
         return null;
     }
 
+    // --- MOMENTUM BOOST ---
+    if (market.volume24hr > 10000 && entryPrice > 0.60 && side === 'YES') {
+        confidence += 0.10;
+        decisionReasons.push(`🔥 High Momentum (Vol: ${parseInt(market.volume24hr)})`);
+    }
+
     let tradeSize = calculateTradeSize();
 
     // FRESH MARKET ADJUSTMENTS
@@ -1898,7 +1904,7 @@ async function runTurboMode() {
 }
 
 main();
-runTurboMode(); // Lancement en parallèle
+// runTurboMode(); // Lancement en parallèle (DISABLED by User Request)
 // startRandomTesting(); // 🎲 DISABLED: Moving to Real Strategy
 
 // --- TEMPORARY RANDOM TESTING ---
