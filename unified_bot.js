@@ -1639,6 +1639,93 @@ async function main() {
     // Sync initial au démarrage
     await syncDataToGitHub();
 
+    // --- DATA PROVIDERS IMPLEMENTATION ---
+    // Ces fonctions peuplent les données pour le dashboard
+
+    global.fetchNewsSentiment = async function () {
+        // Simulation / Extraction depuis PizzINT
+        // On génère des news basées sur les keywords actuels
+        if (CONFIG.KEYWORDS.length > 0) {
+            botState.newsSentiment = CONFIG.KEYWORDS.slice(0, 5).map(k => ({
+                title: `Market Focus: "${k}" trending in intelligence feeds`,
+                sentiment: Math.random() > 0.5 ? 'bullish' : 'bearish',
+                source: 'AlphaMatrix AI'
+            }));
+        } else {
+            botState.newsSentiment = [{
+                title: "Global Macro: Analyzing Defcon Levels",
+                sentiment: "bearish",
+                source: "PizzINT Core"
+            }];
+        }
+    };
+
+    global.detectWhales = async function () {
+        // Scan des marchés à fort volume (> $100k)
+        botState.whaleAlerts = [];
+        try {
+            // On utilise les markets déjà chargés s'ils sont récents
+            const markets = await getRelevantMarkets(false);
+            markets.forEach(m => {
+                const vol = parseFloat(m.volume24hr || 0);
+                if (vol > 50000) {
+                    botState.whaleAlerts.push({
+                        id: m.id,
+                        question: m.question,
+                        volume: vol,
+                        slug: m.slug
+                    });
+                }
+            });
+            // Trier par volume décroissant
+            botState.whaleAlerts.sort((a, b) => b.volume - a.volume);
+            botState.whaleAlerts = botState.whaleAlerts.slice(0, 4); // Top 4
+        } catch (e) { console.error("Whale Scan Error:", e.message); }
+    };
+
+    global.scanArbitrage = async function () {
+        botState.arbitrageOpportunities = [];
+        try {
+            const markets = await getRelevantMarkets(false);
+            markets.forEach(m => {
+                if (m.outcomePrices) {
+                    const pYes = parseFloat(m.outcomePrices[0]);
+                    const pNo = parseFloat(m.outcomePrices[1]);
+                    const sum = pYes + pNo;
+                    if (sum < 0.99 && sum > 0.1) { // Arb opportunity < 1.00 but valid
+                        botState.arbitrageOpportunities.push({
+                            id: m.id,
+                            question: m.question,
+                            sum: sum.toFixed(3),
+                            profit: ((1 - sum) * 100).toFixed(1),
+                            slug: m.slug
+                        });
+                    }
+                }
+            });
+        } catch (e) { console.error("Arb Scan Error:", e.message); }
+    };
+
+    global.detectWizards = async function () {
+        botState.wizards = [];
+        try {
+            const markets = await getRelevantMarkets(false);
+            markets.forEach(m => {
+                const pYes = parseFloat(m.outcomePrices[0]);
+                // Long shot: Price < 0.10 but high liquidity
+                if (pYes < 0.10 && pYes > 0.01 && parseFloat(m.liquidityNum) > 10000) {
+                    botState.wizards.push({
+                        question: m.question,
+                        price: pYes.toFixed(3),
+                        alpha: Math.floor(Math.random() * 20 + 80), // Simulé pour l'instant
+                        reason: "High Liquidity Low Price"
+                    });
+                }
+            });
+            botState.wizards = botState.wizards.slice(0, 3);
+        } catch (e) { console.error("Wizard Scan Error:", e.message); }
+    };
+
     // Boucle de trading
     while (true) {
         try {

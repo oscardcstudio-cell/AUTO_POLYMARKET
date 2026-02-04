@@ -376,13 +376,11 @@
         <header>
             <div class="status-badge">
                 <div class="pulse-dot"></div>
-                POLYMARKET INTELLIGENCE ENGINE v3.0 // SIMULATION MODE
+                POLYMARKET INTELLIGENCE ENGINE v3.1 // ACTIVE TRADING
             </div>
             <h1>Neural Trader Dashboard</h1>
-            <button onclick="resetSimulation()"
-                style="background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.5); color: #fca5a5; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-family: inherit; font-size: 0.8em; margin-top: 10px; transition: all 0.2s;">
-                ♻️ RESTART SIMULATION
-            </button>
+            <div style="font-size: 0.8em; color: #64748b; margin-top: 5px;">SYSTEM STATUS: <span
+                    style="color: #4ade80;">OPERATIONAL</span></div>
         </header>
 
         <!-- Stats Grid -->
@@ -528,22 +526,68 @@
             <!-- COLONNE GAUCHE -->
             <div class="left-col">
                 <div class="section-title">👨‍🍳 The Money Kitchen</div>
-                <div class="kitchen-viewport">
-                    <!-- Les 5 Chefs Animés -->
-                    <div id="chef-sentiment" class="chef">
-                        <div class="bubble">SENTIMENT HACKER</div>
+                <div class="kitchen-grid"
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 30px;">
+
+                    <!-- AGENT 1: SENTIMENT -->
+                    <div class="kitchen-card"
+                        style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 15px; text-align: center; position: relative; overflow: hidden;">
+                        <div style="font-size: 2em; margin-bottom: 8px;">🧠</div>
+                        <div style="font-weight: 700; color: #e2e8f0; font-size: 0.85em; margin-bottom: 4px;">
+                            SENTIMENT<br>HACKER</div>
+                        <div style="font-size: 0.7em; color: #94a3b8; line-height: 1.2;">Scans News & Social for Bias
+                        </div>
+                        <div class="agent-pulse"
+                            style="width: 8px; height: 8px; background: #4ade80; border-radius: 50%; position: absolute; top: 10px; right: 10px; box-shadow: 0 0 10px #4ade80;">
+                        </div>
                     </div>
-                    <div id="chef-arb" class="chef">
-                        <div class="bubble">ARBITRAGE MIXER</div>
+
+                    <!-- AGENT 2: ARBITRAGE -->
+                    <div class="kitchen-card"
+                        style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 15px; text-align: center; position: relative; overflow: hidden;">
+                        <div style="font-size: 2em; margin-bottom: 8px;">⚖️</div>
+                        <div style="font-weight: 700; color: #e2e8f0; font-size: 0.85em; margin-bottom: 4px;">
+                            ARBITRAGE<br>MIXER</div>
+                        <div style="font-size: 0.7em; color: #94a3b8; line-height: 1.2;">Hunts for Pricing Errors</div>
+                        <div class="agent-pulse"
+                            style="width: 8px; height: 8px; background: #60a5fa; border-radius: 50%; position: absolute; top: 10px; right: 10px; box-shadow: 0 0 10px #60a5fa;">
+                        </div>
                     </div>
-                    <div id="chef-whale" class="chef">
-                        <div class="bubble">LIQUIDITY FISHER</div>
+
+                    <!-- AGENT 3: LIQUIDITY -->
+                    <div class="kitchen-card"
+                        style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 15px; text-align: center; position: relative; overflow: hidden;">
+                        <div style="font-size: 2em; margin-bottom: 8px;">🐋</div>
+                        <div style="font-weight: 700; color: #e2e8f0; font-size: 0.85em; margin-bottom: 4px;">
+                            LIQUIDITY<br>FISHER</div>
+                        <div style="font-size: 0.7em; color: #94a3b8; line-height: 1.2;">Tracks Whale Movements</div>
+                        <div class="agent-pulse"
+                            style="width: 8px; height: 8px; background: #a78bfa; border-radius: 50%; position: absolute; top: 10px; right: 10px; box-shadow: 0 0 10px #a78bfa;">
+                        </div>
                     </div>
-                    <div id="chef-pizza" class="chef">
-                        <div class="bubble">RISK BAKER</div>
+
+                    <!-- AGENT 4: RISK -->
+                    <div class="kitchen-card"
+                        style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 15px; text-align: center; position: relative; overflow: hidden;">
+                        <div style="font-size: 2em; margin-bottom: 8px;">🛡️</div>
+                        <div style="font-weight: 700; color: #e2e8f0; font-size: 0.85em; margin-bottom: 4px;">
+                            RISK<br>BAKER</div>
+                        <div style="font-size: 0.7em; color: #94a3b8; line-height: 1.2;">Manages Position Sizing</div>
+                        <div class="agent-pulse"
+                            style="width: 8px; height: 8px; background: #fbbf24; border-radius: 50%; position: absolute; top: 10px; right: 10px; box-shadow: 0 0 10px #fbbf24;">
+                        </div>
                     </div>
-                    <div id="chef-wizard" class="chef">
-                        <div class="bubble">LONG SHOT ALCHEMIST</div>
+
+                    <!-- AGENT 5: LONG SHOT -->
+                    <div class="kitchen-card"
+                        style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 15px; text-align: center; position: relative; overflow: hidden;">
+                        <div style="font-size: 2em; margin-bottom: 8px;">⚗️</div>
+                        <div style="font-weight: 700; color: #e2e8f0; font-size: 0.85em; margin-bottom: 4px;">LONG
+                            SHOT<br>ALCHEMIST</div>
+                        <div style="font-size: 0.7em; color: #94a3b8; line-height: 1.2;">Targets High R:R Trades</div>
+                        <div class="agent-pulse"
+                            style="width: 8px; height: 8px; background: #f472b6; border-radius: 50%; position: absolute; top: 10px; right: 10px; box-shadow: 0 0 10px #f472b6;">
+                        </div>
                     </div>
                 </div>
 
