@@ -1178,6 +1178,14 @@ function simulateTrade(market, pizzaData, isFreshMarket = false) {
         confidence = 0.60;
         decisionReasons.push(`🚀 Trend Following (Vol: ${parseInt(market.volume24hr)} | Price: ${yesPrice.toFixed(2)})`);
     }
+    // NOUVEAU: HYPE FADER (MEAN REVERSION)
+    // Si le prix est > 0.92 (trop haut), on parie NON (Short)
+    else if (yesPrice > 0.92 && yesPrice < 0.98) {
+        side = 'NO';
+        entryPrice = noPrice;
+        confidence = 0.50; // Pari moyen terme sur correction
+        decisionReasons.push(`📉 Hype Fader: Shorting Overbought (Price: ${yesPrice.toFixed(2)})`);
+    }
     // NOUVEAU: Trading basé sur le momentum (volume élevé)
     else if (market.volume24hr && parseFloat(market.volume24hr) > 1000) {
         // Choisir le côté le moins cher
