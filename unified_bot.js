@@ -31,7 +31,7 @@ const CONFIG = {
     MAX_TRADE_SIZE_PERCENT: 0.05,
     KEYWORDS: [], // Sera rempli dynamiquement
     FALLBACK_KEYWORDS: ['War', 'Strike', 'Election', 'Bitcoin', 'Economy'], // Fallback si aucune extraction
-    DATA_FILE: 'bot_data.json',
+    DATA_FILE: process.env.STORAGE_PATH || path.join(__dirname, 'bot_data.json'),
     PORT: process.env.PORT || 3000,
     KEYWORD_UPDATE_INTERVAL: 60 * 60 * 1000 // 1 heure
 };
@@ -1213,6 +1213,13 @@ function simulateTrade(market, pizzaData, isFreshMarket = false) {
 
     if (tradeSize > botState.capital) return null;
 
+    // SAFETY CHECK: Ensure side is valid
+    if (!side || (side !== 'YES' && side !== 'NO')) {
+        // Log this anomaly but do not trade
+        if (Math.random() < 0.1) console.log(`⚠️ Prevented trade with invalid side (${side}) for market ${market.id}`);
+        return null;
+    }
+
     // --- EXECUTION 100% REALISTE ---
     // Au lieu de prendre le prix "moyen", on prend le Best Ask (le prix disponible à l'achat)
     const bestAsk = parseFloat(market.bestAsk || 0);
@@ -1295,6 +1302,26 @@ async function checkAndCloseTrades() {
         if (realPrice !== null && realPrice > 0) {
             trade.priceHistory.push(realPrice);
             if (trade.priceHistory.length > 20) trade.priceHistory.shift();
+
+            // --- ACTIVE MANAGEMENT (TP/SL) ---
+            const currentReturn = (realPrice - trade.entryPrice) / trade.entryPrice;
+
+            // TAKE PROFIT: +25%
+            if (currentReturn >= 0.25) {
+                await executeSell(trade, realPrice, '✅ TAKE PROFIT');
+                botState.activeTrades.splice(i, 1);
+                saveState();
+                continue; // Trade closed, skip simple checks
+            }
+
+            // STOP LOSS: -15%
+            if (currentReturn <= -0.15) {
+                await executeSell(trade, realPrice, '🛡️ STOP LOSS');
+                botState.activeTrades.splice(i, 1);
+                saveState();
+                continue;
+            }
+
         } else {
             // Logger quand le prix échoue
             if (Math.random() < 0.1) { // Log 10% du temps pour ne pas spammer
@@ -1324,6 +1351,41 @@ async function checkAndCloseTrades() {
             }
         }
     }
+}
+
+// Nouvelle fonction: Vendre une position active (Market Sell Simulation)
+async function executeSell(trade, exitPrice, reason) {
+    const rawReturn = trade.shares * exitPrice;
+    const exitFees = rawReturn * 0.001; // 0.1% fee
+    const netReturn = rawReturn - exitFees;
+
+    // Initial investment (cost basis)
+    const entryFees = trade.size * (0.001 / (1 - 0.001));
+    const initialInvestment = trade.size + entryFees;
+
+    const profit = netReturn - initialInvestment;
+
+    botState.capital += netReturn;
+
+    if (profit > 0) botState.winningTrades++;
+    else botState.losingTrades++;
+
+    const closedTrade = {
+        ...trade,
+        status: 'CLOSED',
+        exitPrice: exitPrice,
+        profit: profit,
+        closedAt: new Date().toISOString(),
+        resolvedOutcome: reason, // e.g. "TAKE PROFIT"
+        resolutionMethod: 'ACTIVE_SELL'
+    };
+
+    botState.closedTrades.unshift(closedTrade);
+    if (botState.closedTrades.length > 50) botState.closedTrades = botState.closedTrades.slice(0, 50);
+
+    addLog(`${reason}: ${trade.question.substring(0, 30)}... (Exit: $${exitPrice.toFixed(3)} | PnL: ${profit >= 0 ? '+' : ''}$${profit.toFixed(2)})`, profit >= 0 ? 'success' : 'warning');
+
+    return closedTrade;
 }
 
 // Nouvelle fonction: Résoudre un trade basé sur l'outcome réel du marché
@@ -1817,16 +1879,52 @@ runTurboMode(); // Lancement en parallèle
 // startRandomTesting(); // 🎲 DISABLED: Moving to Real Strategy
 
 // --- TEMPORARY RANDOM TESTING ---
-async function startRandomTesting() {
-    addLog('🎲 MODE TEST ALÉATOIRE ACTIVÉ (Toutes les 2 mins)', 'warning');
+// --- TEMPORARY TEST TRADE FOR RAILWAY VERIFICATION ---
+async function runTestTrade() {
+    console.log('🧪 TEST TRADE: Initializing quick buy/sell cycle...');
+    await new Promise(r => setTimeout(r, 10000)); // Wait 10s for other systems to boot
 
-    // Initial trade immediately
-    setTimeout(() => executeRandomTrade(), 5000); // Wait 5s for markets to load
+    try {
+        const result = await fetchWithRetry('https://gamma-api.polymarket.com/markets?active=true&closed=false&limit=1&ordering=-volume24hr');
+        const markets = await result.json();
 
-    setInterval(async () => {
-        await executeRandomTrade();
-    }, 2 * 60 * 1000); // 2 minutes
+        if (markets.length > 0) {
+            const m = markets[0];
+            const side = 'YES';
+            // Force a small simulation trade
+            const trade = {
+                id: `TEST_RAILWAY_${Date.now()}`,
+                marketId: m.id,
+                slug: m.slug,
+                question: m.question,
+                side: side,
+                entryPrice: 0.50, // Mock price for visibility
+                size: 50,
+                shares: 100,
+                timestamp: new Date().toISOString(),
+                status: 'OPEN',
+                priceHistory: [0.50],
+                category: 'TEST'
+            };
+
+            botState.activeTrades.push(trade);
+            botState.capital -= 50;
+            addLog(`🧪 TEST BUY: Executed on "${m.question.substring(0, 30)}..."`, 'success');
+            saveState();
+
+            // Sells after 15 seconds
+            setTimeout(async () => {
+                await executeSell(trade, 0.55, '🧪 TEST SELL'); // +10% profit
+                addLog(`🧪 TEST SELL: Completed cycle for verification`, 'success');
+                saveState();
+            }, 15000);
+        }
+    } catch (e) {
+        console.error('Test trade failed:', e);
+    }
 }
+runTestTrade();
+
 
 async function executeRandomTrade() {
     try {
