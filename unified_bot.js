@@ -28,7 +28,10 @@ const CONFIG = {
     POLL_INTERVAL_MINUTES: 1,
     DEFCON_THRESHOLD: 5,
     MIN_TRADE_SIZE: 10,
-    MAX_TRADE_SIZE_PERCENT: 0.05,
+    MAX_TRADE_SIZE_PERCENT: 0.10, // Increased to 10% for more impact
+    MIN_LIQUIDITY: 100, // Reduced from 1000
+    MIN_VOLUME: 100, // Reduced from 500
+    MAX_ACTIVE_TRADES: 10, // Increased cap
     KEYWORDS: [], // Sera rempli dynamiquement
     FALLBACK_KEYWORDS: ['War', 'Strike', 'Election', 'Bitcoin', 'Economy'], // Fallback si aucune extraction
     DATA_FILE: process.env.STORAGE_PATH || path.join(__dirname, 'bot_data.json'),
@@ -1457,7 +1460,24 @@ async function resolveTradeWithRealOutcome(trade) {
             addLog(`❌ Trade perdu: ${trade.question.substring(0, 30)}... (${profit.toFixed(2)} USDC)`, 'warning');
         }
 
-        botState.capital += (wonTrade ? trade.shares : 0) - (wonTrade ? 0 : 0); // Ajuster capital
+        // ------------------------------------------------------------------------
+        // FRESH MARKET LOGIC
+        // ------------------------------------------------------------------------
+        function calculateFreshScore(market, ageHours) {
+            let score = 50; // Base
+
+            // 1. TIMING BONUS (fresher = better)
+            if (ageHours < 6) score += 25;        // < 6h = très frais
+            else if (ageHours < 12) score += 15;  // < 12h = frais
+            else score += 5;                       // < 24h = récent
+
+            // 2. PIZZINT CORRELATION
+            const pizzaData = botState.lastPizzaData;
+            if (pizzaData && pizzaData.defcon <= 2) {
+                score += 20; // Crises favors new markets
+            }
+            return score;
+        }
 
         return {
             ...trade,
@@ -1690,6 +1710,9 @@ async function main() {
             displayStatus();
 
             // Tâches de fond additionnelles
+            // 5. Detect Fresh Markets (< 24h)
+            await detectFreshMarkets();
+
             await detectWhales();
             await scanArbitrage();
 

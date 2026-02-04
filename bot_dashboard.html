@@ -1279,22 +1279,27 @@
                         closedList.innerHTML = '<div class="empty-state">No trades match your filters.</div>';
                     } else {
                         closedList.innerHTML = filteredTrades.slice(0, 12).map(t => {
-                            const color = t.profit >= 0 ? '#4ade80' : '#f87171';
-                            const duration = t.closedAt && t.timestamp
-                                ? Math.round((new Date(t.closedAt) - new Date(t.timestamp)) / 1000 / 60)
-                                : 0;
-                            return `
-                        <div class="trade-card" style="opacity:0.8; padding:20px">
-                            <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom: 10px;">
-                                <div style="font-weight:700; font-size:0.9em; max-width:65%; line-height: 1.4;">${t.question.substring(0, 60)}...</div>
-                                <div style="color:${color}; font-weight:900; font-size:1.3em">${t.profit >= 0 ? '+' : ''}$${t.profit.toFixed(2)}</div>
-                            </div>
-                            ${t.resolvedOutcome ? `<div style="font-size:0.7em; margin-bottom:10px; background:rgba(255,255,255,0.05); padding:4px 8px; border-radius:4px; display:inline-block; color:#cbd5e1">${t.resolvedOutcome}</div>` : ''}
-                            <div style="display: flex; justify-content: space-between; font-size: 0.75em; color: #64748b; margin-top: 5px; align-items: center;">
-                                <span>${t.side} @ $${(t.entryPrice || 0).toFixed(3)} • ${duration}m</span>
-                                <a href="https://polymarket.com/market/${t.slug || t.eventSlug || t.marketId}" target="_blank" style="color: #94a3b8; text-decoration: none; border-bottom: 1px dashed #64748b;">VIEW</a>
-                            </div>
-                        </div>`;
+                            try {
+                                const color = t.profit >= 0 ? '#4ade80' : '#f87171';
+                                const duration = t.closedAt && t.timestamp
+                                    ? Math.round((new Date(t.closedAt) - new Date(t.timestamp)) / 1000 / 60)
+                                    : 0;
+                                return `
+                            <div class="trade-card" style="opacity:0.8; padding:20px">
+                                <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom: 10px;">
+                                    <div style="font-weight:700; font-size:0.9em; max-width:65%; line-height: 1.4;">${(t.question || 'Unknown Market').substring(0, 60)}...</div>
+                                    <div style="color:${color}; font-weight:900; font-size:1.3em">${t.profit >= 0 ? '+' : ''}$${(t.profit || 0).toFixed(2)}</div>
+                                </div>
+                                ${t.resolvedOutcome ? `<div style="font-size:0.7em; margin-bottom:10px; background:rgba(255,255,255,0.05); padding:4px 8px; border-radius:4px; display:inline-block; color:#cbd5e1">${t.resolvedOutcome}</div>` : ''}
+                                <div style="display: flex; justify-content: space-between; font-size: 0.75em; color: #64748b; margin-top: 5px; align-items: center;">
+                                    <span>${t.side || 'N/A'} @ $${(t.entryPrice || 0).toFixed(3)} • ${duration}m</span>
+                                    <a href="https://polymarket.com/market/${t.slug || t.eventSlug || t.marketId}" target="_blank" style="color: #94a3b8; text-decoration: none; border-bottom: 1px dashed #64748b;">VIEW</a>
+                                </div>
+                            </div>`;
+                            } catch (e) {
+                                console.error('Error rendering closed trade:', e);
+                                return '';
+                            }
                         }).join('');
                     }
                 }
