@@ -829,12 +829,8 @@ async function fetchNewsSentiment() {
                 fallback: true
             }));
 
-            // Generate some random 'bullish'/'bearish' for simulation variety
-            botState.newsSentiment.forEach(n => {
-                if (Math.random() > 0.7) n.sentiment = Math.random() > 0.5 ? 'bullish' : 'bearish';
-            });
-
-            // addLog(`📰 ${botState.newsSentiment.length} news market-based generated`, 'info'); 
+            // No random sentiment simulation - keep it neutral/honest.
+            // botState.newsSentiment.forEach(n => { ... }); 
         } else {
             botState.newsSentiment = [{
                 title: 'Market analysis active',
@@ -2034,105 +2030,6 @@ async function runTurboMode() {
     }
 }
 
-main();
 // runTurboMode(); // Lancement en parallèle (DISABLED by User Request)
-// startRandomTesting(); // 🎲 DISABLED: Moving to Real Strategy
 
-// --- TEMPORARY RANDOM TESTING ---
-// --- TEMPORARY TEST TRADE FOR RAILWAY VERIFICATION ---
-async function runTestTrade() {
-    console.log('🧪 TEST TRADE: Initializing quick buy/sell cycle...');
-    await new Promise(r => setTimeout(r, 10000)); // Wait 10s for other systems to boot
-
-    try {
-        const result = await fetchWithRetry('https://gamma-api.polymarket.com/markets?active=true&closed=false&limit=1&ordering=-volume24hr');
-        const markets = await result.json();
-
-        if (markets.length > 0) {
-            const m = markets[0];
-            const side = 'YES';
-            // Force a small simulation trade
-            const trade = {
-                id: `TEST_RAILWAY_${Date.now()}`,
-                marketId: m.id,
-                slug: m.slug,
-                question: m.question,
-                side: side,
-                entryPrice: 0.50, // Mock price for visibility
-                size: 50,
-                shares: 100,
-                timestamp: new Date().toISOString(),
-                status: 'OPEN',
-                priceHistory: [0.50],
-                category: 'TEST'
-            };
-
-            botState.activeTrades.push(trade);
-            botState.capital -= 50;
-            addLog(`🧪 TEST BUY: Executed on "${m.question.substring(0, 30)}..."`, 'success');
-            saveState();
-
-            // Sells after 15 seconds
-            setTimeout(async () => {
-                await executeSell(trade, 0.55, '🧪 TEST SELL'); // +10% profit
-                addLog(`🧪 TEST SELL: Completed cycle for verification`, 'success');
-                saveState();
-            }, 15000);
-        }
-    } catch (e) {
-        console.error('Test trade failed:', e);
-    }
-}
-runTestTrade();
-
-
-async function executeRandomTrade() {
-    try {
-        const markets = await getRelevantMarkets();
-        if (markets.length === 0) return;
-
-        // SORT BY VOLATILITY (Volume)
-        const volatileMarkets = markets.sort((a, b) => {
-            return (parseFloat(b.volume24hr) || 0) - (parseFloat(a.volume24hr) || 0);
-        });
-
-        // Pick one of the top 20 most active markets
-        const topPool = volatileMarkets.slice(0, 20);
-        const randomMarket = topPool[Math.floor(Math.random() * topPool.length)];
-
-        // Pick random side
-        const side = Math.random() > 0.5 ? 'YES' : 'NO';
-
-        // Log specific requested by user
-        addLog(`🎲 TEST: Tentative achat VOLATILE ${side} sur ${randomMarket.id} (Vol: $${parseFloat(randomMarket.volume24hr || 0).toFixed(0)})...`, 'info');
-
-        // Fetch REAL price
-        const price = await getRealMarketPrice(randomMarket.id, side);
-        if (!price || price <= 0 || price >= 1) return;
-
-        const trade = {
-            id: `RANDOM_${Date.now()}`,
-            marketId: randomMarket.id,
-            question: randomMarket.question,
-            side: side,
-            size: 50, // Fixed size
-            entryPrice: price,
-            shares: 50 / price,
-            openedAt: new Date().toISOString(),
-            status: 'OPEN',
-            alpha: 0, // Test
-            reason: '🎲 Achat Volatile (Test Mode)',
-            endDate: randomMarket.endDate
-        };
-
-        botState.activeTrades.unshift(trade);
-        botState.capital -= 50;
-        botState.totalTrades++;
-
-        addLog(`✅ 🎲 ACHAT VOLATILE EXÉCUTÉ: ${side} sur "${randomMarket.question.substring(0, 30)}..." @ ${price}`, 'success');
-        saveState();
-
-    } catch (e) {
-        console.error("Random trade error:", e.message);
-    }
-}
+// --- END OF MAIN LOGIC ---

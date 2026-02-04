@@ -501,11 +501,31 @@
 
         <footer
             style="text-align: center; margin: 80px 0 40px 0; color: #475569; font-size: 0.85em; letter-spacing: 1px;">
+            <div style="margin-bottom: 20px;">
+                <button onclick="resetSimulation()" class="trade-action-btn"
+                    style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171;">
+                    ⚠️ RESET WALLET & TRADES
+                </button>
+            </div>
             SECURE NEURAL LINK ESTABLISHED // REFRESH: <span id="lastUpdate">--</span>
         </footer>
     </div>
 
     <script>
+        async function resetSimulation() {
+            if (!confirm('Are you sure you want to RESET the wallet to $1,000 and clear all trades? This cannot be undone.')) return;
+            try {
+                const res = await fetch('/api/reset', { method: 'POST' });
+                const data = await res.json();
+                if (data.success) {
+                    alert('Simulation Reset Successful!');
+                    location.reload();
+                }
+            } catch (e) {
+                alert('Error resetting simulation');
+            }
+        }
+
         let botData = {};
         let mainChart = null;
         let miniCharts = {};
