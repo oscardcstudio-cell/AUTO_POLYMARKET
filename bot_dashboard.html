@@ -108,7 +108,6 @@
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
         }
 
-        /* Stats Grid */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -153,107 +152,6 @@
             color: #f87171;
         }
 
-        /* API Matrix Table */
-        .api-matrix-card {
-            background: var(--glass);
-            border-radius: 24px;
-            padding: 20px;
-            border: 1px solid var(--border);
-            margin-bottom: 30px;
-        }
-
-        .api-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.9em;
-        }
-
-        .api-table th {
-            text-align: left;
-            color: #94a3b8;
-            padding: 10px;
-            border-bottom: 1px solid var(--border);
-            text-transform: uppercase;
-            font-size: 0.75em;
-            letter-spacing: 1px;
-        }
-
-        .api-table td {
-            padding: 12px 10px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .status-online {
-            color: #4ade80;
-            font-weight: 700;
-        }
-
-        .status-offline {
-            color: #f87171;
-            font-weight: 700;
-        }
-
-        /* --- LAYOUT & RESPONSIVITÉ --- */
-        .main-layout {
-            display: grid;
-            grid-template-columns: 1fr 400px;
-            gap: 30px;
-            margin-top: 40px;
-        }
-
-        .left-col,
-        .right-col {
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-            min-width: 0;
-        }
-
-        @media (max-width: 1200px) {
-            .main-layout {
-                grid-template-columns: 1fr;
-            }
-
-            .right-col {
-                order: 2;
-            }
-
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 768px) {
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-
-            h1 {
-                font-size: 2.5em;
-            }
-
-            .section-title {
-                font-size: 0.9em !important;
-                flex-direction: column !important;
-                align-items: flex-start !important;
-            }
-
-            .section-title>div {
-                width: 100%;
-                margin-top: 10px;
-            }
-
-            .section-title input,
-            .section-title select {
-                width: 100%;
-            }
-
-            .trades-grid {
-                grid-template-columns: 1fr !important;
-            }
-        }
-
-        /* --- DASHBOARD COMPONENTS --- */
         .chart-section {
             background: var(--glass);
             backdrop-filter: blur(20px);
@@ -261,6 +159,7 @@
             padding: 30px;
             border: 1px solid var(--border);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
         }
 
         .chart-container {
@@ -268,37 +167,7 @@
             position: relative;
         }
 
-        .terminal-container {
-            background: #000;
-            border-radius: 24px;
-            border: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-        }
-
-        .terminal-header {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 12px 20px;
-            font-family: 'Outfit', sans-serif;
-            font-size: 0.8em;
-            color: #94a3b8;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .terminal-body {
-            padding: 20px;
-            font-family: 'Consolas', 'Monaco', monospace;
-            font-size: 0.85em;
-            overflow-y: auto;
-            flex-grow: 1;
-            line-height: 1.6;
-        }
-
+        /* Trades Grid */
         .trades-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
@@ -361,15 +230,43 @@
             border-radius: 20px;
             margin: 20px 0;
         }
+
+        /* Kitchen Card Tweaks */
+        .kitchen-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .kitchen-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 15px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .agent-pulse {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
 </head>
 
 <body>
-    <div class="refresh-indicator">
-        <div class="spinner"></div>
-        <span>LIVE UPDATING</span>
+    <div class="refresh-indicator"
+        style="position: fixed; top: 20px; right: 20px; display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.5); padding: 8px 15px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);">
+        <div class="pulse-dot" style="width: 6px; height: 6px;"></div>
+        <span style="font-size: 0.7em; font-weight: 700; letter-spacing: 1px;">LIVE</span>
     </div>
 
     <div class="container">
@@ -410,7 +307,7 @@
         </div>
 
         <!-- Performance Statistics Section -->
-        <div class="chart-section" style="margin-bottom: 30px;">
+        <div class="chart-section">
             <div class="stat-label" style="margin-bottom: 20px;">📈 Performance Analytics</div>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
                 <div
@@ -444,6 +341,69 @@
             </div>
         </div>
 
+        <!-- Active Trades (Moved Up) -->
+        <div class="section-title">🚀 Real-Time Operations</div>
+        <div id="activeTradesList" class="trades-grid" style="margin-bottom: 40px;">
+            <div class="empty-state">Scanning liquidity pools for optimal entry...</div>
+        </div>
+
+        <!-- Capital Performance History (Moved Up) -->
+        <div class="chart-section">
+            <div class="stat-label" style="margin-bottom: 25px;">Capital Performance History</div>
+            <div class="chart-container">
+                <canvas id="mainChart"></canvas>
+            </div>
+            <div style="margin-top: 30px; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <div id="defconLevel" class="defcon-badge">DEFCON 5</div>
+                </div>
+                <div style="text-align: right;">
+                    <div class="stat-label" style="margin-bottom: 5px;">PizzINT Index</div>
+                    <div style="font-size: 1.8em; font-weight: 800; color: #60a5fa;" id="pizzaIndex">0</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- The Money Kitchen (Agents) -->
+        <div class="section-title">👨‍🍳 The Money Kitchen</div>
+        <div class="kitchen-grid">
+            <div class="kitchen-card">
+                <div style="font-size: 2em; margin-bottom: 8px;">🧠</div>
+                <div style="font-weight: 700; color: #e2e8f0; font-size: 0.85em; margin-bottom: 4px;">
+                    SENTIMENT<br>HACKER</div>
+                <div style="font-size: 0.7em; color: #94a3b8; line-height: 1.2;">Scans News & Social for Bias</div>
+                <div class="agent-pulse" style="background: #4ade80; box-shadow: 0 0 10px #4ade80;"></div>
+            </div>
+            <div class="kitchen-card">
+                <div style="font-size: 2em; margin-bottom: 8px;">⚖️</div>
+                <div style="font-weight: 700; color: #e2e8f0; font-size: 0.85em; margin-bottom: 4px;">ARBITRAGE<br>MIXER
+                </div>
+                <div style="font-size: 0.7em; color: #94a3b8; line-height: 1.2;">Hunts for Pricing Errors</div>
+                <div class="agent-pulse" style="background: #60a5fa; box-shadow: 0 0 10px #60a5fa;"></div>
+            </div>
+            <div class="kitchen-card">
+                <div style="font-size: 2em; margin-bottom: 8px;">🐋</div>
+                <div style="font-weight: 700; color: #e2e8f0; font-size: 0.85em; margin-bottom: 4px;">
+                    LIQUIDITY<br>FISHER</div>
+                <div style="font-size: 0.7em; color: #94a3b8; line-height: 1.2;">Tracks Whale Movements</div>
+                <div class="agent-pulse" style="background: #a78bfa; box-shadow: 0 0 10px #a78bfa;"></div>
+            </div>
+            <div class="kitchen-card">
+                <div style="font-size: 2em; margin-bottom: 8px;">🛡️</div>
+                <div style="font-weight: 700; color: #e2e8f0; font-size: 0.85em; margin-bottom: 4px;">RISK<br>BAKER
+                </div>
+                <div style="font-size: 0.7em; color: #94a3b8; line-height: 1.2;">Manages Position Sizing</div>
+                <div class="agent-pulse" style="background: #fbbf24; box-shadow: 0 0 10px #fbbf24;"></div>
+            </div>
+            <div class="kitchen-card">
+                <div style="font-size: 2em; margin-bottom: 8px;">⚗️</div>
+                <div style="font-weight: 700; color: #e2e8f0; font-size: 0.85em; margin-bottom: 4px;">LONG
+                    SHOT<br>ALCHEMIST</div>
+                <div style="font-size: 0.7em; color: #94a3b8; line-height: 1.2;">Targets High R:R Trades</div>
+                <div class="agent-pulse" style="background: #f472b6; box-shadow: 0 0 10px #f472b6;"></div>
+            </div>
+        </div>
+
         <!-- SECTOR SURVEILLANCE GRID -->
         <div class="chart-section" style="margin-bottom: 30px; border-color: rgba(255, 255, 255, 0.1);">
             <div class="stat-label" style="display: flex; justify-content: space-between; align-items: center;">
@@ -452,253 +412,62 @@
             </div>
             <div
                 style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-top: 15px;">
-
-                <!-- SECTOR CARD TEMPLATE -->
                 <div id="sector-politics" class="sector-card" onclick="toggleSector('politics')"
                     style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 12px; cursor: pointer; overflow: hidden; transition: all 0.3s;">
                     <div style="padding: 15px; text-align: center;">
                         <div style="font-size: 2em; margin-bottom: 5px;">🏛️</div>
                         <div style="font-weight: 700; color: #60a5fa; font-size: 0.9em;">POLITICS</div>
                         <div class="sector-count" style="font-size: 0.8em; color: #94a3b8;">Scanning...</div>
-                        <div style="font-size: 0.7em; color: #64748b; margin-top: 5px;">▼ EXPAND INTEL</div>
                     </div>
-                    <!-- HIDDEN DETAILS -->
                     <div id="details-politics" class="sector-details"
-                        style="display: none; background: rgba(0,0,0,0.3); padding: 15px; border-top: 1px solid rgba(255,255,255,0.05);">
-                        <div style="font-size: 0.7em; color: #94a3b8; margin-bottom: 8px;">LIVE FEED:</div>
+                        style="display: none; background: rgba(0,0,0,0.3); padding: 15px;">
                         <div class="sector-feed"
                             style="font-size: 0.75em; display: flex; flex-direction: column; gap: 8px;"></div>
                     </div>
                 </div>
-
                 <div id="sector-economics" class="sector-card" onclick="toggleSector('economics')"
                     style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; cursor: pointer; overflow: hidden; transition: all 0.3s;">
                     <div style="padding: 15px; text-align: center;">
                         <div style="font-size: 2em; margin-bottom: 5px;">📉</div>
                         <div style="font-weight: 700; color: #34d399; font-size: 0.9em;">ECONOMICS</div>
                         <div class="sector-count" style="font-size: 0.8em; color: #94a3b8;">Scanning...</div>
-                        <div style="font-size: 0.7em; color: #64748b; margin-top: 5px;">▼ EXPAND INTEL</div>
                     </div>
                     <div id="details-economics" class="sector-details"
-                        style="display: none; background: rgba(0,0,0,0.3); padding: 15px; border-top: 1px solid rgba(255,255,255,0.05);">
-                        <div style="font-size: 0.7em; color: #94a3b8; margin-bottom: 8px;">LIVE FEED:</div>
+                        style="display: none; background: rgba(0,0,0,0.3); padding: 15px;">
                         <div class="sector-feed"
                             style="font-size: 0.75em; display: flex; flex-direction: column; gap: 8px;"></div>
                     </div>
                 </div>
-
                 <div id="sector-tech" class="sector-card" onclick="toggleSector('tech')"
                     style="background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 12px; cursor: pointer; overflow: hidden; transition: all 0.3s;">
                     <div style="padding: 15px; text-align: center;">
                         <div style="font-size: 2em; margin-bottom: 5px;">🤖</div>
                         <div style="font-weight: 700; color: #a78bfa; font-size: 0.9em;">TECH & AI</div>
                         <div class="sector-count" style="font-size: 0.8em; color: #94a3b8;">Scanning...</div>
-                        <div style="font-size: 0.7em; color: #64748b; margin-top: 5px;">▼ EXPAND INTEL</div>
                     </div>
                     <div id="details-tech" class="sector-details"
-                        style="display: none; background: rgba(0,0,0,0.3); padding: 15px; border-top: 1px solid rgba(255,255,255,0.05);">
-                        <div style="font-size: 0.7em; color: #94a3b8; margin-bottom: 8px;">LIVE FEED:</div>
+                        style="display: none; background: rgba(0,0,0,0.3); padding: 15px;">
                         <div class="sector-feed"
                             style="font-size: 0.75em; display: flex; flex-direction: column; gap: 8px;"></div>
                     </div>
                 </div>
-
                 <div id="sector-trending" class="sector-card" onclick="toggleSector('trending')"
                     style="background: rgba(244, 114, 182, 0.1); border: 1px solid rgba(244, 114, 182, 0.3); border-radius: 12px; cursor: pointer; overflow: hidden; transition: all 0.3s;">
                     <div style="padding: 15px; text-align: center;">
                         <div style="font-size: 2em; margin-bottom: 5px;">🔥</div>
                         <div style="font-weight: 700; color: #f472b6; font-size: 0.9em;">VIRAL TRENDS</div>
                         <div class="sector-count" style="font-size: 0.8em; color: #94a3b8;">Scanning...</div>
-                        <div style="font-size: 0.7em; color: #64748b; margin-top: 5px;">▼ EXPAND INTEL</div>
                     </div>
                     <div id="details-trending" class="sector-details"
-                        style="display: none; background: rgba(0,0,0,0.3); padding: 15px; border-top: 1px solid rgba(255,255,255,0.05);">
-                        <div style="font-size: 0.7em; color: #94a3b8; margin-bottom: 8px;">LIVE FEED:</div>
+                        style="display: none; background: rgba(0,0,0,0.3); padding: 15px;">
                         <div class="sector-feed"
                             style="font-size: 0.75em; display: flex; flex-direction: column; gap: 8px;"></div>
                     </div>
                 </div>
-
             </div>
         </div>
 
-        <div class="main-layout">
-            <!-- COLONNE GAUCHE -->
-            <div class="left-col">
-                <div class="section-title">👨‍🍳 The Money Kitchen</div>
-                <div class="kitchen-grid"
-                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 30px;">
-
-                    <!-- AGENT 1: SENTIMENT -->
-                    <div class="kitchen-card"
-                        style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 15px; text-align: center; position: relative; overflow: hidden;">
-                        <div style="font-size: 2em; margin-bottom: 8px;">🧠</div>
-                        <div style="font-weight: 700; color: #e2e8f0; font-size: 0.85em; margin-bottom: 4px;">
-                            SENTIMENT<br>HACKER</div>
-                        <div style="font-size: 0.7em; color: #94a3b8; line-height: 1.2;">Scans News & Social for Bias
-                        </div>
-                        <div class="agent-pulse"
-                            style="width: 8px; height: 8px; background: #4ade80; border-radius: 50%; position: absolute; top: 10px; right: 10px; box-shadow: 0 0 10px #4ade80;">
-                        </div>
-                    </div>
-
-                    <!-- AGENT 2: ARBITRAGE -->
-                    <div class="kitchen-card"
-                        style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 15px; text-align: center; position: relative; overflow: hidden;">
-                        <div style="font-size: 2em; margin-bottom: 8px;">⚖️</div>
-                        <div style="font-weight: 700; color: #e2e8f0; font-size: 0.85em; margin-bottom: 4px;">
-                            ARBITRAGE<br>MIXER</div>
-                        <div style="font-size: 0.7em; color: #94a3b8; line-height: 1.2;">Hunts for Pricing Errors</div>
-                        <div class="agent-pulse"
-                            style="width: 8px; height: 8px; background: #60a5fa; border-radius: 50%; position: absolute; top: 10px; right: 10px; box-shadow: 0 0 10px #60a5fa;">
-                        </div>
-                    </div>
-
-                    <!-- AGENT 3: LIQUIDITY -->
-                    <div class="kitchen-card"
-                        style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 15px; text-align: center; position: relative; overflow: hidden;">
-                        <div style="font-size: 2em; margin-bottom: 8px;">🐋</div>
-                        <div style="font-weight: 700; color: #e2e8f0; font-size: 0.85em; margin-bottom: 4px;">
-                            LIQUIDITY<br>FISHER</div>
-                        <div style="font-size: 0.7em; color: #94a3b8; line-height: 1.2;">Tracks Whale Movements</div>
-                        <div class="agent-pulse"
-                            style="width: 8px; height: 8px; background: #a78bfa; border-radius: 50%; position: absolute; top: 10px; right: 10px; box-shadow: 0 0 10px #a78bfa;">
-                        </div>
-                    </div>
-
-                    <!-- AGENT 4: RISK -->
-                    <div class="kitchen-card"
-                        style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 15px; text-align: center; position: relative; overflow: hidden;">
-                        <div style="font-size: 2em; margin-bottom: 8px;">🛡️</div>
-                        <div style="font-weight: 700; color: #e2e8f0; font-size: 0.85em; margin-bottom: 4px;">
-                            RISK<br>BAKER</div>
-                        <div style="font-size: 0.7em; color: #94a3b8; line-height: 1.2;">Manages Position Sizing</div>
-                        <div class="agent-pulse"
-                            style="width: 8px; height: 8px; background: #fbbf24; border-radius: 50%; position: absolute; top: 10px; right: 10px; box-shadow: 0 0 10px #fbbf24;">
-                        </div>
-                    </div>
-
-                    <!-- AGENT 5: LONG SHOT -->
-                    <div class="kitchen-card"
-                        style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 15px; text-align: center; position: relative; overflow: hidden;">
-                        <div style="font-size: 2em; margin-bottom: 8px;">⚗️</div>
-                        <div style="font-weight: 700; color: #e2e8f0; font-size: 0.85em; margin-bottom: 4px;">LONG
-                            SHOT<br>ALCHEMIST</div>
-                        <div style="font-size: 0.7em; color: #94a3b8; line-height: 1.2;">Targets High R:R Trades</div>
-                        <div class="agent-pulse"
-                            style="width: 8px; height: 8px; background: #f472b6; border-radius: 50%; position: absolute; top: 10px; right: 10px; box-shadow: 0 0 10px #f472b6;">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- API Intelligence Matrix -->
-                <div class="api-matrix-card">
-                    <div class="stat-label" style="margin-bottom: 15px;">🔗 Intelligence Connectivity Matrix</div>
-                    <table class="api-table">
-                        <thead>
-                            <tr>
-                                <th>Module</th>
-                                <th>Provider</th>
-                                <th>Status/Latency</th>
-                                <th>Alpha Impact</th>
-                            </tr>
-                        </thead>
-                        <tbody id="apiMatrixBody">
-                            <tr>
-                                <td>Gamma Engine</td>
-                                <td>Polymarket API</td>
-                                <td class="status-offline" id="api-gamma">OFFLINE</td>
-                                <td>Structural Data</td>
-                            </tr>
-                            <tr>
-                                <td>Liquidity CLOB</td>
-                                <td>Polygon Chain</td>
-                                <td class="status-offline" id="api-clob">OFFLINE</td>
-                                <td>Real-time Pricing</td>
-                            </tr>
-                            <tr>
-                                <td>PizzINT Index</td>
-                                <td>PizzaWatch OSINT</td>
-                                <td class="status-offline" id="api-pizzint">OFFLINE</td>
-                                <td>Global Risk</td>
-                            </tr>
-                            <tr>
-                                <td>AlphaMatrix AI</td>
-                                <td>CryptoPanic/Momentum</td>
-                                <td class="status-offline" id="api-alpha">OFFLINE</td>
-                                <td>Sentiment/Trends</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Capital History -->
-                <div class="chart-section">
-                    <div class="stat-label" style="margin-bottom: 25px;">Capital Performance History</div>
-                    <div class="chart-container">
-                        <canvas id="mainChart"></canvas>
-                    </div>
-                    <div style="margin-top: 30px; display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <div id="defconLevel" class="defcon-badge">DEFCON 5</div>
-                        </div>
-                        <div style="text-align: right;">
-                            <div class="stat-label" style="margin-bottom: 5px;">PizzINT Index</div>
-                            <div style="font-size: 1.8em; font-weight: 800; color: #60a5fa;" id="pizzaIndex">0</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- COLONNE DROITE -->
-            <div class="right-col">
-                <!-- Terminal Graphique -->
-                <div class="terminal-container" style="height: 480px; border-color: #60a5fa;">
-                    <div class="terminal-header" style="background: rgba(59, 130, 246, 0.2);">
-                        <span>📡 ALPHA_NEWS_MATRIX</span>
-                    </div>
-                    <div id="newsFeed"
-                        style="padding: 20px; font-family: monospace; font-size: 0.85em; overflow-y: auto; color: #94a3b8;">
-                        <div style="color: #64748b;">Awaiting intelligence stream...</div>
-                    </div>
-                </div>
-
-                <!-- Arbitrage Terminal -->
-                <div class="terminal-container" style="height: 400px; border-color: rgba(139, 92, 246, 0.3);">
-                    <div class="terminal-header" style="background: #2e1065;">
-                        <span>>_ ARB_SCANNER_v1.0</span>
-                    </div>
-                    <div id="arbList"
-                        style="padding: 20px; font-family: monospace; font-size: 0.85em; overflow-y: auto;">
-                        <div style="color: #64748b;">Awaiting market imbalances...</div>
-                    </div>
-                </div>
-
-                <!-- Live Terminal Log -->
-                <div class="terminal-container" style="height: 350px;">
-                    <div class="terminal-header">
-                        <span>>_ BOT_LOG_SUBSCRIPTION</span>
-                        <span id="terminalClock">00:00:00</span>
-                    </div>
-                    <div id="terminalBody">
-                        <div class="log-entry"><span class="log-info">Kernel initialized. Awaiting market data...</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-
-        <!-- System Logs Full Width -->
-        <div class="terminal-container" style="margin-top: 30px; height: 300px;">
-            <div class="terminal-header">
-                <span>💻 SYSTEM_LOGS</span>
-                <span id="systemLogsClock" style="font-family: monospace;">--:--:--</span>
-            </div>
-            <div id="systemLogsBody" class="terminal-body" style="font-size: 0.8em;"></div>
-        </div>
-
+        <!-- Whales & Wizards (No Turbo) -->
         <div
             style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 40px;">
             <div class="chart-section" style="border-color: rgba(59, 130, 246, 0.2);">
@@ -709,54 +478,6 @@
                 <div class="stat-label">🧙 Wizard Long Shots</div>
                 <div id="wizardList" style="margin-top: 15px;"></div>
             </div>
-            <div class="chart-section" style="border-color: #f472b6;">
-                <div class="stat-label">🚀 Turbo Engine</div>
-                <div
-                    style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px; margin-bottom: 20px;">
-                    <div>
-                        <div class="stat-label" style="font-size: 0.7em;">PnL</div>
-                        <div id="turboProfit" style="font-size: 1.5em; font-weight: 800;">$0.00</div>
-                    </div>
-                    <div style="text-align: center;">
-                        <div class="stat-label" style="font-size: 0.7em;">Ops</div>
-                        <div id="turboTrades" style="font-size: 1.5em; font-weight: 800;">0</div>
-                    </div>
-                    <div style="text-align: right;">
-                        <div class="stat-label" style="font-size: 0.7em;">Active</div>
-                        <div id="turboActive" style="font-size: 1.5em; font-weight: 800; color: #fbbf24;">0</div>
-                    </div>
-                </div>
-
-                <div class="stat-label"
-                    style="font-size: 0.6em; margin-bottom: 15px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px;">
-                    Recent Turbo Settlements</div>
-
-                <div style="max-height: 200px; overflow-y: auto;">
-                    <table style="width: 100%; border-collapse: collapse; font-size: 0.75em;">
-                        <thead style="position: sticky; top: 0; background: var(--glass); z-index: 1;">
-                            <tr>
-                                <th style="text-align: left; padding: 5px; color: #94a3b8;">Market</th>
-                                <th style="text-align: right; padding: 5px; color: #94a3b8;">Entry</th>
-                                <th style="text-align: right; padding: 5px; color: #94a3b8;">Exit</th>
-                                <th style="text-align: right; padding: 5px; color: #94a3b8;">PnL</th>
-                            </tr>
-                        </thead>
-                        <tbody id="turboHistoryList">
-                            <tr>
-                                <td colspan="4" style="text-align: center; color: #64748b; padding: 20px;">
-                                    Awaiting turbo cycles...
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- Active Trades -->
-        <div class="section-title">🚀 Real-Time Operations</div>
-        <div id="activeTradesList" class="trades-grid">
-            <div class="empty-state">Scanning liquidity pools for optimal entry...</div>
         </div>
 
         <!-- History with Filters -->
@@ -787,7 +508,7 @@
     <script>
         let botData = {};
         let mainChart = null;
-        let miniCharts = {}; // Stocker les instances de graphiques pour les détruire proprement
+        let miniCharts = {};
 
         function initMainChart() {
             const ctx = document.getElementById('mainChart').getContext('2d');
@@ -823,32 +544,14 @@
 
         function createMiniChart(id, history, entryPrice, color) {
             const ctx = document.getElementById(`chart-${id}`).getContext('2d');
-
-            // Créer les labels (index)
             const labels = history.map((_, i) => i);
-
             return new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: labels,
                     datasets: [
-                        {
-                            data: history,
-                            borderColor: color,
-                            borderWidth: 2,
-                            pointRadius: 0,
-                            tension: 0.3,
-                            fill: false
-                        },
-                        {
-                            // Ligne de base (Entry Price)
-                            data: Array(history.length).fill(entryPrice),
-                            borderColor: 'rgba(255,255,255,0.2)',
-                            borderWidth: 1,
-                            borderDash: [5, 5],
-                            pointRadius: 0,
-                            fill: false
-                        }
+                        { data: history, borderColor: color, borderWidth: 2, pointRadius: 0, tension: 0.3, fill: false },
+                        { data: Array(history.length).fill(entryPrice), borderColor: 'rgba(255,255,255,0.2)', borderWidth: 1, borderDash: [5, 5], pointRadius: 0, fill: false }
                     ]
                 },
                 options: {
@@ -860,66 +563,12 @@
             });
         }
 
-        function updateTerminal(logs) {
-            const body = document.getElementById('terminalBody');
-            const systemLogsBody = document.getElementById('systemLogsBody');
-            if (!logs || logs.length === 0) return;
-
-            const logsHtml = logs.map(log => {
-                // Gérer les anciens logs qui sont des strings simples
-                if (typeof log === 'string') {
-                    return `<div class="log-entry">
-                        <span class="log-info">${log}</span>
-                    </div>`;
-                }
-
-                // Gérer les nouveaux logs qui sont des objets
-                const time = log.timestamp || '--:--:--';
-                const message = log.message || '';
-                const type = log.type || 'info';
-
-                return `<div class="log-entry">
-                    <span class="log-time">[${time}]</span>
-                    <span class="log-${type}"> ${message}</span>
-                </div>`;
-            }).join('');
-
-            // Mettre à jour les deux terminaux
-            if (body) body.innerHTML = logsHtml;
-            if (systemLogsBody) systemLogsBody.innerHTML = logsHtml;
-
-            // Scroll to top instead of bottom as newest are first
-            // body.scrollTop = 0; 
-        }
-
-        async function resetSimulation() {
-            if (!confirm("Are you sure you want to reset the simulation? All data and trades will be wiped.")) return;
-
-            try {
-                const response = await fetch('/api/reset', { method: 'POST' });
-                const data = await response.json();
-
-                if (data.success) {
-                    alert("Simulation reset successfully!");
-                    window.location.reload();
-                } else {
-                    alert("Error resetting simulation");
-                }
-            } catch (e) {
-                console.error("Reset error:", e);
-                alert("Failed to connect to bot server");
-            }
-        }
-
         function toggleSector(sector) {
             const details = document.getElementById(`details-${sector}`);
             const card = document.getElementById(`sector-${sector}`);
-
             if (!details || !card) return;
-
             if (details.style.display === 'none' || details.style.display === '') {
                 details.style.display = 'block';
-                // Subtle highlight
                 card.style.borderColor = card.style.borderColor.replace('0.3', '0.8');
             } else {
                 details.style.display = 'none';
@@ -929,30 +578,11 @@
 
         function updateDashboard() {
             try {
-                console.log('🔄 updateDashboard called, botData:', botData);
-
-                // API Status
-                if (botData && botData.apiStatus) {
-                    Object.keys(botData.apiStatus).forEach(key => {
-                        const el = document.getElementById(`api-${key}`);
-                        if (el) {
-                            const status = botData.apiStatus[key];
-                            el.textContent = status;
-                            el.className = status === 'ONLINE' ? 'status-online' : 'status-offline';
-                        }
-                    });
-                }
-
-                if (!botData || !botData.capital) {
-                    console.warn('⚠️ No botData or capital');
-                    return;
-                }
-
-                console.log('📊 Active trades count:', botData.activeTrades?.length || 0);
+                if (!botData || !botData.capital) return;
 
                 // Stats
-                document.getElementById('totalCapital').textContent = `$${botData.capital.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-                document.getElementById('profit').textContent = `$${(botData.profit || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                document.getElementById('totalCapital').textContent = `$${botData.capital.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+                document.getElementById('profit').textContent = `$${(botData.profit || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
                 document.getElementById('profit').className = 'stat-value ' + ((botData.profit || 0) >= 0 ? 'positive' : 'negative');
                 document.getElementById('profitPercent').textContent = botData.profitPercent || '0';
 
@@ -960,7 +590,6 @@
                 document.getElementById('winRate').textContent = `${winRate.toFixed(1)}%`;
                 document.getElementById('winningTrades').textContent = botData.winningTrades || 0;
                 document.getElementById('losingTrades').textContent = botData.losingTrades || 0;
-
                 const moneySpent = (botData.activeTrades || []).reduce((sum, t) => sum + t.size, 0);
                 document.getElementById('moneySpent').textContent = `$${moneySpent.toLocaleString()}`;
 
@@ -971,59 +600,23 @@
                     const largestWin = Math.max(...profits);
                     const largestLoss = Math.min(...profits);
 
-                    // Calculate average duration
-                    const durations = botData.closedTrades
-                        .filter(t => t.closedAt && t.timestamp)
-                        .map(t => (new Date(t.closedAt) - new Date(t.timestamp)) / 1000 / 60); // minutes
-                    const avgDuration = durations.length > 0
-                        ? durations.reduce((a, b) => a + b, 0) / durations.length
-                        : 0;
-
                     document.getElementById('avgProfit').textContent = `$${avgProfit.toFixed(2)}`;
                     document.getElementById('avgProfit').style.color = avgProfit >= 0 ? '#4ade80' : '#f87171';
                     document.getElementById('largestWin').textContent = `$${largestWin.toFixed(2)}`;
                     document.getElementById('largestLoss').textContent = `$${largestLoss.toFixed(2)}`;
-                    document.getElementById('avgDuration').textContent = avgDuration >= 60
-                        ? `${(avgDuration / 60).toFixed(1)}h`
-                        : `${avgDuration.toFixed(0)}m`;
+
+                    // Duration
+                    const durations = botData.closedTrades.filter(t => t.closedAt && t.timestamp).map(t => (new Date(t.closedAt) - new Date(t.timestamp)) / 1000 / 60);
+                    const avgDuration = durations.length > 0 ? durations.reduce((a, b) => a + b, 0) / durations.length : 0;
+                    document.getElementById('avgDuration').textContent = avgDuration >= 60 ? `${(avgDuration / 60).toFixed(1)}h` : `${avgDuration.toFixed(0)}m`;
                 }
 
-                // Terminal
-                updateTerminal(botData.logs);
-                const termClock = document.getElementById('terminalClock');
-                const sysClock = document.getElementById('systemLogsClock');
-                const currentTime = new Date().toLocaleTimeString();
-                if (termClock) termClock.textContent = currentTime;
-                if (sysClock) sysClock.textContent = currentTime;
-
-                // PizzINT
+                // Pizza/Defcon
                 document.getElementById('pizzaIndex').textContent = botData.lastPizzaData?.index || 0;
                 const defLevel = botData.lastPizzaData?.defcon || 5;
                 const defEl = document.getElementById('defconLevel');
                 defEl.textContent = `DEFCON ${defLevel}`;
                 defEl.className = `defcon-badge defcon-${defLevel}`;
-
-                // Top Signal
-                const signalSection = document.getElementById('topSignalSection');
-                if (signalSection && botData.topSignal) {
-                    signalSection.style.display = 'block';
-                    const signalQuestion = document.getElementById('signalQuestion');
-                    const signalReason = document.getElementById('signalReason');
-                    const signalScore = document.getElementById('signalScore');
-                    const signalLink = document.getElementById('signalLink');
-
-                    if (signalQuestion) signalQuestion.textContent = botData.topSignal.question;
-                    if (signalReason) signalReason.textContent = botData.topSignal.reason;
-                    if (signalScore) signalScore.textContent = botData.topSignal.score;
-
-                    // Correction URL Top Signal
-                    if (signalLink) {
-                        const link = botData.topSignal.eventSlug
-                            ? `https://polymarket.com/event/${botData.topSignal.eventSlug}`
-                            : `https://polymarket.com/market/${botData.topSignal.slug}`;
-                        signalLink.href = link;
-                    }
-                }
 
                 // Main Chart
                 if (botData.capitalHistory && mainChart) {
@@ -1032,408 +625,119 @@
                     mainChart.update();
                 }
 
-                // Wizards
-                const wizardList = document.getElementById('wizardList');
-                if (botData.wizards && botData.wizards.length > 0) {
-                    wizardList.innerHTML = botData.wizards.map(w => `
-                    <div class="stat-card" style="margin: 0; padding: 15px; border-left: 4px solid #a78bfa; background: rgba(139, 92, 246, 0.05);">
-                        <div style="font-size: 0.9em; font-weight: 700; color: #e2e8f0;">${w.question}</div>
-                        <div style="display: flex; justify-content: space-between; margin-top: 10px; font-size: 0.8em;">
-                            <span style="color: #60a5fa;">PRICE: $${w.price}</span>
-                            <span style="color: #a78bfa; font-weight: 800;">ALPHA: ${w.alpha}%</span>
-                        </div>
-                        <div style="font-size: 0.75em; color: #64748b; margin-top: 5px;">${w.reason}</div>
-                    </div>
-                `).join('');
-                } else {
-                    wizardList.innerHTML = '<div class="empty-state">No wizards detected currently.</div>';
-                }
-
-                // Terminal Clock
-                document.getElementById('terminalClock').textContent = new Date().toLocaleTimeString();
-
-                // Nettoyer les anciens graphiques
-                Object.values(miniCharts).forEach(c => c.destroy());
-                miniCharts = {};
-
-                // Turbo
-                if (botData.turbo) {
-                    document.getElementById('turboProfit').textContent = `$${botData.turbo.profit.toFixed(2)}`;
-                    document.getElementById('turboProfit').className = (botData.turbo.profit >= 0 ? 'positive' : 'negative');
-                    document.getElementById('turboTrades').textContent = botData.turbo.totalTrades;
-                    document.getElementById('turboActive').textContent = botData.turbo.activeTrades.length;
-
-                    // Turbo History
-                    const turboHistory = document.getElementById('turboHistoryList');
-                    if (botData.turbo.closedTrades && botData.turbo.closedTrades.length > 0) {
-                        turboHistory.innerHTML = botData.turbo.closedTrades.slice(0, 10).map(t => `
-                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
-                            <td style="padding: 8px 5px; color: #cbd5e1; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${t.question}</td>
-                            <td style="padding: 8px 5px; text-align: right; color: #94a3b8;">$${(t.entryPrice || 0).toFixed(3)}</td>
-                            <td style="padding: 8px 5px; text-align: right; color: #cbd5e1;">$${(t.exitPrice || 0).toFixed(3)}</td>
-                            <td style="padding: 8px 5px; text-align: right; font-weight: 700; color: ${t.profit >= 0 ? '#34d399' : '#f87171'};">
-                                ${t.profit >= 0 ? '+' : ''}$${t.profit.toFixed(2)}
-                            </td>
-                        </tr>
-                    `).join('');
-                    }
-                }
-
-                // Whale Alerts
-                const whaleList = document.getElementById('whaleAlertsList');
-                if (botData.whaleAlerts && botData.whaleAlerts.length > 0) {
-                    whaleList.innerHTML = botData.whaleAlerts.map(a => `
-                    <div class="stat-card" style="margin: 0; padding: 15px; border-left: 4px solid #3b82f6; background: rgba(59, 130, 246, 0.05);">
-                        <div style="font-size: 0.9em; font-weight: 700;">${a.question}</div>
-                        <div style="display: flex; justify-content: space-between; margin-top: 10px; font-size: 0.8em; color: #94a3b8;">
-                            <span>VOL 24H: $${parseFloat(a.volume).toLocaleString()}</span>
-                            <a href="https://polymarket.com/market/${a.slug}" target="_blank" style="color: #60a5fa; text-decoration: none;">FOLLOW WHALE</a>
-                        </div>
-                    </div>
-                `).join('');
-                } else {
-                    whaleList.innerHTML = '<div class="empty-state">Watching order books...</div>';
-                }
-
-                // Alpha News Matrix
-                const newsFeed = document.getElementById('newsFeed');
-                if (botData.newsSentiment && botData.newsSentiment.length > 0) {
-                    newsFeed.innerHTML = botData.newsSentiment.map(n => `
-                    <div style="margin-bottom: 15px; border-left: 3px solid ${n.sentiment === 'bullish' ? '#34d399' : '#f87171'}; padding-left: 12px; background: rgba(255,255,255,0.02); border-radius: 0 8px 8px 0; padding: 10px;">
-                        <span style="color: ${n.sentiment === 'bullish' ? '#34d399' : '#f87171'}; font-weight: 800;">[${n.sentiment.toUpperCase()}]</span> 
-                        <span style="color: #e2e8f0;">${n.title}</span>
-                        <div style="font-size: 0.8em; color: #64748b; margin-top: 5px;">SOURCE: ${n.source}</div>
-                    </div>
-                `).join('');
-                }
-
-                // Arbitrage
-                const arbList = document.getElementById('arbList');
-                if (botData.arbitrageOpportunities && botData.arbitrageOpportunities.length > 0) {
-                    arbList.innerHTML = botData.arbitrageOpportunities.map(o => `
-                    <div style="margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px dashed rgba(139, 92, 246, 0.2);">
-                        <div style="color: #a78bfa;">> MATCH DETECTED</div>
-                        <div style="color: #fff;">MARKET: ${o.question}</div>
-                        <div style="color: #34d399;">SUM: ${o.sum} | PROFIT: +${o.profit}%</div>
-                        <a href="https://polymarket.com/market/${o.slug}" target="_blank" style="color: #60a5fa; font-size: 0.8em;">[EXECUTE ARBITRAGE]</a>
-                    </div>
-                `).join('');
-                } else {
-                    arbList.innerHTML = '<div style="color: #64748b;">> Scanning for imbalances...</div>';
-                }
-
-                // Sector Surveillance Updates
-                if (botData.sectorStats) {
-                    Object.keys(botData.sectorStats).forEach(sector => {
-                        const stat = botData.sectorStats[sector];
-                        const el = document.getElementById(`sector-${sector}`);
-                        if (el) {
-                            // Update Count
-                            const countEl = el.querySelector('.sector-count');
-                            if (countEl) countEl.textContent = `${stat.count} ACTIVE PAIRS`;
-
-                            // Pulse effect if updated recently (< 1 min)
-                            const isFresh = (Date.now() - new Date(stat.lastUpdate).getTime()) < 60000;
-                            el.style.boxShadow = isFresh ? `0 0 15px ${el.style.backgroundColor}` : 'none';
-
-                            // UPDATE FEED
-                            const feedEl = el.querySelector('.sector-feed');
-                            const activities = (botData.sectorActivity || {})[sector] || [];
-
-                            if (feedEl && activities.length > 0) {
-                                feedEl.innerHTML = activities.slice(0, 5).map(event => {
-                                    let icon = '🔹';
-                                    let color = '#94a3b8';
-                                    let extra = '';
-
-                                    if (event.type === 'NEWS') { icon = '📰'; color = '#60a5fa'; }
-                                    else if (event.type === 'ANALYSIS') { icon = '⚡'; color = '#fbbf24'; }
-                                    else if (event.type === 'TRADE') { icon = '🚀'; color = '#34d399'; }
-                                    else if (event.type === 'SIGNAL') { icon = '🎯'; color = '#f472b6'; }
-
-                                    // Format extra data
-                                    if (event.data) {
-                                        if (event.data.score) extra = `SCORE: ${event.data.score}`;
-                                        if (event.data.amount) extra = `AMT: $${event.data.amount} @ $${event.data.price}`;
-                                        if (event.data.sentiment) extra = `SENTIMENT: ${event.data.sentiment}`;
-                                    }
-
-                                    return `
-                                    <div style="display: flex; gap: 10px; align-items: flex-start; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed rgba(255,255,255,0.05);">
-                                        <div style="font-size: 1.1em;">${icon}</div>
-                                        <div style="flex: 1;">
-                                            <div style="color: #e2e8f0; font-size: 0.95em; line-height: 1.3;">${event.message}</div>
-                                            <div style="display: flex; justify-content: space-between; margin-top: 4px;">
-                                                <span style="color: ${color}; font-weight: 700; font-size: 0.85em;">${extra}</span>
-                                                <span style="color: #64748b; font-size: 0.75em;">${new Date(event.timestamp).toLocaleTimeString()}</span>
-                                            </div>
-                                        </div>
-                                    </div>`;
-                                }).join('');
-                            } else if (feedEl) {
-                                feedEl.innerHTML = '<div style="color: #64748b; font-style: italic; text-align: center; padding: 10px;">Waiting for intel...</div>';
-                            }
-                        }
-                    });
-                }
-
-                // Sector Surveillance Updates
-                if (botData.sectorStats) {
-                    Object.keys(botData.sectorStats).forEach(sector => {
-                        const stat = botData.sectorStats[sector];
-                        const el = document.getElementById(`sector-${sector}`);
-                        if (el) {
-                            // Update Count
-                            const countEl = el.querySelector('.sector-count');
-                            if (countEl) countEl.textContent = `${stat.count} ACTIVE PAIRS`;
-
-                            // Pulse effect if updated recently (< 1 min)
-                            const isFresh = (Date.now() - new Date(stat.lastUpdate).getTime()) < 60000;
-                            // Reset border only if not expanded (to avoid override)
-                            if (document.getElementById(`details-${sector}`).style.display === 'none') {
-                                el.style.borderColor = isFresh ? 'rgba(59, 130, 246, 0.8)' : 'rgba(59, 130, 246, 0.3)';
-                            }
-                            el.style.boxShadow = isFresh ? `0 0 15px ${getComputedStyle(el).backgroundColor}` : 'none';
-
-                            // UPDATE FEED
-                            const feedEl = el.querySelector('.sector-feed');
-                            const activities = (botData.sectorActivity || {})[sector] || [];
-
-                            if (feedEl && activities.length > 0) {
-                                feedEl.innerHTML = activities.slice(0, 5).map(event => {
-                                    let icon = '🔹';
-                                    let color = '#94a3b8';
-                                    let extra = '';
-
-                                    if (event.type === 'NEWS') { icon = '📰'; color = '#60a5fa'; }
-                                    else if (event.type === 'ANALYSIS') { icon = '⚡'; color = '#fbbf24'; }
-                                    else if (event.type === 'TRADE') { icon = '🚀'; color = '#34d399'; }
-                                    else if (event.type === 'SIGNAL') { icon = '🎯'; color = '#f472b6'; }
-
-                                    // Format extra data
-                                    if (event.data) {
-                                        if (event.data.score) extra = `SCORE: ${event.data.score}`;
-                                        if (event.data.amount) extra = `AMT: $${event.data.amount} @ $${event.data.price}`;
-                                        if (event.data.sentiment) extra = `SENTIMENT: ${event.data.sentiment}`;
-                                    }
-
-                                    return `
-                                    <div style="display: flex; gap: 10px; align-items: flex-start; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed rgba(255,255,255,0.05);">
-                                        <div style="font-size: 1.1em;">${icon}</div>
-                                        <div style="flex: 1;">
-                                            <div style="color: #e2e8f0; font-size: 0.95em; line-height: 1.3;">${event.message}</div>
-                                            <div style="display: flex; justify-content: space-between; margin-top: 4px;">
-                                                <span style="color: ${color}; font-weight: 700; font-size: 0.85em;">${extra}</span>
-                                                <span style="color: #64748b; font-size: 0.75em;">${new Date(event.timestamp).toLocaleTimeString()}</span>
-                                            </div>
-                                        </div>
-                                    </div>`;
-                                }).join('');
-                            } else if (feedEl) {
-                                feedEl.innerHTML = '<div style="color: #64748b; font-style: italic; text-align: center; padding: 10px;">Waiting for intel...</div>';
-                            }
-                        }
-                    });
-                }
-
                 // Active Trades
                 const activeList = document.getElementById('activeTradesList');
                 if (!botData.activeTrades || botData.activeTrades.length === 0) {
                     activeList.innerHTML = '<div class="empty-state">SCANNING MARKET DEPTH FOR ANOMALIES...</div>';
                 } else {
-                    console.log('📊 Rendering', botData.activeTrades.length, 'active trades');
                     activeList.innerHTML = botData.activeTrades.map(t => {
-                        try {
-                            // Defensive checks
-                            if (!t.priceHistory || t.priceHistory.length === 0) {
-                                console.warn('⚠️ Trade missing priceHistory:', t.id);
-                                t.priceHistory = [t.entryPrice || 0];
-                            }
+                        const current = t.priceHistory ? t.priceHistory[t.priceHistory.length - 1] : t.entryPrice;
+                        const diff = t.entryPrice > 0 ? ((current - t.entryPrice) / t.entryPrice * 100) : 0;
+                        const color = diff >= 0 ? '#4ade80' : '#f87171';
 
-                            const currentPrice = t.priceHistory[t.priceHistory.length - 1] || t.entryPrice || 0;
-                            const entryPrice = t.entryPrice || 0;
-                            const diff = entryPrice > 0 ? ((currentPrice - entryPrice) / entryPrice * 100).toFixed(1) : '0.0';
-                            const color = diff >= 0 ? '#4ade80' : '#f87171';
-
-                            return `
+                        return `
                         <div class="trade-card">
                             <div style="display:flex; justify-content:space-between; margin-bottom:15px">
-                                <div class="trade-title" style="font-size:1.1em; font-weight:700">${t.question || 'Unknown Market'}</div>
-                                <div style="color:${t.side === 'YES' ? '#4ade80' : '#f87171'}; font-weight:800; border:1px solid; padding:4px 12px; border-radius:8px; font-size:0.8em">${t.side || 'N/A'}</div>
+                                <div style="font-weight:700">${t.question}</div>
+                                <div style="color:${t.side === 'YES' ? '#4ade80' : '#f87171'}; border:1px solid; padding:2px 8px; border-radius:8px">${t.side}</div>
                             </div>
-                            <div class="mini-chart-container" style="height:80px; margin-bottom:15px">
-                                <canvas id="chart-${t.id}"></canvas>
-                            </div>
-                            <div class="trade-metrics" style="background:rgba(255,255,255,0.03); padding:15px; border-radius:16px; margin-bottom:20px">
-                                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px">
-                                    <div>
-                                        <div class="metric-label" style="font-size:0.6em">PURCHASE PRICE</div>
-                                        <div class="metric-value" style="font-size:0.9em">${entryPrice.toFixed(3)}</div>
-                                    </div>
-                                    <div>
-                                        <div class="metric-label" style="font-size:0.6em">MARKET PRICE</div>
-                                        <div class="metric-value" style="font-size:0.9em; color:${color}">${currentPrice.toFixed(3)}</div>
-                                    </div>
-                                    <div>
-                                        <div class="metric-label" style="font-size:0.6em">PnL %</div>
-                                        <div class="metric-value" style="font-size:0.9em; color:${color}">${diff >= 0 ? '+' : ''}${diff}%</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div style="display:flex; justify-content:space-between; align-items:center">
-                                <div style="font-size:0.8em; color:#64748b">VOL: ${(t.size || 0).toFixed(0)} USDC</div>
-                                <a href="https://polymarket.com/market/${t.slug || t.eventSlug || t.marketId}" target="_blank" class="view-btn" style="padding:6px 14px; font-size:0.75em; background:rgba(96, 165, 250, 0.1); color:#60a5fa; border:1px solid rgba(96, 165, 250, 0.3); border-radius:8px; text-decoration:none; transition:all 0.2s;">VIEW ↗</a>
+                            <div style="height:80px; margin-bottom:15px"><canvas id="chart-${t.id}"></canvas></div>
+                            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; background:rgba(255,255,255,0.03); padding:10px; border-radius:10px">
+                                <div><div style="font-size:0.6em">ENTRY</div><div>${t.entryPrice.toFixed(3)}</div></div>
+                                <div><div style="font-size:0.6em">CURRENT</div><div style="color:${color}">${current.toFixed(3)}</div></div>
+                                <div><div style="font-size:0.6em">PnL</div><div style="color:${color}">${diff >= 0 ? '+' : ''}${diff.toFixed(1)}%</div></div>
                             </div>
                         </div>`;
-                        } catch (err) {
-                            console.error('❌ Error rendering trade card:', t.id, err);
-                            return '<div class="empty-state">Error rendering trade</div>';
-                        }
                     }).join('');
 
                     botData.activeTrades.forEach(t => {
-                        try {
-                            const diff = t.priceHistory[t.priceHistory.length - 1] - t.entryPrice;
-                            miniCharts[t.id] = createMiniChart(t.id, t.priceHistory, t.entryPrice, diff >= 0 ? '#4ade80' : '#f87171');
-                        } catch (e) {
-                            console.error('Failed to create chart for trade', t.id, e);
+                        const diff = (t.priceHistory ? t.priceHistory[t.priceHistory.length - 1] : t.entryPrice) - t.entryPrice;
+                        createMiniChart(t.id, t.priceHistory || [t.entryPrice], t.entryPrice, diff >= 0 ? '#4ade80' : '#f87171');
+                    });
+                }
+
+                // Whales
+                const whaleList = document.getElementById('whaleAlertsList');
+                if (botData.whaleAlerts && botData.whaleAlerts.length > 0) {
+                    whaleList.innerHTML = botData.whaleAlerts.slice(0, 4).map(a => `
+                    <div style="margin-bottom:10px; padding:10px; background:rgba(59,130,246,0.1); border-radius:10px; border-left:3px solid #3b82f6;">
+                        <div style="font-weight:700; font-size:0.9em">${a.question}</div>
+                        <div style="font-size:0.8em; color:#94a3b8; margin-top:5px">VOL: $${parseFloat(a.volume).toLocaleString()}</div>
+                    </div>`).join('');
+                } else { whaleList.innerHTML = '<div class="empty-state">Watching order books...</div>'; }
+
+                // Wizards
+                const wizardList = document.getElementById('wizardList');
+                if (botData.wizards && botData.wizards.length > 0) {
+                    wizardList.innerHTML = botData.wizards.slice(0, 3).map(w => `
+                    <div style="margin-bottom:10px; padding:10px; background:rgba(139,92,246,0.1); border-radius:10px; border-left:3px solid #8b5cf6;">
+                        <div style="font-weight:700; font-size:0.9em">${w.question}</div>
+                         <div style="display:flex; justify-content:space-between; margin-top:5px; font-size:0.8em">
+                            <span style="color:#60a5fa">$${w.price}</span>
+                            <span style="color:#a78bfa">ALPHA: ${w.alpha}%</span>
+                        </div>
+                    </div>`).join('');
+                } else { wizardList.innerHTML = '<div class="empty-state">No wizards detected.</div>'; }
+
+                // History
+                const closedList = document.getElementById('closedTradesList');
+                if (botData.closedTrades.length > 0) {
+                    const searchTerm = document.getElementById('searchTrades')?.value.toLowerCase() || '';
+                    const profitFilter = document.getElementById('filterProfit')?.value || 'all';
+
+                    const filtered = botData.closedTrades.filter(t => {
+                        const matchSearch = t.question.toLowerCase().includes(searchTerm);
+                        const matchProfit = profitFilter === 'all' || (profitFilter === 'profit' && t.profit >= 0) || (profitFilter === 'loss' && t.profit < 0);
+                        return matchSearch && matchProfit;
+                    });
+
+                    if (filtered.length > 0) {
+                        closedList.innerHTML = filtered.slice(0, 12).map(t => `
+                         <div class="trade-card" style="opacity:0.8">
+                            <div style="display:flex; justify-content:space-between">
+                                <div style="font-weight:700; font-size:0.9em; max-width:70%">${t.question.substring(0, 60)}...</div>
+                                <div style="font-weight:800; color:${t.profit >= 0 ? '#4ade80' : '#f87171'}">${t.profit >= 0 ? '+' : ''}$${t.profit.toFixed(2)}</div>
+                            </div>
+                            <div style="font-size:0.8em; color:#94a3b8; margin-top:5px">${t.side} @ $${t.entryPrice.toFixed(3)}</div>
+                         </div>`).join('');
+                    } else { closedList.innerHTML = '<div class="empty-state">No matching trades.</div>'; }
+                } else { closedList.innerHTML = '<div class="empty-state">No history recorded.</div>'; }
+
+                // Sectors
+                if (botData.sectorStats) {
+                    Object.keys(botData.sectorStats).forEach(s => {
+                        const el = document.getElementById(`sector-${s}`);
+                        if (el) {
+                            el.querySelector('.sector-count').textContent = `${botData.sectorStats[s].count} ACTIVE`;
+                            const feed = el.querySelector('.sector-feed');
+                            const acts = (botData.sectorActivity || {})[s] || [];
+                            if (feed && acts.length > 0) {
+                                feed.innerHTML = acts.slice(0, 5).map(e => `<div style="font-size:0.8em; margin-bottom:5px; color:#cbd5e1">- ${e.message}</div>`).join('');
+                            }
                         }
                     });
                 }
 
-                // Closed Trades with Filtering
-                const closedList = document.getElementById('closedTradesList');
-                if (botData.closedTrades.length === 0) {
-                    closedList.innerHTML = '<div class="empty-state">ARCHIVES EMPTY.</div>';
-                } else {
-                    // Get filter values
-                    const searchTerm = document.getElementById('searchTrades')?.value.toLowerCase() || '';
-                    const profitFilter = document.getElementById('filterProfit')?.value || 'all';
-
-                    // Apply filters
-                    let filteredTrades = botData.closedTrades.filter(t => {
-                        const matchesSearch = t.question.toLowerCase().includes(searchTerm);
-                        const matchesProfit = profitFilter === 'all' ||
-                            (profitFilter === 'profit' && t.profit >= 0) ||
-                            (profitFilter === 'loss' && t.profit < 0);
-                        return matchesSearch && matchesProfit;
-                    });
-
-                    if (filteredTrades.length === 0) {
-                        closedList.innerHTML = '<div class="empty-state">No trades match your filters.</div>';
-                    } else {
-                        closedList.innerHTML = filteredTrades.slice(0, 12).map(t => {
-                            try {
-                                const color = t.profit >= 0 ? '#4ade80' : '#f87171';
-                                const duration = t.closedAt && t.timestamp
-                                    ? Math.round((new Date(t.closedAt) - new Date(t.timestamp)) / 1000 / 60)
-                                    : 0;
-                                return `
-                            <div class="trade-card" style="opacity:0.8; padding:20px">
-                                <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom: 10px;">
-                                    <div style="font-weight:700; font-size:0.9em; max-width:65%; line-height: 1.4;">${(t.question || 'Unknown Market').substring(0, 60)}...</div>
-                                    <div style="color:${color}; font-weight:900; font-size:1.3em">${t.profit >= 0 ? '+' : ''}$${(t.profit || 0).toFixed(2)}</div>
-                                </div>
-                                ${t.resolvedOutcome ? `<div style="font-size:0.7em; margin-bottom:10px; background:rgba(255,255,255,0.05); padding:4px 8px; border-radius:4px; display:inline-block; color:#cbd5e1">${t.resolvedOutcome}</div>` : ''}
-                                <div style="display: flex; justify-content: space-between; font-size: 0.75em; color: #64748b; margin-top: 5px; align-items: center;">
-                                    <span>${t.side || 'N/A'} @ $${(t.entryPrice || 0).toFixed(3)} • ${duration}m</span>
-                                    <a href="https://polymarket.com/market/${t.slug || t.eventSlug || t.marketId}" target="_blank" style="color: #94a3b8; text-decoration: none; border-bottom: 1px dashed #64748b;">VIEW</a>
-                                </div>
-                            </div>`;
-                            } catch (e) {
-                                console.error('Error rendering closed trade:', e);
-                                return '';
-                            }
-                        }).join('');
-                    }
-                }
-
                 document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
-            } catch (error) {
-                console.error('Dashboard update error:', error);
-            }
-        }
-
-        // Sound Notification System
-        let lastTradeCount = 0;
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-
-        function playNotification(type = 'trade') {
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-
-            if (type === 'trade') {
-                oscillator.frequency.value = 800;
-                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-                oscillator.start(audioContext.currentTime);
-                oscillator.stop(audioContext.currentTime + 0.3);
-            } else if (type === 'profit') {
-                oscillator.frequency.value = 1200;
-                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
-                oscillator.start(audioContext.currentTime);
-                oscillator.stop(audioContext.currentTime + 0.2);
-            } else if (type === 'loss') {
-                oscillator.frequency.value = 400;
-                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
-                oscillator.start(audioContext.currentTime);
-                oscillator.stop(audioContext.currentTime + 0.4);
-            }
+            } catch (e) { console.error(e); }
         }
 
         async function fetchRealData() {
             try {
-                const response = await fetch('/api/bot-data', {
-                    cache: 'no-store',
-                    headers: { 'Cache-Control': 'no-cache' }
-                });
-                if (response.ok) {
-                    const newData = await response.json();
-                    console.log('✅ Fetched data:', {
-                        activeTrades: newData.activeTrades?.length || 0,
-                        capital: newData.capital,
-                        totalTrades: newData.totalTrades
-                    });
-
-                    // Check for new trades and play sound
-                    if (botData.totalTrades && newData.totalTrades > botData.totalTrades) {
-                        playNotification('trade');
-                    }
-
-                    // Check for closed trades
-                    if (botData.closedTrades && newData.closedTrades.length > botData.closedTrades.length) {
-                        const latestTrade = newData.closedTrades[0];
-                        playNotification(latestTrade.profit >= 0 ? 'profit' : 'loss');
-                    }
-
-                    botData = newData;
-                    document.body.classList.remove('server-down');
+                const res = await fetch('/api/bot-data');
+                if (res.ok) {
+                    botData = await res.json();
                     updateDashboard();
-                } else {
-                    throw new Error('Server response error');
                 }
-            } catch (error) {
-                console.error('Fetch error:', error);
-                document.body.classList.add('server-down');
-            }
+            } catch (e) { console.error(e); }
         }
 
-        // Event listeners for filters
         window.onload = () => {
             initMainChart();
             fetchRealData();
-            setInterval(fetchRealData, 3000); // 3s refresh pour plus de réactivité
-
-            // Add filter event listeners
+            setInterval(fetchRealData, 3000);
             document.getElementById('searchTrades')?.addEventListener('input', updateDashboard);
             document.getElementById('filterProfit')?.addEventListener('change', updateDashboard);
-
-            console.log('🎯 Dashboard initialized - Auto-refresh every 3s');
         };
     </script>
 </body>

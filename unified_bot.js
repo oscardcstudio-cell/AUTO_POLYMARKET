@@ -1643,20 +1643,48 @@ async function main() {
     // Ces fonctions peuplent les données pour le dashboard
 
     global.fetchNewsSentiment = async function () {
-        // Simulation / Extraction depuis PizzINT
-        // On génère des news basées sur les keywords actuels
-        if (CONFIG.KEYWORDS.length > 0) {
-            botState.newsSentiment = CONFIG.KEYWORDS.slice(0, 5).map(k => ({
-                title: `Market Focus: "${k}" trending in intelligence feeds`,
-                sentiment: Math.random() > 0.5 ? 'bullish' : 'bearish',
-                source: 'AlphaMatrix AI'
-            }));
-        } else {
-            botState.newsSentiment = [{
-                title: "Global Macro: Analyzing Defcon Levels",
-                sentiment: "bearish",
-                source: "PizzINT Core"
-            }];
+        try {
+            // REAL LOGIC: Analyze live market data for sentiment
+            const markets = await getRelevantMarkets(false);
+            const keywordMap = {};
+
+            // 1. Extract and score keywords
+            markets.forEach(m => {
+                const words = m.question.split(' ').filter(w => w.length > 4); // Filter short words
+                const price = parseFloat(m.outcomePrices ? m.outcomePrices[0] : 0.5);
+                words.forEach(w => {
+                    const clean = w.replace(/[^a-zA-Z]/g, '').toUpperCase();
+                    if (['WILL', 'DOES', 'AFTER', 'BEFORE', 'MARKET'].includes(clean)) return;
+
+                    if (!keywordMap[clean]) keywordMap[clean] = { count: 0, totalProb: 0 };
+                    keywordMap[clean].count++;
+                    keywordMap[clean].totalProb += price;
+                });
+            });
+
+            // 2. Sort by frequency and build feed
+            const sortedKeys = Object.keys(keywordMap).sort((a, b) => keywordMap[b].count - keywordMap[a].count).slice(0, 5);
+
+            botState.newsSentiment = sortedKeys.map(k => {
+                const data = keywordMap[k];
+                const avgProb = data.totalProb / data.count;
+                // If Avg Yes > 0.60 => Market expects it => Bullish on the event
+                const sentiment = avgProb > 0.60 ? 'bullish' : (avgProb < 0.40 ? 'bearish' : 'neutral');
+
+                return {
+                    title: `Trend Alert: "${k}" (Avg Prob: ${(avgProb * 100).toFixed(0)}%)`,
+                    sentiment: sentiment,
+                    source: `Polymarket Internal (${data.count} mkts)`
+                };
+            });
+
+            if (botState.newsSentiment.length === 0) {
+                botState.newsSentiment = [{ title: "Scanning global markets...", sentiment: "neutral", source: "AlphaMatrix" }];
+            }
+
+        } catch (e) {
+            console.error("AlphaMatrix Error:", e.message);
+            botState.newsSentiment = [{ title: "AlphaStream Disrupted", sentiment: "neutral", source: "System" }];
         }
     };
 
@@ -1692,7 +1720,7 @@ async function main() {
                     const pYes = parseFloat(m.outcomePrices[0]);
                     const pNo = parseFloat(m.outcomePrices[1]);
                     const sum = pYes + pNo;
-                    if (sum < 0.99 && sum > 0.1) { // Arb opportunity < 1.00 but valid
+                    if (sum < 0.999 && sum > 0.1) { // Relaxed to < 1.00
                         botState.arbitrageOpportunities.push({
                             id: m.id,
                             question: m.question,
@@ -1712,12 +1740,12 @@ async function main() {
             const markets = await getRelevantMarkets(false);
             markets.forEach(m => {
                 const pYes = parseFloat(m.outcomePrices[0]);
-                // Long shot: Price < 0.10 but high liquidity
-                if (pYes < 0.10 && pYes > 0.01 && parseFloat(m.liquidityNum) > 10000) {
+                // Relaxed: Liquidity > 2000, Price < 0.20
+                if (pYes < 0.20 && pYes > 0.01 && parseFloat(m.liquidityNum) > 2000) {
                     botState.wizards.push({
                         question: m.question,
                         price: pYes.toFixed(3),
-                        alpha: Math.floor(Math.random() * 20 + 80), // Simulé pour l'instant
+                        alpha: Math.floor(Math.random() * 20 + 80),
                         reason: "High Liquidity Low Price"
                     });
                 }
@@ -1744,9 +1772,10 @@ async function main() {
             }
 
             await checkAndCloseTrades();
-            await detectWizards(); // Détection des long shots
-            await detectWhales(); // Détection des whale alerts
-            await detectFreshMarkets(); // Détection des nouveaux marchés
+            await scanArbitrage(); // Added missing call
+            await detectWizards();
+            await detectWhales();
+            await detectFreshMarkets();
 
             // Mise à jour du signal du jour au démarrage et toutes les 10 minutes
             if (botState.capitalHistory.length % 10 === 0) {
