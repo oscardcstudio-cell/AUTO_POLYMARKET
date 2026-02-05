@@ -2032,3 +2032,5 @@ async function runTurboMode() {
 // runTurboMode(); // Lancement en parallèle (DISABLED by User Request)
 
 // --- END OF MAIN LOGIC ---
+
+main(); // Start the bot 🚀
