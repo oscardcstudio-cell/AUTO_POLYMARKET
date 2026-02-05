@@ -1047,6 +1047,12 @@ function calculateAlphaScore(market, pizzaData) {
             score *= 1.2;
             reasons.push(`Index bas ${pizzaData.index} × 1.2`);
         }
+    } else {
+        // Fallback si PizzINT est offline
+        if (category === 'geopolitical' || category === 'economic') {
+            score += 20; // Bonus conservateur par défaut
+            reasons.push('PizzINT Offline: Bonus Catégorie (+20)');
+        }
     }
 
     // 6. Pénalité sports (sauf si vraiment pertinent)
@@ -1852,16 +1858,21 @@ async function main() {
             markets.forEach(m => {
                 const pYes = parseFloat(m.outcomePrices[0]);
                 // Relaxed: Liquidity > 2000, Price < 0.20
-                if (pYes < 0.20 && pYes > 0.01 && parseFloat(m.liquidityNum) > 2000) {
-                    botState.wizards.push({
-                        question: m.question,
-                        price: pYes.toFixed(3),
-                        alpha: Math.floor(Math.random() * 20 + 80),
-                        reason: "High Liquidity Low Price"
-                    });
+                if (parseFloat(m.outcomePrices[0]) < 0.20 && parseFloat(m.outcomePrices[0]) > 0.01 && parseFloat(m.liquidityNum) > 2000) {
+                    const alpha = calculateAlphaScore(m, botState.lastPizzaData); // Use centralized Alpha logic
+                    if (alpha > 50) {
+                        botState.wizards.push({
+                            id: m.id,
+                            slug: m.slug,
+                            question: m.question,
+                            price: parseFloat(m.outcomePrices[0]).toFixed(3),
+                            alpha: alpha,
+                            reason: `High Alpha (${alpha}%)`
+                        });
+                    }
                 }
             });
-            botState.wizards = botState.wizards.slice(0, 3);
+            botState.wizards = botState.wizards.sort((a, b) => b.alpha - a.alpha).slice(0, 3);
         } catch (e) { console.error("Wizard Scan Error:", e.message); }
     };
 
