@@ -17,10 +17,13 @@
 
 1. Allez dans **Railway** → Votre projet **AUTO_POLYMARKET**
 2. **Settings** → **Variables** (ou Environment)
-3. **Ajoutez une nouvelle variable**:
    - **Nom**: `GH_TOKEN`
    - **Valeur**: `votre_token_github_copié`
-4. **Sauvegardez**
+4. **(Optionnel) Ajoutez une variable pour le repo** :
+   - Si votre repo ne s'appelle pas `Auto_Polymarket`, ajoutez :
+   - **Nom**: `GH_REPO`
+   - **Valeur**: `NomDeVotreRepo`
+5. **Sauvegardez**
 
 ---
 

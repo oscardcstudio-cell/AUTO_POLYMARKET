@@ -7,7 +7,7 @@ import fs from 'fs';
 import path from 'path';
 import express from 'express';
 import { fileURLToPath } from 'url';
-import { execSync } from 'child_process';
+// execSync removed - using GitHub API instead
 
 // Import new API modules
 import { getBestExecutionPrice, getCLOBOrderBook, checkCLOBHealth } from './clob_api.js';
@@ -1522,32 +1522,84 @@ function displayStatus() {
 
 // --- GITHUB AUTO-SYNC (Persistence sur Railway) ---
 
+// --- GITHUB AUTO-SYNC (API Version) ---
+
 async function syncDataToGitHub() {
     try {
-        // Vérifier si on est sur Railway (sinon skip)
-        if (!process.env.PORT) {
-            return; // Local mode, pas besoin de sync
+        const token = process.env.GH_TOKEN;
+        if (!token) {
+            if (process.env.PORT) console.log('⚠️ GitHub Sync Skipped: GH_TOKEN not set');
+            return;
         }
 
-        // Sauvegarder l'état actuel
-        saveState();
+        // 1. Get User & Repo Info
+        const repoName = process.env.GH_REPO || 'Auto_Polymarket';
 
-        // Git operations
-        execSync('git config user.email "bot@polymarket.auto"', { stdio: 'ignore' });
-        execSync('git config user.name "Polymarket Bot"', { stdio: 'ignore' });
-        execSync('git add bot_data.json', { stdio: 'ignore' });
+        let owner = process.env.GH_OWNER;
+        if (!owner) {
+            const userResp = await fetchWithRetry('https://api.github.com/user', {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Accept': 'application/vnd.github.v3+json'
+                }
+            });
+            if (!userResp.ok) throw new Error('Failed to fetch GitHub user');
+            const userData = await userResp.json();
+            owner = userData.login;
+        }
 
+        // 2. Get Data & Current SHA
+        saveState(); // Ensure file is up to date
+        const content = fs.readFileSync(CONFIG.DATA_FILE, 'utf8');
+        const contentBase64 = Buffer.from(content).toString('base64');
+        const path = CONFIG.DATA_FILE;
+
+        const fileUrl = `https://api.github.com/repos/${owner}/${repoName}/contents/${path}`;
+
+        // Get current SHA (if file exists)
+        let sha = null;
         try {
-            execSync('git commit -m "Auto-save: Capital $' + botState.capital.toFixed(2) + ' | Trades: ' + botState.activeTrades.length + '"', { stdio: 'ignore' });
-            execSync('git push origin main', { stdio: 'ignore' });
-            addLog('💾 Données sauvegardées sur GitHub', 'info');
-        } catch (e) {
-            // Pas de changements à commit (normal)
+            const getResp = await fetchWithRetry(fileUrl, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Accept': 'application/vnd.github.v3+json'
+                }
+            });
+            if (getResp.ok) {
+                const fileData = await getResp.json();
+                sha = fileData.sha;
+            }
+        } catch (e) { } // File might not exist yet
+
+        // 3. Update File
+        const body = {
+            message: `Auto-save: Capital $${botState.capital.toFixed(2)} | Trades: ${botState.activeTrades.length}`,
+            content: contentBase64,
+            branch: 'main'
+        };
+        if (sha) body.sha = sha;
+
+        const putResp = await fetchWithRetry(fileUrl, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/vnd.github.v3+json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body)
+        });
+
+        if (putResp.ok) {
+            addLog('💾 Données sauvegardées sur GitHub (API)', 'info');
+        } else {
+            const err = await putResp.json();
+            throw new Error(`GitHub API Error: ${err.message}`);
         }
+
     } catch (error) {
-        // Échec silencieux (éviter de spammer les logs)
-        if (Math.random() < 0.1) { // Log 10% du temps
-            console.error('GitHub sync skip:', error.message);
+        // Silencieux pour ne pas polluer les logs (sauf erreur critique)
+        if (Math.random() < 0.1) {
+            console.error('GitHub Sync Error:', error.message);
         }
     }
 }
