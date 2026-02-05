@@ -1524,6 +1524,69 @@ function displayStatus() {
 
 // --- GITHUB AUTO-SYNC (API Version) ---
 
+async function loadDataFromGitHub() {
+    try {
+        if (!process.env.PORT) return; // Skip in local/dev mode unless forced manually
+
+        const token = process.env.GH_TOKEN;
+        if (!token) {
+            console.log('⚠️ GitHub Load Skipped: GH_TOKEN not set');
+            return;
+        }
+
+        const repoName = process.env.GH_REPO || 'Auto_Polymarket';
+        let owner = process.env.GH_OWNER;
+
+        // 1. Get Owner if needed
+        if (!owner) {
+            const userResp = await fetchWithRetry('https://api.github.com/user', {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Accept': 'application/vnd.github.v3+json'
+                }
+            });
+            if (!userResp.ok) throw new Error('Failed to fetch GitHub user');
+            const userData = await userResp.json();
+            owner = userData.login;
+        }
+
+        // 2. Fetch File Content
+        const path = CONFIG.DATA_FILE;
+        const fileUrl = `https://api.github.com/repos/${owner}/${repoName}/contents/${path}`;
+
+        console.log(`📥 Downloading latest state from GitHub (${owner}/${repoName})...`);
+
+        const resp = await fetchWithRetry(fileUrl, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        });
+
+        if (!resp.ok) {
+            if (resp.status === 404) {
+                console.log('⚠️ No bot_data.json found on GitHub (First run?)');
+                return;
+            }
+            throw new Error(`GitHub API Error: ${resp.statusText}`);
+        }
+
+        const data = await resp.json();
+        if (data.content) {
+            const content = Buffer.from(data.content, 'base64').toString('utf8');
+            // Basic validation to ensure it's valid JSON
+            JSON.parse(content);
+            fs.writeFileSync(CONFIG.DATA_FILE, content);
+            console.log('✅ State successfully restored from GitHub');
+        }
+
+    } catch (error) {
+        console.error('❌ Error loading from GitHub:', error.message);
+    }
+}
+
+// --- GITHUB AUTO-SYNC (API Version) ---
+
 async function syncDataToGitHub() {
     try {
         const token = process.env.GH_TOKEN;
@@ -1615,9 +1678,10 @@ async function main() {
         if (isRailway) console.log(`🌐 Running on Railway - Public URL should be accessible`);
     });
 
-    loadState();
+    // Tenter de récupérer le dernier état sauvegardé sur GitHub (si sur Railway)
+    await loadDataFromGitHub();
 
-    // ... (rest of the logic)
+    loadState();
 
     // Initialisation immédiate du premier signal
     const initialPizza = await getPizzaData();
