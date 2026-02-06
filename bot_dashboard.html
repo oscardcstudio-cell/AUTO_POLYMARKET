@@ -480,6 +480,15 @@
             </div>
         </div>
 
+        <!-- LIVE LOGS SECTION (Restored) -->
+        <div class="chart-section" style="margin-top: 30px; border-color: rgba(255, 255, 255, 0.1);">
+            <div class="stat-label">📜 Live System Logs</div>
+            <div id="systemLogs"
+                style="height: 200px; overflow-y: auto; font-family: monospace; font-size: 0.8em; margin-top: 15px; color: #cbd5e1; display: flex; flex-direction: column; gap: 5px;">
+                <div class="empty-state">Waiting for system events...</div>
+            </div>
+        </div>
+
         <!-- History with Filters -->
         <div class="section-title"
             style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
@@ -600,62 +609,71 @@
             try {
                 if (!botData || !botData.capital) return;
 
-                // Stats
-                document.getElementById('totalCapital').textContent = `$${botData.capital.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
-                document.getElementById('profit').textContent = `$${(botData.profit || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
-                document.getElementById('profit').className = 'stat-value ' + ((botData.profit || 0) >= 0 ? 'positive' : 'negative');
-                document.getElementById('profitPercent').textContent = botData.profitPercent || '0';
+                // --- 1. STATISTICS ---
+                try {
 
-                const winRate = ((botData.winningTrades / (botData.winningTrades + botData.losingTrades)) * 100) || 0;
-                document.getElementById('winRate').textContent = `${winRate.toFixed(1)}%`;
-                document.getElementById('winningTrades').textContent = botData.winningTrades || 0;
-                document.getElementById('losingTrades').textContent = botData.losingTrades || 0;
-                const moneySpent = (botData.activeTrades || []).reduce((sum, t) => sum + t.size, 0);
-                document.getElementById('moneySpent').textContent = `$${moneySpent.toLocaleString()}`;
+                    document.getElementById('totalCapital').textContent = `$${botData.capital.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+                    document.getElementById('profit').textContent = `$${(botData.profit || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+                    document.getElementById('profit').className = 'stat-value ' + ((botData.profit || 0) >= 0 ? 'positive' : 'negative');
+                    document.getElementById('profitPercent').textContent = botData.profitPercent || '0';
 
-                // Performance Analytics
-                if (botData.closedTrades && botData.closedTrades.length > 0) {
-                    const profits = botData.closedTrades.map(t => t.profit || 0);
-                    const avgProfit = profits.reduce((a, b) => a + b, 0) / profits.length;
-                    const largestWin = Math.max(...profits);
-                    const largestLoss = Math.min(...profits);
+                    const winRate = ((botData.winningTrades / (botData.winningTrades + botData.losingTrades)) * 100) || 0;
+                    document.getElementById('winRate').textContent = `${winRate.toFixed(1)}%`;
+                    document.getElementById('winningTrades').textContent = botData.winningTrades || 0;
+                    document.getElementById('losingTrades').textContent = botData.losingTrades || 0;
+                    const moneySpent = (botData.activeTrades || []).reduce((sum, t) => sum + t.size, 0);
+                    document.getElementById('moneySpent').textContent = `$${moneySpent.toLocaleString()}`;
+                } catch (e) { console.error("Stats Error:", e); }
 
-                    document.getElementById('avgProfit').textContent = `$${avgProfit.toFixed(2)}`;
-                    document.getElementById('avgProfit').style.color = avgProfit >= 0 ? '#4ade80' : '#f87171';
-                    document.getElementById('largestWin').textContent = `$${largestWin.toFixed(2)}`;
-                    document.getElementById('largestLoss').textContent = `$${largestLoss.toFixed(2)}`;
+                // --- 2. PERFORMANCE ANALYTICS ---
+                try {
+                    if (botData.closedTrades && botData.closedTrades.length > 0) {
+                        const profits = botData.closedTrades.map(t => t.profit || 0);
+                        const avgProfit = profits.reduce((a, b) => a + b, 0) / profits.length;
+                        const largestWin = Math.max(...profits);
+                        const largestLoss = Math.min(...profits);
 
-                    // Duration
-                    const durations = botData.closedTrades.filter(t => t.closedAt && t.timestamp).map(t => (new Date(t.closedAt) - new Date(t.timestamp)) / 1000 / 60);
-                    const avgDuration = durations.length > 0 ? durations.reduce((a, b) => a + b, 0) / durations.length : 0;
-                    document.getElementById('avgDuration').textContent = avgDuration >= 60 ? `${(avgDuration / 60).toFixed(1)}h` : `${avgDuration.toFixed(0)}m`;
-                }
+                        document.getElementById('avgProfit').textContent = `$${avgProfit.toFixed(2)}`;
+                        document.getElementById('avgProfit').style.color = avgProfit >= 0 ? '#4ade80' : '#f87171';
+                        document.getElementById('largestWin').textContent = `$${largestWin.toFixed(2)}`;
+                        document.getElementById('largestLoss').textContent = `$${largestLoss.toFixed(2)}`;
 
-                // Pizza/Defcon
-                document.getElementById('pizzaIndex').textContent = botData.lastPizzaData?.index || 0;
-                const defLevel = botData.lastPizzaData?.defcon || 5;
-                const defEl = document.getElementById('defconLevel');
-                defEl.textContent = `DEFCON ${defLevel}`;
-                defEl.className = `defcon-badge defcon-${defLevel}`;
+                        // Duration
+                        const durations = botData.closedTrades.filter(t => t.closedAt && t.timestamp).map(t => (new Date(t.closedAt) - new Date(t.timestamp)) / 1000 / 60);
+                        const avgDuration = durations.length > 0 ? durations.reduce((a, b) => a + b, 0) / durations.length : 0;
+                        document.getElementById('avgDuration').textContent = avgDuration >= 60 ? `${(avgDuration / 60).toFixed(1)}h` : `${avgDuration.toFixed(0)}m`;
+                    }
 
-                // Main Chart
-                if (botData.capitalHistory && mainChart) {
-                    mainChart.data.labels = botData.capitalHistory.map(h => h.t);
-                    mainChart.data.datasets[0].data = botData.capitalHistory.map(h => h.v);
-                    mainChart.update();
-                }
+                    // Pizza/Defcon
+                    document.getElementById('pizzaIndex').textContent = botData.lastPizzaData?.index || 0;
+                    const defLevel = botData.lastPizzaData?.defcon || 5;
+                    const defEl = document.getElementById('defconLevel');
+                    defEl.textContent = `DEFCON ${defLevel}`;
+                    defEl.className = `defcon-badge defcon-${defLevel}`;
+                } catch (e) { console.error("Analytics/Defcon Error:", e); }
 
-                // Active Trades
-                const activeList = document.getElementById('activeTradesList');
-                if (!botData.activeTrades || botData.activeTrades.length === 0) {
-                    activeList.innerHTML = '<div class="empty-state">SCANNING MARKET DEPTH FOR ANOMALIES...</div>';
-                } else {
-                    activeList.innerHTML = botData.activeTrades.map(t => {
-                        const current = t.priceHistory ? t.priceHistory[t.priceHistory.length - 1] : t.entryPrice;
-                        const diff = t.entryPrice > 0 ? ((current - t.entryPrice) / t.entryPrice * 100) : 0;
-                        const color = diff >= 0 ? '#4ade80' : '#f87171';
+                // --- 3. MAIN CHART ---
+                try {
+                    if (botData.capitalHistory && mainChart) {
+                        mainChart.data.labels = botData.capitalHistory.map(h => h.t);
+                        mainChart.data.datasets[0].data = botData.capitalHistory.map(h => h.v);
+                        mainChart.update();
+                    }
 
-                        return `
+                } catch (e) { console.error("Chart Error:", e); }
+
+                // --- 4. ACTIVE TRADES ---
+                try {
+                    const activeList = document.getElementById('activeTradesList');
+                    if (!botData.activeTrades || botData.activeTrades.length === 0) {
+                        activeList.innerHTML = '<div class="empty-state">SCANNING MARKET DEPTH FOR ANOMALIES...</div>';
+                    } else {
+                        activeList.innerHTML = botData.activeTrades.map(t => {
+                            const current = t.priceHistory ? t.priceHistory[t.priceHistory.length - 1] : t.entryPrice;
+                            const diff = t.entryPrice > 0 ? ((current - t.entryPrice) / t.entryPrice * 100) : 0;
+                            const color = diff >= 0 ? '#4ade80' : '#f87171';
+
+                            return `
                         <div class="trade-card">
                             <div style="display:flex; justify-content:space-between; margin-bottom:15px">
                                 <div style="font-weight:700">${t.question}</div>
@@ -668,28 +686,30 @@
                                 <div><div style="font-size:0.6em">PnL</div><div style="color:${color}">${diff >= 0 ? '+' : ''}${diff.toFixed(1)}%</div></div>
                             </div>
                         </div>`;
-                    }).join('');
+                        }).join('');
 
-                    botData.activeTrades.forEach(t => {
-                        const diff = (t.priceHistory ? t.priceHistory[t.priceHistory.length - 1] : t.entryPrice) - t.entryPrice;
-                        createMiniChart(t.id, t.priceHistory || [t.entryPrice], t.entryPrice, diff >= 0 ? '#4ade80' : '#f87171');
-                    });
-                }
+                        botData.activeTrades.forEach(t => {
+                            const diff = (t.priceHistory ? t.priceHistory[t.priceHistory.length - 1] : t.entryPrice) - t.entryPrice;
+                            createMiniChart(t.id, t.priceHistory || [t.entryPrice], t.entryPrice, diff >= 0 ? '#4ade80' : '#f87171');
+                        });
+                    }
+                } catch (e) { console.error("Active Trades Error:", e); }
 
-                // Whales
-                const whaleList = document.getElementById('whaleAlertsList');
-                if (botData.whaleAlerts && botData.whaleAlerts.length > 0) {
-                    whaleList.innerHTML = botData.whaleAlerts.slice(0, 4).map(a => `
+                // --- 5. WHALES ---
+                try {
+                    const whaleList = document.getElementById('whaleAlertsList');
+                    if (botData.whaleAlerts && botData.whaleAlerts.length > 0) {
+                        whaleList.innerHTML = botData.whaleAlerts.slice(0, 4).map(a => `
                     <div style="margin-bottom:10px; padding:10px; background:rgba(59,130,246,0.1); border-radius:10px; border-left:3px solid #3b82f6;">
                         <div style="font-weight:700; font-size:0.9em">${a.question}</div>
                         <div style="font-size:0.8em; color:#94a3b8; margin-top:5px">VOL: $${parseFloat(a.volume).toLocaleString()}</div>
                     </div>`).join('');
-                } else { whaleList.innerHTML = '<div class="empty-state">Watching order books...</div>'; }
+                    } else { whaleList.innerHTML = '<div class="empty-state">Watching order books...</div>'; }
 
-                // Wizards
-                const wizardList = document.getElementById('wizardList');
-                if (botData.wizards && botData.wizards.length > 0) {
-                    wizardList.innerHTML = botData.wizards.slice(0, 3).map(w => `
+                    // Wizards
+                    const wizardList = document.getElementById('wizardList');
+                    if (botData.wizards && botData.wizards.length > 0) {
+                        wizardList.innerHTML = botData.wizards.slice(0, 3).map(w => `
                     <div style="margin-bottom:10px; padding:10px; background:rgba(139,92,246,0.1); border-radius:10px; border-left:3px solid #8b5cf6;">
                         <div style="font-weight:700; font-size:0.9em">${w.question}</div>
                          <div style="display:flex; justify-content:space-between; margin-top:5px; font-size:0.8em">
@@ -697,22 +717,22 @@
                             <span style="color:#a78bfa">ALPHA: ${w.alpha}%</span>
                         </div>
                     </div>`).join('');
-                } else { wizardList.innerHTML = '<div class="empty-state">No wizards detected.</div>'; }
+                    } else { wizardList.innerHTML = '<div class="empty-state">No wizards detected.</div>'; }
 
-                // History
-                const closedList = document.getElementById('closedTradesList');
-                if (botData.closedTrades.length > 0) {
-                    const searchTerm = document.getElementById('searchTrades')?.value.toLowerCase() || '';
-                    const profitFilter = document.getElementById('filterProfit')?.value || 'all';
+                    // History
+                    const closedList = document.getElementById('closedTradesList');
+                    if (botData.closedTrades.length > 0) {
+                        const searchTerm = document.getElementById('searchTrades')?.value.toLowerCase() || '';
+                        const profitFilter = document.getElementById('filterProfit')?.value || 'all';
 
-                    const filtered = botData.closedTrades.filter(t => {
-                        const matchSearch = t.question.toLowerCase().includes(searchTerm);
-                        const matchProfit = profitFilter === 'all' || (profitFilter === 'profit' && t.profit >= 0) || (profitFilter === 'loss' && t.profit < 0);
-                        return matchSearch && matchProfit;
-                    });
+                        const filtered = botData.closedTrades.filter(t => {
+                            const matchSearch = t.question.toLowerCase().includes(searchTerm);
+                            const matchProfit = profitFilter === 'all' || (profitFilter === 'profit' && t.profit >= 0) || (profitFilter === 'loss' && t.profit < 0);
+                            return matchSearch && matchProfit;
+                        });
 
-                    if (filtered.length > 0) {
-                        closedList.innerHTML = filtered.slice(0, 12).map(t => `
+                        if (filtered.length > 0) {
+                            closedList.innerHTML = filtered.slice(0, 12).map(t => `
                          <div class="trade-card" style="opacity:0.8">
                             <div style="display:flex; justify-content:space-between">
                                 <div style="font-weight:700; font-size:0.9em; max-width:70%">${t.question.substring(0, 60)}...</div>
@@ -720,23 +740,41 @@
                             </div>
                             <div style="font-size:0.8em; color:#94a3b8; margin-top:5px">${t.side} @ $${t.entryPrice.toFixed(3)}</div>
                          </div>`).join('');
-                    } else { closedList.innerHTML = '<div class="empty-state">No matching trades.</div>'; }
-                } else { closedList.innerHTML = '<div class="empty-state">No history recorded.</div>'; }
+                        } else { closedList.innerHTML = '<div class="empty-state">No matching trades.</div>'; }
+                    } else { closedList.innerHTML = '<div class="empty-state">No history recorded.</div>'; }
 
-                // Sectors
-                if (botData.sectorStats) {
-                    Object.keys(botData.sectorStats).forEach(s => {
-                        const el = document.getElementById(`sector-${s}`);
-                        if (el) {
-                            el.querySelector('.sector-count').textContent = `${botData.sectorStats[s].count} ACTIVE`;
-                            const feed = el.querySelector('.sector-feed');
-                            const acts = (botData.sectorActivity || {})[s] || [];
-                            if (feed && acts.length > 0) {
-                                feed.innerHTML = acts.slice(0, 5).map(e => `<div style="font-size:0.8em; margin-bottom:5px; color:#cbd5e1">- ${e.message}</div>`).join('');
+                    // Sectors
+                    if (botData.sectorStats) {
+                        Object.keys(botData.sectorStats).forEach(s => {
+                            const el = document.getElementById(`sector-${s}`);
+                            if (el) {
+                                el.querySelector('.sector-count').textContent = `${botData.sectorStats[s].count} ACTIVE`;
+                                const feed = el.querySelector('.sector-feed');
+                                const acts = (botData.sectorActivity || {})[s] || [];
+                                if (feed && acts.length > 0) {
+                                    feed.innerHTML = acts.slice(0, 5).map(e => `<div style="font-size:0.8em; margin-bottom:5px; color:#cbd5e1">- ${e.message}</div>`).join('');
+                                }
                             }
-                        }
-                    });
-                }
+                        });
+                    }
+                } catch (e) { console.error("Sector Error:", e); }
+
+                // --- 9. LOGS (Restored) ---
+                try {
+                    const logsList = document.getElementById('systemLogs');
+                    if (logsList && botData.logs && botData.logs.length > 0) {
+                        logsList.innerHTML = botData.logs.map(l => {
+                            let color = '#94a3b8'; // info
+                            if (l.type === 'success') color = '#4ade80';
+                            if (l.type === 'warning') color = '#f87171';
+                            if (l.type === 'error') color = '#ef4444';
+                            return `<div style="border-left: 2px solid ${color}; padding-left: 10px;">
+                                <span style="color: #64748b; margin-right: 10px;">[${new Date(l.timestamp).toLocaleTimeString()}]</span>
+                                <span style="color: ${color}">${l.message}</span>
+                             </div>`;
+                        }).join('');
+                    }
+                } catch (e) { console.error("Logs Error:", e); }
 
                 document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
             } catch (e) { console.error(e); }
