@@ -40,7 +40,9 @@ const CONFIG = {
     FALLBACK_KEYWORDS: ['War', 'Strike', 'Election', 'Bitcoin', 'Economy'], // Fallback si aucune extraction
     DATA_FILE: DATA_FILE_PATH,
     PORT: process.env.PORT || 3000,
-    KEYWORD_UPDATE_INTERVAL: 60 * 60 * 1000 // 1 heure
+    KEYWORD_UPDATE_INTERVAL: 60 * 60 * 1000, // 1 heure
+    TAKE_PROFIT_PERCENT: 0.20, // 20% Gain (Lowered from 25% to secure wins faster)
+    STOP_LOSS_PERCENT: 0.15 // 15% Loss
 };
 
 // --- ÉTAT DU BOT ---
@@ -1339,8 +1341,8 @@ async function checkAndCloseTrades() {
             // --- ACTIVE MANAGEMENT (TP/SL) ---
             const currentReturn = (realPrice - trade.entryPrice) / trade.entryPrice;
 
-            // TAKE PROFIT: +25%
-            if (currentReturn >= 0.25) {
+            // TAKE PROFIT: Configurable
+            if (currentReturn >= CONFIG.TAKE_PROFIT_PERCENT) {
                 await executeSell(trade, realPrice, '✅ TAKE PROFIT');
                 botState.activeTrades.splice(i, 1);
                 saveState();
@@ -1349,8 +1351,8 @@ async function checkAndCloseTrades() {
                 continue; // Trade closed, skip simple checks
             }
 
-            // STOP LOSS: -15%
-            if (currentReturn <= -0.15) {
+            // STOP LOSS: Configurable
+            if (currentReturn <= -CONFIG.STOP_LOSS_PERCENT) {
                 await executeSell(trade, realPrice, '🛡️ STOP LOSS');
                 botState.activeTrades.splice(i, 1);
                 saveState();
