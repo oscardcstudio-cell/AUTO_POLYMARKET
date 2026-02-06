@@ -1302,7 +1302,8 @@ function simulateTrade(market, pizzaData, isFreshMarket = false) {
         status: 'OPEN',
         priceHistory: [effectiveEntryPrice],
         category: category, // Stocker la catégorie
-        alphaScore: market._alphaScore || 0 // Stocker le score
+        alphaScore: market._alphaScore || 0, // Stocker le score
+        maxPrice: effectiveEntryPrice // 🌊 High Water Mark Init
     };
 
     botState.activeTrades.push(trade);
@@ -1338,22 +1339,41 @@ async function checkAndCloseTrades() {
             trade.priceHistory.push(realPrice);
             if (trade.priceHistory.length > 20) trade.priceHistory.shift();
 
-            // --- ACTIVE MANAGEMENT (TP/SL) ---
+            trade.maxPrice = Math.max(trade.maxPrice || trade.entryPrice, realPrice);
             const currentReturn = (realPrice - trade.entryPrice) / trade.entryPrice;
+            const maxReturn = (trade.maxPrice - trade.entryPrice) / trade.entryPrice;
 
-            // TAKE PROFIT: Configurable
-            if (currentReturn >= CONFIG.TAKE_PROFIT_PERCENT) {
-                await executeSell(trade, realPrice, '✅ TAKE PROFIT');
-                botState.activeTrades.splice(i, 1);
-                saveState();
-                // 💾 SYNC
-                syncDataToGitHub().catch(e => console.error('Auto-Sync failed:', e.message));
-                continue; // Trade closed, skip simple checks
+            // --- STRATÉGIE "ESCALIER DE SÉCURITÉ" (Dynamic Trailing Stop) ---
+            let dynamicStopPrice = 0;
+
+            // 1. Niveau Initial (SL classique -15%)
+            let requiredStopPercent = -0.15;
+
+            // 2. Niveau Breakeven (Si Gain > 10% => SL @ 0%)
+            if (maxReturn >= 0.10) {
+                requiredStopPercent = 0.00; // Breakeven
             }
 
-            // STOP LOSS: Configurable
-            if (currentReturn <= -CONFIG.STOP_LOSS_PERCENT) {
-                await executeSell(trade, realPrice, '🛡️ STOP LOSS');
+            // 3. Niveau Sécurisation (Si Gain > 20% => SL @ +10%)
+            if (maxReturn >= 0.20) {
+                requiredStopPercent = 0.10; // Secure 10%
+            }
+
+            // 4. Niveau Trailing (Si Gain > 20% => SL suit à 5% de distance du Max)
+            // On prend le plus haut entre le "Secure 10%" et le "Max - 5%"
+            if (maxReturn >= 0.20) {
+                const trailingLevel = maxReturn - 0.05;
+                if (trailingLevel > requiredStopPercent) requiredStopPercent = trailingLevel;
+            }
+
+            // Calcul du prix de stop absolu
+            dynamicStopPrice = trade.entryPrice * (1 + requiredStopPercent);
+
+            // VÉRIFICATION DE LA SORTIE
+            // On vend si le prix ACTUEL passe SOUS le Stop Dynamique
+            if (realPrice <= dynamicStopPrice) {
+                const reason = currentReturn > 0 ? '✅ TRAILING STOP (PROFIT)' : '🛡️ STOP LOSS';
+                await executeSell(trade, realPrice, reason);
                 botState.activeTrades.splice(i, 1);
                 saveState();
                 // 💾 SYNC
