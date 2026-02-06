@@ -23,6 +23,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // --- CONFIGURATION ---
+// Auto-detect Railway Volume Path
+const VOLUME_PATH = process.env.RAILWAY_VOLUME_MOUNT_PATH || process.env.STORAGE_PATH;
+const DATA_FILE_PATH = VOLUME_PATH ? path.join(VOLUME_PATH, 'bot_data.json') : path.join(__dirname, 'bot_data.json');
+
 const CONFIG = {
     STARTING_CAPITAL: 1000,
     POLL_INTERVAL_MINUTES: 1,
@@ -34,7 +38,7 @@ const CONFIG = {
     MAX_ACTIVE_TRADES: 10, // Increased cap
     KEYWORDS: [], // Sera rempli dynamiquement
     FALLBACK_KEYWORDS: ['War', 'Strike', 'Election', 'Bitcoin', 'Economy'], // Fallback si aucune extraction
-    DATA_FILE: process.env.STORAGE_PATH || path.join(__dirname, 'bot_data.json'),
+    DATA_FILE: DATA_FILE_PATH,
     PORT: process.env.PORT || 3000,
     KEYWORD_UPDATE_INTERVAL: 60 * 60 * 1000 // 1 heure
 };
@@ -1310,6 +1314,9 @@ function simulateTrade(market, pizzaData, isFreshMarket = false) {
     logTradeDecision(market, trade, decisionReasons, pizzaData);
 
     saveState();
+    // 💾 SYNC GITHUB IMMEDIATEMENT (Persistance Critique)
+    syncDataToGitHub().catch(e => console.error('Auto-Sync failed:', e.message));
+
     return trade;
 }
 
@@ -1337,6 +1344,8 @@ async function checkAndCloseTrades() {
                 await executeSell(trade, realPrice, '✅ TAKE PROFIT');
                 botState.activeTrades.splice(i, 1);
                 saveState();
+                // 💾 SYNC
+                syncDataToGitHub().catch(e => console.error('Auto-Sync failed:', e.message));
                 continue; // Trade closed, skip simple checks
             }
 
@@ -1345,6 +1354,8 @@ async function checkAndCloseTrades() {
                 await executeSell(trade, realPrice, '🛡️ STOP LOSS');
                 botState.activeTrades.splice(i, 1);
                 saveState();
+                // 💾 SYNC
+                syncDataToGitHub().catch(e => console.error('Auto-Sync failed:', e.message));
                 continue;
             }
 
@@ -1370,6 +1381,8 @@ async function checkAndCloseTrades() {
                         botState.closedTrades = botState.closedTrades.slice(0, 50);
                     }
                     saveState();
+                    // 💾 SYNC
+                    syncDataToGitHub().catch(e => console.error('Auto-Sync failed:', e.message));
                 }
                 // Si résolution === null, le marché n'est pas encore résolu (on attend)
             } catch (e) {
@@ -1682,6 +1695,15 @@ async function main() {
     app.listen(CONFIG.PORT, HOST, () => {
         console.log(`\n🚀 DASHBOARD DISPONIBLE SUR: http://${HOST}:${CONFIG.PORT}`);
         if (isRailway) console.log(`🌐 Running on Railway - Public URL should be accessible`);
+        console.log(`💾 PERSISTENCE PATH: ${CONFIG.DATA_FILE}`);
+
+        if (process.env.RAILWAY_VOLUME_MOUNT_PATH) {
+            console.log(`✅ Auto-Detected Railway Volume: ${process.env.RAILWAY_VOLUME_MOUNT_PATH}`);
+        } else if (process.env.STORAGE_PATH) {
+            console.log(`✅ Using Custom Storage Path: ${process.env.STORAGE_PATH}`);
+        } else {
+            console.log(`⚠️ No Volume/Storage Path detected - using local ephemeral storage`);
+        }
     });
 
     // Tenter de récupérer le dernier état sauvegardé sur GitHub (si sur Railway)
