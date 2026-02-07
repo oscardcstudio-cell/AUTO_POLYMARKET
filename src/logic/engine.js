@@ -277,7 +277,15 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
             decisionReasons.push(`Prix moyen NO: ${noPrice.toFixed(3)}`);
         }
     }
-    else {
+    // --- FINAL FALLBACK FOR VERIFICATION ---
+    if (isTest && !side) {
+        side = 'YES';
+        entryPrice = yesPrice;
+        confidence = 1.0;
+        decisionReasons.push("🛠️ FORCED Test Trade (Verification)");
+    }
+
+    if (!side || !entryPrice) {
         decisionReasons.push('Aucune condition de trade remplie');
         logTradeDecision(market, null, decisionReasons, pizzaData);
         return null;

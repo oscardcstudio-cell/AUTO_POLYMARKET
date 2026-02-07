@@ -105,16 +105,20 @@ async function mainLoop() {
                 // Collect potential candidates in order of priority
                 let candidates = [];
 
+                // Fetch relevant markets once to avoid redundant API calls
+                const relevantMarkets = await getRelevantMarkets();
+                if (!relevantMarkets || relevantMarkets.length === 0) return;
+
                 // 1. Top Signal
                 if (botState.topSignal) {
-                    const m = await getRelevantMarkets().then(mkts => mkts.find(x => x.id === botState.topSignal.id));
+                    const m = relevantMarkets.find(x => x.id === botState.topSignal.id);
                     if (m) candidates.push({ market: m, isFresh: false, priority: 'TOP' });
                 }
 
                 // 2. Whale Alerts
                 if (botState.whaleAlerts) {
                     for (const whale of botState.whaleAlerts) {
-                        const m = await getRelevantMarkets().then(mkts => mkts.find(x => x.id === whale.id));
+                        const m = relevantMarkets.find(x => x.id === whale.id);
                         if (m) candidates.push({ market: m, isFresh: false, priority: 'WHALE' });
                     }
                 }
@@ -122,7 +126,7 @@ async function mainLoop() {
                 // 3. Wizards
                 if (botState.wizards) {
                     for (const wiz of botState.wizards) {
-                        const m = await getRelevantMarkets().then(mkts => mkts.find(x => x.id === wiz.id));
+                        const m = relevantMarkets.find(x => x.id === wiz.id);
                         if (m) candidates.push({ market: m, isFresh: false, priority: 'WIZARD' });
                     }
                 }
@@ -131,8 +135,7 @@ async function mainLoop() {
                 botState.freshMarkets.forEach(m => candidates.push({ market: m, isFresh: true, priority: 'FRESH' }));
 
                 // 5. Standard Markets (Top 10)
-                const stdMarkets = await getRelevantMarkets();
-                stdMarkets.slice(0, 10).forEach(m => candidates.push({ market: m, isFresh: false, priority: 'STD' }));
+                relevantMarkets.slice(0, 10).forEach(m => candidates.push({ market: m, isFresh: false, priority: 'STD' }));
 
                 // Deduplicate candidates by ID
                 const seenIds = new Set();
