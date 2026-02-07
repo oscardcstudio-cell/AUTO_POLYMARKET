@@ -3,6 +3,8 @@ import express from 'express';
 import { botState, stateManager } from '../state.js';
 import { addLog } from '../utils.js';
 import { CONFIG } from '../config.js';
+import { simulateTrade } from '../logic/engine.js';
+import { getRelevantMarkets } from '../logic/signals.js';
 
 const router = express.Router();
 
@@ -59,7 +61,15 @@ router.post('/reset', (req, res) => {
     addLog(botState, '♻️ SIMULATION RESET: Portefeuille réinitialisé à $1000', 'warning');
     stateManager.save();
 
-    res.json({ success: true, message: "Simulation reset successful" });
+    // Trigger Automated Test Trade ($1)
+    getRelevantMarkets().then(markets => {
+        if (markets.length > 0) {
+            const m = markets[Math.floor(Math.random() * markets.length)];
+            simulateTrade(m, null, false, { testSize: 1.0 });
+        }
+    });
+
+    res.json({ success: true, message: "Simulation reset successful + Test trade triggered" });
 });
 
 // Health check endpoint pour Railway

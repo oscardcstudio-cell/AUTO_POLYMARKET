@@ -292,7 +292,7 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
         decisionReasons.push(`🔥 High Momentum (Vol: ${parseInt(market.volume24hr)})`);
     }
 
-    let tradeSize = calculateTradeSize();
+    let tradeSize = dependencies.testSize || calculateTradeSize();
 
     if (tradeSize > botState.capital) tradeSize = botState.capital;
 
