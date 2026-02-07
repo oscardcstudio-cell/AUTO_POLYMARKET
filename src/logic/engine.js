@@ -58,6 +58,65 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
     const category = categorizeMarket(market.question);
     const decisionReasons = [];
 
+    // NOUVEAU: STRATÉGIE ARBITRAGE (Risk-Free)
+    const arbSignal = botState.arbitrageOpportunities && botState.arbitrageOpportunities.find(a => a.id === market.id);
+    if (arbSignal && yesPrice + noPrice < 0.995) { // 0.5% margin for safety
+        const depthYesOK = await checkLiquidityDepthFn(market, 'YES', yesPrice, 25);
+        const depthNoOK = await checkLiquidityDepthFn(market, 'NO', noPrice, 25);
+
+        if (depthYesOK && depthNoOK) {
+            const tradeSize = calculateTradeSize() / 2; // Split for both sides
+            const tradeIdBase = Date.now().toString(36);
+
+            const tradeYes = {
+                id: tradeIdBase + 'y',
+                marketId: market.id,
+                question: market.question,
+                side: 'YES',
+                amount: tradeSize,
+                entryPrice: yesPrice * 1.01, // slippage sim
+                startTime: new Date().toISOString(),
+                shares: tradeSize / (yesPrice * 1.01),
+                status: 'OPEN',
+                confidence: 1.0, // Risk free
+                reasons: [`⚖️ Arbitrage: Sum=${(yesPrice + noPrice).toFixed(3)}`],
+                category: category,
+                clobTokenIds: market.clobTokenIds || []
+            };
+
+            const tradeNo = {
+                id: tradeIdBase + 'n',
+                marketId: market.id,
+                question: market.question,
+                side: 'NO',
+                amount: tradeSize,
+                entryPrice: noPrice * 1.01,
+                startTime: new Date().toISOString(),
+                shares: tradeSize / (noPrice * 1.01),
+                status: 'OPEN',
+                confidence: 1.0,
+                reasons: [`⚖️ Arbitrage: Sum=${(yesPrice + noPrice).toFixed(3)}`],
+                category: category,
+                clobTokenIds: market.clobTokenIds || []
+            };
+
+            // Note: We don't call saveNewTrade here because we return an array 
+            // and server.js will handle the logs/persistence.
+            // Wait, saveNewTrade handles botState.capital and stateManager.save().
+            // I should either refactor saveNewTrade or handle it here.
+            // Let's handle it manually here for both.
+
+            [tradeYes, tradeNo].forEach(t => {
+                botState.capital -= t.amount;
+                botState.activeTrades.unshift(t);
+                botState.totalTrades += 1;
+            });
+            stateManager.save();
+
+            return [tradeYes, tradeNo];
+        }
+    }
+
     // LOGIQUE AMÉLIORÉE - Vérifier la catégorie en mode DEFCON critique
     if (pizzaData && pizzaData.defcon <= 2) {
         if (category === 'geopolitical' || category === 'economic') {
@@ -74,6 +133,49 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
             entryPrice = yesPrice;
             confidence = 0.45;
             decisionReasons.push(`DEFCON ${pizzaData.defcon} + autre catégorie`);
+        }
+    }
+    // NOUVEAU: WHALE FOLLOW STRATEGY (Priorité Absolue)
+    const whaleAlert = botState.whaleAlerts && botState.whaleAlerts.find(w => w.id === market.id);
+    if (whaleAlert) {
+        const trend = await calculateIntradayTrendFn(market.id);
+        const isHighVolume = parseFloat(market.volume24hr) > 50000;
+
+        if (trend === 'UP') {
+            const depthOK = await checkLiquidityDepthFn(market, 'YES', yesPrice, 200); // Strict depth for whales
+            if (depthOK) {
+                side = 'YES';
+                entryPrice = yesPrice;
+                confidence = 0.75;
+                decisionReasons.push(`🐳 Whale Follow: UP Trend Verified (Vol: ${parseInt(market.volume24hr)})`);
+            }
+        } else if (trend === 'DOWN') {
+            const depthOK = await checkLiquidityDepthFn(market, 'NO', noPrice, 200);
+            if (depthOK) {
+                side = 'NO';
+                entryPrice = noPrice;
+                confidence = 0.75;
+                decisionReasons.push(`🐳 Whale Follow: DOWN Trend Verified (Vol: ${parseInt(market.volume24hr)})`);
+            }
+        } else {
+            // Flat trend but huge volume? Maybe consolidation before pump?
+            // Risky to touch without clear direction.
+            decisionReasons.push(`⚠️ Whale Alert Ignored: Trend is FLAT`);
+        }
+    }
+    // NOUVEAU: WIZARD FOLLOW STRATEGY (Smart Money / Alpha)
+    else if (botState.wizards && botState.wizards.some(w => w.id === market.id)) {
+        const wizardSignal = botState.wizards.find(w => w.id === market.id);
+        // Wizards are detected as "Cheap YES" (< 0.35) with high Alpha.
+        // We verify depth and go long.
+        const depthOK = await checkLiquidityDepthFn(market, 'YES', yesPrice, 50);
+        if (depthOK) {
+            side = 'YES';
+            entryPrice = yesPrice;
+            confidence = 0.60;
+            decisionReasons.push(`🧙 Wizard Follow: High Alpha (${wizardSignal.alpha}%)`);
+        } else {
+            decisionReasons.push(`⚠️ Wizard Signal Ignored: Low Liquidity`);
         }
     }
     // NOUVEAU: TREND FOLLOWING (Optimisé + Intraday Check + Depth Check)
@@ -499,7 +601,7 @@ async function calculateIntradayTrend(marketId) {
     const firstPrice = parseFloat(recent[0].price);
     const lastPrice = parseFloat(recent[recent.length - 1].price);
 
-    if (lastPrice > firstPrice * 1.02) return 'UP';
-    if (lastPrice < firstPrice * 0.98) return 'DOWN';
+    if (lastPrice > firstPrice * 1.01) return 'UP'; // Softened from 1.02
+    if (lastPrice < firstPrice * 0.99) return 'DOWN'; // Softened from 0.98
     return 'FLAT';
 }

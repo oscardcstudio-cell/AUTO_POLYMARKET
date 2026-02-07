@@ -202,7 +202,7 @@ function calculateAlphaScore(market, pizzaData) {
     if (momentumRatio > 0.5) { score += 30; reasons.push('Momentum fort (+30)'); }
     else if (momentumRatio > 0.1) { score += 15; reasons.push('Momentum moyen (+15)'); }
 
-    const isWhaleMarket = botState.whaleAlerts.some(w => w.marketId === market.id);
+    const isWhaleMarket = botState.whaleAlerts.some(w => w.id === market.id);
     if (isWhaleMarket) { score += 35; reasons.push('🐳 Whale Alert (+35)'); }
 
     const hasArbitrage = botState.arbitrageOpportunities.some(a => a.id === market.id);

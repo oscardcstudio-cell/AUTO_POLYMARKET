@@ -100,43 +100,73 @@ async function mainLoop() {
             }
 
             // 6. TRADING EXECUTION
-            // A. Fresh Markets (Priority)
-            if (botState.freshMarkets.length > 0 && pizzaData && botState.capital >= CONFIG.MIN_TRADE_SIZE) {
-                const freshCount = botState.activeTrades.filter(t => t.isFresh).length;
-                if (freshCount < 2 && botState.activeTrades.length < 7) {
-                    const freshMarket = botState.freshMarkets[0];
-                    const alreadyTraded = botState.activeTrades.some(t => t.marketId === freshMarket.id);
+            if (pizzaData && botState.capital >= CONFIG.MIN_TRADE_SIZE && botState.activeTrades.length < CONFIG.MAX_ACTIVE_TRADES) {
 
-                    if (!alreadyTraded) {
-                        const trade = simulateTrade(freshMarket, pizzaData, true);
-                        if (trade) {
-                            addLog(botState, `🚀 Fresh trade: ${trade.question.substring(0, 30)}...`, 'success');
-                            // Async slug fetch
-                            getEventSlug(trade.marketId, trade.question).then(s => {
-                                if (s) { trade.eventSlug = s; stateManager.save(); }
-                            });
-                        }
+                // Collect potential candidates in order of priority
+                let candidates = [];
+
+                // 1. Top Signal
+                if (botState.topSignal) {
+                    const m = await getRelevantMarkets().then(mkts => mkts.find(x => x.id === botState.topSignal.id));
+                    if (m) candidates.push({ market: m, isFresh: false, priority: 'TOP' });
+                }
+
+                // 2. Whale Alerts
+                if (botState.whaleAlerts) {
+                    for (const whale of botState.whaleAlerts) {
+                        const m = await getRelevantMarkets().then(mkts => mkts.find(x => x.id === whale.id));
+                        if (m) candidates.push({ market: m, isFresh: false, priority: 'WHALE' });
                     }
                 }
-            }
 
-            // B. Standard Trading
-            if (pizzaData && botState.capital >= CONFIG.MIN_TRADE_SIZE) {
-                if (botState.activeTrades.length < CONFIG.MAX_ACTIVE_TRADES) {
-                    const markets = await getRelevantMarkets();
-                    if (markets.length > 0) {
-                        // Random Pick from top 15 to avoid always picking #1
-                        const market = markets[Math.floor(Math.random() * Math.min(15, markets.length))];
-                        const alreadyTraded = botState.activeTrades.some(t => t.marketId === market.id);
+                // 3. Wizards
+                if (botState.wizards) {
+                    for (const wiz of botState.wizards) {
+                        const m = await getRelevantMarkets().then(mkts => mkts.find(x => x.id === wiz.id));
+                        if (m) candidates.push({ market: m, isFresh: false, priority: 'WIZARD' });
+                    }
+                }
 
-                        if (!alreadyTraded) {
-                            const trade = simulateTrade(market, pizzaData);
-                            if (trade) {
-                                getEventSlug(trade.marketId, trade.question).then(s => {
-                                    if (s) { trade.eventSlug = s; stateManager.save(); }
-                                });
-                            }
+                // 4. Fresh Markets
+                botState.freshMarkets.forEach(m => candidates.push({ market: m, isFresh: true, priority: 'FRESH' }));
+
+                // 5. Standard Markets (Top 10)
+                const stdMarkets = await getRelevantMarkets();
+                stdMarkets.slice(0, 10).forEach(m => candidates.push({ market: m, isFresh: false, priority: 'STD' }));
+
+                // Deduplicate candidates by ID
+                const seenIds = new Set();
+                const uniqueCandidates = [];
+                for (const c of candidates) {
+                    if (!seenIds.has(c.market.id)) {
+                        seenIds.add(c.market.id);
+                        uniqueCandidates.push(c);
+                    }
+                }
+
+                // Try to execute
+                for (const candidate of uniqueCandidates) {
+                    if (botState.activeTrades.length >= CONFIG.MAX_ACTIVE_TRADES) break;
+                    if (botState.capital < CONFIG.MIN_TRADE_SIZE) break;
+
+                    const alreadyTraded = botState.activeTrades.some(t => t.marketId === candidate.market.id);
+                    if (alreadyTraded) continue;
+
+                    let result = await simulateTrade(candidate.market, pizzaData, candidate.isFresh);
+                    if (result) {
+                        // Handle single trade or array (for arbitrage)
+                        const tradesToProcess = Array.isArray(result) ? result : [result];
+
+                        for (const t of tradesToProcess) {
+                            addLog(botState, `🚀 [${candidate.priority}] Trade: ${t.question.substring(0, 30)}...`, 'success');
+                            getEventSlug(t.marketId, t.question).then(s => {
+                                if (s) { t.eventSlug = s; stateManager.save(); }
+                            });
                         }
+
+                        // Break after one successful "entry" (or arbitrage pair) to keep things steady
+                        // unless we want to fill up all slots immediately. Usually better to wait a poll.
+                        break;
                     }
                 }
             }
