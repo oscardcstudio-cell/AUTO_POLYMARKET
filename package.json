@@ -2,11 +2,11 @@
   "name": "auto-polymarket-bot",
   "version": "1.0.0",
   "description": "Bot de trading automatique Polymarket basé sur Pizzint",
-  "main": "unified_bot.js",
+  "main": "server.js",
   "type": "module",
   "scripts": {
-    "start": "node unified_bot.js",
-    "dev": "node unified_bot.js"
+    "start": "node server.js",
+    "dev": "node server.js"
   },
   "engines": {
     "node": ">=18.0.0"

@@ -373,5 +373,27 @@ export default {
     getNonSportsMarkets,
     getContextualMarkets,
     getMarketBySlug,
-    getEventBySlug
+    getEventBySlug,
+    getEventSlug
 };
+
+/**
+ * Get event slug from market ID
+ * @param {string} marketId 
+ * @param {string} question 
+ * @returns {Promise<string|null>}
+ */
+export async function getEventSlug(marketId, question) {
+    try {
+        if (!marketId) return null;
+        const response = await fetchWithRetry(`${GAMMA_BASE_URL}/markets/${marketId}`);
+        if (!response.ok) return null;
+        const data = await response.json();
+        if (data.events && data.events.length > 0 && data.events[0].slug) {
+            return data.events[0].slug;
+        }
+        return data.slug || null;
+    } catch (e) {
+        return null; // Silent fail
+    }
+}
