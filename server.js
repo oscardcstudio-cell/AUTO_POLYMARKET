@@ -29,6 +29,7 @@ const __dirname = path.dirname(__filename);
 
 // --- EXPRESS SERVER ---
 const app = express();
+app.use(express.json());
 
 // Serve static files (Dashboard)
 app.use(express.static(__dirname));

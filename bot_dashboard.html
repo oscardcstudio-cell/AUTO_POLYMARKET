@@ -271,11 +271,37 @@
 
     <div class="container">
         <header>
-            <div class="status-badge">
-                <div class="pulse-dot"></div>
-                POLYMARKET INTELLIGENCE ENGINE v3.1.5 // ACTIVE TRADING
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap;">
+                <div style="display: flex; gap: 10px;">
+                    <div class="status-badge">
+                        <div class="pulse-dot"></div>
+                        <span id="lastUpdate">Checking system...</span>
+                    </div>
+                </div>
+
+                <!-- NEW COMPACT QUICK NOTE -->
+                <div
+                    style="flex: 1; max-width: 600px; display: flex; gap: 10px; background: rgba(255,255,255,0.03); padding: 5px 15px; border-radius: 100px; border: 1px solid var(--border); align-items: center;">
+                    <select id="quickNoteType"
+                        style="background: transparent; border: none; color: #94a3b8; font-size: 0.8em; font-weight: 700; outline: none; cursor: pointer;">
+                        <option value="idea">💡 IDÉE</option>
+                        <option value="bug">🐛 BUG</option>
+                    </select>
+                    <div style="width: 1px; height: 20px; background: var(--border);"></div>
+                    <input type="text" id="quickNoteTitle" placeholder="Note rapide..."
+                        style="flex: 1; background: transparent; border: none; color: white; font-size: 0.85em; outline: none;">
+                    <button onclick="saveQuickNote()"
+                        style="background: var(--accent-blue); border: none; color: white; padding: 5px 15px; border-radius: 100px; font-size: 0.75em; font-weight: 800; cursor: pointer; transition: transform 0.2s;">
+                        FIXER
+                    </button>
+                    <div style="width: 1px; height: 20px; background: var(--border);"></div>
+                    <a href="backlog.html" title="Voir tout le backlog"
+                        style="color: var(--accent-purple); text-decoration: none; font-size: 1.1em;">📓</a>
+                </div>
             </div>
-            <h1>Neural Trader Dashboard <span
+
+            <h1 style="margin-top: 20px;">Neural Trader Dashboard <span
                     style="font-size: 0.4em; color: #64748b; font-weight: normal; vertical-align: middle;">(REFRESH IF
                     NO CHANGE)</span></h1>
             <div style="font-size: 0.8em; color: #64748b; margin-top: 5px;">SYSTEM STATUS: <span
@@ -482,6 +508,7 @@
             </div>
         </div>
 
+
         <!-- LIVE LOGS SECTION (Restored) -->
         <div class="chart-section" style="margin-top: 30px; border-color: rgba(255, 255, 255, 0.1);">
             <div class="stat-label">📜 Live System Logs</div>
@@ -534,6 +561,25 @@
                 }
             } catch (e) {
                 alert('Error resetting simulation');
+            }
+        }
+
+        async function saveQuickNote() {
+            const title = document.getElementById('quickNoteTitle').value;
+            const type = document.getElementById('quickNoteType').value;
+            if (!title) return;
+            try {
+                const res = await fetch('/api/backlog', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title, type, priority: 'medium' })
+                });
+                if (res.ok) {
+                    document.getElementById('quickNoteTitle').value = '';
+                    alert(`${type === 'bug' ? 'Bug' : 'Idée'} enregistré !`);
+                }
+            } catch (e) {
+                console.error('Error saving note:', e);
             }
         }
 

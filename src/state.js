@@ -43,7 +43,8 @@ const INITIAL_STATE = {
         economics: [],
         tech: [],
         trending: []
-    }
+    },
+    backlog: [] // User notes, bugs, and ideas
 };
 
 class StateManager {

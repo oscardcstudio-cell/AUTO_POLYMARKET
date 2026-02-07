@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notebook & Backlog - Polymarket Bot</title>
+    <style>
+        :root {
+            --bg-deep: #020617;
+            --accent-blue: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --glass: rgba(15, 23, 42, 0.7);
+            --border: rgba(255, 255, 255, 0.1);
+            --low: #94a3b8;
+            --medium: #fbbf24;
+            --high: #ef4444;
+            --idea: #3b82f6;
+            --bug: #f43f5e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg-deep);
+            color: #f8fafc;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            background: linear-gradient(to right, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.05);
+            color: #94a3b8;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            font-size: 0.9em;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .add-note-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 25px;
+            border: 1px solid var(--border);
+            margin-bottom: 40px;
+            display: grid;
+            gap: 15px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 15px;
+        }
+
+        input,
+        textarea,
+        select {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+            color: white;
+            padding: 12px 15px;
+            border-radius: 12px;
+            font-family: inherit;
+        }
+
+        input {
+            flex: 1;
+        }
+
+        textarea {
+            width: 100%;
+            height: 80px;
+            resize: none;
+        }
+
+        .btn-add {
+            background: linear-gradient(to right, var(--accent-blue), var(--accent-purple));
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn-add:hover {
+            transform: scale(1.02);
+        }
+
+        .filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .filter-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: #94a3b8;
+            padding: 8px 16px;
+            border-radius: 100px;
+            cursor: pointer;
+            font-size: 0.85em;
+        }
+
+        .filter-btn.active {
+            background: var(--accent-blue);
+            color: white;
+            border-color: var(--accent-blue);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .item-card {
+            background: var(--glass);
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .item-card.resolved {
+            opacity: 0.5;
+            filter: grayscale(0.5);
+        }
+
+        .item-card:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .badge-type {
+            font-size: 0.7em;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            border-radius: 100px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            display: inline-block;
+        }
+
+        .badge.bug {
+            background: rgba(244, 63, 94, 0.2);
+            color: #fb7185;
+        }
+
+        .badge.idea {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+        }
+
+        .item-title {
+            font-weight: 700;
+            font-size: 1.2em;
+            margin-bottom: 8px;
+        }
+
+        .item-desc {
+            font-size: 0.9em;
+            color: #94a3b8;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .item-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--border);
+            padding-top: 15px;
+            margin-top: auto;
+        }
+
+        .priority-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+            opacity: 0.5;
+            transition: opacity 0.2s;
+        }
+
+        .action-btn:hover {
+            opacity: 1;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 100px 0;
+            color: #475569;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Notebook & Backlog</h1>
+            <a href="bot_dashboard.html" class="back-btn">← Retour au Dashboard</a>
+        </header>
+
+        <div class="add-note-card">
+            <div class="input-group">
+                <input type="text" id="noteTitle" placeholder="Titre du bug ou de l'idée...">
+                <select id="noteType">
+                    <option value="idea">💡 Idée</option>
+                    <option value="bug">🐛 Bug</option>
+                </select>
+                <select id="notePriority">
+                    <option value="medium">Medium</option>
+                    <option value="high">Urgent</option>
+                    <option value="low">Peu d'importance</option>
+                </select>
+                <button class="btn-add" onclick="addNote()">Enregistrer</button>
+            </div>
+            <textarea id="noteDesc" placeholder="Description détaillée..."></textarea>
+        </div>
+
+        <div class="filters">
+            <button class="filter-btn active" onclick="filterItems('all', this)">Tous</button>
+            <button class="filter-btn" onclick="filterItems('open', this)">À faire</button>
+            <button class="filter-btn" onclick="filterItems('resolved', this)">Résolus</button>
+        </div>
+
+        <div id="grid" class="grid">
+            <!-- Items populated here -->
+        </div>
+    </div>
+
+    <script>
+        let allItems = [];
+        let currentFilter = 'all';
+
+        async function fetchBacklog() {
+            try {
+                const res = await fetch('/api/backlog');
+                allItems = await res.json();
+                render();
+            } catch (err) { console.error(err); }
+        }
+
+        async function addNote() {
+            const title = document.getElementById('noteTitle').value;
+            const description = document.getElementById('noteDesc').value;
+            const type = document.getElementById('noteType').value;
+            const priority = document.getElementById('notePriority').value;
+
+            if (!title) return alert('Le titre est requis');
+
+            try {
+                const res = await fetch('/api/backlog', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title, description, type, priority })
+                });
+                if (res.ok) {
+                    document.getElementById('noteTitle').value = '';
+                    document.getElementById('noteDesc').value = '';
+                    fetchBacklog();
+                }
+            } catch (err) { console.error(err); }
+        }
+
+        async function toggleStatus(id, currentStatus) {
+            const newStatus = currentStatus === 'open' ? 'resolved' : 'open';
+            try {
+                await fetch(`/api/backlog/${id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: newStatus })
+                });
+                fetchBacklog();
+            } catch (err) { console.error(err); }
+        }
+
+        async function deleteItem(id) {
+            if (!confirm('Voulez-vous supprimer cet élément ?')) return;
+            try {
+                await fetch(`/api/backlog/${id}`, { method: 'DELETE' });
+                fetchBacklog();
+            } catch (err) { console.error(err); }
+        }
+
+        function filterItems(filter, btn) {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            render();
+        }
+
+        function render() {
+            const grid = document.getElementById('grid');
+            const items = allItems.filter(i => {
+                if (currentFilter === 'all') return true;
+                return i.status === currentFilter;
+            });
+
+            if (items.length === 0) {
+                grid.innerHTML = '<div class="empty-state">Aucun élément trouvé. Notez vos idées en haut !</div>';
+                return;
+            }
+
+            grid.innerHTML = items.map(i => `
+                <div class="item-card ${i.status === 'resolved' ? 'resolved' : ''}">
+                    <span class="badge-type badge ${i.type}">${i.type === 'bug' ? '🐛 Bug' : '💡 Idée'}</span>
+                    <div class="item-title">${i.title}</div>
+                    <div class="item-desc">${i.description}</div>
+                    <div class="item-footer">
+                        <div style="font-size: 0.8em; color: #64748b;">
+                            <span class="priority-dot" style="background: var(--${i.priority})"></span>
+                            Priority: ${i.priority}
+                        </div>
+                        <div class="actions">
+                            <button class="action-btn" title="Changer status" onclick="toggleStatus('${i.id}', '${i.status}')">
+                                ${i.status === 'open' ? '✅ Resolve' : '🔄 Reopen'}
+                            </button>
+                            <button class="action-btn" title="Supprimer" onclick="deleteItem('${i.id}')">🗑️</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        fetchBacklog();
+        // Refresh every minute for AI context sync visibility
+        setInterval(fetchBacklog, 60000);
+    </script>
+</body>
+
+</html>
