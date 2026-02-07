@@ -609,13 +609,40 @@
             try {
                 if (!botData || !botData.capital) return;
 
-                // --- 1. STATISTICS ---
+                // --- 1. STATISTICS & EQUITY CALCULATION ---
                 try {
+                    let activeValue = 0;
+                    if (botData.activeTrades && botData.activeTrades.length > 0) {
+                        activeValue = botData.activeTrades.reduce((sum, t) => {
+                            const history = t.priceHistory || [];
+                            const entry = t.entryPrice || 0;
+                            let current = history.length > 0 ? history[history.length - 1] : entry;
+                            // Safety Clamp for Binary Options (0-1)
+                            if (current > 1) current = 1;
+                            if (current < 0) current = 0;
 
-                    document.getElementById('totalCapital').textContent = `$${botData.capital.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
-                    document.getElementById('profit').textContent = `$${(botData.profit || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
-                    document.getElementById('profit').className = 'stat-value ' + ((botData.profit || 0) >= 0 ? 'positive' : 'negative');
-                    document.getElementById('profitPercent').textContent = botData.profitPercent || '0';
+                            const shares = t.shares || 0;
+                            return sum + (shares * current);
+                        }, 0);
+                    }
+
+                    const totalEquity = botData.capital + activeValue;
+
+                    document.getElementById('totalCapital').innerHTML = `
+                        $${totalEquity.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                        <div style="font-size:0.4em; color:#94a3b8; font-weight:400; margin-top:5px">
+                            CASH: $${botData.capital.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })} 
+                            | OPEN: $${activeValue.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                        </div>`;
+
+                    // Update Profit based on EQUITY, not just realized Cash
+                    const startingCap = botData.startingCapital || 1000;
+                    const totalProfit = totalEquity - startingCap;
+                    const profitPercent = (totalProfit / startingCap) * 100;
+
+                    document.getElementById('profit').textContent = `${totalProfit >= 0 ? '+' : ''}$${totalProfit.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+                    document.getElementById('profit').className = 'stat-value ' + (totalProfit >= 0 ? 'positive' : 'negative');
+                    document.getElementById('profitPercent').textContent = profitPercent.toFixed(2) + '%';
 
                     const winRate = ((botData.winningTrades / (botData.winningTrades + botData.losingTrades)) * 100) || 0;
                     document.getElementById('winRate').textContent = `${winRate.toFixed(1)}%`;
@@ -623,25 +650,37 @@
                     document.getElementById('losingTrades').textContent = botData.losingTrades || 0;
                     const moneySpent = (botData.activeTrades || []).reduce((sum, t) => sum + t.size, 0);
                     document.getElementById('moneySpent').textContent = `$${moneySpent.toLocaleString()}`;
+
+                    // Open Risk (active trades amount)
+                    document.getElementById('openRisk').textContent = `$${activeValue.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+
                 } catch (e) { console.error("Stats Error:", e); }
 
                 // --- 2. PERFORMANCE ANALYTICS ---
                 try {
-                    if (botData.closedTrades && botData.closedTrades.length > 0) {
-                        const profits = botData.closedTrades.map(t => t.profit || 0);
-                        const avgProfit = profits.reduce((a, b) => a + b, 0) / profits.length;
-                        const largestWin = Math.max(...profits);
-                        const largestLoss = Math.min(...profits);
+                    const closed = botData.closedTrades || [];
+                    const wins = closed.filter(t => t.profit > 0);
+                    const losses = closed.filter(t => t.profit <= 0);
 
-                        document.getElementById('avgProfit').textContent = `$${avgProfit.toFixed(2)}`;
-                        document.getElementById('avgProfit').style.color = avgProfit >= 0 ? '#4ade80' : '#f87171';
-                        document.getElementById('largestWin').textContent = `$${largestWin.toFixed(2)}`;
-                        document.getElementById('largestLoss').textContent = `$${largestLoss.toFixed(2)}`;
+                    const avgProfit = closed.length > 0 ? (closed.reduce((a, b) => a + b.profit, 0) / closed.length) : 0;
+                    const largestWin = wins.length > 0 ? Math.max(...wins.map(t => t.profit)) : 0;
+                    const largestLoss = losses.length > 0 ? Math.min(...losses.map(t => t.profit)) : 0;
 
-                        // Duration
-                        const durations = botData.closedTrades.filter(t => t.closedAt && t.timestamp).map(t => (new Date(t.closedAt) - new Date(t.timestamp)) / 1000 / 60);
-                        const avgDuration = durations.length > 0 ? durations.reduce((a, b) => a + b, 0) / durations.length : 0;
-                        document.getElementById('avgDuration').textContent = avgDuration >= 60 ? `${(avgDuration / 60).toFixed(1)}h` : `${avgDuration.toFixed(0)}m`;
+                    document.getElementById('avgProfit').textContent = `$${avgProfit.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+                    document.getElementById('avgProfit').style.color = avgProfit >= 0 ? '#4ade80' : '#f87171';
+                    document.getElementById('largestWin').textContent = `$${largestWin.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+                    document.getElementById('largestLoss').textContent = `$${largestLoss.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+                    // Duration
+                    if (closed.length > 0) {
+                        const totalDuration = closed.reduce((acc, t) => {
+                            const start = new Date(t.timestamp).getTime();
+                            const end = new Date(t.closedAt).getTime();
+                            return acc + (end - start);
+                        }, 0);
+                        const avgDurationMin = (totalDuration / closed.length) / 60000;
+                        document.getElementById('avgDuration').textContent = avgDurationMin < 60 ? `${Math.round(avgDurationMin)}m` : `${(avgDurationMin / 60).toFixed(1)}h`;
+                    } else {
+                        document.getElementById('avgDuration').textContent = '-';
                     }
 
                     // Pizza/Defcon
@@ -669,28 +708,40 @@
                         activeList.innerHTML = '<div class="empty-state">SCANNING MARKET DEPTH FOR ANOMALIES...</div>';
                     } else {
                         activeList.innerHTML = botData.activeTrades.map(t => {
-                            const current = t.priceHistory ? t.priceHistory[t.priceHistory.length - 1] : t.entryPrice;
-                            const diff = t.entryPrice > 0 ? ((current - t.entryPrice) / t.entryPrice * 100) : 0;
+                            // Defensive coding to prevent crashes
+                            const entry = t.entryPrice || 0;
+                            const history = t.priceHistory || [];
+                            const current = history.length > 0 ? history[history.length - 1] : entry;
+                            const size = t.size || 0;
+                            const shares = t.shares || 0;
+
+                            const diff = entry > 0 ? ((current - entry) / entry * 100) : 0;
                             const color = diff >= 0 ? '#4ade80' : '#f87171';
+                            const currentValue = shares * current;
 
                             return `
                         <div class="trade-card">
                             <div style="display:flex; justify-content:space-between; margin-bottom:15px">
-                                <div style="font-weight:700">${t.question}</div>
-                                <div style="color:${t.side === 'YES' ? '#4ade80' : '#f87171'}; border:1px solid; padding:2px 8px; border-radius:8px">${t.side}</div>
+                                <div style="font-weight:700; max-width:75%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${t.question}">${t.question}</div>
+                                <div style="color:#ffffff; background:#3b82f6; border:none; padding:2px 8px; border-radius:4px; font-weight:700; font-size:0.8em; display:flex; align-items:center;">${t.side}</div>
                             </div>
-                            <div style="height:80px; margin-bottom:15px"><canvas id="chart-${t.id}"></canvas></div>
-                            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; background:rgba(255,255,255,0.03); padding:10px; border-radius:10px">
-                                <div><div style="font-size:0.6em">ENTRY</div><div>${t.entryPrice.toFixed(3)}</div></div>
-                                <div><div style="font-size:0.6em">CURRENT</div><div style="color:${color}">${current.toFixed(3)}</div></div>
-                                <div><div style="font-size:0.6em">PnL</div><div style="color:${color}">${diff >= 0 ? '+' : ''}${diff.toFixed(1)}%</div></div>
+                            <div style="height:60px; margin-bottom:15px"><canvas id="chart-${t.id}"></canvas></div>
+                            <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:5px; background:rgba(255,255,255,0.03); padding:10px; border-radius:10px; text-align:center;">
+                                <div><div style="font-size:0.6em; color:#94a3b8; margin-bottom:2px">ENTRY</div><div style="font-weight:600">${entry.toFixed(2)}</div></div>
+                                <div><div style="font-size:0.6em; color:#94a3b8; margin-bottom:2px">PRICE</div><div style="font-weight:600; color:${color}">${current.toFixed(2)}</div></div>
+                                <div><div style="font-size:0.6em; color:#94a3b8; margin-bottom:2px">INVEST</div><div style="font-weight:600">$${size.toFixed(0)}</div></div>
+                                <div><div style="font-size:0.6em; color:#94a3b8; margin-bottom:2px">VALUE</div><div style="font-weight:600; color:${color}">$${currentValue.toFixed(0)}</div></div>
+                                <div><div style="font-size:0.6em; color:#94a3b8; margin-bottom:2px">PnL</div><div style="font-weight:800; color:${color}">${diff >= 0 ? '+' : ''}${diff.toFixed(1)}%</div></div>
                             </div>
                         </div>`;
                         }).join('');
 
                         botData.activeTrades.forEach(t => {
-                            const diff = (t.priceHistory ? t.priceHistory[t.priceHistory.length - 1] : t.entryPrice) - t.entryPrice;
-                            createMiniChart(t.id, t.priceHistory || [t.entryPrice], t.entryPrice, diff >= 0 ? '#4ade80' : '#f87171');
+                            const entry = t.entryPrice || 0;
+                            const history = t.priceHistory || [entry];
+                            const current = history.length > 0 ? history[history.length - 1] : entry;
+                            const diff = current - entry;
+                            createMiniChart(t.id, history, entry, diff >= 0 ? '#4ade80' : '#f87171');
                         });
                     }
                 } catch (e) { console.error("Active Trades Error:", e); }
@@ -702,7 +753,7 @@
                         whaleList.innerHTML = botData.whaleAlerts.slice(0, 4).map(a => `
                     <div style="margin-bottom:10px; padding:10px; background:rgba(59,130,246,0.1); border-radius:10px; border-left:3px solid #3b82f6;">
                         <div style="font-weight:700; font-size:0.9em">${a.question}</div>
-                        <div style="font-size:0.8em; color:#94a3b8; margin-top:5px">VOL: $${parseFloat(a.volume).toLocaleString()}</div>
+                        <div style="font-size:0.8em; color:#94a3b8; margin-top:5px">VOL: $${parseFloat(a.volume).toLocaleString(undefined, { maximumFractionDigits: 0 })}</div>
                     </div>`).join('');
                     } else { whaleList.innerHTML = '<div class="empty-state">Watching order books...</div>'; }
 
@@ -732,16 +783,31 @@
                         });
 
                         if (filtered.length > 0) {
-                            closedList.innerHTML = filtered.slice(0, 12).map(t => `
-                         <div class="trade-card" style="opacity:0.8">
-                            <div style="display:flex; justify-content:space-between">
-                                <div style="font-weight:700; font-size:0.9em; max-width:70%">${t.question.substring(0, 60)}...</div>
-                                <div style="font-weight:800; color:${t.profit >= 0 ? '#4ade80' : '#f87171'}">${t.profit >= 0 ? '+' : ''}$${t.profit.toFixed(2)}</div>
+                            closedList.innerHTML = filtered.slice(0, 12).map(t => {
+                                const invested = t.size || 0;
+                                const returned = invested + t.profit;
+                                const roi = invested > 0 ? (t.profit / invested) * 100 : 0;
+
+                                return `
+                         <div class="trade-card" style="opacity:0.8; border-left: 3px solid ${t.profit >= 0 ? '#4ade80' : '#f87171'}">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:10px">
+                                <div style="font-weight:700; font-size:0.9em; max-width:70%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${t.question}">${t.question}</div>
+                                <div style="font-weight:800; color:${t.profit >= 0 ? '#4ade80' : '#f87171'}">${t.profit >= 0 ? '+' : ''}$${t.profit.toFixed(0)}</div>
                             </div>
-                            <div style="font-size:0.8em; color:#94a3b8; margin-top:5px">${t.side} @ $${t.entryPrice.toFixed(3)}</div>
-                         </div>`).join('');
+                            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:5px; font-size:0.75em; color:#cbd5e1; background:rgba(0,0,0,0.2); padding:8px; border-radius:8px;">
+                                <div>SIDE: <span style="font-weight:700; color:#3b82f6">${t.side}</span></div>
+                                <div>ENTRY: $${t.entryPrice.toFixed(3)}</div>
+                                <div>EXIT: $${t.exitPrice ? t.exitPrice.toFixed(3) : '-'}</div>
+                            </div>
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:8px; font-size:0.8em; border-top:1px solid rgba(255,255,255,0.05); padding-top:8px;">
+                                <div>Invested: <span style="color:#e2e8f0">$${invested.toFixed(0)}</span></div>
+                                <div style="text-align:right">Returned: <span style="color:${t.profit >= 0 ? '#4ade80' : '#f87171'}">$${returned.toFixed(0)}</span></div>
+                            </div>
+                         </div>`;
+                            }).join('');
                         } else { closedList.innerHTML = '<div class="empty-state">No matching trades.</div>'; }
                     } else { closedList.innerHTML = '<div class="empty-state">No history recorded.</div>'; }
+
 
                     // Sectors
                     if (botData.sectorStats) {

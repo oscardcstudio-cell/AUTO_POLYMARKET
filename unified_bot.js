@@ -1900,23 +1900,31 @@ async function main() {
         try {
             const markets = await getRelevantMarkets(false);
             markets.forEach(m => {
-                const pYes = parseFloat(m.outcomePrices[0]);
-                // Relaxed: Liquidity > 2000, Price < 0.20
-                if (parseFloat(m.outcomePrices[0]) < 0.20 && parseFloat(m.outcomePrices[0]) > 0.01 && parseFloat(m.liquidityNum) > 2000) {
-                    const alpha = calculateAlphaScore(m, botState.lastPizzaData); // Use centralized Alpha logic
-                    if (alpha > 50) {
+                const pYes = parseFloat(m.outcomePrices ? m.outcomePrices[0] : 0);
+                const liq = parseFloat(m.liquidityNum || 0);
+
+                // Relaxed Criteria for "Long Shots"
+                // Price < 0.35 (was 0.20)
+                // Liquidity > 500 (was 2000)
+                if (pYes < 0.35 && pYes > 0.01 && liq > 500) {
+                    const alpha = calculateAlphaScore(m, botState.lastPizzaData);
+
+                    // Alpha Threshold > 30 (was 50)
+                    if (alpha > 30) {
                         botState.wizards.push({
                             id: m.id,
                             slug: m.slug,
                             question: m.question,
-                            price: parseFloat(m.outcomePrices[0]).toFixed(3),
+                            price: pYes.toFixed(3),
                             alpha: alpha,
-                            reason: `High Alpha (${alpha}%)`
+                            reason: `Alpha ${alpha}%`
                         });
                     }
                 }
             });
-            botState.wizards = botState.wizards.sort((a, b) => b.alpha - a.alpha).slice(0, 3);
+            // Keep top 5 instead of 3
+            botState.wizards = botState.wizards.sort((a, b) => b.alpha - a.alpha).slice(0, 5);
+            console.log(`🧙 Wizards Detected: ${botState.wizards.length}`);
         } catch (e) { console.error("Wizard Scan Error:", e.message); }
     };
 
