@@ -15,10 +15,8 @@ const VOLUME_PATH = process.env.RAILWAY_VOLUME_MOUNT_PATH ||
 
 const DATA_FILE_PATH = VOLUME_PATH ? path.join(VOLUME_PATH, 'bot_data.json') : path.join(ROOT_DIR, 'bot_data.json');
 
-// GitHub Sync is only needed if in production (Railway)
-// The USER wants this even with volume to allow AI visibility
 const IS_PROD = process.env.NODE_ENV === 'production' || !!process.env.RAILWAY_STATIC_URL;
-const ENABLE_GITHUB_SYNC = IS_PROD;
+const ENABLE_GITHUB_SYNC = true; // Always enable to allow AI to see the backlog
 
 export const CONFIG = {
     ENABLE_GITHUB_SYNC,
