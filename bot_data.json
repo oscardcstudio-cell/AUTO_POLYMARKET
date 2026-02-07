@@ -99,10 +99,10 @@
     "question": "Warriors vs. Lakers",
     "score": 100,
     "reason": "Alpha Matrix: Corrélation de signal maximale",
-    "timestamp": "2026-02-07T15:10:09.404Z",
+    "timestamp": "2026-02-07T15:11:09.607Z",
     "slug": "nba-gsw-lal-2026-02-07"
   },
-  "lastUpdate": "2026-02-07T15:10:09.405Z",
+  "lastUpdate": "2026-02-07T15:11:09.608Z",
   "logs": [
     {
       "timestamp": "2026-02-07T15:06:08.598Z",
@@ -331,6 +331,33 @@
   "sectorActivity": {
     "politics": [
       {
+        "id": "mlcgc207btxi5sqky9i",
+        "timestamp": "2026-02-07T15:11:09.607Z",
+        "type": "SIGNAL",
+        "message": "Top Signal Detected: 100/100",
+        "data": {
+          "market": "Warriors vs. Lakers"
+        }
+      },
+      {
+        "id": "mlcgc206174d6zffp17",
+        "timestamp": "2026-02-07T15:11:09.606Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: Warriors vs. Lakers...",
+        "data": {
+          "score": "100"
+        }
+      },
+      {
+        "id": "mlcgc206b5uim4m59su",
+        "timestamp": "2026-02-07T15:11:09.606Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: US x Iran meeting by February ...",
+        "data": {
+          "score": "90"
+        }
+      },
+      {
         "id": "mlcgarjw7qb0jh4pok4",
         "timestamp": "2026-02-07T15:10:09.404Z",
         "type": "SIGNAL",
@@ -387,33 +414,6 @@
       {
         "id": "mlce4vnfnjpaucdzhbe",
         "timestamp": "2026-02-07T14:09:35.547Z",
-        "type": "SIGNAL",
-        "message": "Top Signal Detected: 100/100",
-        "data": {
-          "market": "Warriors vs. Lakers"
-        }
-      },
-      {
-        "id": "mlce4vnez6hszntf0xc",
-        "timestamp": "2026-02-07T14:09:35.546Z",
-        "type": "ANALYSIS",
-        "message": "High Alpha: Warriors vs. Lakers...",
-        "data": {
-          "score": "100"
-        }
-      },
-      {
-        "id": "mlce4vneldesz1gicef",
-        "timestamp": "2026-02-07T14:09:35.546Z",
-        "type": "ANALYSIS",
-        "message": "High Alpha: US x Iran meeting by February ...",
-        "data": {
-          "score": "90"
-        }
-      },
-      {
-        "id": "mlce3l84dubwgwflsh7",
-        "timestamp": "2026-02-07T14:08:35.380Z",
         "type": "SIGNAL",
         "message": "Top Signal Detected: 100/100",
         "data": {
@@ -601,6 +601,15 @@
     ],
     "trending": [
       {
+        "id": "mlcgc206j5r75tp5zl",
+        "timestamp": "2026-02-07T15:11:09.606Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: Seahawks vs. Patriots...",
+        "data": {
+          "score": "85"
+        }
+      },
+      {
         "id": "mlcgarjviwh21m9dsd",
         "timestamp": "2026-02-07T15:10:09.403Z",
         "type": "ANALYSIS",
@@ -679,15 +688,6 @@
         "timestamp": "2026-02-07T12:14:31.729Z",
         "type": "ANALYSIS",
         "message": "High Alpha: Nuggets vs. Bulls...",
-        "data": {
-          "score": "100"
-        }
-      },
-      {
-        "id": "mlca0wmprvwlwv8tx2p",
-        "timestamp": "2026-02-07T12:14:31.729Z",
-        "type": "ANALYSIS",
-        "message": "High Alpha: Hornets vs. Hawks...",
         "data": {
           "score": "100"
         }
