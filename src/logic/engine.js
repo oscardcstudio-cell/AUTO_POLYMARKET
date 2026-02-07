@@ -391,42 +391,34 @@ export async function checkAndCloseTrades(getRealMarketPriceFn) {
     for (let i = botState.activeTrades.length - 1; i >= 0; i--) {
         const trade = botState.activeTrades[i];
 
-        // Use provided price fetcher (injected) or default
-        let currentPrice = 0;
-        if (getRealMarketPriceFn) {
-            currentPrice = await getRealMarketPriceFn(trade);
-        } else {
-            // Fallback mock price logic (simplified)
-            currentPrice = trade.entryPrice || 0.50;
-        }
+        const invested = trade.amount || trade.size || 0;
 
-        if (!currentPrice || isNaN(currentPrice)) {
-            // STRICT MODE: No fallback. Skip processing if price unavailable.
-            // console.warn(`⚠️ Warning: Price unavailable for trade ${trade.question}`);
+        // --- 1. GET PRICE & TRACK HISTORY ---
+        const currentPrice = getRealMarketPriceFn ? await getRealMarketPriceFn(trade) : (trade.entryPrice || 0.5);
+
+        if (!currentPrice || isNaN(currentPrice)) continue;
+
+        trade.priceHistory = trade.priceHistory || [];
+        trade.priceHistory.push(currentPrice);
+        if (trade.priceHistory.length > 50) trade.priceHistory.shift();
+
+        const pnlPercent = invested > 0 ? (trade.shares * currentPrice - invested) / invested : 0;
+        trade.maxReturn = Math.max(trade.maxReturn || 0, pnlPercent);
+
+        // --- 2. DYNAMIC STOP LOSS CHECK ---
+        const dynamicStopInfo = calculateDynamicStopLoss(trade, pnlPercent, trade.maxReturn);
+        const requiredStopPercent = dynamicStopInfo.requiredStopPercent;
+
+        if (pnlPercent <= requiredStopPercent) {
+            const reason = `STOP LOSS: ${(pnlPercent * 100).toFixed(1)}% (Limit: ${(requiredStopPercent * 100).toFixed(1)}%)`;
+            await closeTrade(i, currentPrice, reason);
             continue;
         }
 
-        const currentValue = trade.shares * currentPrice;
-        const invested = trade.amount || trade.size || 0;
-        const pnl = currentValue - invested;
-        const pnlPercent = invested > 0 ? pnl / invested : 0;
-
-        const durationHours = (new Date() - new Date(trade.startTime)) / (1000 * 60 * 60);
-
-        let closeReason = null;
-
-        // --- STRATÉGIE "ESCALIER DE SÉCURITÉ" (Dynamic Trailing Stop) ---
-        const dynamicStopInfo = calculateDynamicStopLoss(trade, currentReturn, maxReturn);
-        const dynamicStopPrice = dynamicStopInfo.stopPrice;
-
-        // VÉRIFICATION DE LA SORTIE
-        // On vend si le prix ACTUEL passe SOUS le Stop Dynamique
-        if (realPrice <= dynamicStopPrice) {
-            const reason = dynamicStopInfo.reason;
-            await executeSell(trade, realPrice, reason);
-            botState.activeTrades.splice(i, 1);
-            saveState();
-            // 💾 SYNC handled in executeSell or implicitly
+        // --- 3. TAKE PROFIT CHECK ---
+        const tpPercent = CONFIG.TAKE_PROFIT_PERCENT || 0.20;
+        if (pnlPercent >= tpPercent) {
+            await closeTrade(i, currentPrice, `TAKE PROFIT: ${(pnlPercent * 100).toFixed(1)}% reached`);
             continue;
         }
 

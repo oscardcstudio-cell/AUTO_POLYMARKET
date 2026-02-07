@@ -191,17 +191,15 @@ async function mainLoop() {
             }
 
             // 7. Data Sync
-            // Record capital history occasionally
-            if (Math.random() < 0.1) {
-                botState.capitalHistory.push({
-                    t: new Date().toISOString(),
-                    v: botState.capital
-                });
-                if (botState.capitalHistory.length > 100) botState.capitalHistory.shift();
+            // Record capital history
+            botState.capitalHistory.push({
+                t: new Date().toISOString(),
+                v: botState.capital
+            });
+            if (botState.capitalHistory.length > 100) botState.capitalHistory.shift();
 
-                // Trigger Git Sync occasionally
-                saveToGithub();
-            }
+            // Trigger Git Sync occasionally
+            saveToGithub();
 
             stateManager.save();
 

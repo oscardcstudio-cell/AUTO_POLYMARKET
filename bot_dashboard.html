@@ -729,7 +729,7 @@
                             <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:5px; background:rgba(255,255,255,0.03); padding:10px; border-radius:10px; text-align:center;">
                                 <div><div style="font-size:0.6em; color:#94a3b8; margin-bottom:2px">ENTRY</div><div style="font-weight:600">${entry.toFixed(2)}</div></div>
                                 <div><div style="font-size:0.6em; color:#94a3b8; margin-bottom:2px">PRICE</div><div style="font-weight:600; color:${color}">${current.toFixed(2)}</div></div>
-                                <div><div style="font-size:0.6em; color:#94a3b8; margin-bottom:2px">INVEST</div><div style="font-weight:600">$${size.toFixed(0)}</div></div>
+                                <div><div style="font-size:0.6em; color:#94a3b8; margin-bottom:2px">INVEST</div><div style="font-weight:600">$${(t.amount || t.size || 0).toFixed(0)}</div></div>
                                 <div><div style="font-size:0.6em; color:#94a3b8; margin-bottom:2px">VALUE</div><div style="font-weight:600; color:${color}">$${currentValue.toFixed(0)}</div></div>
                                 <div><div style="font-size:0.6em; color:#94a3b8; margin-bottom:2px">PnL</div><div style="font-weight:800; color:${color}">${diff >= 0 ? '+' : ''}${diff.toFixed(1)}%</div></div>
                             </div>
