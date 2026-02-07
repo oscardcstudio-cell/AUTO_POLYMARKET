@@ -26,10 +26,11 @@ export const CONFIG = {
     POLL_INTERVAL_MINUTES: 1,
     DEFCON_THRESHOLD: 5,
     MIN_TRADE_SIZE: 10,
-    MAX_TRADE_SIZE_PERCENT: 0.10,
+    MAX_TRADE_SIZE_PERCENT: 0.15, // 15% maximum of total capital
+    KELLY_FRACTION: 0.2,          // 20% of full Kelly (conservative)
     MIN_LIQUIDITY: 100,
     MIN_VOLUME: 100,
-    MAX_ACTIVE_TRADES: 10,
+    BASE_MAX_TRADES: 10,          // Starting limit for diversification
     KEYWORDS: [],
     FALLBACK_KEYWORDS: ['War', 'Strike', 'Election', 'Bitcoin', 'Economy'],
     DATA_FILE: DATA_FILE_PATH,

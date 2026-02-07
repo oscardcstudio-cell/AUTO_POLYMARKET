@@ -38,6 +38,23 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'bot_dashboard.html'));
 });
 
+// Helper logic for dynamic capacity
+function calculateMaxTrades(capital, defcon = 5) {
+    let base = CONFIG.BASE_MAX_TRADES || 10;
+
+    // Capital bonus: +1 trade per $500 gained above starting $1000
+    const profitBonus = Math.floor(Math.max(0, capital - 1000) / 500);
+    base += profitBonus;
+
+    // Crisis modifier: Reduce capacity during DEFCON 1-2 to avoid spreading too thin
+    if (defcon <= 2) {
+        base = Math.max(5, Math.floor(base * 0.5));
+    }
+
+    // Safety Cap
+    return Math.min(base, 25);
+}
+
 // Start Server
 app.listen(CONFIG.PORT, () => {
     console.log(`🤖 Bot Server running on port ${CONFIG.PORT}`);
@@ -108,13 +125,17 @@ async function mainLoop() {
                 await updateTopSignal(pizzaData);
             }
 
-            // 6. TRADING EXECUTION
-            if (pizzaData && botState.capital >= CONFIG.MIN_TRADE_SIZE && botState.activeTrades.length < CONFIG.MAX_ACTIVE_TRADES) {
+            // 6. DYNAMIC CAPACITY & SCANNING
+            const maxTrades = calculateMaxTrades(botState.capital, pizzaData?.defcon);
+            const isFull = botState.activeTrades.length >= maxTrades;
 
-                // Collect potential candidates
-                let candidates = [];
-                if (!relevantMarkets || relevantMarkets.length === 0) return;
+            if (isFull) {
+                addLog(botState, `📊 Portefeuille plein (${botState.activeTrades.length}/${maxTrades}). Mode observation.`, 'info');
+            }
 
+            // Collect potential candidates ALWAYS (for logging)
+            let candidates = [];
+            if (relevantMarkets && relevantMarkets.length > 0) {
                 // 1. Top Signal
                 if (botState.topSignal) {
                     const m = relevantMarkets.find(x => x.id === botState.topSignal.id);
@@ -153,46 +174,46 @@ async function mainLoop() {
                     }
                 }
 
-                // Try to execute
-                if (uniqueCandidates.length > 0) {
-                    console.log(`[LOOP] Considering ${uniqueCandidates.length} unique candidates (Priority sort)`);
-                }
-
+                // Try to execute (Only if not full and has capital)
                 let tradeExecutedThisLoop = false;
                 const rejectionReasons = [];
 
-                for (const candidate of uniqueCandidates) {
-                    if (botState.activeTrades.length >= CONFIG.MAX_ACTIVE_TRADES) break;
-                    if (botState.capital < CONFIG.MIN_TRADE_SIZE) break;
+                if (!isFull && botState.capital >= CONFIG.MIN_TRADE_SIZE) {
+                    for (const candidate of uniqueCandidates) {
+                        if (botState.activeTrades.length >= maxTrades) break;
+                        if (botState.capital < CONFIG.MIN_TRADE_SIZE) break;
 
-                    const alreadyTraded = botState.activeTrades.some(t => t.marketId === candidate.market.id);
-                    if (alreadyTraded) continue;
+                        const alreadyTraded = botState.activeTrades.some(t => t.marketId === candidate.market.id);
+                        if (alreadyTraded) continue;
 
-                    const marketReasons = [];
-                    let result = await simulateTrade(candidate.market, pizzaData, candidate.isFresh, { reasonsCollector: marketReasons });
+                        const marketReasons = [];
+                        let result = await simulateTrade(candidate.market, pizzaData, candidate.isFresh, { reasonsCollector: marketReasons });
 
-                    if (result) {
-                        tradeExecutedThisLoop = true;
-                        const tradesToProcess = Array.isArray(result) ? result : [result];
+                        if (result) {
+                            tradeExecutedThisLoop = true;
+                            const tradesToProcess = Array.isArray(result) ? result : [result];
 
-                        for (const t of tradesToProcess) {
-                            addLog(botState, `🚀 [${candidate.priority}] Trade: ${t.question.substring(0, 30)}...`, 'success');
-                            getEventSlug(t.marketId, t.question).then(s => {
-                                if (s) { t.eventSlug = s; stateManager.save(); }
-                            });
-                        }
-                        break;
-                    } else {
-                        if (marketReasons.length > 0) {
-                            rejectionReasons.push(`${candidate.priority}: ${marketReasons[marketReasons.length - 1]}`);
+                            for (const t of tradesToProcess) {
+                                addLog(botState, `🚀 [${candidate.priority}] Trade: ${t.question.substring(0, 30)}...`, 'success');
+                                getEventSlug(t.marketId, t.question).then(s => {
+                                    if (s) { t.eventSlug = s; stateManager.save(); }
+                                });
+                            }
+                            break; // Limit to 1 trade group per loop for stability
+                        } else {
+                            if (marketReasons.length > 0) {
+                                rejectionReasons.push(`${candidate.priority}: ${marketReasons[marketReasons.length - 1]}`);
+                            }
                         }
                     }
                 }
 
+                // 7. Loop Summary (Always Visible)
                 if (!tradeExecutedThisLoop && uniqueCandidates.length > 0) {
                     const uniqueReasons = [...new Set(rejectionReasons)].slice(0, 3);
                     const reasonSummary = uniqueReasons.length > 0 ? " | " + uniqueReasons.join(", ") : "";
-                    addLog(botState, `🔍 Scanned ${uniqueCandidates.length} markets. No entry found${reasonSummary}`, 'info');
+                    const prefix = isFull ? "👁️ OBS: " : "🔍 ";
+                    addLog(botState, `${prefix}Scanned ${uniqueCandidates.length} markets. No entry found${reasonSummary}`, 'info');
                 }
             }
 

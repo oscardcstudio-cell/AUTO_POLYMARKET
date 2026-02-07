@@ -5,9 +5,36 @@ import { CONFIG } from '../config.js';
 import { categorizeMarket } from './signals.js';
 import { getBestExecutionPrice, getCLOBOrderBook, getCLOBTradeHistory } from '../api/clob_api.js';
 
-function calculateTradeSize() {
-    const maxSize = botState.capital * CONFIG.MAX_TRADE_SIZE_PERCENT;
-    return Math.max(CONFIG.MIN_TRADE_SIZE, Math.min(maxSize, 50));
+function calculateTradeSize(confidence, price) {
+    const capital = botState.capital || CONFIG.STARTING_CAPITAL;
+
+    // Safety Fallback
+    if (!confidence || !price || price <= 0 || price >= 1) {
+        const defaultSize = Math.max(CONFIG.MIN_TRADE_SIZE, Math.min(capital * 0.05, 50));
+        return defaultSize;
+    }
+
+    // Fractional Kelly Criterion
+    // Formula: f = (p*b - q) / b  where b are the odds (1/price - 1)
+    // Simplified for binary outcome: f = (confidence - price) / (1 - price)
+
+    const p = confidence;
+    const q = 1 - p;
+    const b = (1 / price) - 1;
+
+    let kellyFraction = (p * b - q) / b;
+
+    // Apply conservative fractional factor
+    const fraction = CONFIG.KELLY_FRACTION || 0.2;
+    let targetPercent = kellyFraction * fraction;
+
+    // Safety Bounds
+    if (targetPercent < 0) targetPercent = 0.01; // Minimum skin in the game if signal exists
+    if (targetPercent > CONFIG.MAX_TRADE_SIZE_PERCENT) targetPercent = CONFIG.MAX_TRADE_SIZE_PERCENT;
+
+    const calculatedSize = capital * targetPercent;
+
+    return Math.max(CONFIG.MIN_TRADE_SIZE, Math.min(calculatedSize, capital * 0.15));
 }
 
 // Logging détaillé des décisions de trade pour analyse
@@ -89,7 +116,7 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
         const depthNoOK = await checkLiquidityDepthFn(market, 'NO', noPrice, 25);
 
         if (depthYesOK && depthNoOK) {
-            const tradeSize = calculateTradeSize() / 2; // Split for both sides
+            const tradeSize = calculateTradeSize(1.0, (yesPrice + noPrice) / 2) / 2; // Risk-free confidence = 1.0, price = avg
             const tradeIdBase = Date.now().toString(36);
 
             const tradeYes = {
@@ -338,7 +365,7 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
         decisionReasons.push(`🔥 High Momentum (Vol: ${parseInt(market.volume24hr)})`);
     }
 
-    let tradeSize = dependencies.testSize || calculateTradeSize();
+    let tradeSize = dependencies.testSize || calculateTradeSize(confidence, entryPrice);
 
     if (tradeSize > botState.capital) tradeSize = botState.capital;
 
@@ -383,10 +410,7 @@ function saveNewTrade(trade) {
     botState.totalTrades += 1;
 
     // Limiter l'historique des trades actifs pour éviter le bloat
-    if (botState.activeTrades.length > CONFIG.MAX_ACTIVE_TRADES) {
-        // Warning: This logic was just shifting, but we don't want to close random trades.
-        // We just prevent opening new ones in the loop if max is reached.
-    }
+    // (Note: La limite de trades autorisés est gérée dynamiquement dans server.js)
 
     stateManager.save();
     addLog(botState, `✅ TRADE OPENED: ${trade.side} sur "${trade.question.substring(0, 30)}..." @ $${trade.entryPrice.toFixed(3)} ($${trade.amount.toFixed(2)})`, 'trade');
