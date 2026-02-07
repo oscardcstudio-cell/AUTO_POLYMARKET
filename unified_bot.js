@@ -1179,8 +1179,8 @@ function simulateTrade(market, pizzaData, isFreshMarket = false) {
         confidence = 0.40;
         decisionReasons.push(`Prix moyen NO: ${noPrice.toFixed(3)}`);
     }
-    // NOUVEAU: TREND FOLLOWING (Suivre la foule si volume élevé + conviction)
-    else if (market.volume24hr > 5000 && yesPrice > 0.60 && yesPrice < 0.85) {
+    // NOUVEAU: TREND FOLLOWING (Optimisé: Vol > 2000, Price > 0.55)
+    else if (market.volume24hr > 2000 && yesPrice > 0.55 && yesPrice < 0.90) {
         side = 'YES';
         entryPrice = yesPrice;
         confidence = 0.60;
@@ -1194,19 +1194,35 @@ function simulateTrade(market, pizzaData, isFreshMarket = false) {
         confidence = 0.50; // Pari moyen terme sur correction
         decisionReasons.push(`📉 Hype Fader: Shorting Overbought (Price: ${yesPrice.toFixed(2)})`);
     }
-    // NOUVEAU: Trading basé sur le momentum (volume élevé)
+    // NOUVEAU: SMART MOMENTUM (Volume > 1000)
     else if (market.volume24hr && parseFloat(market.volume24hr) > 1000) {
-        // Choisir le côté le moins cher
-        if (yesPrice < noPrice) {
+        // Si YES est favori (et pas trop cher), on suit la tendance
+        if (yesPrice >= 0.55 && yesPrice <= 0.85) {
             side = 'YES';
             entryPrice = yesPrice;
-            confidence = 0.35;
-            decisionReasons.push(`Momentum élevé (vol24h: ${market.volume24hr}) - YES favori`);
-        } else {
+            confidence = 0.45;
+            decisionReasons.push(`🔥 Smart Momentum: Following YES Favorite (Vol: ${market.volume24hr})`);
+        }
+        // Si NO est favori (YES < 0.45), on suit NO
+        else if (noPrice >= 0.55 && noPrice <= 0.85) {
             side = 'NO';
             entryPrice = noPrice;
-            confidence = 0.35;
-            decisionReasons.push(`Momentum élevé (vol24h: ${market.volume24hr}) - NO favori`);
+            confidence = 0.45;
+            decisionReasons.push(`🔥 Smart Momentum: Following NO Favorite (Vol: ${market.volume24hr})`);
+        }
+        // Sinon (Zone d'incertitude 0.45-0.55), on prend le moins cher (Contrarian)
+        else {
+            if (yesPrice < noPrice) {
+                side = 'YES';
+                entryPrice = yesPrice;
+                confidence = 0.35;
+                decisionReasons.push(`Contrarian Momentum - Betting Cheap YES`);
+            } else {
+                side = 'NO';
+                entryPrice = noPrice;
+                confidence = 0.35;
+                decisionReasons.push(`Contrarian Momentum - Betting Cheap NO`);
+            }
         }
     }
     else {

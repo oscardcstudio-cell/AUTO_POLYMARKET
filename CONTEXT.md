@@ -27,6 +27,11 @@ We have successfully re-implemented:
 *   Logic is in `detectWizards()` in `unified_bot.js`.
 *   Criteria were relaxed in Version 2.1 to find more opportunities (Price < 0.35, Liq > 500, Alpha > 30).
 
+## 📈 Trade Logic Update (v2.2)
+*   **Smart Momentum:** Replaced "Contrarian Bias" with "Trend Following" for Vol > 1000.
+*   **Behavior:** Now bets **YES** on favorites (Price 0.55 - 0.85), instead of Shorting them.
+*   **Goal:** Balance the YES/NO ratio.
+
 ## 🚀 Next Steps (Backlog)
 *   **Smart Exit:** Implement trailing stop-loss logic in `unified_bot.js`.
 *   **PizzINT Integration:** Deepen the integration with the news API for better Alpha scores.
