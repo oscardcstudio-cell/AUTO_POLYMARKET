@@ -50,13 +50,28 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
         reasonsCollector = null
     } = dependencies;
 
-    if (!market.outcomePrices || market.outcomePrices.length < 2) {
+    if (!market.outcomePrices) {
         if (reasonsCollector) reasonsCollector.push("Missing prices");
         return null;
     }
 
-    const yesPrice = parseFloat(market.outcomePrices[0]);
-    const noPrice = parseFloat(market.outcomePrices[1]);
+    let prices = market.outcomePrices;
+    if (typeof prices === 'string') {
+        try {
+            prices = JSON.parse(prices);
+        } catch (e) {
+            if (reasonsCollector) reasonsCollector.push("Invalid price JSON");
+            return null;
+        }
+    }
+
+    if (!Array.isArray(prices) || prices.length < 2) {
+        if (reasonsCollector) reasonsCollector.push("Incomplete prices");
+        return null;
+    }
+
+    const yesPrice = parseFloat(prices[0]);
+    const noPrice = parseFloat(prices[1]);
 
     if (isNaN(yesPrice) || isNaN(noPrice)) {
         if (reasonsCollector) reasonsCollector.push("NaN prices");

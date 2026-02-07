@@ -188,7 +188,6 @@ async function mainLoop() {
                     const reasonSummary = uniqueReasons.length > 0 ? " | " + uniqueReasons.join(", ") : "";
                     addLog(botState, `🔍 Scanned ${uniqueCandidates.length} markets. No entry found${reasonSummary}`, 'info');
                 }
-                鼓
             }
 
             // 7. Data Sync
