@@ -224,13 +224,22 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
     }
     // NOUVEAU: HYPE FADER (Depth Checked)
     else if (yesPrice > 0.92 && yesPrice < 0.98) {
-        // Check Depth for Shorting
+        // Check Depth for Shorting YES (Buying NO)
         const depthOK = await checkLiquidityDepthFn(market, 'NO', noPrice, 50);
         if (depthOK) {
             side = 'NO';
             entryPrice = noPrice;
             confidence = 0.50;
-            decisionReasons.push(`📉 Hype Fader: Shorting Overbought (Price: ${yesPrice.toFixed(2)})`);
+            decisionReasons.push(`📉 Hype Fader: Shorting Overbought YES (Price: ${yesPrice.toFixed(2)})`);
+        }
+    } else if (noPrice > 0.92 && noPrice < 0.98) {
+        // Check Depth for Shorting NO (Buying YES)
+        const depthOK = await checkLiquidityDepthFn(market, 'YES', yesPrice, 50);
+        if (depthOK) {
+            side = 'YES';
+            entryPrice = yesPrice;
+            confidence = 0.50;
+            decisionReasons.push(`📈 Hype Fader: Shorting Overbought NO (Price: ${noPrice.toFixed(2)})`);
         }
     }
     // NOUVEAU: SMART MOMENTUM (Vol > 1000 + Spread Check implied by Depth)
@@ -265,15 +274,15 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
         }
     }
     // Prix très bas (long shots) - Moved AFTER advanced strategies
-    else if (yesPrice < 0.15 && yesPrice >= 0.01) {
+    else if (yesPrice < 0.20 && yesPrice >= 0.01) {
         const depthOK = await checkLiquidityDepthFn(market, 'YES', yesPrice, 20);
         if (depthOK) {
             side = 'YES';
             entryPrice = yesPrice;
-            confidence = 0.25;
+            confidence = 0.35;
             decisionReasons.push(`Prix bas YES: ${yesPrice.toFixed(3)}`);
         }
-    } else if (noPrice < 0.2 && noPrice >= 0.01) {
+    } else if (noPrice < 0.20 && noPrice >= 0.01) {
         const depthOK = await checkLiquidityDepthFn(market, 'NO', noPrice, 20);
         if (depthOK) {
             side = 'NO';

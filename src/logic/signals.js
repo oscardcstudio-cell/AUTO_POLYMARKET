@@ -351,20 +351,27 @@ export async function detectWizards() {
     try {
         const markets = await getRelevantMarkets(false);
         markets.forEach(m => {
-            const pYes = parseFloat(m.outcomePrices ? m.outcomePrices[0] : 0);
+            if (!m.outcomePrices) return;
+            let prices = m.outcomePrices;
+            if (typeof prices === 'string') {
+                try { prices = JSON.parse(prices); } catch (e) { return; }
+            }
+            const pYes = parseFloat(prices[0]);
+            const pNo = parseFloat(prices[1]);
             const liq = parseFloat(m.liquidityNum || 0);
 
+            // Check YES Wizards
             if (pYes < 0.35 && pYes > 0.01 && liq > 500) {
                 const alpha = calculateAlphaScore(m, botState.lastPizzaData);
                 if (alpha > 30) {
-                    botState.wizards.push({
-                        id: m.id,
-                        slug: m.slug,
-                        question: m.question,
-                        price: pYes.toFixed(3),
-                        alpha: alpha,
-                        reason: `Alpha ${alpha}%`
-                    });
+                    botState.wizards.push({ id: m.id, side: 'YES', slug: m.slug, question: m.question, price: pYes.toFixed(3), alpha: alpha, reason: `YES Alpha ${alpha}%` });
+                }
+            }
+            // Check NO Wizards
+            else if (pNo < 0.35 && pNo > 0.01 && liq > 500) {
+                const alpha = calculateAlphaScore(m, botState.lastPizzaData);
+                if (alpha > 30) {
+                    botState.wizards.push({ id: m.id, side: 'NO', slug: m.slug, question: m.question, price: pNo.toFixed(3), alpha: alpha, reason: `NO Alpha ${alpha}%` });
                 }
             }
         });
