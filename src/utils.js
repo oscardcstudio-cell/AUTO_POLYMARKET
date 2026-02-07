@@ -32,9 +32,9 @@ export function saveToGithub(commitMessage = "Auto-save bot state") {
     // 1. Check if sync is enabled in config (disables local sync)
     if (!CONFIG.ENABLE_GITHUB_SYNC) return;
 
-    // 2. Only verify if git is configured
-    const gitDir = path.join(path.dirname(CONFIG.DATA_FILE), '.git');
-    if (!fs.existsSync(gitDir)) return;
+    // 2. Only verify if git is configured (look in root, not just data dir)
+    const rootGitDir = path.join(CONFIG.ROOT_DIR, '.git');
+    if (!fs.existsSync(rootGitDir)) return;
 
     // Note: This function previously used execSync which is blocking.
     // Using exec (async) is safer for the event loop.

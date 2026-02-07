@@ -7,7 +7,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Auto-detect Railway Volume Path
-const ROOT_DIR = path.resolve(__dirname, '..');
+export const ROOT_DIR = path.resolve(__dirname, '..');
 // Prioritize explicit env var, then /app/data (common Railway default), then STORAGE_PATH
 const VOLUME_PATH = process.env.RAILWAY_VOLUME_MOUNT_PATH ||
     (fs.existsSync('/app/data') ? '/app/data' : null) ||
@@ -19,6 +19,7 @@ const IS_PROD = process.env.NODE_ENV === 'production' || !!process.env.RAILWAY_S
 const ENABLE_GITHUB_SYNC = true; // Always enable to allow AI to see the backlog
 
 export const CONFIG = {
+    ROOT_DIR,
     ENABLE_GITHUB_SYNC,
     STARTING_CAPITAL: 1000,
     POLL_INTERVAL_MINUTES: 1,
