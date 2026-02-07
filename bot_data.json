@@ -87,6 +87,26 @@
     {
       "t": "2026-02-07T15:09:09.267Z",
       "v": 1000
+    },
+    {
+      "t": "2026-02-07T15:19:21.923Z",
+      "v": 1000
+    },
+    {
+      "t": "2026-02-07T15:29:23.761Z",
+      "v": 1000
+    },
+    {
+      "t": "2026-02-07T15:31:24.505Z",
+      "v": 1000
+    },
+    {
+      "t": "2026-02-07T15:34:24.979Z",
+      "v": 1000
+    },
+    {
+      "t": "2026-02-07T15:46:26.786Z",
+      "v": 1000
     }
   ],
   "lastPizzaData": {
@@ -99,11 +119,26 @@
     "question": "Warriors vs. Lakers",
     "score": 100,
     "reason": "Alpha Matrix: Corrélation de signal maximale",
-    "timestamp": "2026-02-07T15:13:09.916Z",
+    "timestamp": "2026-02-07T15:19:21.923Z",
     "slug": "nba-gsw-lal-2026-02-07"
   },
-  "lastUpdate": "2026-02-07T15:13:09.916Z",
+  "lastUpdate": "2026-02-07T16:02:29.345Z",
   "logs": [
+    {
+      "timestamp": "2026-02-07T15:17:21.432Z",
+      "message": "Serveur démarré sur le port 3000",
+      "type": "success"
+    },
+    {
+      "timestamp": "2026-02-07T15:17:21.369Z",
+      "message": "🔄 Démarrage de la boucle de trading...",
+      "type": "info"
+    },
+    {
+      "timestamp": "2026-02-07T15:17:21.363Z",
+      "message": "Chargement des données réussi ($1000.00)",
+      "type": "success"
+    },
     {
       "timestamp": "2026-02-07T15:06:08.598Z",
       "message": "Serveur démarré sur le port 3000",
@@ -331,8 +366,8 @@
   "sectorActivity": {
     "politics": [
       {
-        "id": "mlcgemu4tys3xw6lfq",
-        "timestamp": "2026-02-07T15:13:09.916Z",
+        "id": "mlcgmlvnsbtyyuil3gg",
+        "timestamp": "2026-02-07T15:19:21.923Z",
         "type": "SIGNAL",
         "message": "Top Signal Detected: 100/100",
         "data": {
@@ -340,8 +375,8 @@
         }
       },
       {
-        "id": "mlcgemu4y7qgn0s38a",
-        "timestamp": "2026-02-07T15:13:09.916Z",
+        "id": "mlcgmlvm81fv41obj19",
+        "timestamp": "2026-02-07T15:19:21.922Z",
         "type": "ANALYSIS",
         "message": "High Alpha: Warriors vs. Lakers...",
         "data": {
@@ -349,8 +384,8 @@
         }
       },
       {
-        "id": "mlcgemu4huwkne7nvq",
-        "timestamp": "2026-02-07T15:13:09.916Z",
+        "id": "mlcgmlvmtllukzljmqk",
+        "timestamp": "2026-02-07T15:19:21.922Z",
         "type": "ANALYSIS",
         "message": "High Alpha: US x Iran meeting by February ...",
         "data": {
@@ -358,8 +393,8 @@
         }
       },
       {
-        "id": "mlcgdcfuh2m5avida5b",
-        "timestamp": "2026-02-07T15:12:09.786Z",
+        "id": "mlcglbhgjdesbvnl1r",
+        "timestamp": "2026-02-07T15:18:21.796Z",
         "type": "SIGNAL",
         "message": "Top Signal Detected: 100/100",
         "data": {
@@ -367,8 +402,8 @@
         }
       },
       {
-        "id": "mlcgdcfuynu8z5h1s7f",
-        "timestamp": "2026-02-07T15:12:09.786Z",
+        "id": "mlcglbhgw0xod9j8yl",
+        "timestamp": "2026-02-07T15:18:21.796Z",
         "type": "ANALYSIS",
         "message": "High Alpha: Warriors vs. Lakers...",
         "data": {
@@ -376,8 +411,8 @@
         }
       },
       {
-        "id": "mlcgdcfu5dlf3gd5i5g",
-        "timestamp": "2026-02-07T15:12:09.786Z",
+        "id": "mlcglbhghj2fe63t0eh",
+        "timestamp": "2026-02-07T15:18:21.796Z",
         "type": "ANALYSIS",
         "message": "High Alpha: US x Iran meeting by February ...",
         "data": {
@@ -385,8 +420,8 @@
         }
       },
       {
-        "id": "mlcgc207btxi5sqky9i",
-        "timestamp": "2026-02-07T15:11:09.607Z",
+        "id": "mlcgk131q34ugbijw6f",
+        "timestamp": "2026-02-07T15:17:21.661Z",
         "type": "SIGNAL",
         "message": "Top Signal Detected: 100/100",
         "data": {
@@ -394,8 +429,8 @@
         }
       },
       {
-        "id": "mlcgc206174d6zffp17",
-        "timestamp": "2026-02-07T15:11:09.606Z",
+        "id": "mlcgk130xqwmktva3wb",
+        "timestamp": "2026-02-07T15:17:21.660Z",
         "type": "ANALYSIS",
         "message": "High Alpha: Warriors vs. Lakers...",
         "data": {
@@ -403,8 +438,8 @@
         }
       },
       {
-        "id": "mlcgc206b5uim4m59su",
-        "timestamp": "2026-02-07T15:11:09.606Z",
+        "id": "mlcgk130d6ehfbe40j",
+        "timestamp": "2026-02-07T15:17:21.660Z",
         "type": "ANALYSIS",
         "message": "High Alpha: US x Iran meeting by February ...",
         "data": {
@@ -412,8 +447,8 @@
         }
       },
       {
-        "id": "mlcgarjw7qb0jh4pok4",
-        "timestamp": "2026-02-07T15:10:09.404Z",
+        "id": "mlcgh7qfrpkzkb0stv",
+        "timestamp": "2026-02-07T15:15:10.311Z",
         "type": "SIGNAL",
         "message": "Top Signal Detected: 100/100",
         "data": {
@@ -601,6 +636,51 @@
     ],
     "trending": [
       {
+        "id": "mlcgmlvmt70t7kcameh",
+        "timestamp": "2026-02-07T15:19:21.922Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: Seahawks vs. Patriots...",
+        "data": {
+          "score": "85"
+        }
+      },
+      {
+        "id": "mlcglbhgx7zdl579wi",
+        "timestamp": "2026-02-07T15:18:21.796Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: Seahawks vs. Patriots...",
+        "data": {
+          "score": "85"
+        }
+      },
+      {
+        "id": "mlcgk1304qeqvkjghan",
+        "timestamp": "2026-02-07T15:17:21.660Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: Seahawks vs. Patriots...",
+        "data": {
+          "score": "85"
+        }
+      },
+      {
+        "id": "mlcgh7qed6aghsy1kzg",
+        "timestamp": "2026-02-07T15:15:10.310Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: Seahawks vs. Patriots...",
+        "data": {
+          "score": "85"
+        }
+      },
+      {
+        "id": "mlcgfx9memxvyqrbieq",
+        "timestamp": "2026-02-07T15:14:10.090Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: Seahawks vs. Patriots...",
+        "data": {
+          "score": "85"
+        }
+      },
+      {
         "id": "mlcgemu4fkki30zahbh",
         "timestamp": "2026-02-07T15:13:09.916Z",
         "type": "ANALYSIS",
@@ -643,53 +723,6 @@
         "message": "High Alpha: Seahawks vs. Patriots...",
         "data": {
           "score": "85"
-        }
-      },
-      {
-        "id": "mlce4vneyh0au01fbsg",
-        "timestamp": "2026-02-07T14:09:35.546Z",
-        "type": "ANALYSIS",
-        "message": "High Alpha: Seahawks vs. Patriots...",
-        "data": {
-          "score": "85"
-        }
-      },
-      {
-        "id": "mlce3l826cjy5e3ejej",
-        "timestamp": "2026-02-07T14:08:35.378Z",
-        "type": "ANALYSIS",
-        "message": "High Alpha: Seahawks vs. Patriots...",
-        "data": {
-          "score": "85"
-        }
-      },
-      {
-        "id": "mlcavkjhu6e4qaeo28i",
-        "timestamp": "2026-02-07T12:38:22.397Z",
-        "type": "TRADE",
-        "message": "🎰 Trade Opened: $50 on NO",
-        "data": {
-          "market": "Will Solana dip to $90 in February?",
-          "price": "NaN"
-        }
-      },
-      {
-        "id": "mlcaprduq8s6hmsou",
-        "timestamp": "2026-02-07T12:33:51.330Z",
-        "type": "TRADE",
-        "message": "🎰 Trade Opened: $50 on NO",
-        "data": {
-          "market": "Spread: Seahawks (-4.5)",
-          "price": "NaN"
-        }
-      },
-      {
-        "id": "mlcadyrnhwelnpm0lr",
-        "timestamp": "2026-02-07T12:24:41.027Z",
-        "type": "ANALYSIS",
-        "message": "High Alpha: Nuggets vs. Bulls...",
-        "data": {
-          "score": "100"
         }
       }
     ]

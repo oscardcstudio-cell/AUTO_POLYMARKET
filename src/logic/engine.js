@@ -46,15 +46,22 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
         checkLiquidityDepthFn = checkLiquidityDepth,
         calculateIntradayTrendFn = calculateIntradayTrend,
         testSize = null,
-        isTest = false
+        isTest = false,
+        reasonsCollector = null
     } = dependencies;
 
-    if (!market.outcomePrices || market.outcomePrices.length < 2) return null;
+    if (!market.outcomePrices || market.outcomePrices.length < 2) {
+        if (reasonsCollector) reasonsCollector.push("Missing prices");
+        return null;
+    }
 
     const yesPrice = parseFloat(market.outcomePrices[0]);
     const noPrice = parseFloat(market.outcomePrices[1]);
 
-    if (isNaN(yesPrice) || isNaN(noPrice)) return null;
+    if (isNaN(yesPrice) || isNaN(noPrice)) {
+        if (reasonsCollector) reasonsCollector.push("NaN prices");
+        return null;
+    }
 
     let side, entryPrice, confidence;
     const category = categorizeMarket(market.question);
@@ -128,6 +135,7 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
             decisionReasons.push(`DEFCON ${pizzaData.defcon} critique + ${category}`);
         } else if (category === 'sports') {
             decisionReasons.push(`Rejeté: Sports pendant DEFCON ${pizzaData.defcon}`);
+            if (reasonsCollector) reasonsCollector.push(...decisionReasons);
             logTradeDecision(market, null, decisionReasons, pizzaData);
             return null;
         } else {
@@ -144,7 +152,7 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
         const isHighVolume = parseFloat(market.volume24hr) > 50000;
 
         if (trend === 'UP') {
-            const depthOK = await checkLiquidityDepthFn(market, 'YES', yesPrice, 100); // Loosened from 200
+            const depthOK = await checkLiquidityDepthFn(market, 'YES', yesPrice, 50); // Loosened from 100
             if (depthOK) {
                 side = 'YES';
                 entryPrice = yesPrice;
@@ -152,7 +160,7 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
                 decisionReasons.push(`🐳 Whale Follow: UP Trend Verified (Vol: ${parseInt(market.volume24hr)})`);
             }
         } else if (trend === 'DOWN') {
-            const depthOK = await checkLiquidityDepthFn(market, 'NO', noPrice, 100); // Loosened from 200
+            const depthOK = await checkLiquidityDepthFn(market, 'NO', noPrice, 50); // Loosened from 100
             if (depthOK) {
                 side = 'NO';
                 entryPrice = noPrice;
@@ -181,12 +189,12 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
         }
     }
     // NOUVEAU: TREND FOLLOWING (Optimisé + Intraday Check + Depth Check)
-    else if (market.volume24hr > 2000 && yesPrice > 0.55 && yesPrice < 0.90) {
+    else if (market.volume24hr > 1000 && yesPrice > 0.55 && yesPrice < 0.90) {
         // 1. Check Intraday Trend
         const trend = await calculateIntradayTrendFn(market.id);
         if (trend === 'UP') {
             // 2. Check Depth 
-            const depthOK = await checkLiquidityDepthFn(market, 'YES', yesPrice, 100); // Check for $100 depth
+            const depthOK = await checkLiquidityDepthFn(market, 'YES', yesPrice, 50); // Loosened from 100
             if (depthOK) {
                 side = 'YES';
                 entryPrice = yesPrice;
@@ -287,6 +295,7 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
 
     if (!side || !entryPrice) {
         decisionReasons.push('Aucune condition de trade remplie');
+        if (reasonsCollector) reasonsCollector.push(...decisionReasons);
         logTradeDecision(market, null, decisionReasons, pizzaData);
         return null;
     }
@@ -295,7 +304,10 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
     if (!side || !entryPrice) return null; // Added safety return
 
 
-    if (entryPrice < 0.01) return null;
+    if (entryPrice < 0.01) {
+        if (reasonsCollector) reasonsCollector.push("Price too low (<0.01)");
+        return null;
+    }
 
     if (market.volume24hr > 10000 && entryPrice > 0.60 && side === 'YES') {
         confidence += 0.10;

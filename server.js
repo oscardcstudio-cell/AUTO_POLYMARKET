@@ -148,10 +148,12 @@ async function mainLoop() {
                 }
 
                 // Try to execute
-                // Diagnostic log
                 if (uniqueCandidates.length > 0) {
                     console.log(`[LOOP] Considering ${uniqueCandidates.length} unique candidates (Priority sort)`);
                 }
+
+                let tradeExecutedThisLoop = false;
+                const rejectionReasons = [];
 
                 for (const candidate of uniqueCandidates) {
                     if (botState.activeTrades.length >= CONFIG.MAX_ACTIVE_TRADES) break;
@@ -160,9 +162,11 @@ async function mainLoop() {
                     const alreadyTraded = botState.activeTrades.some(t => t.marketId === candidate.market.id);
                     if (alreadyTraded) continue;
 
-                    let result = await simulateTrade(candidate.market, pizzaData, candidate.isFresh);
+                    const marketReasons = [];
+                    let result = await simulateTrade(candidate.market, pizzaData, candidate.isFresh, { reasonsCollector: marketReasons });
+
                     if (result) {
-                        // Handle single trade or array (for arbitrage)
+                        tradeExecutedThisLoop = true;
                         const tradesToProcess = Array.isArray(result) ? result : [result];
 
                         for (const t of tradesToProcess) {
@@ -171,12 +175,20 @@ async function mainLoop() {
                                 if (s) { t.eventSlug = s; stateManager.save(); }
                             });
                         }
-
-                        // Break after one successful "entry" (or arbitrage pair) to keep things steady
-                        // unless we want to fill up all slots immediately. Usually better to wait a poll.
                         break;
+                    } else {
+                        if (marketReasons.length > 0) {
+                            rejectionReasons.push(`${candidate.priority}: ${marketReasons[marketReasons.length - 1]}`);
+                        }
                     }
                 }
+
+                if (!tradeExecutedThisLoop && uniqueCandidates.length > 0) {
+                    const uniqueReasons = [...new Set(rejectionReasons)].slice(0, 3);
+                    const reasonSummary = uniqueReasons.length > 0 ? " | " + uniqueReasons.join(", ") : "";
+                    addLog(botState, `🔍 Scanned ${uniqueCandidates.length} markets. No entry found${reasonSummary}`, 'info');
+                }
+                鼓
             }
 
             // 7. Data Sync
