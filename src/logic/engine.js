@@ -144,7 +144,7 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
         const isHighVolume = parseFloat(market.volume24hr) > 50000;
 
         if (trend === 'UP') {
-            const depthOK = await checkLiquidityDepthFn(market, 'YES', yesPrice, 200); // Strict depth for whales
+            const depthOK = await checkLiquidityDepthFn(market, 'YES', yesPrice, 100); // Loosened from 200
             if (depthOK) {
                 side = 'YES';
                 entryPrice = yesPrice;
@@ -152,7 +152,7 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
                 decisionReasons.push(`🐳 Whale Follow: UP Trend Verified (Vol: ${parseInt(market.volume24hr)})`);
             }
         } else if (trend === 'DOWN') {
-            const depthOK = await checkLiquidityDepthFn(market, 'NO', noPrice, 200);
+            const depthOK = await checkLiquidityDepthFn(market, 'NO', noPrice, 100); // Loosened from 200
             if (depthOK) {
                 side = 'NO';
                 entryPrice = noPrice;
