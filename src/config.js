@@ -1,17 +1,27 @@
 
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Auto-detect Railway Volume Path
-// Note: We go up one level cause we are in src/
 const ROOT_DIR = path.resolve(__dirname, '..');
-const VOLUME_PATH = process.env.RAILWAY_VOLUME_MOUNT_PATH || process.env.STORAGE_PATH;
+// Prioritize explicit env var, then /app/data (common Railway default), then STORAGE_PATH
+const VOLUME_PATH = process.env.RAILWAY_VOLUME_MOUNT_PATH ||
+    (fs.existsSync('/app/data') ? '/app/data' : null) ||
+    process.env.STORAGE_PATH;
+
 const DATA_FILE_PATH = VOLUME_PATH ? path.join(VOLUME_PATH, 'bot_data.json') : path.join(ROOT_DIR, 'bot_data.json');
 
+// GitHub Sync is only needed if in production (Railway)
+// The USER wants this even with volume to allow AI visibility
+const IS_PROD = process.env.NODE_ENV === 'production' || !!process.env.RAILWAY_STATIC_URL;
+const ENABLE_GITHUB_SYNC = IS_PROD;
+
 export const CONFIG = {
+    ENABLE_GITHUB_SYNC,
     STARTING_CAPITAL: 1000,
     POLL_INTERVAL_MINUTES: 1,
     DEFCON_THRESHOLD: 5,

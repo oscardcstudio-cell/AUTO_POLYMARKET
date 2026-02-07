@@ -78,8 +78,23 @@
     "timestamp": "2026-02-07T14:10:35.674Z",
     "slug": "nba-gsw-lal-2026-02-07"
   },
-  "lastUpdate": "2026-02-07T14:18:36.966Z",
+  "lastUpdate": "2026-02-07T14:26:40.456Z",
   "logs": [
+    {
+      "timestamp": "2026-02-07T14:24:39.808Z",
+      "message": "Serveur démarré sur le port 3000",
+      "type": "success"
+    },
+    {
+      "timestamp": "2026-02-07T14:24:39.723Z",
+      "message": "🔄 Démarrage de la boucle de trading...",
+      "type": "info"
+    },
+    {
+      "timestamp": "2026-02-07T14:24:39.714Z",
+      "message": "Chargement des données réussi ($1000.00)",
+      "type": "success"
+    },
     {
       "timestamp": "2026-02-07T14:07:34.954Z",
       "message": "Serveur démarré sur le port 3000",

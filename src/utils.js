@@ -29,9 +29,10 @@ export function addLog(botState, message, type = 'info') {
 
 // --- GITHUB SYNC ---
 export function saveToGithub(commitMessage = "Auto-save bot state") {
-    // Only verify if git is configured, otherwise skip silently to avoid spam
-    // In a real/production env, we might want to use a specific Git library
-    // For now, consistent with legacy behavior:
+    // 1. Check if sync is enabled in config (disables local sync)
+    if (!CONFIG.ENABLE_GITHUB_SYNC) return;
+
+    // 2. Only verify if git is configured
     const gitDir = path.join(path.dirname(CONFIG.DATA_FILE), '.git');
     if (!fs.existsSync(gitDir)) return;
 
