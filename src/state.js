@@ -86,9 +86,10 @@ class StateManager {
 
             fs.writeFileSync(CONFIG.DATA_FILE, JSON.stringify(this.data, null, 2));
 
-            // Auto-backup to GitHub (every 5 saves or something? No, let's keep it simple for now)
-            // In legacy code it was sometimes commented out or specific. 
-            // We'll expose a method to trigger it.
+            // Sync to GitHub to allow AI/Antigravity to see updates
+            if (CONFIG.ENABLE_GITHUB_SYNC) {
+                saveToGithub("Update bot state & backlog");
+            }
         } catch (error) {
             console.error('❌ Erreur sauvegarde:', error.message);
         }
