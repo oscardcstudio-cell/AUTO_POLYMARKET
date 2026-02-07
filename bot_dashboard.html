@@ -278,6 +278,16 @@
                         <div class="pulse-dot"></div>
                         <span id="lastUpdate">Checking system...</span>
                     </div>
+                    <div class="status-badge" id="alphaBadge"
+                        style="background: rgba(74, 222, 128, 0.1); border-color: rgba(74, 222, 128, 0.3);">
+                        <div class="pulse-dot" style="background: #4ade80;"></div>
+                        <span>ALPHA: <span id="alphaStatus">OK</span></span>
+                    </div>
+                    <div class="status-badge" id="gammaBadge"
+                        style="background: rgba(96, 165, 250, 0.1); border-color: rgba(96, 165, 250, 0.3);">
+                        <div class="pulse-dot" style="background: #60a5fa;"></div>
+                        <span>GAMMA: <span id="gammaStatus">OK</span></span>
+                    </div>
                 </div>
 
                 <!-- NEW COMPACT QUICK NOTE -->
@@ -721,8 +731,8 @@
                     // Duration
                     if (closed.length > 0) {
                         const totalDuration = closed.reduce((acc, t) => {
-                            const start = new Date(t.timestamp).getTime();
-                            const end = new Date(t.closedAt).getTime();
+                            const start = new Date(t.startTime || t.timestamp).getTime();
+                            const end = new Date(t.endTime || t.closedAt).getTime();
                             return acc + (end - start);
                         }, 0);
                         const avgDurationMin = (totalDuration / closed.length) / 60000;
@@ -730,6 +740,12 @@
                     } else {
                         document.getElementById('avgDuration').textContent = '-';
                     }
+
+                    // API Status Badges
+                    const alphaEl = document.getElementById('alphaStatus');
+                    const gammaEl = document.getElementById('gammaStatus');
+                    if (alphaEl) alphaEl.textContent = botData.apiStatus?.alpha || 'Checking...';
+                    if (gammaEl) gammaEl.textContent = botData.apiStatus?.gamma || 'Checking...';
 
                     // Pizza/Defcon
                     document.getElementById('pizzaIndex').textContent = botData.lastPizzaData?.index || 0;

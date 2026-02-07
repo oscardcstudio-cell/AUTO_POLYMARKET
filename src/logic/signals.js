@@ -82,11 +82,25 @@ export async function getRelevantMarkets(useDeepScan = false) {
     }
 }
 
-export function checkConnectivity() {
-    // Placeholder or import if needed. 
-    // In original code it just did fetches.
-    // We can move it to a health check module or keep it in server.js
-    // For now, let signals manage their own connectivity status implicitly
+export async function checkConnectivity() {
+    // 1. Check Gamma
+    try {
+        const res = await fetch('https://gamma-api.polymarket.com/health', { signal: AbortSignal.timeout(5000) });
+        botState.apiStatus.gamma = res.ok ? 'ONLINE' : 'DEGRADED';
+    } catch (e) {
+        botState.apiStatus.gamma = 'OFFLINE';
+    }
+
+    // 2. Check CLOB
+    try {
+        const res = await fetch('https://clob.polymarket.com/health', { signal: AbortSignal.timeout(5000) });
+        botState.apiStatus.clob = res.ok ? 'ONLINE' : 'DEGRADED';
+    } catch (e) {
+        botState.apiStatus.clob = 'OFFLINE';
+    }
+
+    // 3. Check Alpha (Placeholder/Internal)
+    botState.apiStatus.alpha = botState.lastPizzaData ? 'ONLINE' : 'OFFLINE';
 }
 
 function extractEntities(text) {

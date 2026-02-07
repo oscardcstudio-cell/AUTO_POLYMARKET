@@ -69,7 +69,7 @@ async function mainLoop() {
     while (true) {
         try {
             // 1. Connectivity & API Status
-            // checkConnectivity(); // (Optional, implemented in signals implicitly via 'apiStatus' updates)
+            await checkConnectivity();
 
             // 2. Fetch Intelligence (PizzInt / Alpha)
             const relevantMarkets = await getRelevantMarkets();
@@ -209,12 +209,18 @@ async function mainLoop() {
                     }
                 }
 
-                // 7. Loop Summary (Always Visible)
+                // 7. Loop Summary & Observational Logging (Always Visible)
                 if (!tradeExecutedThisLoop && uniqueCandidates.length > 0) {
                     const uniqueReasons = [...new Set(rejectionReasons)].slice(0, 3);
                     const reasonSummary = uniqueReasons.length > 0 ? " | " + uniqueReasons.join(", ") : "";
                     const prefix = isFull ? "👁️ OBS: " : "🔍 ";
                     addLog(botState, `${prefix}Scanned ${uniqueCandidates.length} markets. No entry found${reasonSummary}`, 'info');
+
+                    // Add observational pulses for surveillance visibility
+                    const sectorsFound = [...new Set(uniqueCandidates.map(c => c.market._category || categorizeMarket(c.market.question)))];
+                    sectorsFound.forEach(sec => {
+                        stateManager.addSectorEvent(sec, 'ANALYSIS', `Observation: ${uniqueCandidates.filter(c => (c.market._category || categorizeMarket(c.market.question)) === sec).length} marchés scannés.`, { status: 'idle' });
+                    });
                 }
             }
 
