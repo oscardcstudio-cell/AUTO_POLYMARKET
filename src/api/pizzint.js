@@ -38,9 +38,7 @@ export async function getPizzaData() {
             trends: data.trends || []
         };
     } catch (e) {
-        // Fallback Mock Data if API fails
-        // console.error("PizzInt API Error:", e.message); 
-        // Silent fail or return null to trigger offline mode
+        // Return null to indicate failure/offline
         return null;
     }
 }

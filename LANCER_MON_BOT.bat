@@ -8,5 +8,5 @@ echo [1/2] Nettoyage des anciennes instances...
 for /f "tokens=5" %%a in ('netstat -aon ^| findstr :3000') do taskkill /f /pid %%a 2>nul
 echo [2/2] Demarrage du bot...
 echo.
-node unified_bot.js
+node server.js
 pause

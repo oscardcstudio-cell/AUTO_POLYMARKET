@@ -26,5 +26,18 @@ export const CONFIG = {
     PORT: process.env.PORT || 3000,
     KEYWORD_UPDATE_INTERVAL: 60 * 60 * 1000, // 1 heure
     TAKE_PROFIT_PERCENT: 0.20,
-    STOP_LOSS_PERCENT: 0.15
+    STOP_LOSS_PERCENT: 0.15,
+    DYNAMIC_SL: {
+        VOLATILITY_MAP: {
+            crypto: 0.20,
+            economic: 0.20,
+            geopolitical: 0.15,
+            sports: 0.10,
+            other: 0.15
+        },
+        TRAILING_ACTIVATION: 0.15, // Activate trailing when +15% profit
+        TRAILING_DISTANCE: 0.05,   // Trail by 5%
+        TIME_DECAY_HOURS: 24,      // Tighten after 24h
+        TIME_DECAY_PENALTY: 0.05   // Tighten by 5%
+    }
 };

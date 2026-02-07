@@ -22,6 +22,7 @@ import {
 } from './src/logic/signals.js';
 import { getPizzaData } from './src/api/pizzint.js';
 import { getEventSlug } from './src/api/market_discovery.js';
+import { getMidPrice } from './src/api/clob_api.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -67,7 +68,25 @@ async function mainLoop() {
             }
 
             // 3. Portfolio Management
-            await checkAndCloseTrades(); // Handles exits
+            // Inject Real Price Fetcher logic
+            await checkAndCloseTrades(async (trade) => {
+                try {
+                    // 1. Try CLOB if Token IDs are available
+                    if (trade.clobTokenIds && trade.clobTokenIds.length === 2) {
+                        // Assumption: clobTokenIds[0] = YES, [1] = NO. 
+                        // Gamma uses [YES, NO] order for outcomePrices usually.
+                        const tokenId = trade.side === 'YES' ? trade.clobTokenIds[0] : trade.clobTokenIds[1];
+                        if (tokenId) {
+                            const clobPrice = await getMidPrice(tokenId);
+                            if (clobPrice) return clobPrice;
+                        }
+                    }
+
+                    // 2. If no CLOB, return null (Skip processing)
+                    // User requested NO MOCK DATA.
+                    return null;
+                } catch (e) { return null; }
+            });
 
             // 4. Market Scanning
             await scanArbitrage();

@@ -337,10 +337,13 @@ export async function checkCLOBHealth() {
     }
 }
 
+export { getCLOBMidpoint as getMidPrice };
+
 export default {
     getCLOBOrderBook,
     getCLOBPrice,
     getCLOBMidpoint,
+    getMidPrice: getCLOBMidpoint,
     getCLOBTradeHistory,
     getCLOBMarkets,
     analyzeSpread,

@@ -1,0 +1,560 @@
+{
+  "startTime": "2026-02-07T12:55:54.888Z",
+  "capital": 1000,
+  "startingCapital": 1000,
+  "totalTrades": 0,
+  "winningTrades": 0,
+  "losingTrades": 0,
+  "activeTrades": [],
+  "closedTrades": [],
+  "capitalHistory": [
+    {
+      "t": "2026-02-07T12:56:13.989Z",
+      "v": 1000
+    },
+    {
+      "t": "2026-02-07T13:19:17.370Z",
+      "v": 1000
+    },
+    {
+      "t": "2026-02-07T13:22:17.905Z",
+      "v": 1000
+    },
+    {
+      "t": "2026-02-07T13:23:18.064Z",
+      "v": 1000
+    },
+    {
+      "t": "2026-02-07T13:24:18.200Z",
+      "v": 1000
+    },
+    {
+      "t": "2026-02-07T13:27:39.522Z",
+      "v": 1000
+    }
+  ],
+  "lastPizzaData": {
+    "index": 50,
+    "defcon": 5,
+    "trends": []
+  },
+  "topSignal": {
+    "id": "1320343",
+    "question": "Will Elon Musk post <40 tweets from February 5 to February 7, 2026?",
+    "score": 65,
+    "reason": "Alpha Matrix: Momentum & Sentiment positifs",
+    "timestamp": "2026-02-07T12:56:13.988Z",
+    "slug": "elon-musk-of-tweets-february-5-february-7-0-39"
+  },
+  "lastUpdate": "2026-02-07T13:32:00.443Z",
+  "logs": [
+    {
+      "timestamp": "2026-02-07T13:28:59.717Z",
+      "message": "Serveur démarré sur le port 3000",
+      "type": "success"
+    },
+    {
+      "timestamp": "2026-02-07T13:28:59.670Z",
+      "message": "🔄 Démarrage de la boucle de trading...",
+      "type": "info"
+    },
+    {
+      "timestamp": "2026-02-07T13:28:59.666Z",
+      "message": "Chargement des données réussi ($1000.00)",
+      "type": "success"
+    },
+    {
+      "timestamp": "2026-02-07T13:27:39.357Z",
+      "message": "Serveur démarré sur le port 3000",
+      "type": "success"
+    },
+    {
+      "timestamp": "2026-02-07T13:27:39.316Z",
+      "message": "🔄 Démarrage de la boucle de trading...",
+      "type": "info"
+    },
+    {
+      "timestamp": "2026-02-07T13:27:39.311Z",
+      "message": "Chargement des données réussi ($1000.00)",
+      "type": "success"
+    },
+    {
+      "timestamp": "2026-02-07T12:55:54.888Z",
+      "message": "♻️ SIMULATION RESET: Portefeuille réinitialisé à $1000",
+      "type": "warning"
+    }
+  ],
+  "whaleAlerts": [
+    {
+      "id": "1328039",
+      "question": "US x Iran meeting by February 6, 2026?",
+      "volume": 2786788.6132570063,
+      "slug": "us-x-iran-meeting-by-february-6-2026"
+    },
+    {
+      "id": "1320343",
+      "question": "Will Elon Musk post <40 tweets from February 5 to February 7, 2026?",
+      "volume": 1133373.6896709998,
+      "slug": "elon-musk-of-tweets-february-5-february-7-0-39"
+    },
+    {
+      "id": "1269423",
+      "question": "Seahawks vs. Patriots",
+      "volume": 1088884.228517,
+      "slug": "nfl-sea-ne-2026-02-08"
+    },
+    {
+      "id": "1303384",
+      "question": "Will Bitcoin reach $85,000 in February?",
+      "volume": 680020.953113,
+      "slug": "will-bitcoin-reach-85k-in-february-2026"
+    }
+  ],
+  "arbitrageOpportunities": [],
+  "newsSentiment": [
+    {
+      "title": "Trend Alert: \"\" (Avg Prob: NaN%)",
+      "sentiment": "neutral",
+      "source": "Polymarket Internal (17 mkts)"
+    },
+    {
+      "title": "Trend Alert: \"FEBRUARY\" (Avg Prob: NaN%)",
+      "sentiment": "neutral",
+      "source": "Polymarket Internal (15 mkts)"
+    },
+    {
+      "title": "Trend Alert: \"BITCOIN\" (Avg Prob: NaN%)",
+      "sentiment": "neutral",
+      "source": "Polymarket Internal (9 mkts)"
+    },
+    {
+      "title": "Trend Alert: \"SEAHAWKS\" (Avg Prob: NaN%)",
+      "sentiment": "neutral",
+      "source": "Polymarket Internal (3 mkts)"
+    },
+    {
+      "title": "Trend Alert: \"REACH\" (Avg Prob: NaN%)",
+      "sentiment": "neutral",
+      "source": "Polymarket Internal (3 mkts)"
+    }
+  ],
+  "momentumData": {},
+  "apiStatus": {
+    "gamma": "ONLINE",
+    "clob": "Checking...",
+    "pizzint": "ONLINE",
+    "alpha": "ONLINE"
+  },
+  "wizards": [],
+  "freshMarkets": [],
+  "keywordScores": {},
+  "deepScanData": {
+    "lastScan": null,
+    "marketCount": 0,
+    "scanDuration": 0
+  },
+  "clobSpreadWarnings": [
+    {
+      "marketId": "1303384",
+      "question": "Will Bitcoin reach $85,000 in February?",
+      "spread": "196.00",
+      "warning": "CRITICAL: Spread > 10%, avoid trading",
+      "timestamp": "2026-02-07T12:29:45.433Z"
+    },
+    {
+      "marketId": "1269423",
+      "question": "Seahawks vs. Patriots",
+      "spread": "196.00",
+      "warning": "CRITICAL: Spread > 10%, avoid trading",
+      "timestamp": "2026-02-07T12:29:45.378Z"
+    },
+    {
+      "marketId": "1313442",
+      "question": "Hornets vs. Hawks",
+      "spread": "196.00",
+      "warning": "CRITICAL: Spread > 10%, avoid trading",
+      "timestamp": "2026-02-07T12:29:45.281Z"
+    },
+    {
+      "marketId": "1303355",
+      "question": "Will Bitcoin reach $150,000 in February?",
+      "spread": "199.60",
+      "warning": "CRITICAL: Spread > 10%, avoid trading",
+      "timestamp": "2026-02-07T12:29:45.109Z"
+    },
+    {
+      "marketId": "1303384",
+      "question": "Will Bitcoin reach $85,000 in February?",
+      "spread": "196.00",
+      "warning": "CRITICAL: Spread > 10%, avoid trading",
+      "timestamp": "2026-02-07T12:28:44.461Z"
+    }
+  ],
+  "sectorStats": {
+    "politics": {
+      "count": 20,
+      "active": true,
+      "lastUpdate": 1770467385554
+    },
+    "economics": {
+      "count": 20,
+      "active": true,
+      "lastUpdate": 1770467385554
+    },
+    "tech": {
+      "count": 2,
+      "active": true,
+      "lastUpdate": 1770467385554
+    },
+    "trending": {
+      "count": 44,
+      "active": true,
+      "lastUpdate": 1770467385554
+    }
+  },
+  "sectorActivity": {
+    "politics": [
+      {
+        "id": "mlcay9j4j5qbh4di4g",
+        "timestamp": "2026-02-07T12:40:28.096Z",
+        "type": "TRADE",
+        "message": "💰 Trade Closed: Stop Loss (-100.0%)",
+        "data": {
+          "pnl": "-50.00"
+        }
+      },
+      {
+        "id": "mlcay9j4tj4tcrtl47l",
+        "timestamp": "2026-02-07T12:40:28.096Z",
+        "type": "TRADE",
+        "message": "💰 Trade Closed: Stop Loss (-100.0%)",
+        "data": {
+          "pnl": "-50.00"
+        }
+      },
+      {
+        "id": "mlcaua565m9pw8pl7ji",
+        "timestamp": "2026-02-07T12:37:22.266Z",
+        "type": "TRADE",
+        "message": "🌍 Trade Opened: $50 on NO",
+        "data": {
+          "market": "US x Iran meeting by February 6, 2026?",
+          "price": "NaN"
+        }
+      },
+      {
+        "id": "mlcaszq9m17g9r9z6o",
+        "timestamp": "2026-02-07T12:36:22.113Z",
+        "type": "TRADE",
+        "message": "🌍 Trade Opened: $50 on NO",
+        "data": {
+          "market": "Will the next official US-Iran meeting be in Oman?",
+          "price": "NaN"
+        }
+      },
+      {
+        "id": "mlcadyrnvespz594swj",
+        "timestamp": "2026-02-07T12:24:41.027Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: Warriors vs. Lakers...",
+        "data": {
+          "score": "100"
+        }
+      },
+      {
+        "id": "mlca0wmpq80onga6ucr",
+        "timestamp": "2026-02-07T12:14:31.729Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: Warriors vs. Lakers...",
+        "data": {
+          "score": "100"
+        }
+      },
+      {
+        "id": "mlc9nv9nwqkihar314",
+        "timestamp": "2026-02-07T12:04:23.435Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: Warriors vs. Lakers...",
+        "data": {
+          "score": "100"
+        }
+      }
+    ],
+    "economics": [
+      {
+        "id": "mlcaszpf6h0cnnwcxhj",
+        "timestamp": "2026-02-07T12:36:22.083Z",
+        "type": "TRADE",
+        "message": "💰 Trade Closed: Stop Loss (-100.0%)",
+        "data": {
+          "pnl": "-50.00"
+        }
+      },
+      {
+        "id": "mlcar1u84todd1mzcbx",
+        "timestamp": "2026-02-07T12:34:51.536Z",
+        "type": "TRADE",
+        "message": "📉 Trade Opened: $50 on NO",
+        "data": {
+          "market": "Will the price of Bitcoin be above $70,000 on February 7?",
+          "price": "NaN"
+        }
+      },
+      {
+        "id": "mlcakliksp592ri6qi",
+        "timestamp": "2026-02-07T12:29:50.444Z",
+        "type": "TRADE",
+        "message": "💰 Trade Closed: Max Price Reached",
+        "data": {
+          "pnl": "NaN"
+        }
+      },
+      {
+        "id": "mlcadyrna220mafv0qd",
+        "timestamp": "2026-02-07T12:24:41.027Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: Will the price of Bitcoin be a...",
+        "data": {
+          "score": "100"
+        }
+      },
+      {
+        "id": "mlcadyrnsypmpc11two",
+        "timestamp": "2026-02-07T12:24:41.027Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: Will the price of Bitcoin be a...",
+        "data": {
+          "score": "100"
+        }
+      },
+      {
+        "id": "mlcadyrn11lukt2qhht",
+        "timestamp": "2026-02-07T12:24:41.027Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: Bitcoin Up or Down on February...",
+        "data": {
+          "score": "100"
+        }
+      },
+      {
+        "id": "mlcadyrnwl4az8y8dn",
+        "timestamp": "2026-02-07T12:24:41.027Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: Will the price of Bitcoin be a...",
+        "data": {
+          "score": "100"
+        }
+      },
+      {
+        "id": "mlca7fv0cbgbmftk7t",
+        "timestamp": "2026-02-07T12:19:36.588Z",
+        "type": "TRADE",
+        "message": "Executing NO on Will Bitcoin reach $...",
+        "data": {
+          "amount": "49.95",
+          "price": "0.990"
+        }
+      },
+      {
+        "id": "mlca0wmqsfvqptb2ok",
+        "timestamp": "2026-02-07T12:14:31.730Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: Will the price of Bitcoin be a...",
+        "data": {
+          "score": "100"
+        }
+      },
+      {
+        "id": "mlca0wmpmaes3gk3rwo",
+        "timestamp": "2026-02-07T12:14:31.729Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: Will the price of Bitcoin be a...",
+        "data": {
+          "score": "100"
+        }
+      }
+    ],
+    "tech": [
+      {
+        "id": "mlcbijdxzzh0c0bc86h",
+        "timestamp": "2026-02-07T12:56:13.989Z",
+        "type": "SIGNAL",
+        "message": "Top Signal Detected: 65/100",
+        "data": {
+          "market": "Will Elon Musk post <40 tweets from February 5 to February 7, 2026?"
+        }
+      },
+      {
+        "id": "mlcaszpfx9lcrwwnckj",
+        "timestamp": "2026-02-07T12:36:22.083Z",
+        "type": "TRADE",
+        "message": "💰 Trade Closed: Stop Loss (-100.0%)",
+        "data": {
+          "pnl": "-49.95"
+        }
+      },
+      {
+        "id": "mlcadyropiyyqiafbu9",
+        "timestamp": "2026-02-07T12:24:41.028Z",
+        "type": "SIGNAL",
+        "message": "Top Signal Detected: 100/100",
+        "data": {
+          "market": "Will Elon Musk post <40 tweets from February 5 to February 7, 2026?"
+        }
+      },
+      {
+        "id": "mlcadyrmrp2stq56ixn",
+        "timestamp": "2026-02-07T12:24:41.026Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: Will Elon Musk post <40 tweets...",
+        "data": {
+          "score": "100"
+        }
+      },
+      {
+        "id": "mlca0wmqaf42c4xwbqu",
+        "timestamp": "2026-02-07T12:14:31.730Z",
+        "type": "SIGNAL",
+        "message": "Top Signal Detected: 100/100",
+        "data": {
+          "market": "Will Elon Musk post <40 tweets from February 5 to February 7, 2026?"
+        }
+      },
+      {
+        "id": "mlca0wmpgbydqeth0ms",
+        "timestamp": "2026-02-07T12:14:31.729Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: Will Elon Musk post <40 tweets...",
+        "data": {
+          "score": "100"
+        }
+      },
+      {
+        "id": "mlc9voe38z7qehtck6v",
+        "timestamp": "2026-02-07T12:10:27.771Z",
+        "type": "TRADE",
+        "message": "Executing NO on Will Elon Musk post ...",
+        "data": {
+          "amount": "49.95",
+          "price": "NaN"
+        }
+      },
+      {
+        "id": "mlc9nv9nuaf2f7j825",
+        "timestamp": "2026-02-07T12:04:23.435Z",
+        "type": "SIGNAL",
+        "message": "Top Signal Detected: 100/100",
+        "data": {
+          "market": "Will Elon Musk post <40 tweets from February 5 to February 7, 2026?"
+        }
+      },
+      {
+        "id": "mlc9nv9mzvdh004p1wh",
+        "timestamp": "2026-02-07T12:04:23.434Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: Will Elon Musk post <40 tweets...",
+        "data": {
+          "score": "100"
+        }
+      }
+    ],
+    "trending": [
+      {
+        "id": "mlcavkjhu6e4qaeo28i",
+        "timestamp": "2026-02-07T12:38:22.397Z",
+        "type": "TRADE",
+        "message": "🎰 Trade Opened: $50 on NO",
+        "data": {
+          "market": "Will Solana dip to $90 in February?",
+          "price": "NaN"
+        }
+      },
+      {
+        "id": "mlcaprduq8s6hmsou",
+        "timestamp": "2026-02-07T12:33:51.330Z",
+        "type": "TRADE",
+        "message": "🎰 Trade Opened: $50 on NO",
+        "data": {
+          "market": "Spread: Seahawks (-4.5)",
+          "price": "NaN"
+        }
+      },
+      {
+        "id": "mlcadyrnhwelnpm0lr",
+        "timestamp": "2026-02-07T12:24:41.027Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: Nuggets vs. Bulls...",
+        "data": {
+          "score": "100"
+        }
+      },
+      {
+        "id": "mlcadyrnwn17552jop8",
+        "timestamp": "2026-02-07T12:24:41.027Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: Hornets vs. Hawks...",
+        "data": {
+          "score": "100"
+        }
+      },
+      {
+        "id": "mlca0wmp74zye8f19ga",
+        "timestamp": "2026-02-07T12:14:31.729Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: Nuggets vs. Bulls...",
+        "data": {
+          "score": "100"
+        }
+      },
+      {
+        "id": "mlca0wmprvwlwv8tx2p",
+        "timestamp": "2026-02-07T12:14:31.729Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: Hornets vs. Hawks...",
+        "data": {
+          "score": "100"
+        }
+      },
+      {
+        "id": "mlc9t2ih34k7bt3otgv",
+        "timestamp": "2026-02-07T12:08:26.105Z",
+        "type": "TRADE",
+        "message": "Executing NO on Hornets vs. Hawks...",
+        "data": {
+          "amount": "49.95",
+          "price": "0.470"
+        }
+      },
+      {
+        "id": "mlc9qguqc8ufk3bi9g",
+        "timestamp": "2026-02-07T12:06:24.722Z",
+        "type": "TRADE",
+        "message": "Executing NO on Seahawks vs. Patriot...",
+        "data": {
+          "amount": "49.95",
+          "price": "0.330"
+        }
+      },
+      {
+        "id": "mlc9nv9ntmxjob6gbsg",
+        "timestamp": "2026-02-07T12:04:23.435Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: Nuggets vs. Bulls...",
+        "data": {
+          "score": "100"
+        }
+      },
+      {
+        "id": "mlc9nv9n1b22std55oi",
+        "timestamp": "2026-02-07T12:04:23.435Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: Hornets vs. Hawks...",
+        "data": {
+          "score": "100"
+        }
+      }
+    ]
+  },
+  "profit": 0,
+  "profitPercent": "0.00"
+}
