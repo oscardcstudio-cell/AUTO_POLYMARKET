@@ -145,6 +145,11 @@ async function mainLoop() {
                 }
 
                 // Try to execute
+                // Diagnostic log
+                if (uniqueCandidates.length > 0) {
+                    console.log(`[LOOP] Considering ${uniqueCandidates.length} unique candidates (Priority sort)`);
+                }
+
                 for (const candidate of uniqueCandidates) {
                     if (botState.activeTrades.length >= CONFIG.MAX_ACTIVE_TRADES) break;
                     if (botState.capital < CONFIG.MIN_TRADE_SIZE) break;

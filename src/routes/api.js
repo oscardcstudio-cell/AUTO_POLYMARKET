@@ -65,7 +65,15 @@ router.post('/reset', (req, res) => {
     getRelevantMarkets().then(markets => {
         if (markets.length > 0) {
             const m = markets[Math.floor(Math.random() * markets.length)];
-            simulateTrade(m, null, false, { testSize: 1.0 });
+            addLog(botState, `🛠️ Triggering forced test trade on: ${m.question.substring(0, 30)}...`, 'info');
+            simulateTrade(m, null, false, { testSize: 1.0, isTest: true })
+                .then(t => {
+                    if (t) addLog(botState, `✅ Test trade SUCCESS`, 'success');
+                    else addLog(botState, `❌ Test trade FAILED to open`, 'error');
+                })
+                .catch(e => addLog(botState, `❌ Test trade ERROR: ${e.message}`, 'error'));
+        } else {
+            addLog(botState, `⚠️ No relevant markets for test trade`, 'warning');
         }
     });
 

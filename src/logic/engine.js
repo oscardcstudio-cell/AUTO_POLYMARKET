@@ -44,7 +44,9 @@ function logTradeDecision(market, trade, reasons, pizzaData) {
 export async function simulateTrade(market, pizzaData, isFreshMarket = false, dependencies = {}) {
     const {
         checkLiquidityDepthFn = checkLiquidityDepth,
-        calculateIntradayTrendFn = calculateIntradayTrend
+        calculateIntradayTrendFn = calculateIntradayTrend,
+        testSize = null,
+        isTest = false
     } = dependencies;
 
     if (!market.outcomePrices || market.outcomePrices.length < 2) return null;
