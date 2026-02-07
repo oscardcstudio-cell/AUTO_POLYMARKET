@@ -54,6 +54,8 @@ async function mainLoop() {
             // checkConnectivity(); // (Optional, implemented in signals implicitly via 'apiStatus' updates)
 
             // 2. Fetch Intelligence (PizzInt / Alpha)
+            const relevantMarkets = await getRelevantMarkets();
+
             try {
                 await fetchNewsSentiment();
                 botState.apiStatus.alpha = 'ONLINE';
@@ -68,13 +70,11 @@ async function mainLoop() {
             }
 
             // 3. Portfolio Management
-            // Inject Real Price Fetcher logic
+            // Inject Real Price Fetcher (CLOB with Gamma Fallback)
             await checkAndCloseTrades(async (trade) => {
                 try {
-                    // 1. Try CLOB if Token IDs are available
+                    // a) Try CLOB first
                     if (trade.clobTokenIds && trade.clobTokenIds.length === 2) {
-                        // Assumption: clobTokenIds[0] = YES, [1] = NO. 
-                        // Gamma uses [YES, NO] order for outcomePrices usually.
                         const tokenId = trade.side === 'YES' ? trade.clobTokenIds[0] : trade.clobTokenIds[1];
                         if (tokenId) {
                             const clobPrice = await getMidPrice(tokenId);
@@ -82,8 +82,17 @@ async function mainLoop() {
                         }
                     }
 
-                    // 2. If no CLOB, return null (Skip processing)
-                    // User requested NO MOCK DATA.
+                    // b) Fallback to Gamma (from our fresh fetch)
+                    const market = relevantMarkets.find(m => m.id === trade.marketId);
+                    if (market && market.outcomePrices) {
+                        let prices = market.outcomePrices;
+                        if (typeof prices === 'string') {
+                            try { prices = JSON.parse(prices); } catch (e) { return null; }
+                        }
+                        const price = trade.side === 'YES' ? parseFloat(prices[0]) : parseFloat(prices[1]);
+                        return isNaN(price) ? null : price;
+                    }
+
                     return null;
                 } catch (e) { return null; }
             });
@@ -95,18 +104,15 @@ async function mainLoop() {
             await detectFreshMarkets();
 
             // 5. Signal Update (Periodic)
-            if (botState.capitalHistory.length % 10 === 0) {
+            if (botState.capitalHistory.length % 5 === 0) {
                 await updateTopSignal(pizzaData);
             }
 
             // 6. TRADING EXECUTION
             if (pizzaData && botState.capital >= CONFIG.MIN_TRADE_SIZE && botState.activeTrades.length < CONFIG.MAX_ACTIVE_TRADES) {
 
-                // Collect potential candidates in order of priority
+                // Collect potential candidates
                 let candidates = [];
-
-                // Fetch relevant markets once to avoid redundant API calls
-                const relevantMarkets = await getRelevantMarkets();
                 if (!relevantMarkets || relevantMarkets.length === 0) return;
 
                 // 1. Top Signal
