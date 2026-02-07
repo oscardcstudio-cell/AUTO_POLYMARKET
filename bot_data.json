@@ -43,6 +43,10 @@
     {
       "t": "2026-02-07T13:58:04.643Z",
       "v": 1000
+    },
+    {
+      "t": "2026-02-07T14:07:35.170Z",
+      "v": 1000
     }
   ],
   "lastPizzaData": {
@@ -58,8 +62,23 @@
     "timestamp": "2026-02-07T12:56:13.988Z",
     "slug": "elon-musk-of-tweets-february-5-february-7-0-39"
   },
-  "lastUpdate": "2026-02-07T14:06:06.013Z",
+  "lastUpdate": "2026-02-07T14:07:35.186Z",
   "logs": [
+    {
+      "timestamp": "2026-02-07T14:07:34.954Z",
+      "message": "Serveur démarré sur le port 3000",
+      "type": "success"
+    },
+    {
+      "timestamp": "2026-02-07T14:07:34.872Z",
+      "message": "🔄 Démarrage de la boucle de trading...",
+      "type": "info"
+    },
+    {
+      "timestamp": "2026-02-07T14:07:34.863Z",
+      "message": "Chargement des données réussi ($1000.00)",
+      "type": "success"
+    },
     {
       "timestamp": "2026-02-07T13:28:59.717Z",
       "message": "Serveur démarré sur le port 3000",
@@ -104,12 +123,6 @@
       "slug": "us-x-iran-meeting-by-february-6-2026"
     },
     {
-      "id": "1320343",
-      "question": "Will Elon Musk post <40 tweets from February 5 to February 7, 2026?",
-      "volume": 1133373.6896709998,
-      "slug": "elon-musk-of-tweets-february-5-february-7-0-39"
-    },
-    {
       "id": "1269423",
       "question": "Seahawks vs. Patriots",
       "volume": 1088884.228517,
@@ -120,6 +133,12 @@
       "question": "Will Bitcoin reach $85,000 in February?",
       "volume": 680020.953113,
       "slug": "will-bitcoin-reach-85k-in-february-2026"
+    },
+    {
+      "id": "1313448",
+      "question": "Warriors vs. Lakers",
+      "volume": 624769.7558049998,
+      "slug": "nba-gsw-lal-2026-02-07"
     }
   ],
   "arbitrageOpportunities": [],
@@ -127,7 +146,7 @@
     {
       "title": "Trend Alert: \"\" (Avg Prob: NaN%)",
       "sentiment": "neutral",
-      "source": "Polymarket Internal (17 mkts)"
+      "source": "Polymarket Internal (18 mkts)"
     },
     {
       "title": "Trend Alert: \"FEBRUARY\" (Avg Prob: NaN%)",
