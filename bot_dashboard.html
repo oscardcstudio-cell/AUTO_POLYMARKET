@@ -327,6 +327,38 @@
             border-radius: 15px;
             border: 1px solid var(--border);
         }
+
+        /* MOBILE OPTIMIZATIONS */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            .stats-grid,
+            .trades-grid,
+            .marketplace-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-tabs {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .nav-tab {
+                text-align: center;
+                width: 100%;
+            }
+
+            .header-badges {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .status-badge {
+                justify-content: center;
+            }
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
@@ -400,7 +432,53 @@
     <!-- NAVIGATION -->
     <div class="nav-tabs">
         <div class="nav-tab active" onclick="switchView('dashboard')">📊 Dashboard</div>
+        <div class="nav-tab" onclick="switchView('analytics')">📈 Analytics</div>
         <div class="nav-tab" onclick="switchView('marketplace')">🌍 Marketplace (Deep Scan)</div>
+    </div>
+
+    <!-- VIEW: ANALYTICS -->
+    <div id="analytics-view" style="display: none;">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Total Volume</div>
+                <div class="stat-value" id="ana-volume">$0.00</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Realized PnL</div>
+                <div class="stat-value" id="ana-pnl">$0.00</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Global Winrate</div>
+                <div class="stat-value" id="ana-winrate">0%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Total Trades</div>
+                <div class="stat-value" id="ana-trades">0</div>
+            </div>
+        </div>
+
+        <div class="chart-section">
+            <div class="stat-label">Monthly Performance</div>
+            <div class="chart-container">
+                <canvas id="monthlyChart"></canvas>
+            </div>
+        </div>
+
+        <div
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 30px; margin-top: 30px;">
+            <div class="chart-section">
+                <div class="stat-label">Performance by Category</div>
+                <div class="chart-container" style="height: 300px;">
+                    <canvas id="categoryChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-section">
+                <div class="stat-label">Strategy Effectiveness</div>
+                <div class="chart-container" style="height: 300px;">
+                    <canvas id="strategyChart"></canvas>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- VIEW: DASHBOARD -->
@@ -693,6 +771,93 @@
                 }
             }
 
+            let categoryChart = null;
+            let strategyChart = null;
+            let monthlyChart = null;
+
+            async function loadAnalytics() {
+                try {
+                    // 1. Global Stats
+                    fetch('/api/analytics/global').then(res => res.json()).then(data => {
+                        if (data.error) return;
+                        document.getElementById('ana-volume').innerText = '$' + (data.total_volume || 0).toFixed(2);
+                        document.getElementById('ana-pnl').innerText = '$' + (data.total_pnl || 0).toFixed(2);
+                        document.getElementById('ana-pnl').className = 'stat-value ' + (data.total_pnl >= 0 ? 'positive' : 'negative');
+                        document.getElementById('ana-winrate').innerText = (data.win_rate_percent || 0).toFixed(1) + '%';
+                        document.getElementById('ana-trades').innerText = data.total_trades || 0;
+                    });
+
+                    // 2. Charts
+                    const [catRes, stratRes, monthRes] = await Promise.all([
+                        fetch('/api/analytics/category').then(r => r.json()),
+                        fetch('/api/analytics/strategy').then(r => r.json()),
+                        fetch('/api/analytics/monthly').then(r => r.json())
+                    ]);
+
+                    renderCategoryChart(catRes);
+                    renderStrategyChart(stratRes);
+                    renderMonthlyChart(monthRes);
+
+                } catch (e) { console.error("Analytics Error", e); }
+            }
+
+            function renderCategoryChart(data) {
+                const ctx = document.getElementById('categoryChart').getContext('2d');
+                if (categoryChart) categoryChart.destroy();
+                categoryChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.map(d => d.category),
+                        datasets: [{
+                            label: 'PnL ($)',
+                            data: data.map(d => d.total_pnl),
+                            backgroundColor: data.map(d => d.total_pnl >= 0 ? '#4ade80' : '#f87171')
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+            }
+
+            function renderStrategyChart(data) {
+                const ctx = document.getElementById('strategyChart').getContext('2d');
+                if (strategyChart) strategyChart.destroy();
+                strategyChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: data.map(d => d.strategy),
+                        datasets: [{
+                            data: data.map(d => d.trade_count),
+                            backgroundColor: ['#60a5fa', '#a78bfa', '#f472b6', '#fbbf24', '#34d399']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: 'right' } }
+                    }
+                });
+            }
+
+            function renderMonthlyChart(data) {
+                const ctx = document.getElementById('monthlyChart').getContext('2d');
+                if (monthlyChart) monthlyChart.destroy();
+                monthlyChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: data.map(d => new Date(d.month).toLocaleDateString(undefined, { month: 'short', year: '2-digit' })),
+                        datasets: [{
+                            label: 'Monthly PnL',
+                            data: data.map(d => d.total_pnl),
+                            borderColor: '#8b5cf6',
+                            backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+            }
+
             let botData = {};
             let mainChart = null;
             let miniCharts = {};
@@ -704,14 +869,21 @@
             function switchView(mode) {
                 viewMode = mode;
                 document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+
+                document.getElementById('dashboard-view').style.display = 'none';
+                if (document.getElementById('marketplace-view')) document.getElementById('marketplace-view').style.display = 'none';
+                document.getElementById('analytics-view').style.display = 'none';
+
                 if (mode === 'dashboard') {
                     document.getElementById('dashboard-view').style.display = 'block';
-                    document.getElementById('marketplace-view').style.display = 'none';
                     document.querySelector('.nav-tab:nth-child(1)').classList.add('active');
-                } else {
-                    document.getElementById('dashboard-view').style.display = 'none';
-                    document.getElementById('marketplace-view').style.display = 'block';
+                } else if (mode === 'analytics') {
+                    document.getElementById('analytics-view').style.display = 'block';
                     document.querySelector('.nav-tab:nth-child(2)').classList.add('active');
+                    loadAnalytics();
+                } else {
+                    if (document.getElementById('marketplace-view')) document.getElementById('marketplace-view').style.display = 'block';
+                    document.querySelector('.nav-tab:nth-child(3)').classList.add('active');
                     if (marketCache.length === 0) loadMarketplace();
                 }
             }
@@ -719,7 +891,7 @@
             async function loadMarketplace() {
                 const grid = document.getElementById('marketplace-grid');
                 const stats = document.getElementById('marketplace-stats');
-                if (grid) grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:50px;"><div class="pulse-dot" style="margin:0 auto; width:20px; height:20px;"></div><br>Deep Scanning...</div>';
+                if (grid) grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:50px;"><div class="pulse-dot" style="margin:0 auto; width:20px; height:20px; background:#60a5fa; box-shadow:0 0 20px #60a5fa;"></div><br><div style="font-size:1.2em; font-weight:700; margin-top:15px;">Scanning 1000+ Markets...</div><div style="color:#94a3b8; font-size:0.9em; margin-top:5px;">This process runs in the background. Please wait.</div></div>';
 
                 try {
                     const res = await fetch('/api/markets');
@@ -745,6 +917,19 @@
                 const sort = sortInput ? sortInput.value : 'volume';
 
                 let filtered = marketCache.filter(m => (m.question || '').toLowerCase().includes(search));
+
+                if (filtered.length === 0) {
+                    grid.innerHTML = `
+                     <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #94a3b8; background: rgba(255,255,255,0.02); border-radius: 10px; border: 1px dashed var(--border);">
+                        <div style="font-size: 2em; margin-bottom: 10px;">🌪️</div>
+                        <div style="font-weight: 700; margin-bottom: 5px;">Deep Scan Empty or In Progress</div>
+                        <div style="font-size: 0.9em; margin-bottom: 15px;">Le scan des 1000 marchés prend du temps au démarrage.</div>
+                        <button onclick="loadMarketplace()" style="background: var(--accent-blue); color: white; border: none; padding: 8px 20px; border-radius: 100px; cursor: pointer; font-weight: 600;">
+                            🔄 Force Retry
+                        </button>
+                     </div>`;
+                    return;
+                }
 
                 if (sort === 'volume') filtered.sort((a, b) => (b.volume || 0) - (a.volume || 0));
                 if (sort === 'liquidity') filtered.sort((a, b) => (b.liquidity || 0) - (a.liquidity || 0));

@@ -5,6 +5,7 @@ import { CONFIG } from '../config.js';
 import { categorizeMarket } from './signals.js';
 import { getBestExecutionPrice, getCLOBOrderBook, getCLOBTradeHistory } from '../api/clob_api.js';
 import { supabaseService } from '../services/supabaseService.js';
+import { sportsService } from '../services/sportsService.js';
 
 function calculateTradeSize(confidence, price) {
     const capital = botState.capital || CONFIG.STARTING_CAPITAL;
@@ -109,6 +110,20 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
     let side, entryPrice, confidence;
     const category = categorizeMarket(market.question);
     const decisionReasons = [];
+
+    // NOUVEAU: SPORTS EXPERT (Global Validation)
+    // Run this EARLY to filter out bad sports trades immediately
+    const sportsValidation = await sportsService.validateBet(market);
+    if (sportsValidation.adjustment <= -0.2) {
+        decisionReasons.push(...sportsValidation.reasons);
+        if (reasonsCollector) reasonsCollector.push(...sportsValidation.reasons);
+        logTradeDecision(market, null, decisionReasons, pizzaData);
+        return null;
+    }
+    if (sportsValidation.adjustment !== 0 && sportsValidation.adjustment > -0.2) {
+        // Log it but don't return yet, we will apply adjustment to confidence later
+        decisionReasons.push(...sportsValidation.reasons);
+    }
 
     // NOUVEAU: STRATÉGIE ARBITRAGE (Risk-Free)
     const arbSignal = botState.arbitrageOpportunities && botState.arbitrageOpportunities.find(a => a.id === market.id);
@@ -231,6 +246,8 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
             decisionReasons.push(`⚠️ Wizard Signal Ignored: Low Liquidity`);
         }
     }
+
+
     // NOUVEAU: TREND FOLLOWING (Optimisé + Intraday Check + Depth Check)
     else if (market.volume24hr > 1000 && yesPrice > 0.55 && yesPrice < 0.90) {
         // 1. Check Intraday Trend
@@ -364,6 +381,19 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
     if (market.volume24hr > 10000 && entryPrice > 0.60 && side === 'YES') {
         confidence += 0.10;
         decisionReasons.push(`🔥 High Momentum (Vol: ${parseInt(market.volume24hr)})`);
+    }
+
+    // Apply Sports Adjustment if defined
+    if (typeof sportsValidation !== 'undefined' && sportsValidation.adjustment) {
+        confidence += sportsValidation.adjustment;
+        decisionReasons.push(`🏀 Sports Adjustment: ${sportsValidation.adjustment.toFixed(2)}`);
+    }
+
+    // Apply AI Feedback Adjustment (Category based)
+    if (botState.confidenceAdjustments && botState.confidenceAdjustments[category]) {
+        const aiAdj = botState.confidenceAdjustments[category];
+        confidence += aiAdj;
+        decisionReasons.push(`🤖 AI Feedback: ${aiAdj > 0 ? '+' : ''}${aiAdj.toFixed(2)} (${category})`);
     }
 
     let tradeSize = dependencies.testSize || calculateTradeSize(confidence, entryPrice);

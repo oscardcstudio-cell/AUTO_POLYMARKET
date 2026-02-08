@@ -7,6 +7,7 @@ import { CONFIG } from './src/config.js';
 import { stateManager, botState } from './src/state.js';
 import { addLog, saveToGithub } from './src/utils.js';
 import apiRoutes from './src/routes/api.js';
+import analyticsRoutes from './src/api/analyticsRoutes.js';
 
 // Logic & Signals
 import { simulateTrade, checkAndCloseTrades } from './src/logic/engine.js';
@@ -24,6 +25,7 @@ import {
 import { getPizzaData } from './src/api/pizzint.js';
 import { getEventSlug } from './src/api/market_discovery.js';
 import { getMidPrice } from './src/api/clob_api.js';
+import { feedbackLoop } from './src/logic/feedbackLoop.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -35,6 +37,7 @@ app.use(express.json());
 // Serve static files (Dashboard)
 app.use(express.static(__dirname));
 app.use('/api', apiRoutes);
+app.use('/api/analytics', analyticsRoutes);
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'bot_dashboard.html'));
@@ -154,6 +157,10 @@ async function mainLoop() {
             // 5. Signal Update (Periodic)
             if (botState.capitalHistory.length % 5 === 0) {
                 await updateTopSignal(pizzaData);
+                // Run AI Feedback Analysis
+                if (botState.capitalHistory.length % 20 === 0) { // Less frequent
+                    await feedbackLoop.analyzePerformance();
+                }
             }
 
             // 6. DYNAMIC CAPACITY & SCANNING
