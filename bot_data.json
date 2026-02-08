@@ -34,6 +34,7 @@
         0.0405,
         0.0405,
         0.0405,
+        0.0405,
         0.0405
       ],
       "maxReturn": 0
@@ -58,6 +59,7 @@
       "clobTokenIds": "[\"80230236018433940569996058935444651347308266584430516013229815570706872276819\", \"107000426448217931795450451304515386602910396776318075817601265223856116134349\"]",
       "eventSlug": "will-elon-cut-the-budget-by-at-least-10-in-2025",
       "priceHistory": [
+        0.0105,
         0.0105,
         0.0105,
         0.0105,
@@ -101,6 +103,7 @@
         0.495,
         0.495,
         0.495,
+        0.495,
         0.495
       ],
       "maxReturn": 0.010101010101010211
@@ -125,6 +128,7 @@
       "clobTokenIds": "[\"70584222105672215743914509614198676449757016746323593572033490884974443841053\", \"78453865954536643710017153843673830010373935401063241006664722462398084283536\"]",
       "eventSlug": "rojas-guilty-in-texas-illegal-abortion-case",
       "priceHistory": [
+        0.08,
         0.08,
         0.08,
         0.08,
@@ -273,8 +277,23 @@
     "timestamp": "2026-02-08T20:29:34.333Z",
     "slug": "nfl-sea-ne-2026-02-08"
   },
-  "lastUpdate": "2026-02-08T20:41:41.451Z",
+  "lastUpdate": "2026-02-08T20:42:41.979Z",
   "logs": [
+    {
+      "timestamp": "2026-02-08T20:42:41.978Z",
+      "message": "🔍 Checking 4 active trades...",
+      "type": "info"
+    },
+    {
+      "timestamp": "2026-02-08T20:41:41.752Z",
+      "message": "Main Loop Error: categorizeMarket is not defined",
+      "type": "error"
+    },
+    {
+      "timestamp": "2026-02-08T20:41:41.751Z",
+      "message": "🔍 Scanned 10 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, STD: Price too low (<0.01)",
+      "type": "info"
+    },
     {
       "timestamp": "2026-02-08T20:41:41.451Z",
       "message": "🔍 Checking 4 active trades...",
@@ -1012,6 +1031,15 @@
     ],
     "trending": [
       {
+        "id": "mle7kz0yuhuoyvjt9a",
+        "timestamp": "2026-02-08T20:41:41.458Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: Seahawks vs. Patriots...",
+        "data": {
+          "score": "100"
+        }
+      },
+      {
         "id": "mle7joa3ma6dwku8e2c",
         "timestamp": "2026-02-08T20:40:40.876Z",
         "type": "ANALYSIS",
@@ -1086,15 +1114,6 @@
       {
         "id": "mle79a4omw170oqyr3",
         "timestamp": "2026-02-08T20:32:35.976Z",
-        "type": "ANALYSIS",
-        "message": "High Alpha: Seahawks vs. Patriots...",
-        "data": {
-          "score": "100"
-        }
-      },
-      {
-        "id": "mle77zeme6fbk6rexwe",
-        "timestamp": "2026-02-08T20:31:35.422Z",
         "type": "ANALYSIS",
         "message": "High Alpha: Seahawks vs. Patriots...",
         "data": {

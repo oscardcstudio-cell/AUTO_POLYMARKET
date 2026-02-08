@@ -18,7 +18,8 @@ import {
     updateTopSignal,
     fetchNewsSentiment,
     checkConnectivity,
-    getRelevantMarkets
+    getRelevantMarkets,
+    categorizeMarket
 } from './src/logic/signals.js';
 import { getPizzaData } from './src/api/pizzint.js';
 import { getEventSlug } from './src/api/market_discovery.js';

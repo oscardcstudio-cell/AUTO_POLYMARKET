@@ -347,6 +347,7 @@
         <!-- Performance Statistics Section -->
         <div class="chart-section">
             <div class="stat-label" style="margin-bottom: 20px;">📈 Performance Analytics</div>
+            <div id="perfAnalyticsStatus" style="font-size: 0.8em; color: #94a3b8; margin-bottom: 15px;"></div>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
                 <div
                     style="text-align: center; padding: 15px; background: rgba(255,255,255,0.02); border-radius: 16px;">
@@ -446,7 +447,7 @@
         <div class="chart-section" style="margin-bottom: 30px; border-color: rgba(255, 255, 255, 0.1);">
             <div class="stat-label" style="display: flex; justify-content: space-between; align-items: center;">
                 <span>🌍 Multi-Sector Global Surveillance</span>
-                <span style="font-size: 0.8em; color: #4ade80;" id="sectorPulse">● MONITORING ACTIVE</span>
+                <span style="font-size: 0.8em;" id="sectorPulse">● INITIALIZING...</span>
             </div>
             <div
                 style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-top: 15px;">
@@ -720,6 +721,16 @@
                     const wins = closed.filter(t => t.profit > 0);
                     const losses = closed.filter(t => t.profit <= 0);
 
+                    // Update Performance Analytics Status Indicator
+                    const perfStatus = document.getElementById('perfAnalyticsStatus');
+                    if (closed.length === 0) {
+                        perfStatus.textContent = "⏳ Waiting for first closed trade to calculate metrics...";
+                        perfStatus.style.color = "#f59e0b";
+                    } else {
+                        perfStatus.textContent = `✓ Based on ${closed.length} completed trade${closed.length > 1 ? 's' : ''}`;
+                        perfStatus.style.color = "#4ade80";
+                    }
+
                     const avgProfit = closed.length > 0 ? (closed.reduce((a, b) => a + b.profit, 0) / closed.length) : 0;
                     const largestWin = wins.length > 0 ? Math.max(...wins.map(t => t.profit)) : 0;
                     const largestLoss = losses.length > 0 ? Math.min(...losses.map(t => t.profit)) : 0;
@@ -769,7 +780,7 @@
                 try {
                     const activeList = document.getElementById('activeTradesList');
                     if (!botData.activeTrades || botData.activeTrades.length === 0) {
-                        activeList.innerHTML = '<div class="empty-state">SCANNING MARKET DEPTH FOR ANOMALIES...</div>';
+                        activeList.innerHTML = '<div class="empty-state">🔍 Scanning markets for optimal entry conditions...</div>';
                     } else {
                         activeList.innerHTML = botData.activeTrades.map(t => {
                             // Defensive coding to prevent crashes
@@ -870,19 +881,33 @@
                          </div>`;
                             }).join('');
                         } else { closedList.innerHTML = '<div class="empty-state">No matching trades.</div>'; }
-                    } else { closedList.innerHTML = '<div class="empty-state">No history recorded.</div>'; }
+                    } else { closedList.innerHTML = '<div class="empty-state">📊 No closed trades yet. Waiting for first settlement...</div>'; }
 
 
                     // Sectors
                     if (botData.sectorStats) {
+                        // Update sector pulse with total market count
+                        const sectorPulse = document.getElementById('sectorPulse');
+                        const totalActive = Object.values(botData.sectorStats).reduce((sum, s) => sum + (s.count || 0), 0);
+                        if (totalActive > 0) {
+                            sectorPulse.textContent = `● ${totalActive} MARKETS TRACKED`;
+                            sectorPulse.style.color = '#4ade80';
+                        } else {
+                            sectorPulse.textContent = `⚠ NO ACTIVE MARKETS`;
+                            sectorPulse.style.color = '#f59e0b';
+                        }
+
                         Object.keys(botData.sectorStats).forEach(s => {
                             const el = document.getElementById(`sector-${s}`);
                             if (el) {
-                                el.querySelector('.sector-count').textContent = `${botData.sectorStats[s].count} ACTIVE`;
+                                const count = botData.sectorStats[s].count || 0;
+                                el.querySelector('.sector-count').textContent = count > 0 ? `${count} ACTIVE` : 'IDLE';
                                 const feed = el.querySelector('.sector-feed');
                                 const acts = (botData.sectorActivity || {})[s] || [];
                                 if (feed && acts.length > 0) {
                                     feed.innerHTML = acts.slice(0, 5).map(e => `<div style="font-size:0.8em; margin-bottom:5px; color:#cbd5e1">- ${e.message}</div>`).join('');
+                                } else if (feed) {
+                                    feed.innerHTML = '<div style="font-size:0.7em; color:#64748b; font-style:italic;">No recent activity</div>';
                                 }
                             }
                         });
