@@ -58,7 +58,9 @@ router.post('/reset', (req, res) => {
             alpha: 'Checking...'
         },
         wizards: [],
-        freshMarkets: []
+        wizards: [],
+        freshMarkets: [],
+        marketCache: []
     });
 
     addLog(botState, '♻️ SIMULATION RESET: Portefeuille réinitialisé à $1000', 'warning');
@@ -197,6 +199,30 @@ router.get('/trade-history', (req, res) => {
     } else {
         res.json([]); // No history file yet
     }
+});
+
+// --- NEW: Marketplace Data ---
+router.get('/markets', (req, res) => {
+    // Serve cached deep scan data
+    // Lightweight mapping to reduce payload size if needed, but 1000 items is fine.
+    // Let's send key fields for the table.
+
+    const markets = (botState.marketCache || []).map(m => ({
+        id: m.id,
+        question: m.question,
+        slug: m.slug,
+        volume: parseFloat(m.volume24hr || 0),
+        liquidity: parseFloat(m.liquidityNum || 0),
+        prices: m.outcomePrices ? JSON.parse(m.outcomePrices) : [0, 0],
+        endDate: m.endDate,
+        category: m.category || 'other'
+    }));
+
+    res.json({
+        lastScan: botState.deepScanData?.lastScan || null,
+        count: markets.length,
+        markets: markets
+    });
 });
 
 export default router;

@@ -87,12 +87,13 @@ async function mainLoop() {
                 lastDeepScanTime = now;
                 isDeepScan = true;
 
-                // Update stats
+                // Update stats & Cache for Marketplace
                 botState.deepScanData = {
                     lastScan: new Date().toISOString(),
                     marketCount: relevantMarkets.length,
                     scanDuration: 0 // Could be measured
                 };
+                botState.marketCache = relevantMarkets; // Store for Frontend Marketplace
             } else {
                 relevantMarkets = await getRelevantMarkets(false); // QUICK SCAN
             }
