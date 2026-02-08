@@ -7,6 +7,7 @@ import { addLog } from '../utils.js';
 import { CONFIG } from '../config.js';
 import { simulateTrade } from '../logic/engine.js';
 import { getRelevantMarkets } from '../logic/signals.js';
+import { supabase } from '../services/supabaseService.js';
 
 const router = express.Router();
 
@@ -94,6 +95,28 @@ router.get('/health', (req, res) => {
         capital: botState.capital,
         activeTrades: botState.activeTrades.length
     });
+});
+
+router.get('/health-db', async (req, res) => {
+    try {
+        if (!supabase) {
+            return res.status(503).json({ status: 'error', message: 'Supabase client not initialized (check env vars)' });
+        }
+        const { data, error } = await supabase.from('trades').select('count').limit(1);
+        if (error) throw error;
+
+        res.json({
+            status: 'healthy',
+            database: 'connected',
+            timestamp: new Date().toISOString()
+        });
+    } catch (e) {
+        res.status(500).json({
+            status: 'error',
+            message: e.message,
+            hint: 'Check SUPABASE_URL and SUPABASE_KEY in Railway Variables'
+        });
+    }
 });
 
 // --- BACKLOG ENDPOINTS ---
