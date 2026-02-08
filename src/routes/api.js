@@ -75,23 +75,7 @@ router.post('/reset', (req, res) => {
 
     stateManager.save();
 
-    // Trigger Automated Test Trade ($1)
-    getRelevantMarkets().then(markets => {
-        if (markets.length > 0) {
-            const m = markets[Math.floor(Math.random() * markets.length)];
-            addLog(botState, `🛠️ Triggering forced test trade on: ${m.question.substring(0, 30)}...`, 'info');
-            simulateTrade(m, null, false, { testSize: 1.0, isTest: true })
-                .then(t => {
-                    if (t) addLog(botState, `✅ Test trade SUCCESS`, 'success');
-                    else addLog(botState, `❌ Test trade FAILED to open`, 'error');
-                })
-                .catch(e => addLog(botState, `❌ Test trade ERROR: ${e.message}`, 'error'));
-        } else {
-            addLog(botState, `⚠️ No relevant markets for test trade`, 'warning');
-        }
-    });
-
-    res.json({ success: true, message: "Simulation reset successful + Test trade triggered" });
+    res.json({ success: true, message: "Simulation reset successful" });
 });
 
 // Health check endpoint pour Railway
