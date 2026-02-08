@@ -1,11 +1,32 @@
 {
   "startTime": "2026-02-07T12:55:54.888Z",
-  "capital": 1000,
+  "capital": 886.9565217391305,
   "startingCapital": 1000,
-  "totalTrades": 0,
+  "totalTrades": 1,
   "winningTrades": 0,
   "losingTrades": 0,
-  "activeTrades": [],
+  "activeTrades": [
+    {
+      "id": "mle75e5fayprwlibg9f",
+      "marketId": "528788",
+      "question": "Rojas guilty in Texas illegal abortion case?",
+      "slug": "rojas-guilty-in-texas-illegal-abortion-case",
+      "side": "YES",
+      "amount": 113.04347826086956,
+      "entryPrice": 0.0808,
+      "startTime": "2026-02-08T20:29:34.563Z",
+      "shares": 1399.0529487731383,
+      "status": "OPEN",
+      "confidence": 0.6,
+      "reasons": [
+        "🧙 Wizard Follow: High Alpha (40%)"
+      ],
+      "category": "other",
+      "isFresh": false,
+      "clobTokenIds": "[\"70584222105672215743914509614198676449757016746323593572033490884974443841053\", \"78453865954536643710017153843673830010373935401063241006664722462398084283536\"]",
+      "eventSlug": "rojas-guilty-in-texas-illegal-abortion-case"
+    }
+  ],
   "closedTrades": [],
   "capitalHistory": [
     {
@@ -107,6 +128,10 @@
     {
       "t": "2026-02-07T15:46:26.786Z",
       "v": 1000
+    },
+    {
+      "t": "2026-02-08T20:29:34.579Z",
+      "v": 886.9565217391305
     }
   ],
   "lastPizzaData": {
@@ -115,15 +140,40 @@
     "trends": []
   },
   "topSignal": {
-    "id": "1313448",
-    "question": "Warriors vs. Lakers",
+    "id": "1269423",
+    "question": "Seahawks vs. Patriots",
     "score": 100,
     "reason": "Alpha Matrix: Corrélation de signal maximale",
-    "timestamp": "2026-02-07T15:19:21.923Z",
-    "slug": "nba-gsw-lal-2026-02-07"
+    "timestamp": "2026-02-08T20:29:34.333Z",
+    "slug": "nfl-sea-ne-2026-02-08"
   },
-  "lastUpdate": "2026-02-07T16:02:29.345Z",
+  "lastUpdate": "2026-02-08T20:29:34.620Z",
   "logs": [
+    {
+      "timestamp": "2026-02-08T20:29:34.579Z",
+      "message": "🚀 [WIZARD] Trade: Rojas guilty in Texas illegal ...",
+      "type": "success"
+    },
+    {
+      "timestamp": "2026-02-08T20:29:34.579Z",
+      "message": "✅ TRADE OPENED: YES sur \"Rojas guilty in Texas illegal ...\" @ $0.081 ($113.04)",
+      "type": "trade"
+    },
+    {
+      "timestamp": "2026-02-08T20:29:33.969Z",
+      "message": "Serveur démarré sur le port 3000",
+      "type": "success"
+    },
+    {
+      "timestamp": "2026-02-08T20:29:33.888Z",
+      "message": "🔄 Démarrage de la boucle de trading...",
+      "type": "info"
+    },
+    {
+      "timestamp": "2026-02-08T20:29:33.881Z",
+      "message": "Chargement des données réussi ($1000.00)",
+      "type": "success"
+    },
     {
       "timestamp": "2026-02-07T15:17:21.432Z",
       "message": "Serveur démarré sur le port 3000",
@@ -237,28 +287,28 @@
   ],
   "whaleAlerts": [
     {
-      "id": "1328039",
-      "question": "US x Iran meeting by February 6, 2026?",
-      "volume": 2786788.6132570063,
-      "slug": "us-x-iran-meeting-by-february-6-2026"
-    },
-    {
       "id": "1269423",
       "question": "Seahawks vs. Patriots",
-      "volume": 1088884.228517,
+      "volume": 6794193.464303972,
       "slug": "nfl-sea-ne-2026-02-08"
     },
     {
-      "id": "1303384",
-      "question": "Will Bitcoin reach $85,000 in February?",
-      "volume": 680020.953113,
-      "slug": "will-bitcoin-reach-85k-in-february-2026"
+      "id": "1328039",
+      "question": "US x Iran meeting by February 6, 2026?",
+      "volume": 5953461.836272001,
+      "slug": "us-x-iran-meeting-by-february-6-2026"
     },
     {
-      "id": "1313448",
-      "question": "Warriors vs. Lakers",
-      "volume": 624769.7558049998,
-      "slug": "nba-gsw-lal-2026-02-07"
+      "id": "1326324",
+      "question": "Will Trump admin release any more Epstein related files by February 6?",
+      "volume": 778011.237787,
+      "slug": "will-trump-admin-release-any-more-epstein-related-files-by-february-6"
+    },
+    {
+      "id": "1353269",
+      "question": "Counter-Strike: FURIA vs Vitality (BO5) - IEM Krakow Playoffs",
+      "volume": 678908.0576949995,
+      "slug": "cs2-furia-vit-2026-02-08"
     }
   ],
   "arbitrageOpportunities": [],
@@ -266,37 +316,56 @@
     {
       "title": "Trend Alert: \"\" (Avg Prob: NaN%)",
       "sentiment": "neutral",
-      "source": "Polymarket Internal (18 mkts)"
+      "source": "Polymarket Internal (7 mkts)"
     },
     {
       "title": "Trend Alert: \"FEBRUARY\" (Avg Prob: NaN%)",
       "sentiment": "neutral",
-      "source": "Polymarket Internal (15 mkts)"
-    },
-    {
-      "title": "Trend Alert: \"BITCOIN\" (Avg Prob: NaN%)",
-      "sentiment": "neutral",
-      "source": "Polymarket Internal (9 mkts)"
+      "source": "Polymarket Internal (4 mkts)"
     },
     {
       "title": "Trend Alert: \"SEAHAWKS\" (Avg Prob: NaN%)",
       "sentiment": "neutral",
-      "source": "Polymarket Internal (3 mkts)"
+      "source": "Polymarket Internal (2 mkts)"
     },
     {
-      "title": "Trend Alert: \"REACH\" (Avg Prob: NaN%)",
+      "title": "Trend Alert: \"MEETING\" (Avg Prob: NaN%)",
       "sentiment": "neutral",
-      "source": "Polymarket Internal (3 mkts)"
+      "source": "Polymarket Internal (2 mkts)"
+    },
+    {
+      "title": "Trend Alert: \"BUDGET\" (Avg Prob: NaN%)",
+      "sentiment": "neutral",
+      "source": "Polymarket Internal (2 mkts)"
     }
   ],
   "momentumData": {},
   "apiStatus": {
     "gamma": "ONLINE",
-    "clob": "Checking...",
+    "clob": "DEGRADED",
     "pizzint": "ONLINE",
     "alpha": "ONLINE"
   },
-  "wizards": [],
+  "wizards": [
+    {
+      "id": "1269423",
+      "side": "NO",
+      "slug": "nfl-sea-ne-2026-02-08",
+      "question": "Seahawks vs. Patriots",
+      "price": "0.325",
+      "alpha": 100,
+      "reason": "NO Alpha 100%"
+    },
+    {
+      "id": "528788",
+      "side": "YES",
+      "slug": "rojas-guilty-in-texas-illegal-abortion-case",
+      "question": "Rojas guilty in Texas illegal abortion case?",
+      "price": "0.080",
+      "alpha": 40,
+      "reason": "YES Alpha 40%"
+    }
+  ],
   "freshMarkets": [],
   "keywordScores": {},
   "deepScanData": {
@@ -365,6 +434,24 @@
   },
   "sectorActivity": {
     "politics": [
+      {
+        "id": "mle75dz0yjyzk64wn98",
+        "timestamp": "2026-02-08T20:29:34.332Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: Counter-Strike: FURIA vs Vital...",
+        "data": {
+          "score": "100"
+        }
+      },
+      {
+        "id": "mle75dz0xavf4icmmq8",
+        "timestamp": "2026-02-08T20:29:34.332Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: US x Iran meeting by February ...",
+        "data": {
+          "score": "100"
+        }
+      },
       {
         "id": "mlcgmlvnsbtyyuil3gg",
         "timestamp": "2026-02-07T15:19:21.923Z",
@@ -435,24 +522,6 @@
         "message": "High Alpha: Warriors vs. Lakers...",
         "data": {
           "score": "100"
-        }
-      },
-      {
-        "id": "mlcgk130d6ehfbe40j",
-        "timestamp": "2026-02-07T15:17:21.660Z",
-        "type": "ANALYSIS",
-        "message": "High Alpha: US x Iran meeting by February ...",
-        "data": {
-          "score": "90"
-        }
-      },
-      {
-        "id": "mlcgh7qfrpkzkb0stv",
-        "timestamp": "2026-02-07T15:15:10.311Z",
-        "type": "SIGNAL",
-        "message": "Top Signal Detected: 100/100",
-        "data": {
-          "market": "Warriors vs. Lakers"
         }
       }
     ],
@@ -636,6 +705,43 @@
     ],
     "trending": [
       {
+        "id": "mle75e5vggge8vkjr9l",
+        "timestamp": "2026-02-08T20:29:34.579Z",
+        "type": "TRADE",
+        "message": "🎰 Trade Opened: $113 on YES",
+        "data": {
+          "market": "Rojas guilty in Texas illegal abortion case?",
+          "price": "0.08"
+        }
+      },
+      {
+        "id": "mle75dz118base3j0kv",
+        "timestamp": "2026-02-08T20:29:34.333Z",
+        "type": "SIGNAL",
+        "message": "Top Signal Detected: 100/100",
+        "data": {
+          "market": "Seahawks vs. Patriots"
+        }
+      },
+      {
+        "id": "mle75dz038hqt2o4vg9",
+        "timestamp": "2026-02-08T20:29:34.332Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: Seahawks vs. Patriots...",
+        "data": {
+          "score": "100"
+        }
+      },
+      {
+        "id": "mle75dxqiqlg6xjfjy",
+        "timestamp": "2026-02-08T20:29:34.286Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: Seahawks vs. Patriots...",
+        "data": {
+          "score": "100"
+        }
+      },
+      {
         "id": "mlcgmlvmt70t7kcameh",
         "timestamp": "2026-02-07T15:19:21.922Z",
         "type": "ANALYSIS",
@@ -688,45 +794,10 @@
         "data": {
           "score": "85"
         }
-      },
-      {
-        "id": "mlcgdcfu1u551fmf3n9",
-        "timestamp": "2026-02-07T15:12:09.786Z",
-        "type": "ANALYSIS",
-        "message": "High Alpha: Seahawks vs. Patriots...",
-        "data": {
-          "score": "85"
-        }
-      },
-      {
-        "id": "mlcgc206j5r75tp5zl",
-        "timestamp": "2026-02-07T15:11:09.606Z",
-        "type": "ANALYSIS",
-        "message": "High Alpha: Seahawks vs. Patriots...",
-        "data": {
-          "score": "85"
-        }
-      },
-      {
-        "id": "mlcgarjviwh21m9dsd",
-        "timestamp": "2026-02-07T15:10:09.403Z",
-        "type": "ANALYSIS",
-        "message": "High Alpha: Seahawks vs. Patriots...",
-        "data": {
-          "score": "85"
-        }
-      },
-      {
-        "id": "mlce661m9s05ceypm3i",
-        "timestamp": "2026-02-07T14:10:35.674Z",
-        "type": "ANALYSIS",
-        "message": "High Alpha: Seahawks vs. Patriots...",
-        "data": {
-          "score": "85"
-        }
       }
     ]
   },
-  "profit": 0,
-  "profitPercent": "0.00"
+  "backlog": [],
+  "profit": -113.0434782608695,
+  "profitPercent": "-11.30"
 }
