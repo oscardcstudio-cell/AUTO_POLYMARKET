@@ -69,7 +69,14 @@ router.post('/reset', (req, res) => {
             fs.unlinkSync(historyFile);
             addLog(botState, '📂 Historique des trades effacé', 'warning');
         } catch (e) {
-            console.error("Failed to delete history file:", e);
+            console.error("Failed to delete history file, trying to truncate:", e);
+            try {
+                fs.writeFileSync(historyFile, '');
+                addLog(botState, '📂 Historique des trades vidé (truncate)', 'warning');
+            } catch (e2) {
+                console.error("Failed to truncate history file:", e2);
+                addLog(botState, '❌ Erreur suppression historique: ' + e2.message, 'error');
+            }
         }
     }
 
