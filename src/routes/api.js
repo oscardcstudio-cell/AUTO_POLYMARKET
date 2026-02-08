@@ -1,5 +1,7 @@
 
 import express from 'express';
+import fs from 'fs';
+import path from 'path';
 import { botState, stateManager } from '../state.js';
 import { addLog } from '../utils.js';
 import { CONFIG } from '../config.js';
