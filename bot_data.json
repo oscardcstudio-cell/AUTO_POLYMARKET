@@ -50,6 +50,7 @@
         0.04,
         0.04,
         0.04,
+        0.04,
         0.04
       ],
       "maxReturn": 0
@@ -99,6 +100,7 @@
         0.011,
         0.011,
         0.011,
+        0.011,
         0.011
       ],
       "maxReturn": 0.03724658180103707
@@ -123,6 +125,7 @@
       "clobTokenIds": "[\"85229865481166262443616698813899475047082678584551624516576861283095641108073\", \"11240144609794675088588251385750462152427779062609952137535104957577820876903\"]",
       "eventSlug": "nfl-sea-ne-2026-02-08-spread-away-4pt5",
       "priceHistory": [
+        0.495,
         0.495,
         0.495,
         0.495,
@@ -197,6 +200,7 @@
         0.085,
         0.085,
         0.085,
+        0.08,
         0.08,
         0.08,
         0.08,
@@ -362,6 +366,10 @@
     {
       "t": "2026-02-08T21:21:47.356Z",
       "v": 738.5489652452549
+    },
+    {
+      "t": "2026-02-08T21:22:47.929Z",
+      "v": 738.5489652452549
     }
   ],
   "lastPizzaData": {
@@ -377,8 +385,18 @@
     "timestamp": "2026-02-08T21:18:45.295Z",
     "slug": "nfl-sea-ne-2026-02-08"
   },
-  "lastUpdate": "2026-02-08T21:21:47.365Z",
+  "lastUpdate": "2026-02-08T21:22:47.946Z",
   "logs": [
+    {
+      "timestamp": "2026-02-08T21:22:47.929Z",
+      "message": "🔍 Scanned 10 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, STD: Price too low (<0.01)",
+      "type": "info"
+    },
+    {
+      "timestamp": "2026-02-08T21:22:47.648Z",
+      "message": "🔍 Checking 4 active trades...",
+      "type": "info"
+    },
     {
       "timestamp": "2026-02-08T21:21:47.355Z",
       "message": "🔍 Scanned 10 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, STD: Price too low (<0.01)",
@@ -1040,6 +1058,24 @@
   "sectorActivity": {
     "politics": [
       {
+        "id": "mle91u61s5amdvpmsrb",
+        "timestamp": "2026-02-08T21:22:47.929Z",
+        "type": "ANALYSIS",
+        "message": "Observation: 1 marchés scannés.",
+        "data": {
+          "status": "idle"
+        }
+      },
+      {
+        "id": "mle91u612exhvmx3rlv",
+        "timestamp": "2026-02-08T21:22:47.929Z",
+        "type": "ANALYSIS",
+        "message": "Observation: 3 marchés scannés.",
+        "data": {
+          "status": "idle"
+        }
+      },
+      {
         "id": "mle90jfgt7s43bgec6o",
         "timestamp": "2026-02-08T21:21:47.356Z",
         "type": "ANALYSIS",
@@ -1109,24 +1145,6 @@
         "message": "Observation: 3 marchés scannés.",
         "data": {
           "status": "idle"
-        }
-      },
-      {
-        "id": "mle8wmy766b96g4z9dg",
-        "timestamp": "2026-02-08T21:18:45.295Z",
-        "type": "ANALYSIS",
-        "message": "High Alpha: Counter-Strike: FURIA vs Vital...",
-        "data": {
-          "score": "100"
-        }
-      },
-      {
-        "id": "mle8wmy756ugceu4aed",
-        "timestamp": "2026-02-08T21:18:45.295Z",
-        "type": "ANALYSIS",
-        "message": "High Alpha: US x Iran meeting by February ...",
-        "data": {
-          "score": "100"
         }
       }
     ],
@@ -1226,6 +1244,15 @@
     ],
     "tech": [
       {
+        "id": "mle91u61ngg51xy2kac",
+        "timestamp": "2026-02-08T21:22:47.929Z",
+        "type": "ANALYSIS",
+        "message": "Observation: 3 marchés scannés.",
+        "data": {
+          "status": "idle"
+        }
+      },
+      {
         "id": "mle90jfgdeeapzp9n3n",
         "timestamp": "2026-02-08T21:21:47.356Z",
         "type": "ANALYSIS",
@@ -1305,18 +1332,27 @@
         "data": {
           "status": "idle"
         }
-      },
+      }
+    ],
+    "trending": [
       {
-        "id": "mle8ouipjb74wbho66n",
-        "timestamp": "2026-02-08T21:12:41.857Z",
+        "id": "mle91u61rp9te6bkzk",
+        "timestamp": "2026-02-08T21:22:47.929Z",
         "type": "ANALYSIS",
         "message": "Observation: 3 marchés scannés.",
         "data": {
           "status": "idle"
         }
-      }
-    ],
-    "trending": [
+      },
+      {
+        "id": "mle91tysujjzpinzzko",
+        "timestamp": "2026-02-08T21:22:47.668Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: Seahawks vs. Patriots...",
+        "data": {
+          "score": "100"
+        }
+      },
       {
         "id": "mle90jfgxttmv4zjp3e",
         "timestamp": "2026-02-08T21:21:47.356Z",
@@ -1387,24 +1423,6 @@
         "message": "Top Signal Detected: 100/100",
         "data": {
           "market": "Seahawks vs. Patriots"
-        }
-      },
-      {
-        "id": "mle8wmy63ggfh59lj69",
-        "timestamp": "2026-02-08T21:18:45.294Z",
-        "type": "ANALYSIS",
-        "message": "High Alpha: Seahawks vs. Patriots...",
-        "data": {
-          "score": "100"
-        }
-      },
-      {
-        "id": "mle8wmwc4930140yhaj",
-        "timestamp": "2026-02-08T21:18:45.228Z",
-        "type": "ANALYSIS",
-        "message": "High Alpha: Seahawks vs. Patriots...",
-        "data": {
-          "score": "100"
         }
       }
     ]
