@@ -2,11 +2,17 @@
 import { createClient } from '@supabase/supabase-js';
 import { CONFIG } from '../config.js';
 
-// Fallback values for local testing (from user chat)
-const SUPABASE_URL = process.env.SUPABASE_URL || 'https://locsskuiwhixwwqmsjtm.supabase.co';
-const SUPABASE_KEY = process.env.SUPABASE_KEY || 'sb_publishable_eUdyffzMtRSyWm4nZhZYew_AH_7elvg';
+import dotenv from 'dotenv';
+dotenv.config();
 
-export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_KEY = process.env.SUPABASE_KEY;
+
+if (!SUPABASE_URL || !SUPABASE_KEY) {
+    console.warn("⚠️  WARNING: Supabase credentials missing in process.env. Persistence disabled.");
+}
+
+export const supabase = (SUPABASE_URL && SUPABASE_KEY) ? createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
 export const supabaseService = {
     /**
