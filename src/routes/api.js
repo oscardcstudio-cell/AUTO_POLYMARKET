@@ -61,6 +61,18 @@ router.post('/reset', (req, res) => {
     });
 
     addLog(botState, '♻️ SIMULATION RESET: Portefeuille réinitialisé à $1000', 'warning');
+
+    // Delete trade history file if exists
+    const historyFile = path.join(process.cwd(), 'trade_decisions.jsonl');
+    if (fs.existsSync(historyFile)) {
+        try {
+            fs.unlinkSync(historyFile);
+            addLog(botState, '📂 Historique des trades effacé', 'warning');
+        } catch (e) {
+            console.error("Failed to delete history file:", e);
+        }
+    }
+
     stateManager.save();
 
     // Trigger Automated Test Trade ($1)
