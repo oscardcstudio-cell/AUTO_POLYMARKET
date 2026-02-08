@@ -344,6 +344,15 @@
             </div>
         </div>
 
+        <!-- TRADE ACTIVITY LOGS -->
+        <div class="chart-section" style="margin-top: 30px; border-color: rgba(34, 197, 94, 0.3);">
+            <div class="stat-label">💰 Trade Activity Logs</div>
+            <div id="tradeActivityLogs"
+                style="height: 250px; overflow-y: auto; font-family: monospace; font-size: 0.85em; margin-top: 15px; color: #cbd5e1; display: flex; flex-direction: column; gap: 8px; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 10px;">
+                <div class="empty-state">⏳ Waiting for trade execution...</div>
+            </div>
+        </div>
+
         <!-- Performance Statistics Section -->
         <div class="chart-section">
             <div class="stat-label" style="margin-bottom: 20px;">📈 Performance Analytics</div>
@@ -933,6 +942,30 @@
                         });
                     }
                 } catch (e) { console.error("Sector Error:", e); }
+
+                // --- 8.5. TRADE LOGS ---
+                try {
+                    const tradeLogsList = document.getElementById('tradeActivityLogs');
+                    if (tradeLogsList && botData.logs && botData.logs.length > 0) {
+                        const tradeLogs = botData.logs.filter(l => l.type === 'trade');
+                        if (tradeLogs.length > 0) {
+                            tradeLogsList.innerHTML = tradeLogs.slice(0, 15).map(l => {
+                                const isBuy = l.message.includes('BUY') || l.message.includes('YES') || l.message.includes('✅');
+                                const color = isBuy ? '#22c55e' : '#f59e0b';
+                                const icon = isBuy ? '🟢 BUY' : '🔴 SELL';
+                                return `<div style="border-left: 3px solid ${color}; padding: 8px 12px; background: rgba(0,0,0,0.2); border-radius: 5px;">
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                        <span style="color: ${color}; font-weight: 700; font-size: 0.9em;">${icon}</span>
+                                        <span style="color: #64748b; font-size: 0.75em;">${new Date(l.timestamp).toLocaleTimeString()}</span>
+                                    </div>
+                                    <div style="color: #e2e8f0; font-size: 0.85em;">${l.message}</div>
+                                 </div>`;
+                            }).join('');
+                        } else {
+                            tradeLogsList.innerHTML = '<div class="empty-state">⏳ Waiting for trade execution...</div>';
+                        }
+                    }
+                } catch (e) { console.error("Trade Logs Error:", e); }
 
                 // --- 9. LOGS (Restored) ---
                 try {

@@ -455,8 +455,27 @@ export async function checkAndCloseTrades(getRealMarketPriceFn) {
             continue;
         }
 
-        // Vérifier si le marché a expiré
-        const now = new Date();
+        // --- 4. TIMEOUT CHECK (Research-backed: 48h for prediction markets) ---
+        const now = Date.now();
+        const tradeAge = (now - new Date(trade.startTime).getTime()) / (1000 * 60 * 60); // hours
+        const timeoutHours = CONFIG.TRADE_TIMEOUT_HOURS || 48;
+
+        if (tradeAge >= timeoutHours) {
+            const reason = `⏱️ TIMEOUT: ${tradeAge.toFixed(1)}h (PnL: ${(pnlPercent * 100).toFixed(1)}%)`;
+            addLog(botState, `${reason} - Freeing capital for new opportunities`, 'info');
+            await closeTrade(i, currentPrice, reason);
+            continue;
+        }
+
+        // --- 5. EMOTIONAL SPIKE REVERSION (70% of spikes revert in 24h) ---
+        // If trade has +5% profit and is 24h old, lock it in
+        if (pnlPercent >= 0.05 && tradeAge >= 24) {
+            const reason = `🎯 SPIKE LOCK: ${(pnlPercent * 100).toFixed(1)}% after ${tradeAge.toFixed(0)}h`;
+            await closeTrade(i, currentPrice, reason);
+            continue;
+        }
+
+        // Vérifier si le marché a expiré (reuse 'now' from above)
         const marketEndDate = new Date(trade.endDate);
         if (now > marketEndDate) {
             try {
