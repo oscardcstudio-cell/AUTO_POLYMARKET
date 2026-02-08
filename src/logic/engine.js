@@ -4,6 +4,7 @@ import { addLog } from '../utils.js';
 import { CONFIG } from '../config.js';
 import { categorizeMarket } from './signals.js';
 import { getBestExecutionPrice, getCLOBOrderBook, getCLOBTradeHistory } from '../api/clob_api.js';
+import { supabaseService } from '../services/supabaseService.js';
 
 function calculateTradeSize(confidence, price) {
     const capital = botState.capital || CONFIG.STARTING_CAPITAL;
@@ -413,6 +414,7 @@ function saveNewTrade(trade) {
     // (Note: La limite de trades autorisés est gérée dynamiquement dans server.js)
 
     stateManager.save();
+    supabaseService.saveTrade(trade).catch(err => console.error('Supabase Save Error:', err));
     addLog(botState, `✅ TRADE OPENED: ${trade.side} sur "${trade.question.substring(0, 30)}..." @ $${trade.entryPrice.toFixed(3)} ($${trade.amount.toFixed(2)})`, 'trade');
 }
 
@@ -486,8 +488,8 @@ export async function checkAndCloseTrades(getRealMarketPriceFn) {
                     if (botState.closedTrades.length > 50) botState.closedTrades.pop();
 
                     stateManager.save();
-                    // syncDataToGitHub() call via callback or interval? 
-                    // stateManager.save() handles file persistence. GitHub sync is separate.
+                    // Sync to Supabase
+                    await supabaseService.saveTrade(resolution);
                 }
             } catch (e) {
                 console.error(`Error resolving trade ${trade.id}:`, e.message);
@@ -584,7 +586,9 @@ async function closeTrade(index, exitPrice, reason) {
 
     // Save state
     stateManager.save();
-    // syncDataToGitHub handled in calling function or main loop
+
+    // Sync to Supabase
+    await supabaseService.saveTrade(trade);
 }
 
 function calculateDynamicStopLoss(trade, currentReturn, maxReturn) {
