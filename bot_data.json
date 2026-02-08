@@ -294,6 +294,10 @@
     {
       "t": "2026-02-08T21:12:41.857Z",
       "v": 738.5489652452549
+    },
+    {
+      "t": "2026-02-08T21:13:42.562Z",
+      "v": 738.5489652452549
     }
   ],
   "lastPizzaData": {
@@ -306,11 +310,16 @@
     "question": "Seahawks vs. Patriots",
     "score": 100,
     "reason": "Alpha Matrix: Corrélation de signal maximale",
-    "timestamp": "2026-02-08T20:29:34.333Z",
+    "timestamp": "2026-02-08T21:13:42.246Z",
     "slug": "nfl-sea-ne-2026-02-08"
   },
-  "lastUpdate": "2026-02-08T21:13:42.186Z",
+  "lastUpdate": "2026-02-08T21:13:42.574Z",
   "logs": [
+    {
+      "timestamp": "2026-02-08T21:13:42.561Z",
+      "message": "🔍 Scanned 10 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, STD: Price too low (<0.01)",
+      "type": "info"
+    },
     {
       "timestamp": "2026-02-08T21:13:42.185Z",
       "message": "🔍 Checking 4 active trades...",
@@ -793,7 +802,7 @@
   ],
   "momentumData": {},
   "apiStatus": {
-    "gamma": "DEGRADED",
+    "gamma": "ONLINE",
     "clob": "DEGRADED",
     "pizzint": "ONLINE",
     "alpha": "ONLINE"
@@ -887,6 +896,42 @@
   "sectorActivity": {
     "politics": [
       {
+        "id": "mle8q5cy0mebi8ni10s",
+        "timestamp": "2026-02-08T21:13:42.562Z",
+        "type": "ANALYSIS",
+        "message": "Observation: 1 marchés scannés.",
+        "data": {
+          "status": "idle"
+        }
+      },
+      {
+        "id": "mle8q5cyhv73kdg5abo",
+        "timestamp": "2026-02-08T21:13:42.562Z",
+        "type": "ANALYSIS",
+        "message": "Observation: 3 marchés scannés.",
+        "data": {
+          "status": "idle"
+        }
+      },
+      {
+        "id": "mle8q546yevtk4f22ls",
+        "timestamp": "2026-02-08T21:13:42.246Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: Counter-Strike: FURIA vs Vital...",
+        "data": {
+          "score": "100"
+        }
+      },
+      {
+        "id": "mle8q5465o3iywb48gx",
+        "timestamp": "2026-02-08T21:13:42.246Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: US x Iran meeting by February ...",
+        "data": {
+          "score": "100"
+        }
+      },
+      {
         "id": "mle8ouipbn282q2td5l",
         "timestamp": "2026-02-08T21:12:41.857Z",
         "type": "ANALYSIS",
@@ -938,42 +983,6 @@
         "message": "High Alpha: Warriors vs. Lakers...",
         "data": {
           "score": "100"
-        }
-      },
-      {
-        "id": "mlcgmlvmtllukzljmqk",
-        "timestamp": "2026-02-07T15:19:21.922Z",
-        "type": "ANALYSIS",
-        "message": "High Alpha: US x Iran meeting by February ...",
-        "data": {
-          "score": "90"
-        }
-      },
-      {
-        "id": "mlcglbhgjdesbvnl1r",
-        "timestamp": "2026-02-07T15:18:21.796Z",
-        "type": "SIGNAL",
-        "message": "Top Signal Detected: 100/100",
-        "data": {
-          "market": "Warriors vs. Lakers"
-        }
-      },
-      {
-        "id": "mlcglbhgw0xod9j8yl",
-        "timestamp": "2026-02-07T15:18:21.796Z",
-        "type": "ANALYSIS",
-        "message": "High Alpha: Warriors vs. Lakers...",
-        "data": {
-          "score": "100"
-        }
-      },
-      {
-        "id": "mlcglbhghj2fe63t0eh",
-        "timestamp": "2026-02-07T15:18:21.796Z",
-        "type": "ANALYSIS",
-        "message": "High Alpha: US x Iran meeting by February ...",
-        "data": {
-          "score": "90"
         }
       }
     ],
@@ -1073,6 +1082,15 @@
     ],
     "tech": [
       {
+        "id": "mle8q5cyxlqomofwzoq",
+        "timestamp": "2026-02-08T21:13:42.562Z",
+        "type": "ANALYSIS",
+        "message": "Observation: 3 marchés scannés.",
+        "data": {
+          "status": "idle"
+        }
+      },
+      {
         "id": "mle8ouipjb74wbho66n",
         "timestamp": "2026-02-08T21:12:41.857Z",
         "type": "ANALYSIS",
@@ -1154,19 +1172,45 @@
         "data": {
           "score": "100"
         }
-      },
-      {
-        "id": "mlc9voe38z7qehtck6v",
-        "timestamp": "2026-02-07T12:10:27.771Z",
-        "type": "TRADE",
-        "message": "Executing NO on Will Elon Musk post ...",
-        "data": {
-          "amount": "49.95",
-          "price": "NaN"
-        }
       }
     ],
     "trending": [
+      {
+        "id": "mle8q5cyodwv5e332a",
+        "timestamp": "2026-02-08T21:13:42.562Z",
+        "type": "ANALYSIS",
+        "message": "Observation: 3 marchés scannés.",
+        "data": {
+          "status": "idle"
+        }
+      },
+      {
+        "id": "mle8q5468g8haa21leo",
+        "timestamp": "2026-02-08T21:13:42.246Z",
+        "type": "SIGNAL",
+        "message": "Top Signal Detected: 100/100",
+        "data": {
+          "market": "Seahawks vs. Patriots"
+        }
+      },
+      {
+        "id": "mle8q545vlo0vbiw4nc",
+        "timestamp": "2026-02-08T21:13:42.245Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: Seahawks vs. Patriots...",
+        "data": {
+          "score": "100"
+        }
+      },
+      {
+        "id": "mle8q531vsiht9vr3mr",
+        "timestamp": "2026-02-08T21:13:42.205Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: Seahawks vs. Patriots...",
+        "data": {
+          "score": "100"
+        }
+      },
       {
         "id": "mle8ouiplscpodrp4po",
         "timestamp": "2026-02-08T21:12:41.857Z",
@@ -1215,42 +1259,6 @@
       {
         "id": "mle7nkez9d670516rwf",
         "timestamp": "2026-02-08T20:43:42.491Z",
-        "type": "ANALYSIS",
-        "message": "High Alpha: Seahawks vs. Patriots...",
-        "data": {
-          "score": "100"
-        }
-      },
-      {
-        "id": "mle7m9q85advkhvhkbn",
-        "timestamp": "2026-02-08T20:42:41.984Z",
-        "type": "ANALYSIS",
-        "message": "High Alpha: Seahawks vs. Patriots...",
-        "data": {
-          "score": "100"
-        }
-      },
-      {
-        "id": "mle7kz0yuhuoyvjt9a",
-        "timestamp": "2026-02-08T20:41:41.458Z",
-        "type": "ANALYSIS",
-        "message": "High Alpha: Seahawks vs. Patriots...",
-        "data": {
-          "score": "100"
-        }
-      },
-      {
-        "id": "mle7joa3ma6dwku8e2c",
-        "timestamp": "2026-02-08T20:40:40.876Z",
-        "type": "ANALYSIS",
-        "message": "High Alpha: Seahawks vs. Patriots...",
-        "data": {
-          "score": "100"
-        }
-      },
-      {
-        "id": "mle7idmfb3b67tes1u",
-        "timestamp": "2026-02-08T20:39:40.407Z",
         "type": "ANALYSIS",
         "message": "High Alpha: Seahawks vs. Patriots...",
         "data": {
