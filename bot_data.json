@@ -26,6 +26,7 @@
       "clobTokenIds": "[\"96361925776989336186111887920533578209326565663637092688733016597062311745569\", \"20002636398944597965698652220992177552927816915094913583821579024925426590022\"]",
       "eventSlug": "will-elon-cut-the-budget-by-at-least-5-in-2025",
       "priceHistory": [
+        0.0405,
         0.0405
       ],
       "maxReturn": 0
@@ -50,6 +51,7 @@
       "clobTokenIds": "[\"80230236018433940569996058935444651347308266584430516013229815570706872276819\", \"107000426448217931795450451304515386602910396776318075817601265223856116134349\"]",
       "eventSlug": "will-elon-cut-the-budget-by-at-least-10-in-2025",
       "priceHistory": [
+        0.0105,
         0.0105,
         0.0105
       ],
@@ -77,6 +79,7 @@
       "priceHistory": [
         0.495,
         0.495,
+        0.495,
         0.495
       ],
       "maxReturn": 0.010101010101010211
@@ -101,6 +104,7 @@
       "clobTokenIds": "[\"70584222105672215743914509614198676449757016746323593572033490884974443841053\", \"78453865954536643710017153843673830010373935401063241006664722462398084283536\"]",
       "eventSlug": "rojas-guilty-in-texas-illegal-abortion-case",
       "priceHistory": [
+        0.08,
         0.08,
         0.08,
         0.08,
@@ -241,8 +245,23 @@
     "timestamp": "2026-02-08T20:29:34.333Z",
     "slug": "nfl-sea-ne-2026-02-08"
   },
-  "lastUpdate": "2026-02-08T20:33:36.600Z",
+  "lastUpdate": "2026-02-08T20:34:37.117Z",
   "logs": [
+    {
+      "timestamp": "2026-02-08T20:34:37.116Z",
+      "message": "🔍 Checking 4 active trades...",
+      "type": "info"
+    },
+    {
+      "timestamp": "2026-02-08T20:33:36.871Z",
+      "message": "Main Loop Error: categorizeMarket is not defined",
+      "type": "error"
+    },
+    {
+      "timestamp": "2026-02-08T20:33:36.870Z",
+      "message": "🔍 Scanned 10 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, STD: Price too low (<0.01)",
+      "type": "info"
+    },
     {
       "timestamp": "2026-02-08T20:33:36.600Z",
       "message": "🔍 Checking 4 active trades...",
@@ -860,6 +879,15 @@
     ],
     "trending": [
       {
+        "id": "mle7akwu0qzlazgfrsv",
+        "timestamp": "2026-02-08T20:33:36.606Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: Seahawks vs. Patriots...",
+        "data": {
+          "score": "100"
+        }
+      },
+      {
         "id": "mle79a4omw170oqyr3",
         "timestamp": "2026-02-08T20:32:35.976Z",
         "type": "ANALYSIS",
@@ -936,15 +964,6 @@
       {
         "id": "mlcgmlvmt70t7kcameh",
         "timestamp": "2026-02-07T15:19:21.922Z",
-        "type": "ANALYSIS",
-        "message": "High Alpha: Seahawks vs. Patriots...",
-        "data": {
-          "score": "85"
-        }
-      },
-      {
-        "id": "mlcglbhgx7zdl579wi",
-        "timestamp": "2026-02-07T15:18:21.796Z",
         "type": "ANALYSIS",
         "message": "High Alpha: Seahawks vs. Patriots...",
         "data": {
