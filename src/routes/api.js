@@ -145,4 +145,30 @@ router.delete('/backlog/:id', (req, res) => {
     res.json({ success: true });
 });
 
+// --- NEW: Full Trade History Endpoint ---
+router.get('/trade-history', (req, res) => {
+    const historyFile = path.join(process.cwd(), 'trade_decisions.jsonl');
+    if (fs.existsSync(historyFile)) {
+        try {
+            const fileContent = fs.readFileSync(historyFile, 'utf-8');
+            // Parse JSONL (one JSON object per line)
+            const trades = fileContent
+                .split('\n')
+                .filter(line => line.trim() !== '')
+                .map(line => {
+                    try { return JSON.parse(line); } catch (e) { return null; }
+                })
+                .filter(t => t !== null && t.tradeExecuted === true) // Only show executed trades
+                .reverse(); // Newest first
+
+            res.json(trades);
+        } catch (error) {
+            console.error("Error reading trade history:", error);
+            res.status(500).json({ error: "Failed to read history" });
+        }
+    } else {
+        res.json([]); // No history file yet
+    }
+});
+
 export default router;

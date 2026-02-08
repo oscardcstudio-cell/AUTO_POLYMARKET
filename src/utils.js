@@ -38,7 +38,8 @@ export function saveToGithub(commitMessage = "Auto-save bot state") {
 
     // Note: This function previously used execSync which is blocking.
     // Using exec (async) is safer for the event loop.
-    exec(`git add "${CONFIG.DATA_FILE}" && git commit -m "${commitMessage}" && git push`, (error, stdout, stderr) => {
+    // Add bot_data.json AND trade_decisions.jsonl
+    exec(`git add "bot_data.json" "trade_decisions.jsonl" && git commit -m "${commitMessage}" && git push`, (error, stdout, stderr) => {
         if (error) {
             console.error(`Git Save Error: ${error.message}`);
             return;

@@ -532,7 +532,7 @@
         <!-- History with Filters -->
         <div class="section-title"
             style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
-            <span>📜 Archives & Settlements</span>
+            <span>📜 Trade History (All Decisions)</span>
             <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                 <input type="text" id="searchTrades" placeholder="Search markets..."
                     style="padding: 8px 15px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 20px; color: #f8fafc; font-size: 0.85em; outline: none;">
@@ -664,7 +664,7 @@
             }
         }
 
-        function updateDashboard() {
+        async function updateDashboard() {
             try {
                 if (!botData || !botData.capital) return;
 
@@ -845,43 +845,63 @@
                     </div>`).join('');
                     } else { wizardList.innerHTML = '<div class="empty-state">No wizards detected.</div>'; }
 
-                    // History
-                    const closedList = document.getElementById('closedTradesList');
-                    if (botData.closedTrades.length > 0) {
-                        const searchTerm = document.getElementById('searchTrades')?.value.toLowerCase() || '';
-                        const profitFilter = document.getElementById('filterProfit')?.value || 'all';
+                    // --- 4. HISTORY (FROM FULL LOGS) ---
+                    try {
+                        const response = await fetch('/api/trade-history');
+                        const history = await response.json();
 
-                        const filtered = botData.closedTrades.filter(t => {
-                            const matchSearch = t.question.toLowerCase().includes(searchTerm);
-                            const matchProfit = profitFilter === 'all' || (profitFilter === 'profit' && t.profit >= 0) || (profitFilter === 'loss' && t.profit < 0);
-                            return matchSearch && matchProfit;
+                        const closedList = document.getElementById('closedTradesList');
+                        const searchTerm = document.getElementById('searchTrades')?.value.toLowerCase() || '';
+                        // Filter logic
+                        const filtered = history.filter(t => {
+                            const matchesSearch = (t.question || '').toLowerCase().includes(searchTerm) ||
+                                (t.marketId || '').includes(searchTerm) ||
+                                (t.side || '').toLowerCase().includes(searchTerm);
+                            return matchesSearch;
                         });
 
                         if (filtered.length > 0) {
-                            closedList.innerHTML = filtered.slice(0, 12).map(t => {
-                                const invested = t.size || 0;
-                                const returned = invested + t.profit;
-                                const roi = invested > 0 ? (t.profit / invested) * 100 : 0;
+                            closedList.innerHTML = filtered.slice(0, 50).map(t => { // Show max 50 recent
+                                const date = new Date(t.timestamp).toLocaleString();
+                                const isBuy = t.side === 'YES';
+                                // Logic: If profit is available (from updated logs), use it. Else neutral/open style.
+                                const color = isBuy ? '#4ade80' : '#f87171';
+                                const price = t.entryPrice ? t.entryPrice.toFixed(3) : '?.???';
 
                                 return `
-                         <div class="trade-card" style="opacity:0.8; border-left: 3px solid ${t.profit >= 0 ? '#4ade80' : '#f87171'}">
-                            <div style="display:flex; justify-content:space-between; margin-bottom:10px">
-                                <div style="font-weight:700; font-size:0.9em; max-width:70%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${t.question}">${t.question}</div>
-                                <div style="font-weight:800; color:${t.profit >= 0 ? '#4ade80' : '#f87171'}">${t.profit >= 0 ? '+' : ''}$${t.profit.toFixed(0)}</div>
-                            </div>
-                            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:5px; font-size:0.75em; color:#cbd5e1; background:rgba(0,0,0,0.2); padding:8px; border-radius:8px;">
-                                <div>SIDE: <span style="font-weight:700; color:#3b82f6">${t.side}</span></div>
-                                <div>ENTRY: $${t.entryPrice.toFixed(3)}</div>
-                                <div>EXIT: $${t.exitPrice ? t.exitPrice.toFixed(3) : '-'}</div>
-                            </div>
-                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:8px; font-size:0.8em; border-top:1px solid rgba(255,255,255,0.05); padding-top:8px;">
-                                <div>Invested: <span style="color:#e2e8f0">$${invested.toFixed(0)}</span></div>
-                                <div style="text-align:right">Returned: <span style="color:${t.profit >= 0 ? '#4ade80' : '#f87171'}">$${returned.toFixed(0)}</span></div>
-                            </div>
-                         </div>`;
+                                <div class="trade-card" style="border-left: 4px solid ${color}; opacity: 0.9;">
+                                    <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                                        <span class="trade-token" style="background:${color}20; color:${color}">${t.side}</span>
+                                        <span class="trade-time" style="color:#64748b; font-size:0.8em">${date}</span>
+                                    </div>
+                                    <div class="trade-question" style="margin-bottom:10px;">${t.question}</div>
+                                    <div class="trade-details" style="grid-template-columns: repeat(3, 1fr);">
+                                        <div class="trade-detail-item">
+                                            <div class="detail-label">Entry</div>
+                                            <div class="detail-value">$${price}</div>
+                                        </div>
+                                        <div class="trade-detail-item">
+                                            <div class="detail-label">Confidence</div>
+                                            <div class="detail-value">${t.confidence ? (t.confidence * 100).toFixed(0) : '?'}%</div>
+                                        </div>
+                                        <div class="trade-detail-item">
+                                            <div class="detail-label">Vol 24h</div>
+                                            <div class="detail-value">$${t.marketData?.volume24h ? Math.round(t.marketData.volume24h).toLocaleString() : '-'}</div>
+                                        </div>
+                                    </div>
+                                    <div style="margin-top:10px; font-size:0.8em; color:#94a3b8; font-style:italic; border-top:1px solid rgba(255,255,255,0.05); padding-top:8px;">
+                                        Rationale: ${(t.decisionReasons || []).slice(0, 2).join(', ')}
+                                    </div>
+                                </div>
+                                `;
                             }).join('');
-                        } else { closedList.innerHTML = '<div class="empty-state">No matching trades.</div>'; }
-                    } else { closedList.innerHTML = '<div class="empty-state">📊 No closed trades yet. Waiting for first settlement...</div>'; }
+                        } else {
+                            closedList.innerHTML = '<div class="empty-state">No trade history found in logs.</div>';
+                        }
+                    } catch (e) {
+                        console.error("History Error:", e);
+                        document.getElementById('closedTradesList').innerHTML = '<div class="empty-state" style="color:#f87171">Error loading history.</div>';
+                    }
 
 
                     // Sectors

@@ -20,7 +20,7 @@ Thumbs.db
 npm-debug.log*
 
 # Data
-trade_decisions.jsonl
+# trade_decisions.jsonl (Synced now)
 
 # Build
 dist/
