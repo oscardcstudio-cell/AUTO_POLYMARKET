@@ -2,10 +2,28 @@
   "startTime": "2026-02-07T12:55:54.888Z",
   "capital": 0,
   "startingCapital": 1000,
-  "totalTrades": 43,
+  "totalTrades": 44,
   "winningTrades": 0,
   "losingTrades": 0,
   "activeTrades": [
+    {
+      "id": "mlee4ru62clkhx69sq7",
+      "marketId": "502028",
+      "question": "Infowars shuttered by Friday?",
+      "side": "NO",
+      "amount": 0,
+      "entryPrice": 0.7128,
+      "startTime": "2026-02-08T23:45:02.958Z",
+      "shares": 0,
+      "status": "OPEN",
+      "confidence": 0.45,
+      "reasons": [
+        "🔥 Smart Momentum: Following NO Favorite"
+      ],
+      "category": "geopolitical",
+      "isFresh": false,
+      "clobTokenIds": []
+    },
     {
       "id": "mlee4rtkg6oozaz3ypn",
       "marketId": "502027",
@@ -1127,8 +1145,13 @@
     "timestamp": "2026-02-08T21:23:48.372Z",
     "slug": "nfl-sea-ne-2026-02-08"
   },
-  "lastUpdate": "2026-02-08T23:45:02.936Z",
+  "lastUpdate": "2026-02-08T23:45:02.958Z",
   "logs": [
+    {
+      "timestamp": "2026-02-08T23:45:02.954Z",
+      "message": "✅ TRADE OPENED: NO sur \"Roaring Kitty dumps GME calls ...\" @ $0.713 ($0.00)",
+      "type": "trade"
+    },
     {
       "timestamp": "2026-02-08T23:45:02.936Z",
       "message": "✅ TRADE OPENED: NO sur \"Did Keith Gill (RoaringKitty) ...\" @ $0.713 ($0.00)",
@@ -2002,20 +2025,20 @@
   ],
   "sectorStats": {
     "politics": {
-      "count": 21,
-      "lastActivity": "2026-02-08T23:45:02.936Z"
+      "count": 22,
+      "lastActivity": "2026-02-08T23:45:02.958Z"
     },
     "economics": {
       "count": 14,
-      "lastActivity": "2026-02-08T23:45:02.936Z"
+      "lastActivity": "2026-02-08T23:45:02.958Z"
     },
     "tech": {
       "count": 12,
-      "lastActivity": "2026-02-08T23:45:02.937Z"
+      "lastActivity": "2026-02-08T23:45:02.958Z"
     },
     "trending": {
       "count": 36,
-      "lastActivity": "2026-02-08T23:45:02.937Z"
+      "lastActivity": "2026-02-08T23:45:02.958Z"
     }
   },
   "sectorActivity": {
@@ -2312,6 +2335,16 @@
     ],
     "trending": [
       {
+        "id": "mlee4ru2arge56nc29i",
+        "timestamp": "2026-02-08T23:45:02.954Z",
+        "type": "TRADE",
+        "message": "🎰 Trade Opened: $0 on NO",
+        "data": {
+          "market": "Roaring Kitty dumps GME calls by Friday?",
+          "price": "0.71"
+        }
+      },
+      {
         "id": "mlee4rtkstwb53mmnh",
         "timestamp": "2026-02-08T23:45:02.936Z",
         "type": "TRADE",
@@ -2388,4 +2421,22 @@
         "message": "🎰 Trade Opened: $0 on NO",
         "data": {
           "market": "Will Roaring Kitty tweet on Monday?",
-          
+          "price": "0.71"
+        }
+      },
+      {
+        "id": "mlee4ro8o2n45mb3pfp",
+        "timestamp": "2026-02-08T23:45:02.744Z",
+        "type": "TRADE",
+        "message": "🎰 Trade Opened: $0 on NO",
+        "data": {
+          "market": "Roaring Kitty charged in 2024?",
+          "price": "0.71"
+        }
+      }
+    ]
+  },
+  "backlog": [],
+  "profit": -1000,
+  "profitPercent": "-100.00"
+}
