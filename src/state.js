@@ -84,6 +84,31 @@ class StateManager {
             this.data.profit = this.data.capital - this.data.startingCapital;
             this.data.profitPercent = ((this.data.profit) / this.data.startingCapital * 100).toFixed(2);
 
+            // --- RECALCULATE SECTOR STATS (Fix for BUG-002) ---
+            // Initialize if missing
+            if (!this.data.sectorStats) this.data.sectorStats = { politics: { count: 0 }, economics: { count: 0 }, tech: { count: 0 }, trending: { count: 0 } };
+
+            const sectors = ['politics', 'economics', 'tech', 'trending'];
+            sectors.forEach(s => {
+                // Count active trades in this sector
+                const tradeCount = this.data.activeTrades.filter(t => {
+                    const cat = (t.category || '').toLowerCase();
+                    if (s === 'politics' && cat.includes('politi')) return true;
+                    if (s === 'economics' && cat.includes('eco')) return true;
+                    if (s === 'tech' && (cat.includes('tech') || cat.includes('ai'))) return true;
+                    if (s === 'trending' && !cat.includes('politi') && !cat.includes('eco') && !cat.includes('tech')) return true;
+                    return false;
+                }).length;
+
+                // Count recent activity events
+                const activityCount = (this.data.sectorActivity && this.data.sectorActivity[s]) ? this.data.sectorActivity[s].length : 0;
+
+                this.data.sectorStats[s] = {
+                    count: tradeCount + activityCount, // Active items = trades + recent alerts
+                    lastActivity: new Date().toISOString()
+                };
+            });
+
             fs.writeFileSync(CONFIG.DATA_FILE, JSON.stringify(this.data, null, 2));
 
             // Sync to GitHub to allow AI/Antigravity to see updates
