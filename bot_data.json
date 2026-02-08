@@ -24,7 +24,11 @@
       "category": "tech",
       "isFresh": false,
       "clobTokenIds": "[\"80230236018433940569996058935444651347308266584430516013229815570706872276819\", \"107000426448217931795450451304515386602910396776318075817601265223856116134349\"]",
-      "eventSlug": "will-elon-cut-the-budget-by-at-least-10-in-2025"
+      "eventSlug": "will-elon-cut-the-budget-by-at-least-10-in-2025",
+      "priceHistory": [
+        0.0105
+      ],
+      "maxReturn": 0
     },
     {
       "id": "mle76owl0zrdns0u688a",
@@ -46,6 +50,7 @@
       "clobTokenIds": "[\"85229865481166262443616698813899475047082678584551624516576861283095641108073\", \"11240144609794675088588251385750462152427779062609952137535104957577820876903\"]",
       "eventSlug": "nfl-sea-ne-2026-02-08-spread-away-4pt5",
       "priceHistory": [
+        0.495,
         0.495
       ],
       "maxReturn": 0.010101010101010211
@@ -70,6 +75,7 @@
       "clobTokenIds": "[\"70584222105672215743914509614198676449757016746323593572033490884974443841053\", \"78453865954536643710017153843673830010373935401063241006664722462398084283536\"]",
       "eventSlug": "rojas-guilty-in-texas-illegal-abortion-case",
       "priceHistory": [
+        0.08,
         0.08,
         0.08
       ],
@@ -204,8 +210,13 @@
     "timestamp": "2026-02-08T20:29:34.333Z",
     "slug": "nfl-sea-ne-2026-02-08"
   },
-  "lastUpdate": "2026-02-08T20:31:35.717Z",
+  "lastUpdate": "2026-02-08T20:32:35.970Z",
   "logs": [
+    {
+      "timestamp": "2026-02-08T20:32:35.970Z",
+      "message": "🔍 Checking 3 active trades...",
+      "type": "info"
+    },
     {
       "timestamp": "2026-02-08T20:31:35.689Z",
       "message": "🚀 [STD] Trade: Will Elon cut the budget by at...",
@@ -428,7 +439,7 @@
   ],
   "momentumData": {},
   "apiStatus": {
-    "gamma": "ONLINE",
+    "gamma": "DEGRADED",
     "clob": "DEGRADED",
     "pizzint": "ONLINE",
     "alpha": "ONLINE"
