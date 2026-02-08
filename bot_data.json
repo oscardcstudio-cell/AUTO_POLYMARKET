@@ -1,11 +1,31 @@
 {
   "startTime": "2026-02-07T12:55:54.888Z",
-  "capital": 886.9565217391305,
+  "capital": 876.9565217391305,
   "startingCapital": 1000,
-  "totalTrades": 1,
+  "totalTrades": 2,
   "winningTrades": 0,
   "losingTrades": 0,
   "activeTrades": [
+    {
+      "id": "mle76owl0zrdns0u688a",
+      "marketId": "1271400",
+      "question": "Spread: Seahawks (-4.5)",
+      "slug": "nfl-sea-ne-2026-02-08-spread-away-4pt5",
+      "side": "NO",
+      "amount": 10,
+      "entryPrice": 0.49005,
+      "startTime": "2026-02-08T20:30:35.157Z",
+      "shares": 20.40608101214162,
+      "status": "OPEN",
+      "confidence": 0.35,
+      "reasons": [
+        "Contrarian Momentum"
+      ],
+      "category": "other",
+      "isFresh": false,
+      "clobTokenIds": "[\"85229865481166262443616698813899475047082678584551624516576861283095641108073\", \"11240144609794675088588251385750462152427779062609952137535104957577820876903\"]",
+      "eventSlug": "nfl-sea-ne-2026-02-08-spread-away-4pt5"
+    },
     {
       "id": "mle75e5fayprwlibg9f",
       "marketId": "528788",
@@ -136,6 +156,10 @@
     {
       "t": "2026-02-08T20:29:34.579Z",
       "v": 886.9565217391305
+    },
+    {
+      "t": "2026-02-08T20:30:35.166Z",
+      "v": 876.9565217391305
     }
   ],
   "lastPizzaData": {
@@ -151,8 +175,18 @@
     "timestamp": "2026-02-08T20:29:34.333Z",
     "slug": "nfl-sea-ne-2026-02-08"
   },
-  "lastUpdate": "2026-02-08T20:30:34.831Z",
+  "lastUpdate": "2026-02-08T20:30:35.202Z",
   "logs": [
+    {
+      "timestamp": "2026-02-08T20:30:35.165Z",
+      "message": "🚀 [STD] Trade: Spread: Seahawks (-4.5)...",
+      "type": "success"
+    },
+    {
+      "timestamp": "2026-02-08T20:30:35.165Z",
+      "message": "✅ TRADE OPENED: NO sur \"Spread: Seahawks (-4.5)...\" @ $0.490 ($10.00)",
+      "type": "trade"
+    },
     {
       "timestamp": "2026-02-08T20:30:34.830Z",
       "message": "🔍 Checking 1 active trades...",
@@ -350,7 +384,7 @@
   ],
   "momentumData": {},
   "apiStatus": {
-    "gamma": "DEGRADED",
+    "gamma": "ONLINE",
     "clob": "DEGRADED",
     "pizzint": "ONLINE",
     "alpha": "ONLINE"
@@ -714,6 +748,25 @@
     ],
     "trending": [
       {
+        "id": "mle76owt61hfn0zv2ux",
+        "timestamp": "2026-02-08T20:30:35.165Z",
+        "type": "TRADE",
+        "message": "🎰 Trade Opened: $10 on NO",
+        "data": {
+          "market": "Spread: Seahawks (-4.5)",
+          "price": "0.49"
+        }
+      },
+      {
+        "id": "mle76onsifry7h2sbvg",
+        "timestamp": "2026-02-08T20:30:34.840Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: Seahawks vs. Patriots...",
+        "data": {
+          "score": "100"
+        }
+      },
+      {
         "id": "mle75e5vggge8vkjr9l",
         "timestamp": "2026-02-08T20:29:34.579Z",
         "type": "TRADE",
@@ -785,28 +838,10 @@
         "data": {
           "score": "85"
         }
-      },
-      {
-        "id": "mlcgfx9memxvyqrbieq",
-        "timestamp": "2026-02-07T15:14:10.090Z",
-        "type": "ANALYSIS",
-        "message": "High Alpha: Seahawks vs. Patriots...",
-        "data": {
-          "score": "85"
-        }
-      },
-      {
-        "id": "mlcgemu4fkki30zahbh",
-        "timestamp": "2026-02-07T15:13:09.916Z",
-        "type": "ANALYSIS",
-        "message": "High Alpha: Seahawks vs. Patriots...",
-        "data": {
-          "score": "85"
-        }
       }
     ]
   },
   "backlog": [],
-  "profit": -113.0434782608695,
-  "profitPercent": "-11.30"
+  "profit": -123.0434782608695,
+  "profitPercent": "-12.30"
 }
