@@ -67,13 +67,41 @@ app.listen(CONFIG.PORT, () => {
 async function mainLoop() {
     addLog(botState, '🔄 Démarrage de la boucle de trading...', 'info');
 
+    // State for Deep Scan
+    let lastDeepScanTime = 0;
+    const DEEP_SCAN_INTERVAL = 30 * 60 * 1000; // 30 minutes
+
     while (true) {
         try {
             // 1. Connectivity & API Status
             await checkConnectivity();
 
             // 2. Fetch Intelligence (PizzInt / Alpha)
-            const relevantMarkets = await getRelevantMarkets();
+            const now = Date.now();
+            let relevantMarkets;
+            let isDeepScan = false;
+
+            if (now - lastDeepScanTime > DEEP_SCAN_INTERVAL) {
+                addLog(botState, '🌊 LANCEMENT DEEP SCAN (1000+ marchés)...', 'info');
+                relevantMarkets = await getRelevantMarkets(true); // DEEP SCAN
+                lastDeepScanTime = now;
+                isDeepScan = true;
+
+                // Update stats
+                botState.deepScanData = {
+                    lastScan: new Date().toISOString(),
+                    marketCount: relevantMarkets.length,
+                    scanDuration: 0 // Could be measured
+                };
+            } else {
+                relevantMarkets = await getRelevantMarkets(false); // QUICK SCAN
+            }
+
+            if (!relevantMarkets || relevantMarkets.length === 0) {
+                addLog(botState, '⚠️ Aucun marché trouvé, nouvelle tentative...', 'warning');
+                await new Promise(resolve => setTimeout(resolve, 5000));
+                continue;
+            }
 
             try {
                 await fetchNewsSentiment();
@@ -117,9 +145,9 @@ async function mainLoop() {
             });
 
             // 4. Market Scanning
-            await scanArbitrage();
-            await detectWizards();
-            await detectWhales();
+            await scanArbitrage(relevantMarkets);
+            await detectWizards(relevantMarkets);
+            await detectWhales(relevantMarkets);
             await detectFreshMarkets();
 
             // 5. Signal Update (Periodic)

@@ -317,10 +317,10 @@ export async function fetchNewsSentiment() {
     }
 }
 
-export async function detectWhales() {
+export async function detectWhales(markets = null) {
     botState.whaleAlerts = [];
     try {
-        const markets = await getRelevantMarkets(false);
+        if (!markets) markets = await getRelevantMarkets(false);
         markets.forEach(m => {
             const vol = parseFloat(m.volume24hr || 0);
             if (vol > 50000) {
@@ -337,10 +337,10 @@ export async function detectWhales() {
     } catch (e) { console.error("Whale Scan Error:", e.message); }
 }
 
-export async function scanArbitrage() {
+export async function scanArbitrage(markets = null) {
     botState.arbitrageOpportunities = [];
     try {
-        const markets = await getRelevantMarkets(false);
+        if (!markets) markets = await getRelevantMarkets(false);
         markets.forEach(m => {
             if (m.outcomePrices) {
                 const pYes = parseFloat(m.outcomePrices[0]);
@@ -360,10 +360,10 @@ export async function scanArbitrage() {
     } catch (e) { console.error("Arb Scan Error:", e.message); }
 }
 
-export async function detectWizards() {
+export async function detectWizards(markets = null) {
     botState.wizards = [];
     try {
-        const markets = await getRelevantMarkets(false);
+        if (!markets) markets = await getRelevantMarkets(false);
         markets.forEach(m => {
             if (!m.outcomePrices) return;
             let prices = m.outcomePrices;
