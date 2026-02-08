@@ -48,6 +48,7 @@
         0.04,
         0.04,
         0.04,
+        0.04,
         0.04
       ],
       "maxReturn": 0
@@ -95,6 +96,7 @@
         0.011,
         0.011,
         0.011,
+        0.011,
         0.011
       ],
       "maxReturn": 0.03724658180103707
@@ -119,6 +121,7 @@
       "clobTokenIds": "[\"85229865481166262443616698813899475047082678584551624516576861283095641108073\", \"11240144609794675088588251385750462152427779062609952137535104957577820876903\"]",
       "eventSlug": "nfl-sea-ne-2026-02-08-spread-away-4pt5",
       "priceHistory": [
+        0.495,
         0.495,
         0.495,
         0.495,
@@ -191,6 +194,7 @@
         0.085,
         0.085,
         0.085,
+        0.08,
         0.08,
         0.08
       ],
@@ -361,8 +365,13 @@
     "timestamp": "2026-02-08T21:18:45.295Z",
     "slug": "nfl-sea-ne-2026-02-08"
   },
-  "lastUpdate": "2026-02-08T21:19:46.161Z",
+  "lastUpdate": "2026-02-08T21:20:46.475Z",
   "logs": [
+    {
+      "timestamp": "2026-02-08T21:20:46.475Z",
+      "message": "🔍 Checking 4 active trades...",
+      "type": "info"
+    },
     {
       "timestamp": "2026-02-08T21:19:46.144Z",
       "message": "🔍 Scanned 10 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, STD: Price too low (<0.01)",
@@ -910,7 +919,7 @@
   ],
   "momentumData": {},
   "apiStatus": {
-    "gamma": "ONLINE",
+    "gamma": "DEGRADED",
     "clob": "DEGRADED",
     "pizzint": "ONLINE",
     "alpha": "ONLINE"
