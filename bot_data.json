@@ -24,7 +24,11 @@
       "category": "other",
       "isFresh": false,
       "clobTokenIds": "[\"70584222105672215743914509614198676449757016746323593572033490884974443841053\", \"78453865954536643710017153843673830010373935401063241006664722462398084283536\"]",
-      "eventSlug": "rojas-guilty-in-texas-illegal-abortion-case"
+      "eventSlug": "rojas-guilty-in-texas-illegal-abortion-case",
+      "priceHistory": [
+        0.08
+      ],
+      "maxReturn": 0
     }
   ],
   "closedTrades": [],
@@ -147,8 +151,13 @@
     "timestamp": "2026-02-08T20:29:34.333Z",
     "slug": "nfl-sea-ne-2026-02-08"
   },
-  "lastUpdate": "2026-02-08T20:29:34.620Z",
+  "lastUpdate": "2026-02-08T20:30:34.831Z",
   "logs": [
+    {
+      "timestamp": "2026-02-08T20:30:34.830Z",
+      "message": "🔍 Checking 1 active trades...",
+      "type": "info"
+    },
     {
       "timestamp": "2026-02-08T20:29:34.579Z",
       "message": "🚀 [WIZARD] Trade: Rojas guilty in Texas illegal ...",
@@ -341,7 +350,7 @@
   ],
   "momentumData": {},
   "apiStatus": {
-    "gamma": "ONLINE",
+    "gamma": "DEGRADED",
     "clob": "DEGRADED",
     "pizzint": "ONLINE",
     "alpha": "ONLINE"
