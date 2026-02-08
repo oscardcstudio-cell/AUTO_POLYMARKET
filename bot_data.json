@@ -1,11 +1,31 @@
 {
   "startTime": "2026-02-07T12:55:54.888Z",
-  "capital": 876.9565217391305,
+  "capital": 816.7793132236308,
   "startingCapital": 1000,
-  "totalTrades": 2,
+  "totalTrades": 3,
   "winningTrades": 0,
   "losingTrades": 0,
   "activeTrades": [
+    {
+      "id": "mle77zlvgmb7euf27ep",
+      "marketId": "521963",
+      "question": "Will Elon cut the budget by at least 10% in 2025?",
+      "slug": "will-elon-cut-the-budget-by-at-least-10-in-2025",
+      "side": "YES",
+      "amount": 60.177208515499714,
+      "entryPrice": 0.010605000000000002,
+      "startTime": "2026-02-08T20:31:35.683Z",
+      "shares": 5674.418530457304,
+      "status": "OPEN",
+      "confidence": 0.35,
+      "reasons": [
+        "Contrarian Momentum"
+      ],
+      "category": "tech",
+      "isFresh": false,
+      "clobTokenIds": "[\"80230236018433940569996058935444651347308266584430516013229815570706872276819\", \"107000426448217931795450451304515386602910396776318075817601265223856116134349\"]",
+      "eventSlug": "will-elon-cut-the-budget-by-at-least-10-in-2025"
+    },
     {
       "id": "mle76owl0zrdns0u688a",
       "marketId": "1271400",
@@ -165,6 +185,10 @@
     {
       "t": "2026-02-08T20:30:35.166Z",
       "v": 876.9565217391305
+    },
+    {
+      "t": "2026-02-08T20:31:35.690Z",
+      "v": 816.7793132236308
     }
   ],
   "lastPizzaData": {
@@ -180,8 +204,18 @@
     "timestamp": "2026-02-08T20:29:34.333Z",
     "slug": "nfl-sea-ne-2026-02-08"
   },
-  "lastUpdate": "2026-02-08T20:31:35.416Z",
+  "lastUpdate": "2026-02-08T20:31:35.717Z",
   "logs": [
+    {
+      "timestamp": "2026-02-08T20:31:35.689Z",
+      "message": "🚀 [STD] Trade: Will Elon cut the budget by at...",
+      "type": "success"
+    },
+    {
+      "timestamp": "2026-02-08T20:31:35.689Z",
+      "message": "✅ TRADE OPENED: YES sur \"Will Elon cut the budget by at...\" @ $0.011 ($60.18)",
+      "type": "trade"
+    },
     {
       "timestamp": "2026-02-08T20:31:35.416Z",
       "message": "🔍 Checking 2 active trades...",
@@ -394,7 +428,7 @@
   ],
   "momentumData": {},
   "apiStatus": {
-    "gamma": "DEGRADED",
+    "gamma": "ONLINE",
     "clob": "DEGRADED",
     "pizzint": "ONLINE",
     "alpha": "ONLINE"
@@ -674,6 +708,16 @@
     ],
     "tech": [
       {
+        "id": "mle77zm1d1k816lnhgk",
+        "timestamp": "2026-02-08T20:31:35.689Z",
+        "type": "TRADE",
+        "message": "🎰 Trade Opened: $60 on YES",
+        "data": {
+          "market": "Will Elon cut the budget by at least 10% in 2025?",
+          "price": "0.01"
+        }
+      },
+      {
         "id": "mlcbijdxzzh0c0bc86h",
         "timestamp": "2026-02-07T12:56:13.989Z",
         "type": "SIGNAL",
@@ -758,6 +802,15 @@
     ],
     "trending": [
       {
+        "id": "mle77zeme6fbk6rexwe",
+        "timestamp": "2026-02-08T20:31:35.422Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: Seahawks vs. Patriots...",
+        "data": {
+          "score": "100"
+        }
+      },
+      {
         "id": "mle76owt61hfn0zv2ux",
         "timestamp": "2026-02-08T20:30:35.165Z",
         "type": "TRADE",
@@ -839,19 +892,10 @@
         "data": {
           "score": "85"
         }
-      },
-      {
-        "id": "mlcgh7qed6aghsy1kzg",
-        "timestamp": "2026-02-07T15:15:10.310Z",
-        "type": "ANALYSIS",
-        "message": "High Alpha: Seahawks vs. Patriots...",
-        "data": {
-          "score": "85"
-        }
       }
     ]
   },
   "backlog": [],
-  "profit": -123.0434782608695,
-  "profitPercent": "-12.30"
+  "profit": -183.22068677636923,
+  "profitPercent": "-18.32"
 }
