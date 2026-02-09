@@ -805,24 +805,7 @@
                 </div>
             </div>
 
-            <!-- History with Filters -->
-            <div class="section-title"
-                style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
-                <span>📜 Trade History (All Decisions)</span>
-                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                    <input type="text" id="searchTrades" placeholder="Search markets..."
-                        style="padding: 8px 15px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 20px; color: #f8fafc; font-size: 0.85em; outline: none;">
-                    <select id="filterProfit"
-                        style="padding: 8px 15px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 20px; color: #f8fafc; font-size: 0.85em; outline: none;">
-                        <option value="all">All Trades</option>
-                        <option value="profit">Profitable Only</option>
-                        <option value="loss">Losses Only</option>
-                    </select>
-                </div>
-            </div>
-            <div id="closedTradesList" class="trades-grid">
-                <div class="empty-state">No history recorded in this session.</div>
-            </div>
+
 
             <footer
                 style="text-align: center; margin: 80px 0 40px 0; color: #475569; font-size: 0.85em; letter-spacing: 1px;">
@@ -1045,8 +1028,8 @@
                         <div style="font-weight:700; margin-bottom:10px; height:45px; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;">${m.question}</div>
                         
                         <div style="display:flex; gap:5px; margin-bottom:10px;">
-                            <div style="flex:1; background:rgba(34,197,94,0.1); color:#4ade80; padding:5px; border-radius:5px; text-align:center; font-weight:700;">Yes ${yes.toFixed(2)}</div>
-                            <div style="flex:1; background:rgba(239,68,68,0.1); color:#f87171; padding:5px; border-radius:5px; text-align:center; font-weight:700;">No ${no.toFixed(2)}</div>
+                            <div style="flex:1; background:rgba(34,197,94,0.1); color:#4ade80; padding:5px; border-radius:5px; text-align:center; font-weight:700;">Yes ${(yes || 0).toFixed(2)}</div>
+                            <div style="flex:1; background:rgba(239,68,68,0.1); color:#f87171; padding:5px; border-radius:5px; text-align:center; font-weight:700;">No ${(no || 0).toFixed(2)}</div>
                         </div>
 
                         <div style="display:flex; justify-content:space-between; font-size:0.8em; color:#94a3b8;">
@@ -1161,7 +1144,7 @@
 
                         document.getElementById('profit').textContent = `${totalProfit >= 0 ? '+' : ''}$${totalProfit.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
                         document.getElementById('profit').className = 'stat-value ' + (totalProfit >= 0 ? 'positive' : 'negative');
-                        document.getElementById('profitPercent').textContent = profitPercent.toFixed(2) + '%';
+                        document.getElementById('profitPercent').textContent = (profitPercent || 0).toFixed(2) + '%';
 
                         const winRate = ((botData.winningTrades / (botData.winningTrades + botData.losingTrades)) * 100) || 0;
                         document.getElementById('winRate').textContent = `${winRate.toFixed(1)}%`;
@@ -1408,67 +1391,8 @@
                     </div>`).join('');
                         } else { wizardList.innerHTML = '<div class="empty-state">No wizards detected.</div>'; }
 
-                        // --- 4. HISTORY (FROM FULL LOGS) ---
-                        try {
-                            const response = await fetch('/api/trade-history');
-                            const history = await response.json();
+                        // --- 4. HISTORY (REMOVED as per user request) ---
 
-                            const closedList = document.getElementById('closedTradesList');
-                            const searchTerm = document.getElementById('searchTrades')?.value.toLowerCase() || '';
-                            // Filter logic
-                            const filtered = history.filter(t => {
-                                const matchesSearch = (t.question || '').toLowerCase().includes(searchTerm) ||
-                                    (t.marketId || '').includes(searchTerm) ||
-                                    (t.side || '').toLowerCase().includes(searchTerm);
-                                return matchesSearch;
-                            });
-
-                            if (filtered.length > 0) {
-                                closedList.innerHTML = filtered.slice(0, 50).map(t => { // Show max 50 recent
-                                    const date = new Date(t.timestamp).toLocaleString();
-                                    const isBuy = t.side === 'YES';
-                                    // Logic: If profit is available (from updated logs), use it. Else neutral/open style.
-                                    const color = isBuy ? '#4ade80' : '#f87171';
-                                    const price = t.entryPrice ? t.entryPrice.toFixed(3) : '?.???';
-
-                                    return `
-                                <div class="trade-card" style="border-left: 4px solid ${color}; opacity: 0.9;">
-                                    <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                                        <span class="trade-token" style="background:${color}20; color:${color}">${t.side}</span>
-                                        <span class="trade-time" style="color:#64748b; font-size:0.8em">${date}</span>
-                                    </div>
-                                    <div class="trade-question" style="margin-bottom:10px;">
-                                        <a href="https://polymarket.com/event/${t.eventSlug || t.slug || ''}" target="_blank" style="color:inherit; text-decoration:none; display:flex; align-items:center; gap:5px; transition:color 0.2s;" onmouseover="this.style.color='#60a5fa'" onmouseout="this.style.color='inherit'">
-                                            ${t.question} <span style="font-size:0.8em; opacity:0.7">🔗</span>
-                                        </a>
-                                    </div>
-                                    <div class="trade-details" style="grid-template-columns: repeat(3, 1fr);">
-                                        <div class="trade-detail-item">
-                                            <div class="detail-label">Entry</div>
-                                            <div class="detail-value">$${price}</div>
-                                        </div>
-                                        <div class="trade-detail-item">
-                                            <div class="detail-label">Confidence</div>
-                                            <div class="detail-value">${t.confidence ? (t.confidence * 100).toFixed(0) : '?'}%</div>
-                                        </div>
-                                        <div class="trade-detail-item">
-                                            <div class="detail-label">Vol 24h</div>
-                                            <div class="detail-value">$${t.marketData?.volume24h ? Math.round(t.marketData.volume24h).toLocaleString() : '-'}</div>
-                                        </div>
-                                    </div>
-                                    <div style="margin-top:10px; font-size:0.8em; color:#94a3b8; font-style:italic; border-top:1px solid rgba(255,255,255,0.05); padding-top:8px;">
-                                        Rationale: ${(t.decisionReasons || []).slice(0, 2).join(', ')}
-                                    </div>
-                                </div>
-                                `;
-                                }).join('');
-                            } else {
-                                closedList.innerHTML = '<div class="empty-state">No trade history found in logs.</div>';
-                            }
-                        } catch (e) {
-                            console.error("History Error:", e);
-                            document.getElementById('closedTradesList').innerHTML = '<div class="empty-state" style="color:#f87171">Error loading history.</div>';
-                        }
 
 
                         // Sectors
@@ -1795,11 +1719,11 @@
                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                 <div>
                                     <div style="font-weight: 600; color: #e2e8f0; margin-bottom: 5px;">Run #${data.runs.length - i} - ${new Date(run.timestamp).toLocaleString()}</div>
-                                    <div style="font-size: 0.85em; color: #94a3b8;">Trades: ${run.trade_count} | Winrate: ${run.winrate.toFixed(1)}%</div>
+                                    <div style="font-size: 0.85em; color: #94a3b8;">Trades: ${run.trade_count} | Winrate: ${(run.winrate || 0).toFixed(1)}%</div>
                                 </div>
                                 <div style="text-align: right;">
-                                    <div style="font-size: 1.3em; font-weight: 700; color: ${run.roi >= 0 ? '#4ade80' : '#f87171'};">${run.roi >= 0 ? '+' : ''}${run.roi.toFixed(2)}%</div>
-                                    <div style="font-size: 0.85em; color: #64748b;">Sharpe: ${run.sharpe.toFixed(2)}</div>
+                                    <div style="font-size: 1.3em; font-weight: 700; color: ${run.roi >= 0 ? '#4ade80' : '#f87171'};">${run.roi >= 0 ? '+' : ''}${(run.roi || 0).toFixed(2)}%</div>
+                                    <div style="font-size: 0.85em; color: #64748b;">Sharpe: ${(run.sharpe || 0).toFixed(2)}</div>
                                 </div>
                             </div>
                         </div>
