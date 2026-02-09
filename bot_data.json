@@ -1,11 +1,212 @@
 {
   "startTime": "2026-02-07T12:55:54.888Z",
-  "capital": 100,
+  "capital": 0,
   "startingCapital": 1000,
-  "totalTrades": 53,
+  "totalTrades": 64,
   "winningTrades": 0,
   "losingTrades": 0,
   "activeTrades": [
+    {
+      "id": "mlee51zfdk2ez2m0x0h",
+      "marketId": "502028",
+      "question": "Infowars shuttered by Friday?",
+      "side": "NO",
+      "amount": 0,
+      "entryPrice": 0.7128,
+      "startTime": "2026-02-08T23:45:16.107Z",
+      "shares": 0,
+      "status": "OPEN",
+      "confidence": 0.45,
+      "reasons": [
+        "🔥 Smart Momentum: Following NO Favorite"
+      ],
+      "category": "geopolitical",
+      "isFresh": false,
+      "clobTokenIds": []
+    },
+    {
+      "id": "mlee51z67jjdfnw8nn9",
+      "marketId": "502027",
+      "question": "Roaring Kitty dumps GME calls by Friday?",
+      "side": "NO",
+      "amount": 0,
+      "entryPrice": 0.7128,
+      "startTime": "2026-02-08T23:45:16.098Z",
+      "shares": 0,
+      "status": "OPEN",
+      "confidence": 0.45,
+      "reasons": [
+        "🔥 Smart Momentum: Following NO Favorite"
+      ],
+      "category": "other",
+      "isFresh": false,
+      "clobTokenIds": []
+    },
+    {
+      "id": "mlee51z1dnlag2mky8q",
+      "marketId": "502026",
+      "question": "Did Keith Gill (RoaringKitty) sell his X account?",
+      "side": "NO",
+      "amount": 0,
+      "entryPrice": 0.7128,
+      "startTime": "2026-02-08T23:45:16.093Z",
+      "shares": 0,
+      "status": "OPEN",
+      "confidence": 0.45,
+      "reasons": [
+        "🔥 Smart Momentum: Following NO Favorite"
+      ],
+      "category": "other",
+      "isFresh": false,
+      "clobTokenIds": []
+    },
+    {
+      "id": "mlee51ys6r1sv7747xm",
+      "marketId": "502025",
+      "question": "Berkshire Hathaway closes above $600k today?",
+      "side": "YES",
+      "amount": 0,
+      "entryPrice": 0.7272,
+      "startTime": "2026-02-08T23:45:16.084Z",
+      "shares": 0,
+      "status": "OPEN",
+      "confidence": 0.75,
+      "reasons": [
+        "🚀 Trend Following Verified (Vol: 100000 | Intraday: UP)",
+        "🔥 High Momentum (Vol: 100000)"
+      ],
+      "category": "other",
+      "isFresh": false,
+      "clobTokenIds": []
+    },
+    {
+      "id": "mlee51xolwbjdc2wyek",
+      "marketId": "502024",
+      "question": "Will Berkshire Hathaway resume public trading today?",
+      "side": "YES",
+      "amount": 0,
+      "entryPrice": 0.7272,
+      "startTime": "2026-02-08T23:45:16.044Z",
+      "shares": 0,
+      "status": "OPEN",
+      "confidence": 0.75,
+      "reasons": [
+        "🚀 Trend Following Verified (Vol: 100000 | Intraday: UP)",
+        "🔥 High Momentum (Vol: 100000)"
+      ],
+      "category": "other",
+      "isFresh": false,
+      "clobTokenIds": []
+    },
+    {
+      "id": "mlee51wtpvls3rtozpl",
+      "marketId": "502023",
+      "question": "$GME market cap >$10b at Monday close?",
+      "side": "NO",
+      "amount": 0,
+      "entryPrice": 0.7128,
+      "startTime": "2026-02-08T23:45:16.013Z",
+      "shares": 0,
+      "status": "OPEN",
+      "confidence": 0.45,
+      "reasons": [
+        "🔥 Smart Momentum: Following NO Favorite"
+      ],
+      "category": "other",
+      "isFresh": false,
+      "clobTokenIds": []
+    },
+    {
+      "id": "mlee51uq1i5bnc458jh",
+      "marketId": "502016",
+      "question": "$GME market cap below $6 billion on Friday?",
+      "side": "NO",
+      "amount": 0,
+      "entryPrice": 0.7128,
+      "startTime": "2026-02-08T23:45:15.938Z",
+      "shares": 0,
+      "status": "OPEN",
+      "confidence": 0.45,
+      "reasons": [
+        "🔥 Smart Momentum: Following NO Favorite"
+      ],
+      "category": "other",
+      "isFresh": false,
+      "clobTokenIds": []
+    },
+    {
+      "id": "mlee51tvupzfu12v9k8",
+      "marketId": "502015",
+      "question": "New GME YOLO update by Friday?",
+      "side": "YES",
+      "amount": 0,
+      "entryPrice": 0.7272,
+      "startTime": "2026-02-08T23:45:15.907Z",
+      "shares": 0,
+      "status": "OPEN",
+      "confidence": 0.75,
+      "reasons": [
+        "🚀 Trend Following Verified (Vol: 100000 | Intraday: UP)",
+        "🔥 High Momentum (Vol: 100000)"
+      ],
+      "category": "other",
+      "isFresh": false,
+      "clobTokenIds": []
+    },
+    {
+      "id": "mlee51t1acnf9a9j64a",
+      "marketId": "502014",
+      "question": "Was Roaring Kitty GME YOLO update fake?",
+      "side": "NO",
+      "amount": 0,
+      "entryPrice": 0.7128,
+      "startTime": "2026-02-08T23:45:15.877Z",
+      "shares": 0,
+      "status": "OPEN",
+      "confidence": 0.45,
+      "reasons": [
+        "🔥 Smart Momentum: Following NO Favorite"
+      ],
+      "category": "other",
+      "isFresh": false,
+      "clobTokenIds": []
+    },
+    {
+      "id": "mlee51sj4j423tywhg9",
+      "marketId": "502013",
+      "question": "Will Roaring Kitty tweet on Monday?",
+      "side": "NO",
+      "amount": 0,
+      "entryPrice": 0.7128,
+      "startTime": "2026-02-08T23:45:15.859Z",
+      "shares": 0,
+      "status": "OPEN",
+      "confidence": 0.45,
+      "reasons": [
+        "🔥 Smart Momentum: Following NO Favorite"
+      ],
+      "category": "other",
+      "isFresh": false,
+      "clobTokenIds": []
+    },
+    {
+      "id": "mlee51rwqz28x1pyf8o",
+      "marketId": "502012",
+      "question": "Roaring Kitty charged in 2024?",
+      "side": "NO",
+      "amount": 100,
+      "entryPrice": 0.7128,
+      "startTime": "2026-02-08T23:45:15.836Z",
+      "shares": 140.29180695847361,
+      "status": "OPEN",
+      "confidence": 0.45,
+      "reasons": [
+        "🔥 Smart Momentum: Following NO Favorite"
+      ],
+      "category": "other",
+      "isFresh": false,
+      "clobTokenIds": []
+    },
     {
       "id": "mlee51qtaqp0xqe0ww6",
       "marketId": "502011",
@@ -1312,8 +1513,63 @@
     "timestamp": "2026-02-08T21:23:48.372Z",
     "slug": "nfl-sea-ne-2026-02-08"
   },
-  "lastUpdate": "2026-02-08T23:45:15.797Z",
+  "lastUpdate": "2026-02-08T23:45:16.107Z",
   "logs": [
+    {
+      "timestamp": "2026-02-08T23:45:16.100Z",
+      "message": "✅ TRADE OPENED: NO sur \"Roaring Kitty dumps GME calls ...\" @ $0.713 ($0.00)",
+      "type": "trade"
+    },
+    {
+      "timestamp": "2026-02-08T23:45:16.097Z",
+      "message": "✅ TRADE OPENED: NO sur \"Did Keith Gill (RoaringKitty) ...\" @ $0.713 ($0.00)",
+      "type": "trade"
+    },
+    {
+      "timestamp": "2026-02-08T23:45:16.091Z",
+      "message": "✅ TRADE OPENED: YES sur \"Berkshire Hathaway closes abov...\" @ $0.727 ($0.00)",
+      "type": "trade"
+    },
+    {
+      "timestamp": "2026-02-08T23:45:16.074Z",
+      "message": "✅ TRADE OPENED: YES sur \"Will Berkshire Hathaway resume...\" @ $0.727 ($0.00)",
+      "type": "trade"
+    },
+    {
+      "timestamp": "2026-02-08T23:45:16.042Z",
+      "message": "✅ TRADE OPENED: NO sur \"$GME market cap >$10b at Monda...\" @ $0.713 ($0.00)",
+      "type": "trade"
+    },
+    {
+      "timestamp": "2026-02-08T23:45:16.008Z",
+      "message": "✅ TRADE OPENED: NO sur \"$GME market cap below $6 billi...\" @ $0.713 ($0.00)",
+      "type": "trade"
+    },
+    {
+      "timestamp": "2026-02-08T23:45:15.937Z",
+      "message": "✅ TRADE OPENED: YES sur \"New GME YOLO update by Friday?...\" @ $0.727 ($0.00)",
+      "type": "trade"
+    },
+    {
+      "timestamp": "2026-02-08T23:45:15.901Z",
+      "message": "✅ TRADE OPENED: NO sur \"Was Roaring Kitty GME YOLO upd...\" @ $0.713 ($0.00)",
+      "type": "trade"
+    },
+    {
+      "timestamp": "2026-02-08T23:45:15.877Z",
+      "message": "✅ TRADE OPENED: NO sur \"Will Roaring Kitty tweet on Mo...\" @ $0.713 ($0.00)",
+      "type": "trade"
+    },
+    {
+      "timestamp": "2026-02-08T23:45:15.857Z",
+      "message": "✅ TRADE OPENED: NO sur \"Roaring Kitty charged in 2024?...\" @ $0.713 ($100.00)",
+      "type": "trade"
+    },
+    {
+      "timestamp": "2026-02-08T23:45:15.830Z",
+      "message": "✅ TRADE OPENED: YES sur \"$GME halted on Monday?...\" @ $0.727 ($100.00)",
+      "type": "trade"
+    },
     {
       "timestamp": "2026-02-08T23:45:15.795Z",
       "message": "✅ TRADE OPENED: YES sur \"Trump’s first TikTok >25M view...\" @ $0.727 ($100.00)",
@@ -2237,20 +2493,20 @@
   ],
   "sectorStats": {
     "politics": {
-      "count": 27,
-      "lastActivity": "2026-02-08T23:45:15.797Z"
+      "count": 28,
+      "lastActivity": "2026-02-08T23:45:16.107Z"
     },
     "economics": {
       "count": 16,
-      "lastActivity": "2026-02-08T23:45:15.797Z"
+      "lastActivity": "2026-02-08T23:45:16.107Z"
     },
     "tech": {
       "count": 12,
-      "lastActivity": "2026-02-08T23:45:15.797Z"
+      "lastActivity": "2026-02-08T23:45:16.107Z"
     },
     "trending": {
-      "count": 38,
-      "lastActivity": "2026-02-08T23:45:15.797Z"
+      "count": 48,
+      "lastActivity": "2026-02-08T23:45:16.107Z"
     }
   },
   "sectorActivity": {
@@ -2549,18 +2805,8 @@
     ],
     "trending": [
       {
-        "id": "mlee51l4zi3l3bamrki",
-        "timestamp": "2026-02-08T23:45:15.592Z",
-        "type": "TRADE",
-        "message": "🎰 Trade Opened: $100 on NO",
-        "data": {
-          "market": "Will England win the 2024 Euros?",
-          "price": "0.71"
-        }
-      },
-      {
-        "id": "mlee4ru2arge56nc29i",
-        "timestamp": "2026-02-08T23:45:02.954Z",
+        "id": "mlee51z8l6mk1edzbl",
+        "timestamp": "2026-02-08T23:45:16.100Z",
         "type": "TRADE",
         "message": "🎰 Trade Opened: $0 on NO",
         "data": {
@@ -2569,8 +2815,8 @@
         }
       },
       {
-        "id": "mlee4rtkstwb53mmnh",
-        "timestamp": "2026-02-08T23:45:02.936Z",
+        "id": "mlee51z5su45kgqrev",
+        "timestamp": "2026-02-08T23:45:16.097Z",
         "type": "TRADE",
         "message": "🎰 Trade Opened: $0 on NO",
         "data": {
@@ -2579,8 +2825,8 @@
         }
       },
       {
-        "id": "mlee4rsq5m84sa615jf",
-        "timestamp": "2026-02-08T23:45:02.906Z",
+        "id": "mlee51z01tjnvwv4aif",
+        "timestamp": "2026-02-08T23:45:16.092Z",
         "type": "TRADE",
         "message": "🎰 Trade Opened: $0 on YES",
         "data": {
@@ -2589,8 +2835,8 @@
         }
       },
       {
-        "id": "mlee4rs3rrqntg6g0cj",
-        "timestamp": "2026-02-08T23:45:02.883Z",
+        "id": "mlee51yjcy9u3hd3c2j",
+        "timestamp": "2026-02-08T23:45:16.076Z",
         "type": "TRADE",
         "message": "🎰 Trade Opened: $0 on YES",
         "data": {
@@ -2599,8 +2845,8 @@
         }
       },
       {
-        "id": "mlee4rrhxcmainyb3b",
-        "timestamp": "2026-02-08T23:45:02.861Z",
+        "id": "mlee51xnfo6oex2erdi",
+        "timestamp": "2026-02-08T23:45:16.043Z",
         "type": "TRADE",
         "message": "🎰 Trade Opened: $0 on NO",
         "data": {
@@ -2609,8 +2855,8 @@
         }
       },
       {
-        "id": "mlee4rquq2h0bcrtqy",
-        "timestamp": "2026-02-08T23:45:02.838Z",
+        "id": "mlee51wpg6io92qvw7e",
+        "timestamp": "2026-02-08T23:45:16.009Z",
         "type": "TRADE",
         "message": "🎰 Trade Opened: $0 on NO",
         "data": {
@@ -2619,9 +2865,48 @@
         }
       },
       {
-        "id": "mlee4rq0rwpyq4r44uh",
-        "timestamp": "2026-02-08T23:45:02.808Z",
+        "id": "mlee51upok1t8z5n6b",
+        "timestamp": "2026-02-08T23:45:15.937Z",
         "type": "TRADE",
         "message": "🎰 Trade Opened: $0 on YES",
         "data": {
-          "market": "New GME Y
+          "market": "New GME YOLO update by Friday?",
+          "price": "0.73"
+        }
+      },
+      {
+        "id": "mlee51tqhu6zw6nfmbq",
+        "timestamp": "2026-02-08T23:45:15.902Z",
+        "type": "TRADE",
+        "message": "🎰 Trade Opened: $0 on NO",
+        "data": {
+          "market": "Was Roaring Kitty GME YOLO update fake?",
+          "price": "0.71"
+        }
+      },
+      {
+        "id": "mlee51t1tgmtkc7essk",
+        "timestamp": "2026-02-08T23:45:15.877Z",
+        "type": "TRADE",
+        "message": "🎰 Trade Opened: $0 on NO",
+        "data": {
+          "market": "Will Roaring Kitty tweet on Monday?",
+          "price": "0.71"
+        }
+      },
+      {
+        "id": "mlee51siz48xqoubm0b",
+        "timestamp": "2026-02-08T23:45:15.858Z",
+        "type": "TRADE",
+        "message": "🎰 Trade Opened: $100 on NO",
+        "data": {
+          "market": "Roaring Kitty charged in 2024?",
+          "price": "0.71"
+        }
+      }
+    ]
+  },
+  "backlog": [],
+  "profit": -1000,
+  "profitPercent": "-100.00"
+}

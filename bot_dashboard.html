@@ -1186,6 +1186,72 @@
                         }
                     } catch (e) { console.error("Active Trades Error:", e); }
 
+                    // --- 4.5. TRADE ACTIVITY LOGS ---
+                    try {
+                        const activityLogsContainer = document.getElementById('tradeActivityLogs');
+
+                        // Collect both open and closed trades
+                        const openTrades = (botData.activeTrades || [])
+                            .filter(t => (t.amount || 0) > 0)
+                            .map(t => ({
+                                ...t,
+                                type: 'BUY',
+                                timestamp: t.startTime,
+                                displayTime: new Date(t.startTime).toLocaleTimeString()
+                            }));
+
+                        const closedTrades = (botData.closedTrades || [])
+                            .map(t => ({
+                                ...t,
+                                type: 'SELL',
+                                timestamp: t.endTime || t.closedAt || t.timestamp,
+                                displayTime: new Date(t.endTime || t.closedAt || t.timestamp).toLocaleTimeString()
+                            }));
+
+                        // Merge and sort by timestamp (newest first)
+                        const allTrades = [...openTrades, ...closedTrades]
+                            .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+                            .slice(0, 15); // Show latest 15 activities
+
+                        if (allTrades.length === 0) {
+                            activityLogsContainer.innerHTML = '<div class="empty-state">⏳ Waiting for trade execution...</div>';
+                        } else {
+                            activityLogsContainer.innerHTML = allTrades.map(t => {
+                                const isBuy = t.type === 'BUY';
+                                const sideColor = t.side === 'YES' ? '#4ade80' : '#f87171';
+                                const actionColor = isBuy ? '#60a5fa' : '#a78bfa';
+                                const actionIcon = isBuy ? '📈' : '📉';
+                                const actionText = isBuy ? 'ACHAT' : 'VENTE';
+                                const truncatedQuestion = t.question.length > 60 ? t.question.substring(0, 60) + '...' : t.question;
+
+                                // For SELL, show profit if available
+                                const profitText = !isBuy && t.profit !== undefined ?
+                                    ` • P&L: <span style="color: ${t.profit >= 0 ? '#4ade80' : '#f87171'}; font-weight: 700;">${t.profit >= 0 ? '+' : ''}$${t.profit.toFixed(2)}</span>` : '';
+
+                                return `
+                                    <div style="padding: 8px 10px; background: rgba(255,255,255,0.02); border-radius: 6px; border-left: 3px solid ${actionColor}; font-size: 0.85em;">
+                                        <div style="display: flex; justify-content: space-between; align-items: start; gap: 10px;">
+                                            <div style="flex: 1; min-width: 0;">
+                                                <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 3px;">
+                                                    <span style="font-size: 1.1em;">${actionIcon}</span>
+                                                    <span style="font-weight: 700; color: ${actionColor}; font-size: 0.75em; letter-spacing: 0.5px;">${actionText}</span>
+                                                    <span style="font-weight: 600; color: #e2e8f0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1;" title="${t.question}">
+                                                        ${truncatedQuestion}
+                                                    </span>
+                                                </div>
+                                                <div style="font-size: 0.9em; color: #94a3b8;">
+                                                    <span style="color: ${sideColor}; font-weight: 700;">${t.side}</span> • 
+                                                    $${(t.amount || t.size || 0).toFixed(0)} @ ${(t.entryPrice || 0).toFixed(3)} • 
+                                                    ${t.displayTime}${profitText}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('');
+                        }
+                    } catch (e) { console.error("Trade Activity Logs Error:", e); }
+
                     // --- 5. WHALES ---
                     try {
                         const whaleList = document.getElementById('whaleAlertsList');
