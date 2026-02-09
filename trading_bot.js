@@ -5,6 +5,7 @@
 
 import fs from 'fs';
 import path from 'path';
+import { startPriceUpdateLoop } from './src/services/priceUpdateService.js';
 
 // Configuration
 const CONFIG = {
@@ -301,6 +302,10 @@ async function runBot() {
 
     // Charger l'état précédent si existe
     loadState();
+
+    // Démarrer le price update loop
+    console.log('🔄 Starting real-time price tracking...');
+    startPriceUpdateLoop(botState);
 
     while (true) {
         try {

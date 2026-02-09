@@ -397,6 +397,11 @@
                     <div class="pulse-dot" style="background: #60a5fa;"></div>
                     <span>GAMMA: <span id="gammaStatus">OK</span></span>
                 </div>
+                <div class="status-badge" id="priceTrackerBadge"
+                    style="background: rgba(139, 92, 246, 0.1); border-color: rgba(139, 92, 246, 0.3);">
+                    <div class="pulse-dot" style="background: #8b5cf6;"></div>
+                    <span>PRICES: <span id="priceTrackerStatus">STARTING...</span></span>
+                </div>
             </div>
 
             <!-- NEW COMPACT QUICK NOTE -->
@@ -1301,6 +1306,30 @@
                                 const diff = current - entry;
                                 createMiniChart(t.id, history, entry, diff >= 0 ? '#4ade80' : '#f87171');
                             });
+
+                            // Update Price Tracker Badge
+                            const priceTrackerBadge = document.getElementById('priceTrackerBadge');
+                            const priceTrackerStatus = document.getElementById('priceTrackerStatus');
+                            if (priceTrackerBadge && priceTrackerStatus) {
+                                const lastUpdate = botData.activeTrades
+                                    .map(t => t.lastPriceUpdate)
+                                    .filter(Boolean)
+                                    .sort()
+                                    .pop();
+
+                                if (lastUpdate) {
+                                    const minutesAgo = Math.floor((Date.now() - new Date(lastUpdate).getTime()) / 60000);
+                                    if (minutesAgo < 6) {
+                                        priceTrackerStatus.textContent = `LIVE (${minutesAgo}m ago)`;
+                                        priceTrackerBadge.style.borderColor = 'rgba(139, 92, 246, 0.5)';
+                                    } else {
+                                        priceTrackerStatus.textContent = `STALE (${minutesAgo}m)`;
+                                        priceTrackerBadge.style.borderColor = 'rgba(245, 158, 11, 0.5)';
+                                    }
+                                } else {
+                                    priceTrackerStatus.textContent = 'WAITING...';
+                                }
+                            }
                         }
                     } catch (e) { console.error("Active Trades Error:", e); }
 
