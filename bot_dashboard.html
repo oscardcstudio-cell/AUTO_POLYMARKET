@@ -1473,6 +1473,97 @@
                 }
             }
 
+            // View Navigation
+            function switchView(viewName) {
+                // Hide all views
+                document.getElementById('dashboard-view').style.display = 'none';
+                document.getElementById('analytics-view').style.display = 'none';
+                document.getElementById('marketplace-view').style.display = 'none';
+
+                // Remove active class from all tabs
+                document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+
+                // Show selected view
+                if (viewName === 'dashboard') {
+                    document.getElementById('dashboard-view').style.display = 'block';
+                    document.querySelectorAll('.nav-tab')[0].classList.add('active');
+                } else if (viewName === 'analytics') {
+                    document.getElementById('analytics-view').style.display = 'block';
+                    document.querySelectorAll('.nav-tab')[1].classList.add('active');
+                    updateAnalytics(); // Load analytics data when view is opened
+                } else if (viewName === 'marketplace') {
+                    document.getElementById('marketplace-view').style.display = 'block';
+                    document.querySelectorAll('.nav-tab')[2].classList.add('active');
+                    renderMarketplace(); // Load marketplace data
+                }
+            }
+
+            // Update Analytics Page
+            async function updateAnalytics() {
+                try {
+                    const res = await fetch('/api/trade-history');
+                    const trades = await res.json();
+
+                    if (!trades || trades.length === 0) {
+                        console.log('No trade history data');
+                        return;
+                    }
+
+                    // Calculate metrics
+                    const closedTrades = trades.filter(t => t.status === 'CLOSED');
+                    const totalVolume = closedTrades.reduce((sum, t) => sum + (t.amount || 0), 0);
+                    const totalPnL = closedTrades.reduce((sum, t) => sum + (t.pnl || 0), 0);
+                    const winningTrades = closedTrades.filter(t => (t.pnl || 0) > 0).length;
+                    const winRate = closedTrades.length > 0 ? (winningTrades / closedTrades.length) * 100 : 0;
+
+                    // Update stats
+                    document.getElementById('ana-volume').textContent = `$${totalVolume.toFixed(0)}`;
+                    document.getElementById('ana-pnl').textContent = `${totalPnL >= 0 ? '+' : ''}$${totalPnL.toFixed(2)}`;
+                    document.getElementById('ana-pnl').className = 'stat-value ' + (totalPnL >= 0 ? 'positive' : 'negative');
+                    document.getElementById('ana-winrate').textContent = `${winRate.toFixed(1)}%`;
+                    document.getElementById('ana-trades').textContent = closedTrades.length;
+
+                    // Prepare data for charts
+                    const categoryData = {};
+                    closedTrades.forEach(t => {
+                        const cat = t.category || 'other';
+                        if (!categoryData[cat]) categoryData[cat] = { wins: 0, losses: 0, pnl: 0 };
+                        if ((t.pnl || 0) > 0) categoryData[cat].wins++;
+                        else categoryData[cat].losses++;
+                        categoryData[cat].pnl += (t.pnl || 0);
+                    });
+
+                    // Update Category Chart
+                    const categoryCtx = document.getElementById('categoryChart')?.getContext('2d');
+                    if (categoryCtx && window.categoryChartInstance) {
+                        window.categoryChartInstance.destroy();
+                    }
+                    if (categoryCtx) {
+                        window.categoryChartInstance = new Chart(categoryCtx, {
+                            type: 'bar',
+                            data: {
+                                labels: Object.keys(categoryData),
+                                datasets: [{
+                                    label: 'PnL by Category',
+                                    data: Object.values(categoryData).map(d => d.pnl),
+                                    backgroundColor: Object.values(categoryData).map(d => d.pnl >= 0 ? '#4ade80' : '#f87171')
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: { legend: { display: false } },
+                                scales: { y: { beginAtZero: true } }
+                            }
+                        });
+                    }
+
+                    console.log('✅ Analytics updated');
+                } catch (e) {
+                    console.error('Analytics Error:', e);
+                }
+            }
+
             window.onload = () => {
                 initMainChart();
                 fetchRealData();
