@@ -400,6 +400,16 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
 
     if (tradeSize > botState.capital) tradeSize = botState.capital;
 
+    // CRITICAL: Prevent Ghost Trades ($0 or near-zero amounts)
+    if (tradeSize < CONFIG.MIN_TRADE_SIZE || botState.capital < CONFIG.MIN_TRADE_SIZE) {
+        const lowCapMsg = `Skipped trade: Insufficient capital ($${botState.capital.toFixed(2)}) or trade size too small ($${tradeSize.toFixed(2)})`;
+        decisionReasons.push(lowCapMsg);
+        if (reasonsCollector) reasonsCollector.push(lowCapMsg);
+        addLog(botState, `⚠️ ${lowCapMsg}`, 'warning');
+        logTradeDecision(market, null, decisionReasons, pizzaData);
+        return null;
+    }
+
     // Simulation de slippage et frais
     const slippage = 0.01;
     const fee = 0.00;

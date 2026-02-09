@@ -1143,13 +1143,16 @@
 
                     } catch (e) { console.error("Chart Error:", e); }
 
-                    // --- 4. ACTIVE TRADES ---
+                    // --- 4. ACTIVE TRADES (LATEST) ---
                     try {
                         const activeList = document.getElementById('activeTradesList');
-                        if (!botData.activeTrades || botData.activeTrades.length === 0) {
-                            activeList.innerHTML = '<div class="empty-state">🔍 Scanning markets for optimal entry conditions...</div>';
+                        // FILTER OUT GHOST TRADES with amount: 0 (bug fix)
+                        const realActiveTrades = (botData.activeTrades || []).filter(t => (t.amount || 0) > 0);
+
+                        if (realActiveTrades.length === 0) {
+                            activeList.innerHTML = '<div class="empty-state">No active trades...</div>';
                         } else {
-                            activeList.innerHTML = botData.activeTrades.map(t => {
+                            activeList.innerHTML = realActiveTrades.slice(0, 10).map(t => {
                                 // Defensive coding to prevent crashes
                                 const entry = t.entryPrice || 0;
                                 const history = t.priceHistory || [];
