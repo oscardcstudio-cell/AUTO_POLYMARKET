@@ -1175,7 +1175,10 @@
                         document.getElementById('moneySpent').textContent = `$${moneySpent.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
 
                         // Open Risk (active trades amount)
-                        document.getElementById('openRisk').textContent = `$${activeValue.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+                        const openRiskEl = document.getElementById('openRisk');
+                        if (openRiskEl) {
+                            openRiskEl.textContent = `$${activeValue.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+                        }
 
                     } catch (e) { console.error("Stats Error:", e); }
 
@@ -1259,7 +1262,8 @@
                                 // Defensive coding to prevent crashes
                                 const entry = t.entryPrice || 0;
                                 const history = t.priceHistory || [];
-                                const current = history.length > 0 ? history[history.length - 1] : entry;
+                                const currentVal = history.length > 0 ? history[history.length - 1] : entry;
+                                const current = (currentVal !== undefined && currentVal !== null) ? currentVal : (entry || 0);
                                 const size = t.size || 0;
                                 const shares = t.shares || 0;
 
@@ -1307,7 +1311,8 @@
                             botData.activeTrades.forEach(t => {
                                 const entry = t.entryPrice || 0;
                                 const history = t.priceHistory || [entry];
-                                const current = history.length > 0 ? history[history.length - 1] : entry;
+                                const currentVal = history.length > 0 ? history[history.length - 1] : entry;
+                                const current = (currentVal !== undefined && currentVal !== null) ? currentVal : (entry || 0);
                                 const diff = current - entry;
                                 createMiniChart(t.id, history, entry, diff >= 0 ? '#4ade80' : '#f87171');
                             });
