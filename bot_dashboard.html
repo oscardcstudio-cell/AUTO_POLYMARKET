@@ -1551,29 +1551,7 @@
                         }
                     } catch (e) { console.error("Sector Error:", e); }
 
-                    // --- 8.5. TRADE LOGS ---
-                    try {
-                        const tradeLogsList = document.getElementById('tradeActivityLogs');
-                        if (tradeLogsList && botData.logs && botData.logs.length > 0) {
-                            const tradeLogs = botData.logs.filter(l => l.type === 'trade');
-                            if (tradeLogs.length > 0) {
-                                tradeLogsList.innerHTML = tradeLogs.slice(0, 15).map(l => {
-                                    const isBuy = l.message.includes('BUY') || l.message.includes('YES') || l.message.includes('✅');
-                                    const color = isBuy ? '#22c55e' : '#f59e0b';
-                                    const icon = isBuy ? '🟢 BUY' : '🔴 SELL';
-                                    return `<div style="border-left: 3px solid ${color}; padding: 8px 12px; background: rgba(0,0,0,0.2); border-radius: 5px;">
-                                    <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-                                        <span style="color: ${color}; font-weight: 700; font-size: 0.9em;">${icon}</span>
-                                        <span style="color: #64748b; font-size: 0.75em;">${new Date(l.timestamp).toLocaleTimeString()}</span>
-                                    </div>
-                                    <div style="color: #e2e8f0; font-size: 0.85em;">${l.message}</div>
-                                 </div>`;
-                                }).join('');
-                            } else {
-                                tradeLogsList.innerHTML = '<div class="empty-state">⏳ Waiting for trade execution...</div>';
-                            }
-                        }
-                    } catch (e) { console.error("Trade Logs Error:", e); }
+
 
                     // --- 9. LOGS (Restored) ---
                     try {
