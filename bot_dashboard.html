@@ -575,7 +575,13 @@
         <div class="chart-section">
             <div class="stat-label">📋 Recent Backtest Runs</div>
             <div id="backtestRunsList" style="margin-top: 15px;">
-                <div class="empty-state">No backtest runs yet. Click "Run Backtest Now" to start.</div>
+                <div class="empty-state">
+                    No backtest runs yet.<br><br>
+                    <button onclick="runBacktestNow()" class="trade-action-btn"
+                        style="background: var(--accent-blue); color: white; border: none;">
+                        🚀 Run Backtest Now
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -988,57 +994,7 @@
                 }
             }
 
-            function renderMarketplace() {
-                const grid = document.getElementById('marketplace-grid');
-                if (!grid) return;
 
-                const searchInput = document.getElementById('marketSearch');
-                const sortInput = document.getElementById('marketSort');
-
-                const search = searchInput ? searchInput.value.toLowerCase() : '';
-                const sort = sortInput ? sortInput.value : 'volume';
-
-                let filtered = marketCache.filter(m => (m.question || '').toLowerCase().includes(search));
-
-                if (filtered.length === 0) {
-                    grid.innerHTML = `
-                     <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #94a3b8; background: rgba(255,255,255,0.02); border-radius: 10px; border: 1px dashed var(--border);">
-                        <div style="font-size: 2em; margin-bottom: 10px;">🌪️</div>
-                        <div style="font-weight: 700; margin-bottom: 5px;">Deep Scan Empty or In Progress</div>
-                        <div style="font-size: 0.9em; margin-bottom: 15px;">Le scan des 1000 marchés prend du temps au démarrage.</div>
-                        <button onclick="loadMarketplace()" style="background: var(--accent-blue); color: white; border: none; padding: 8px 20px; border-radius: 100px; cursor: pointer; font-weight: 600;">
-                            🔄 Force Retry
-                        </button>
-                     </div>`;
-                    return;
-                }
-
-                if (sort === 'volume') filtered.sort((a, b) => (b.volume || 0) - (a.volume || 0));
-                if (sort === 'liquidity') filtered.sort((a, b) => (b.liquidity || 0) - (a.liquidity || 0));
-                if (sort === 'endDate') filtered.sort((a, b) => new Date(a.endDate || 0) - new Date(b.endDate || 0));
-
-                grid.innerHTML = filtered.slice(0, 100).map(m => {
-                    const prices = m.prices || [0.5, 0.5];
-                    const yes = prices[0];
-                    const no = prices[1];
-
-                    return `
-                    <div class="market-card-mini" onclick="window.open('https://polymarket.com/event/${m.slug}', '_blank')">
-                        <div class="market-badge">${m.category || 'Mixed'}</div>
-                        <div style="font-weight:700; margin-bottom:10px; height:45px; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;">${m.question}</div>
-                        
-                        <div style="display:flex; gap:5px; margin-bottom:10px;">
-                            <div style="flex:1; background:rgba(34,197,94,0.1); color:#4ade80; padding:5px; border-radius:5px; text-align:center; font-weight:700;">Yes ${(yes || 0).toFixed(2)}</div>
-                            <div style="flex:1; background:rgba(239,68,68,0.1); color:#f87171; padding:5px; border-radius:5px; text-align:center; font-weight:700;">No ${(no || 0).toFixed(2)}</div>
-                        </div>
-
-                        <div style="display:flex; justify-content:space-between; font-size:0.8em; color:#94a3b8;">
-                            <span>💧 $${((m.liquidity || 0) / 1000).toFixed(1)}k</span>
-                            <span>🔥 $${((m.volume || 0) / 1000).toFixed(1)}k</span>
-                        </div>
-                    </div>`;
-                }).join('');
-            }
 
 
             function initMainChart() {
@@ -1592,7 +1548,8 @@
             async function renderMarketplace() {
                 try {
                     const res = await fetch('/api/markets');
-                    const markets = await res.json();
+                    const data = await res.json();
+                    const markets = data.markets || [];
 
                     if (!markets || markets.length === 0) {
                         document.getElementById('marketplaceTableBody').innerHTML =

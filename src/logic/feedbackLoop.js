@@ -1,7 +1,8 @@
-
 import { supabase } from '../services/supabaseService.js';
 import { botState, stateManager } from '../state.js';
 import { addLog } from '../utils.js';
+import { exec } from 'child_process';
+import path from 'path';
 
 export const feedbackLoop = {
     /**
@@ -56,6 +57,46 @@ export const feedbackLoop = {
 
         } catch (err) {
             console.error('Error in feedbackLoop:', err.message);
+        }
+    }
+    ,
+
+    /**
+     * Autonomous Backtest Strategy
+     * Runs a backtest if enough time has passed or if significant learning occurred.
+     */
+    async runAutonomousBacktest() {
+        const NOW = Date.now();
+        const LAST_RUN = botState.lastBacktestRequest || 0;
+        const INTERVAL_MS = 6 * 60 * 60 * 1000; // 6 hours
+
+        // Strategy: Run if interval passed OR if confidence adjustments explicitly requested it (flag)
+        if (NOW - LAST_RUN > INTERVAL_MS) {
+            console.log('🧪 Starting Autonomous Backtest...');
+            addLog(botState, '🧪 Lancement du Backtest Autonome (Vérification Stratégie)...', 'info');
+
+            botState.lastBacktestRequest = NOW; // Update immediately to prevent double-fire
+            stateManager.save();
+
+            const scriptPath = path.join(process.cwd(), 'scripts', 'backtest_public.js');
+
+            exec(`node ${scriptPath}`, (error, stdout, stderr) => {
+                if (error) {
+                    console.error(`Auto-Backtest Error: ${error.message}`);
+                    addLog(botState, `❌ Auto-Backtest Failed: ${error.message}`, 'error');
+                    return;
+                }
+
+                // Parse Check: Look for "ROI:" in output
+                if (stdout.includes("ROI:")) {
+                    // Extract rough ROI for log
+                    const roiMatch = stdout.match(/ROI:\s*([+\-]?\d+\.?\d*)/);
+                    const roi = roiMatch ? roiMatch[1] : "?";
+                    addLog(botState, `✅ Auto-Backtest Terminé. ROI Actuel: ${roi}%`, 'success');
+                } else {
+                    addLog(botState, `✅ Auto-Backtest Terminé (voir Dashboard)`, 'success');
+                }
+            });
         }
     }
 };

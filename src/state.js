@@ -47,16 +47,17 @@ const INITIAL_STATE = {
     backlog: [] // User notes, bugs, and ideas
 };
 
-class StateManager {
-    constructor() {
+export class StateManager {
+    constructor(filePath = CONFIG.DATA_FILE) {
+        this.filePath = filePath;
         this.data = { ...INITIAL_STATE };
         this.load();
     }
 
     load() {
-        if (fs.existsSync(CONFIG.DATA_FILE)) {
+        if (fs.existsSync(this.filePath)) {
             try {
-                const buffer = fs.readFileSync(CONFIG.DATA_FILE, 'utf8');
+                const buffer = fs.readFileSync(this.filePath, 'utf8');
                 if (buffer.trim().length > 0) {
                     const savedData = JSON.parse(buffer);
                     // Merge saved data with initial structure to ensure new fields exists
@@ -68,8 +69,21 @@ class StateManager {
                     addLog(this.data, `Chargement des données réussi ($${this.data.capital.toFixed(2)})`, 'success');
                 }
             } catch (err) {
-                console.error("Erreur lecture données:", err);
-                addLog(this.data, "Erreur lecture données, utilisation état initial", 'error');
+                console.error("Erreur lecture données state:", err.message);
+
+                // Corruption Handling: Backup & Reset
+                if (err instanceof SyntaxError) {
+                    const backupPath = this.filePath + '.bak';
+                    console.warn(`⚠️ CORRUPTION DÉTECTÉE: Sauvegarde de l'état corrompu vers ${backupPath}`);
+                    try {
+                        fs.copyFileSync(this.filePath, backupPath);
+                    } catch (backupErr) {
+                        console.error("Échec de la backup du fichier corrompu:", backupErr);
+                    }
+                }
+
+                addLog(this.data, "Erreur lecture données, réinitialisation (backup créée)", 'error');
+                // this.data is already INITIAL_STATE
             }
         } else {
             addLog(this.data, "Aucun fichier de données, création d'un nouveau profil", 'warning');
@@ -109,7 +123,9 @@ class StateManager {
                 };
             });
 
-            fs.writeFileSync(CONFIG.DATA_FILE, JSON.stringify(this.data, null, 2));
+
+
+            fs.writeFileSync(this.filePath, JSON.stringify(this.data, null, 2));
 
             // Sync to GitHub to allow AI/Antigravity to see updates
             if (CONFIG.ENABLE_GITHUB_SYNC) {

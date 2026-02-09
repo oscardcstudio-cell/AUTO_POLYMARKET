@@ -2,6 +2,7 @@
 import express from 'express';
 import fs from 'fs';
 import path from 'path';
+import { exec } from 'child_process';
 import { botState, stateManager } from '../state.js';
 import { addLog } from '../utils.js';
 import { CONFIG } from '../config.js';
@@ -241,16 +242,26 @@ router.get('/markets', (req, res) => {
     // Lightweight mapping to reduce payload size if needed, but 1000 items is fine.
     // Let's send key fields for the table.
 
-    const markets = (botState.marketCache || []).map(m => ({
-        id: m.id,
-        question: m.question,
-        slug: m.slug,
-        volume: parseFloat(m.volume24hr || 0),
-        liquidity: parseFloat(m.liquidityNum || 0),
-        prices: m.outcomePrices ? JSON.parse(m.outcomePrices) : [0, 0],
-        endDate: m.endDate,
-        category: m.category || 'other'
-    }));
+    const markets = (botState.marketCache || []).map(m => {
+        let parsedPrices = [0, 0];
+        try {
+            parsedPrices = m.outcomePrices ? JSON.parse(m.outcomePrices) : [0, 0];
+        } catch (e) {
+            console.error(`Invalid prices for market ${m.id}:`, m.outcomePrices, e);
+            parsedPrices = [0, 0];
+        }
+
+        return {
+            id: m.id,
+            question: m.question,
+            slug: m.slug,
+            volume: parseFloat(m.volume24hr || 0),
+            liquidity: parseFloat(m.liquidityNum || 0),
+            prices: parsedPrices,
+            endDate: m.endDate,
+            category: m.category || 'other'
+        };
+    });
 
     res.json({
         lastScan: botState.deepScanData?.lastScan || null,
@@ -291,12 +302,29 @@ router.get('/backtest-results', async (req, res) => {
 });
 
 // Run Backtest Endpoint
+// Run Backtest Endpoint
 router.post('/run-backtest', async (req, res) => {
     try {
-        res.json({
-            success: false,
-            error: 'Run backtest manually: node scripts/backtest_public.js'
+        const scriptPath = path.join(process.cwd(), 'scripts', 'backtest_public.js');
+
+        exec(`node ${scriptPath}`, (error, stdout, stderr) => {
+            if (error) {
+                console.error(`Backtest error: ${error.message}`);
+                return res.json({ success: false, error: error.message });
+            }
+            if (stderr) {
+                console.error(`Backtest stderr: ${stderr}`);
+            }
+
+            // Parse stdout to find the JSON result or just return success
+            // The script saves to Supabase, which is the source of truth for the frontend
+
+            // We can try to parse the last line if it outputs JSON, but for now just return success
+            // and let the frontend refresh the list from Supabase
+
+            res.json({ success: true, message: 'Backtest completed successfully', output: stdout });
         });
+
     } catch (error) {
         res.json({ success: false, error: error.message });
     }
