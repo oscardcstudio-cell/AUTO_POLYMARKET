@@ -1,0 +1,374 @@
+[
+  {
+    "id": "8104ce0d-a924-4d15-a806-5cbf089720e7",
+    "created_at": "2026-02-09T11:27:54.659712+00:00",
+    "market_id": "1304210",
+    "question": "Will Elon Musk post 220-239 tweets from February 3 to February 10, 2026?",
+    "side": "YES",
+    "amount": 42.96136779079035,
+    "entry_price": 0.113625,
+    "exit_price": null,
+    "pnl": 0,
+    "pnl_percent": 0,
+    "status": "OPEN",
+    "strategy": "standard",
+    "confidence": 0.6,
+    "metadata": {
+      "slug": "elon-musk-of-tweets-february-3-february-10-220-239",
+      "reasons": [],
+      "marketData": {}
+    }
+  },
+  {
+    "id": "46cd4a6e-afb1-4a0e-aca2-01f2c08aa083",
+    "created_at": "2026-02-09T09:43:25.313309+00:00",
+    "market_id": "1304210",
+    "question": "Will Elon Musk post 220-239 tweets from February 3 to February 10, 2026?",
+    "side": "YES",
+    "amount": 42.657598902943796,
+    "entry_price": 0.09847500000000001,
+    "exit_price": 0.1125,
+    "pnl": 6.075377756931061,
+    "pnl_percent": 0,
+    "status": "CLOSED",
+    "strategy": "standard",
+    "confidence": 0.6,
+    "metadata": {
+      "slug": "elon-musk-of-tweets-february-3-february-10-220-239",
+      "reasons": [],
+      "eventSlug": "elon-musk-of-tweets-february-3-february-10-220-239",
+      "marketData": {}
+    }
+  },
+  {
+    "id": "c409c79e-51e7-44fa-827e-1bff91d17dc2",
+    "created_at": "2026-02-09T09:42:24.074711+00:00",
+    "market_id": "1333621",
+    "question": "Mavericks vs. Suns",
+    "side": "YES",
+    "amount": 44.90273568730926,
+    "entry_price": 0.30805,
+    "exit_price": null,
+    "pnl": 0,
+    "pnl_percent": 0,
+    "status": "OPEN",
+    "strategy": "standard",
+    "confidence": 0.6,
+    "metadata": {
+      "slug": "nba-dal-phx-2026-02-10",
+      "reasons": [],
+      "marketData": {}
+    }
+  },
+  {
+    "id": "ac628598-a319-4acf-a51f-26afeea493de",
+    "created_at": "2026-02-09T09:42:22.553701+00:00",
+    "market_id": "527079",
+    "question": "Will GTA 6 cost $100+?",
+    "side": "YES",
+    "amount": 41.917500000000004,
+    "entry_price": 0.011615,
+    "exit_price": 0.048,
+    "pnl": 131.31022277227726,
+    "pnl_percent": 0,
+    "status": "CLOSED",
+    "strategy": "standard",
+    "confidence": 0.6,
+    "metadata": {
+      "slug": "will-gta-6-cost-100",
+      "reasons": [],
+      "eventSlug": "will-gta-6-cost-100",
+      "marketData": {}
+    }
+  },
+  {
+    "id": "0987fc3c-b207-4ca8-9bda-fdbe2a71a1fa",
+    "created_at": "2026-02-09T08:29:23.35009+00:00",
+    "market_id": "1350926",
+    "question": "Bitcoin Up or Down - February 9, 3AM ET",
+    "side": "YES",
+    "amount": 35.915284190630864,
+    "entry_price": 0.23734999999999998,
+    "exit_price": null,
+    "pnl": 0,
+    "pnl_percent": 0,
+    "status": "OPEN",
+    "strategy": "standard",
+    "confidence": 0.6,
+    "metadata": {
+      "slug": "bitcoin-up-or-down-february-9-3am-et",
+      "reasons": [],
+      "marketData": {}
+    }
+  },
+  {
+    "id": "1e077306-6347-4ea6-b4e3-7823ce51f024",
+    "created_at": "2026-02-09T07:44:19.738864+00:00",
+    "market_id": "1304210",
+    "question": "Will Elon Musk post 220-239 tweets from February 3 to February 10, 2026?",
+    "side": "YES",
+    "amount": 37.80556230592722,
+    "entry_price": 0.08685999999999999,
+    "exit_price": 0.0975,
+    "pnl": 4.63102904599431,
+    "pnl_percent": 0,
+    "status": "CLOSED",
+    "strategy": "standard",
+    "confidence": 0.6,
+    "metadata": {
+      "slug": "elon-musk-of-tweets-february-3-february-10-220-239",
+      "reasons": [],
+      "eventSlug": "elon-musk-of-tweets-february-3-february-10-220-239",
+      "marketData": {}
+    }
+  },
+  {
+    "id": "cb944310-713c-4fa5-b54b-5d2694ee1b78",
+    "created_at": "2026-02-09T03:26:48.526285+00:00",
+    "market_id": "1358034",
+    "question": "Isaiah Collier: Assists O/U 11.5",
+    "side": "YES",
+    "amount": 29.734711926010174,
+    "entry_price": 0.2626,
+    "exit_price": null,
+    "pnl": 0,
+    "pnl_percent": 0,
+    "status": "OPEN",
+    "strategy": "standard",
+    "confidence": 0.4,
+    "metadata": {
+      "slug": "nba-uta-mia-2026-02-09-assists-isaiah-collier-11pt5",
+      "reasons": [],
+      "marketData": {}
+    }
+  },
+  {
+    "id": "ceef4027-23a6-4e68-b775-b8c96e0a6f4b",
+    "created_at": "2026-02-09T02:04:51.840664+00:00",
+    "market_id": "528788",
+    "question": "Rojas guilty in Texas illegal abortion case?",
+    "side": "YES",
+    "amount": 41.360313581292345,
+    "entry_price": 0.1111,
+    "exit_price": null,
+    "pnl": 0,
+    "pnl_percent": 0,
+    "status": "OPEN",
+    "strategy": "standard",
+    "confidence": 0.6,
+    "metadata": {
+      "slug": "rojas-guilty-in-texas-illegal-abortion-case",
+      "reasons": [],
+      "marketData": {}
+    }
+  },
+  {
+    "id": "65ce5f21-8e6a-4a91-824b-d16bc9a2aa39",
+    "created_at": "2026-02-09T02:04:50.524036+00:00",
+    "market_id": "528788",
+    "question": "Rojas guilty in Texas illegal abortion case?",
+    "side": "YES",
+    "amount": 50,
+    "entry_price": 0.09595000000000001,
+    "exit_price": 0.11,
+    "pnl": 7.321521625846792,
+    "pnl_percent": 0,
+    "status": "CLOSED",
+    "strategy": "standard",
+    "confidence": 0.6,
+    "metadata": {
+      "slug": "rojas-guilty-in-texas-illegal-abortion-case",
+      "reasons": [],
+      "eventSlug": "rojas-guilty-in-texas-illegal-abortion-case",
+      "marketData": {}
+    }
+  },
+  {
+    "id": "87dc8683-def9-4e25-a70b-34441fcf35fb",
+    "created_at": "2026-02-09T01:27:51.883457+00:00",
+    "market_id": "1357623",
+    "question": "Quentin Grimes: Points O/U 9.5",
+    "side": "YES",
+    "amount": 26.54775,
+    "entry_price": 0.28280000000000005,
+    "exit_price": null,
+    "pnl": 0,
+    "pnl_percent": 0,
+    "status": "OPEN",
+    "strategy": "standard",
+    "confidence": 0.4,
+    "metadata": {
+      "slug": "nba-phi-por-2026-02-09-points-quentin-grimes-9pt5",
+      "reasons": [],
+      "marketData": {}
+    }
+  },
+  {
+    "id": "06abf220-a64c-4a30-ad26-0f162fa58927",
+    "created_at": "2026-02-08T23:36:34.345558+00:00",
+    "market_id": "528788",
+    "question": "Rojas guilty in Texas illegal abortion case?",
+    "side": "YES",
+    "amount": 113.04347826086956,
+    "entry_price": 0.0808,
+    "exit_price": null,
+    "pnl": 0,
+    "pnl_percent": 0,
+    "status": "OPEN",
+    "strategy": "standard",
+    "confidence": 0.6,
+    "metadata": {
+      "slug": "rojas-guilty-in-texas-illegal-abortion-case",
+      "reasons": [],
+      "eventSlug": "rojas-guilty-in-texas-illegal-abortion-case",
+      "marketData": {}
+    }
+  },
+  {
+    "id": "0ee5e190-84ca-4c4b-806f-a2ee66223bf6",
+    "created_at": "2026-02-08T23:36:34.190743+00:00",
+    "market_id": "1271400",
+    "question": "Spread: Seahawks (-4.5)",
+    "side": "NO",
+    "amount": 10,
+    "entry_price": 0.49005,
+    "exit_price": null,
+    "pnl": 0,
+    "pnl_percent": 0,
+    "status": "OPEN",
+    "strategy": "standard",
+    "confidence": 0.35,
+    "metadata": {
+      "slug": "nfl-sea-ne-2026-02-08-spread-away-4pt5",
+      "reasons": [],
+      "eventSlug": "nfl-sea-ne-2026-02-08-spread-away-4pt5",
+      "marketData": {}
+    }
+  },
+  {
+    "id": "6feb347a-956a-416d-8f3c-43e592166426",
+    "created_at": "2026-02-08T23:36:34.039976+00:00",
+    "market_id": "521963",
+    "question": "Will Elon cut the budget by at least 10% in 2025?",
+    "side": "YES",
+    "amount": 60.177208515499714,
+    "entry_price": 0.010605000000000002,
+    "exit_price": null,
+    "pnl": 0,
+    "pnl_percent": 0,
+    "status": "OPEN",
+    "strategy": "standard",
+    "confidence": 0.35,
+    "metadata": {
+      "slug": "will-elon-cut-the-budget-by-at-least-10-in-2025",
+      "reasons": [],
+      "eventSlug": "will-elon-cut-the-budget-by-at-least-10-in-2025",
+      "marketData": {}
+    }
+  },
+  {
+    "id": "e5ec37dc-ce8f-4227-a455-a95327c88d5b",
+    "created_at": "2026-02-08T23:36:33.846634+00:00",
+    "market_id": "521964",
+    "question": "Will Elon cut the budget by at least 5% in 2025?",
+    "side": "YES",
+    "amount": 78.2303479783759,
+    "entry_price": 0.040905000000000004,
+    "exit_price": null,
+    "pnl": 0,
+    "pnl_percent": 0,
+    "status": "OPEN",
+    "strategy": "standard",
+    "confidence": 0.5,
+    "metadata": {
+      "slug": "will-elon-cut-the-budget-by-at-least-5-in-2025",
+      "reasons": [],
+      "eventSlug": "will-elon-cut-the-budget-by-at-least-5-in-2025",
+      "marketData": {}
+    }
+  },
+  {
+    "id": "f6502e87-05d4-43a4-8bb8-9bd38a75c604",
+    "created_at": "2026-02-08T23:13:39.840344+00:00",
+    "market_id": "528788",
+    "question": "Rojas guilty in Texas illegal abortion case?",
+    "side": "YES",
+    "amount": 113.04347826086956,
+    "entry_price": 0.0808,
+    "exit_price": null,
+    "pnl": 0,
+    "pnl_percent": 0,
+    "status": "OPEN",
+    "strategy": "standard",
+    "confidence": 0.6,
+    "metadata": {
+      "slug": "rojas-guilty-in-texas-illegal-abortion-case",
+      "reasons": [],
+      "eventSlug": "rojas-guilty-in-texas-illegal-abortion-case",
+      "marketData": {}
+    }
+  },
+  {
+    "id": "6706ca0d-6997-4175-a26d-14e2ac07c3f5",
+    "created_at": "2026-02-08T23:13:39.676196+00:00",
+    "market_id": "1271400",
+    "question": "Spread: Seahawks (-4.5)",
+    "side": "NO",
+    "amount": 10,
+    "entry_price": 0.49005,
+    "exit_price": null,
+    "pnl": 0,
+    "pnl_percent": 0,
+    "status": "OPEN",
+    "strategy": "standard",
+    "confidence": 0.35,
+    "metadata": {
+      "slug": "nfl-sea-ne-2026-02-08-spread-away-4pt5",
+      "reasons": [],
+      "eventSlug": "nfl-sea-ne-2026-02-08-spread-away-4pt5",
+      "marketData": {}
+    }
+  },
+  {
+    "id": "08ff2fd5-ac97-4b2a-90ba-6d9b5cc5fd9a",
+    "created_at": "2026-02-08T23:13:39.492711+00:00",
+    "market_id": "521963",
+    "question": "Will Elon cut the budget by at least 10% in 2025?",
+    "side": "YES",
+    "amount": 60.177208515499714,
+    "entry_price": 0.010605000000000002,
+    "exit_price": null,
+    "pnl": 0,
+    "pnl_percent": 0,
+    "status": "OPEN",
+    "strategy": "standard",
+    "confidence": 0.35,
+    "metadata": {
+      "slug": "will-elon-cut-the-budget-by-at-least-10-in-2025",
+      "reasons": [],
+      "eventSlug": "will-elon-cut-the-budget-by-at-least-10-in-2025",
+      "marketData": {}
+    }
+  },
+  {
+    "id": "1f6007aa-ed92-46fa-969b-f0405b663313",
+    "created_at": "2026-02-08T23:13:39.252861+00:00",
+    "market_id": "521964",
+    "question": "Will Elon cut the budget by at least 5% in 2025?",
+    "side": "YES",
+    "amount": 78.2303479783759,
+    "entry_price": 0.040905000000000004,
+    "exit_price": null,
+    "pnl": 0,
+    "pnl_percent": 0,
+    "status": "OPEN",
+    "strategy": "standard",
+    "confidence": 0.5,
+    "metadata": {
+      "slug": "will-elon-cut-the-budget-by-at-least-5-in-2025",
+      "reasons": [],
+      "eventSlug": "will-elon-cut-the-budget-by-at-least-5-in-2025",
+      "marketData": {}
+    }
+  }
+]

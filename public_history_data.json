@@ -1,0 +1,402 @@
+[
+  {
+    "id": "500741",
+    "question": "U.S. Recession in 2024?",
+    "category": "Business",
+    "snapshot_date": "2024-12-28T12:00:00.000Z",
+    "simulated_market_state": {
+      "id": "500741",
+      "question": "U.S. Recession in 2024?",
+      "category": "Business",
+      "outcomePrices": "[0.28,0.72]",
+      "volume24hr": 100000,
+      "liquidityNum": 10000,
+      "_isSimulatedData": true
+    },
+    "actual_winner": "NO",
+    "final_prices": [
+      "0",
+      "1"
+    ]
+  },
+  {
+    "id": "501341",
+    "question": "BitBoy vs. Smic - Crypto Fight Night",
+    "category": "Culture",
+    "snapshot_date": "2024-06-12T12:00:00.000Z",
+    "simulated_market_state": {
+      "id": "501341",
+      "question": "BitBoy vs. Smic - Crypto Fight Night",
+      "category": "Culture",
+      "outcomePrices": "[0.72,0.28]",
+      "volume24hr": 100000,
+      "liquidityNum": 10000,
+      "_isSimulatedData": true
+    },
+    "actual_winner": "YES",
+    "final_prices": [
+      "1",
+      "0"
+    ]
+  },
+  {
+    "id": "501667",
+    "question": "Will Russia capture Chasiv Yar before October?",
+    "category": "global politics",
+    "snapshot_date": "2024-09-27T12:00:00.000Z",
+    "simulated_market_state": {
+      "id": "501667",
+      "question": "Will Russia capture Chasiv Yar before October?",
+      "category": "global politics",
+      "outcomePrices": "[0.28,0.72]",
+      "volume24hr": 100000,
+      "liquidityNum": 10000,
+      "_isSimulatedData": true
+    },
+    "actual_winner": "NO",
+    "final_prices": [
+      "0",
+      "1"
+    ]
+  },
+  {
+    "id": "501986",
+    "question": "Will England win the 2024 Euros?",
+    "category": "Sports",
+    "snapshot_date": "2024-07-11T12:00:00.000Z",
+    "simulated_market_state": {
+      "id": "501986",
+      "question": "Will England win the 2024 Euros?",
+      "category": "Sports",
+      "outcomePrices": "[0.28,0.72]",
+      "volume24hr": 100000,
+      "liquidityNum": 10000,
+      "_isSimulatedData": true
+    },
+    "actual_winner": "NO",
+    "final_prices": [
+      "0",
+      "1"
+    ]
+  },
+  {
+    "id": "502002",
+    "question": "Will Nicolas Maduro Win the 2024 Venezuela presidential election?",
+    "category": "elections 2024",
+    "snapshot_date": "2024-07-25T12:00:00.000Z",
+    "simulated_market_state": {
+      "id": "502002",
+      "question": "Will Nicolas Maduro Win the 2024 Venezuela presidential election?",
+      "category": "elections 2024",
+      "outcomePrices": "[0.28,0.72]",
+      "volume24hr": 100000,
+      "liquidityNum": 10000,
+      "_isSimulatedData": true
+    },
+    "actual_winner": "NO",
+    "final_prices": [
+      "0",
+      "1"
+    ]
+  },
+  {
+    "id": "502008",
+    "question": "Trump’s first TikTok >10M views by Sunday night?",
+    "category": "Politics",
+    "snapshot_date": "2024-06-02T08:15:38.000Z",
+    "simulated_market_state": {
+      "id": "502008",
+      "question": "Trump’s first TikTok >10M views by Sunday night?",
+      "category": "Politics",
+      "outcomePrices": "[0.72,0.28]",
+      "volume24hr": 100000,
+      "liquidityNum": 10000,
+      "_isSimulatedData": true
+    },
+    "actual_winner": "YES",
+    "final_prices": [
+      "1",
+      "0"
+    ]
+  },
+  {
+    "id": "502009",
+    "question": "Trump’s first TikTok >50M views by Sunday night?",
+    "category": "Politics",
+    "snapshot_date": "2024-06-02T15:20:00.000Z",
+    "simulated_market_state": {
+      "id": "502009",
+      "question": "Trump’s first TikTok >50M views by Sunday night?",
+      "category": "Politics",
+      "outcomePrices": "[0.72,0.28]",
+      "volume24hr": 100000,
+      "liquidityNum": 10000,
+      "_isSimulatedData": true
+    },
+    "actual_winner": "YES",
+    "final_prices": [
+      "1",
+      "0"
+    ]
+  },
+  {
+    "id": "502010",
+    "question": "Trump’s first TikTok >25M views by Sunday night?",
+    "category": "Politics",
+    "snapshot_date": "2024-06-02T08:25:37.000Z",
+    "simulated_market_state": {
+      "id": "502010",
+      "question": "Trump’s first TikTok >25M views by Sunday night?",
+      "category": "Politics",
+      "outcomePrices": "[0.72,0.28]",
+      "volume24hr": 100000,
+      "liquidityNum": 10000,
+      "_isSimulatedData": true
+    },
+    "actual_winner": "YES",
+    "final_prices": [
+      "1",
+      "0"
+    ]
+  },
+  {
+    "id": "502011",
+    "question": "$GME halted on Monday?",
+    "category": "Business",
+    "snapshot_date": "2024-06-03T06:48:04.000Z",
+    "simulated_market_state": {
+      "id": "502011",
+      "question": "$GME halted on Monday?",
+      "category": "Business",
+      "outcomePrices": "[0.72,0.28]",
+      "volume24hr": 100000,
+      "liquidityNum": 10000,
+      "_isSimulatedData": true
+    },
+    "actual_winner": "YES",
+    "final_prices": [
+      "1",
+      "0"
+    ]
+  },
+  {
+    "id": "502012",
+    "question": "Roaring Kitty charged in 2024?",
+    "category": "Business",
+    "snapshot_date": "2024-12-28T12:00:00.000Z",
+    "simulated_market_state": {
+      "id": "502012",
+      "question": "Roaring Kitty charged in 2024?",
+      "category": "Business",
+      "outcomePrices": "[0.28,0.72]",
+      "volume24hr": 100000,
+      "liquidityNum": 10000,
+      "_isSimulatedData": true
+    },
+    "actual_winner": "NO",
+    "final_prices": [
+      "0",
+      "1"
+    ]
+  },
+  {
+    "id": "502013",
+    "question": "Will Roaring Kitty tweet on Monday?",
+    "category": "Business",
+    "snapshot_date": "2024-06-03T15:02:07.000Z",
+    "simulated_market_state": {
+      "id": "502013",
+      "question": "Will Roaring Kitty tweet on Monday?",
+      "category": "Business",
+      "outcomePrices": "[0.28,0.72]",
+      "volume24hr": 100000,
+      "liquidityNum": 10000,
+      "_isSimulatedData": true
+    },
+    "actual_winner": "NO",
+    "final_prices": [
+      "0",
+      "1"
+    ]
+  },
+  {
+    "id": "502014",
+    "question": "Was Roaring Kitty GME YOLO update fake?",
+    "category": "Politics",
+    "snapshot_date": "2024-06-04T12:00:00.000Z",
+    "simulated_market_state": {
+      "id": "502014",
+      "question": "Was Roaring Kitty GME YOLO update fake?",
+      "category": "Politics",
+      "outcomePrices": "[0.28,0.72]",
+      "volume24hr": 100000,
+      "liquidityNum": 10000,
+      "_isSimulatedData": true
+    },
+    "actual_winner": "NO",
+    "final_prices": [
+      "0",
+      "1"
+    ]
+  },
+  {
+    "id": "502015",
+    "question": "New GME YOLO update by Friday?",
+    "category": "Business",
+    "snapshot_date": "2024-06-04T12:00:00.000Z",
+    "simulated_market_state": {
+      "id": "502015",
+      "question": "New GME YOLO update by Friday?",
+      "category": "Business",
+      "outcomePrices": "[0.72,0.28]",
+      "volume24hr": 100000,
+      "liquidityNum": 10000,
+      "_isSimulatedData": true
+    },
+    "actual_winner": "YES",
+    "final_prices": [
+      "1",
+      "0"
+    ]
+  },
+  {
+    "id": "502016",
+    "question": "$GME market cap below $6 billion on Friday?",
+    "category": "Business",
+    "snapshot_date": "2024-06-04T12:00:00.000Z",
+    "simulated_market_state": {
+      "id": "502016",
+      "question": "$GME market cap below $6 billion on Friday?",
+      "category": "Business",
+      "outcomePrices": "[0.28,0.72]",
+      "volume24hr": 100000,
+      "liquidityNum": 10000,
+      "_isSimulatedData": true
+    },
+    "actual_winner": "NO",
+    "final_prices": [
+      "0",
+      "1"
+    ]
+  },
+  {
+    "id": "502023",
+    "question": "$GME market cap >$10b at Monday close?",
+    "category": "GME",
+    "snapshot_date": "2024-06-03T08:44:55.000Z",
+    "simulated_market_state": {
+      "id": "502023",
+      "question": "$GME market cap >$10b at Monday close?",
+      "category": "GME",
+      "outcomePrices": "[0.28,0.72]",
+      "volume24hr": 100000,
+      "liquidityNum": 10000,
+      "_isSimulatedData": true
+    },
+    "actual_winner": "NO",
+    "final_prices": [
+      "0",
+      "1"
+    ]
+  },
+  {
+    "id": "502024",
+    "question": "Will Berkshire Hathaway resume public trading today?",
+    "category": "GME",
+    "snapshot_date": "2024-06-03T13:20:36.000Z",
+    "simulated_market_state": {
+      "id": "502024",
+      "question": "Will Berkshire Hathaway resume public trading today?",
+      "category": "GME",
+      "outcomePrices": "[0.72,0.28]",
+      "volume24hr": 100000,
+      "liquidityNum": 10000,
+      "_isSimulatedData": true
+    },
+    "actual_winner": "YES",
+    "final_prices": [
+      "1",
+      "0"
+    ]
+  },
+  {
+    "id": "502025",
+    "question": "Berkshire Hathaway closes above $600k today?",
+    "category": "Stocks",
+    "snapshot_date": "2024-06-03T13:38:27.000Z",
+    "simulated_market_state": {
+      "id": "502025",
+      "question": "Berkshire Hathaway closes above $600k today?",
+      "category": "Stocks",
+      "outcomePrices": "[0.72,0.28]",
+      "volume24hr": 100000,
+      "liquidityNum": 10000,
+      "_isSimulatedData": true
+    },
+    "actual_winner": "YES",
+    "final_prices": [
+      "1",
+      "0"
+    ]
+  },
+  {
+    "id": "502026",
+    "question": "Did Keith Gill (RoaringKitty) sell his X account?",
+    "category": "internet culture",
+    "snapshot_date": "2024-06-04T12:00:00.000Z",
+    "simulated_market_state": {
+      "id": "502026",
+      "question": "Did Keith Gill (RoaringKitty) sell his X account?",
+      "category": "internet culture",
+      "outcomePrices": "[0.28,0.72]",
+      "volume24hr": 100000,
+      "liquidityNum": 10000,
+      "_isSimulatedData": true
+    },
+    "actual_winner": "NO",
+    "final_prices": [
+      "0",
+      "1"
+    ]
+  },
+  {
+    "id": "502027",
+    "question": "Roaring Kitty dumps GME calls by Friday?",
+    "category": "GME",
+    "snapshot_date": "2024-06-04T12:00:00.000Z",
+    "simulated_market_state": {
+      "id": "502027",
+      "question": "Roaring Kitty dumps GME calls by Friday?",
+      "category": "GME",
+      "outcomePrices": "[0.28,0.72]",
+      "volume24hr": 100000,
+      "liquidityNum": 10000,
+      "_isSimulatedData": true
+    },
+    "actual_winner": "NO",
+    "final_prices": [
+      "0",
+      "1"
+    ]
+  },
+  {
+    "id": "502028",
+    "question": "Infowars shuttered by Friday?",
+    "category": "alex jones",
+    "snapshot_date": "2024-06-04T12:00:00.000Z",
+    "simulated_market_state": {
+      "id": "502028",
+      "question": "Infowars shuttered by Friday?",
+      "category": "alex jones",
+      "outcomePrices": "[0.28,0.72]",
+      "volume24hr": 100000,
+      "liquidityNum": 10000,
+      "_isSimulatedData": true
+    },
+    "actual_winner": "NO",
+    "final_prices": [
+      "0",
+      "1"
+    ]
+  }
+]

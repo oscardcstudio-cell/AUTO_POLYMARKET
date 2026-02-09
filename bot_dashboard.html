@@ -1068,8 +1068,12 @@
                         document.getElementById('winRate').textContent = `${winRate.toFixed(1)}%`;
                         document.getElementById('winningTrades').textContent = botData.winningTrades || 0;
                         document.getElementById('losingTrades').textContent = botData.losingTrades || 0;
-                        const moneySpent = (botData.activeTrades || []).reduce((sum, t) => sum + t.size, 0);
-                        document.getElementById('moneySpent').textContent = `$${moneySpent.toLocaleString()}`;
+
+                        // Calculate Open Risk (money invested in active trades, not current value)
+                        const moneySpent = (botData.activeTrades || []).reduce((sum, t) => {
+                            return sum + (t.amount || 0);
+                        }, 0);
+                        document.getElementById('moneySpent').textContent = `$${moneySpent.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
 
                         // Open Risk (active trades amount)
                         document.getElementById('openRisk').textContent = `$${activeValue.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;

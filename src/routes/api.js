@@ -176,28 +176,53 @@ router.delete('/backlog/:id', (req, res) => {
 });
 
 // --- NEW: Full Trade History Endpoint ---
-router.get('/trade-history', (req, res) => {
-    const historyFile = path.join(process.cwd(), 'trade_decisions.jsonl');
-    if (fs.existsSync(historyFile)) {
-        try {
-            const fileContent = fs.readFileSync(historyFile, 'utf-8');
-            // Parse JSONL (one JSON object per line)
-            const trades = fileContent
-                .split('\n')
-                .filter(line => line.trim() !== '')
-                .map(line => {
-                    try { return JSON.parse(line); } catch (e) { return null; }
-                })
-                .filter(t => t !== null && t.tradeExecuted === true) // Only show executed trades
-                .reverse(); // Newest first
+router.get('/trade-history', async (req, res) => {
+    try {
+        // PRODUCTION FIX: Read from Supabase instead of local file (Railway doesn't have trade_decisions.jsonl)
+        const { supabaseService } = await import('../services/supabaseService.js');
 
-            res.json(trades);
-        } catch (error) {
-            console.error("Error reading trade history:", error);
-            res.status(500).json({ error: "Failed to read history" });
+        if (supabaseService && supabaseService.loadRecentTrades) {
+            const trades = await supabaseService.loadRecentTrades(100);
+
+            // Format for dashboard compatibility
+            const formattedTrades = trades.map(t => ({
+                timestamp: t.created_at,
+                marketId: t.market_id,
+                question: t.question,
+                category: t.metadata?.category || 'other',
+                side: t.side,
+                amount: t.amount,
+                entryPrice: t.entry_price,
+                exitPrice: t.exit_price,
+                pnl: t.pnl,
+                status: t.status,
+                confidence: t.confidence,
+                tradeExecuted: true,
+                decisionReasons: t.metadata?.reasons || []
+            }));
+
+            res.json(formattedTrades);
+        } else {
+            // Fallback: try local file if Supabase not available
+            const historyFile = path.join(process.cwd(), 'trade_decisions.jsonl');
+            if (fs.existsSync(historyFile)) {
+                const fileContent = fs.readFileSync(historyFile, 'utf-8');
+                const trades = fileContent
+                    .split('\n')
+                    .filter(line => line.trim() !== '')
+                    .map(line => {
+                        try { return JSON.parse(line); } catch (e) { return null; }
+                    })
+                    .filter(t => t !== null && t.tradeExecuted === true)
+                    .reverse();
+                res.json(trades);
+            } else {
+                res.json([]);
+            }
         }
-    } else {
-        res.json([]); // No history file yet
+    } catch (error) {
+        console.error("Error reading trade history:", error);
+        res.status(500).json({ error: "Failed to read history" });
     }
 });
 

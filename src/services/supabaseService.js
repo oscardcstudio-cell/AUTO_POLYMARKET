@@ -20,6 +20,11 @@ export const supabaseService = {
      * @param {Object} trade - The trade object from botState
      */
     async saveTrade(trade) {
+        if (!supabase) {
+            console.warn('⚠️ Supabase not configured, skipping trade save');
+            return null;
+        }
+
         try {
             // Map bot trade object to DB schema
             const dbTrade = {
@@ -42,14 +47,10 @@ export const supabaseService = {
                 }
             };
 
-            // Upsert (Insert or Update based on 'id' if we had one, but strict match might fail)
-            // Strategy: We don't have a persistent UUID in local state yet (only 'TRADE_...').
-            // We use 'market_id' + 'created_at' as unique? No.
-            // Best approach: Add a 'supabase_id' to local trade object once saved.
-
             let result;
+
             if (trade.supabase_id) {
-                // Update existing
+                // Update existing trade
                 result = await supabase
                     .from('trades')
                     .update(dbTrade)
@@ -57,7 +58,25 @@ export const supabaseService = {
                     .select()
                     .single();
             } else {
-                // Insert new
+                // ANTI-DUPLICATE: Check if similar trade already exists
+                const { data: existing } = await supabase
+                    .from('trades')
+                    .select('id')
+                    .eq('market_id', dbTrade.market_id)
+                    .eq('amount', dbTrade.amount)
+                    .eq('entry_price', dbTrade.entry_price)
+                    .eq('status', dbTrade.status)
+                    .order('created_at', { ascending: false })
+                    .limit(1);
+
+                if (existing && existing.length > 0) {
+                    console.log(`⚠️ Trade already exists in Supabase, skipping: ${trade.question.substring(0, 40)}...`);
+                    // Attach the existing ID to avoid future duplicates
+                    trade.supabase_id = existing[0].id;
+                    return existing[0];
+                }
+
+                // Insert new trade
                 result = await supabase
                     .from('trades')
                     .insert(dbTrade)
