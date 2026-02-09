@@ -1,5 +1,6 @@
 import fetch from 'node-fetch';
 import { addLog } from '../utils.js';
+import { botState } from '../state.js';
 
 /**
  * Price Update Service
@@ -34,16 +35,16 @@ async function fetchMarketPrice(marketId, retryCount = 0) {
             // Rate limited - exponential backoff
             if (retryCount < MAX_RETRIES) {
                 const delay = RETRY_DELAY * Math.pow(2, retryCount);
-                addLog(`⚠️ Rate limited, retrying in ${delay}ms...`, 'warning');
+                addLog(botState, `⚠️ Rate limited, retrying in ${delay}ms...`, 'warning');
                 await new Promise(resolve => setTimeout(resolve, delay));
                 return fetchMarketPrice(marketId, retryCount + 1);
             }
-            addLog(`❌ Max retries reached for market ${marketId}`, 'error');
+            addLog(botState, `❌ Max retries reached for market ${marketId}`, 'error');
             return null;
         }
 
         if (!response.ok) {
-            addLog(`⚠️ Failed to fetch price for market ${marketId}: ${response.status}`, 'warning');
+            addLog(botState, `⚠️ Failed to fetch price for market ${marketId}: ${response.status}`, 'warning');
             return null;
         }
 
@@ -68,7 +69,7 @@ async function fetchMarketPrice(marketId, retryCount = 0) {
 
         return currentPrice;
     } catch (error) {
-        addLog(`❌ Error fetching price for market ${marketId}: ${error.message}`, 'error');
+        addLog(botState, `❌ Error fetching price for market ${marketId}: ${error.message}`, 'error');
         return null;
     }
 }
@@ -83,7 +84,7 @@ export async function updateActiveTradePrices(activeTrades) {
         return 0;
     }
 
-    addLog(`🔄 Updating prices for ${activeTrades.length} active trades...`);
+    addLog(botState, `🔄 Updating prices for ${activeTrades.length} active trades...`);
     let updatedCount = 0;
 
     // Process trades sequentially with small delay to avoid rate limiting
@@ -118,7 +119,7 @@ export async function updateActiveTradePrices(activeTrades) {
         await new Promise(resolve => setTimeout(resolve, 200));
     }
 
-    addLog(`✅ Updated ${updatedCount}/${activeTrades.length} trade prices`);
+    addLog(botState, `✅ Updated ${updatedCount}/${activeTrades.length} trade prices`);
     return updatedCount;
 }
 
@@ -127,14 +128,16 @@ export async function updateActiveTradePrices(activeTrades) {
  * @param {Object} botState - The bot state object with activeTrades
  * @returns {NodeJS.Timeout} Interval ID for cleanup
  */
-export function startPriceUpdateLoop(botState) {
-    addLog(`🚀 Starting price update loop (every ${PRICE_UPDATE_INTERVAL / 60000} minutes)`);
+export function startPriceUpdateLoop(botStateArg) {
+    // Use the argument if provided, otherwise fallback to imported botState (though argument is expected)
+    const state = botStateArg || botState;
+    addLog(state, `🚀 Starting price update loop (every ${PRICE_UPDATE_INTERVAL / 60000} minutes)`);
 
     const intervalId = setInterval(async () => {
         try {
-            await updateActiveTradePrices(botState.activeTrades);
+            await updateActiveTradePrices(state.activeTrades);
         } catch (error) {
-            addLog(`❌ Price update loop error: ${error.message}`, 'error');
+            addLog(state, `❌ Price update loop error: ${error.message}`, 'error');
         }
     }, PRICE_UPDATE_INTERVAL);
 
@@ -149,5 +152,5 @@ export function startPriceUpdateLoop(botState) {
  */
 export function clearPriceCache() {
     priceCache.clear();
-    addLog('🗑️ Price cache cleared');
+    addLog(botState, '🗑️ Price cache cleared');
 }
