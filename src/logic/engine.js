@@ -477,6 +477,9 @@ export async function checkAndCloseTrades(getRealMarketPriceFn) {
         trade.priceHistory.push(currentPrice);
         if (trade.priceHistory.length > 50) trade.priceHistory.shift();
 
+        // Update timestamp for Dashboard "PRICES: LIVE" indicator
+        trade.lastPriceUpdate = new Date().toISOString();
+
         const pnlPercent = invested > 0 ? (trade.shares * currentPrice - invested) / invested : 0;
         trade.maxReturn = Math.max(trade.maxReturn || 0, pnlPercent);
 

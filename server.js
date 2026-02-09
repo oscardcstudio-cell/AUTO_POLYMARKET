@@ -8,6 +8,7 @@ import { stateManager, botState } from './src/state.js';
 import { addLog, saveToGithub } from './src/utils.js';
 import apiRoutes from './src/routes/api.js';
 import analyticsRoutes from './src/api/analyticsRoutes.js';
+import { startPriceUpdateLoop } from './src/services/priceUpdateService.js';
 
 // Logic & Signals
 import { simulateTrade, checkAndCloseTrades } from './src/logic/engine.js';
@@ -69,6 +70,10 @@ app.listen(CONFIG.PORT, () => {
 // --- MAIN LOOP ---
 async function mainLoop() {
     addLog(botState, '🔄 Démarrage de la boucle de trading...', 'info');
+
+    // Start Real-Time Price Tracking Service
+    console.log('🔄 Starting real-time price tracking service...');
+    startPriceUpdateLoop(botState);
 
     // State for Deep Scan
     let lastDeepScanTime = 0;
