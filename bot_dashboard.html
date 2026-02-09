@@ -481,6 +481,49 @@
         </div>
     </div>
 
+    <!-- VIEW: MARKETPLACE (DEEP SCAN) -->
+    <div id="marketplace-view" style="display: none;">
+        <div
+            style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; gap: 15px; flex-wrap: wrap;">
+            <h2 style="margin: 0; font-size: 1.5em;">🌍 Marketplace Deep Scan</h2>
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="marketSearch" placeholder="Search markets..."
+                    style="padding: 8px 15px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 20px; color: #f8fafc; font-size: 0.85em; outline: none; min-width: 250px;">
+                <select id="marketSort"
+                    style="padding: 8px 15px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 20px; color: #f8fafc; font-size: 0.85em; outline: none;">
+                    <option value="volume">Sort by Volume</option>
+                    <option value="liquidity">Sort by Liquidity</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="stat-card" style="padding: 0; overflow: hidden;">
+            <div id="marketplaceTable" style="max-height: 700px; overflow-y: auto;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.85em;">
+                    <thead style="position: sticky; top: 0; background: rgba(0,0,0,0.9); z-index: 10;">
+                        <tr style="border-bottom: 2px solid var(--border);">
+                            <th style="padding: 15px; text-align: left; font-weight: 700; color: #cbd5e1;">Question</th>
+                            <th style="padding: 15px; text-align: center; font-weight: 700; color: #cbd5e1;">YES Price
+                            </th>
+                            <th style="padding: 15px; text-align: right; font-weight: 700; color: #cbd5e1;">Volume 24h
+                            </th>
+                            <th style="padding: 15px; text-align: right; font-weight: 700; color: #cbd5e1;">Liquidity
+                            </th>
+                            <th style="padding: 15px; text-align: center; font-weight: 700; color: #cbd5e1;">Category
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="marketplaceTableBody">
+                        <tr>
+                            <td colspan="5" style="padding: 40px; text-align: center; color: #64748b;">Loading
+                                markets...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
     <!-- VIEW: DASHBOARD -->
     <div id="dashboard-view">
         <!-- KPIS GRID -->
@@ -1561,6 +1604,74 @@
                     console.log('✅ Analytics updated');
                 } catch (e) {
                     console.error('Analytics Error:', e);
+                }
+            }
+
+            // Render Marketplace Table
+            async function renderMarketplace() {
+                try {
+                    const res = await fetch('/api/markets');
+                    const markets = await res.json();
+
+                    if (!markets || markets.length === 0) {
+                        document.getElementById('marketplaceTableBody').innerHTML =
+                            '<tr><td colspan="5" style="padding: 40px; text-align: center; color: #64748b;">No markets found</td></tr>';
+                        return;
+                    }
+
+                    // Get search and sort values
+                    const search = document.getElementById('marketSearch')?.value.toLowerCase() || '';
+                    const sortBy = document.getElementById('marketSort')?.value || 'volume';
+
+                    // Filter by search
+                    let filtered = markets.filter(m =>
+                        m.question.toLowerCase().includes(search)
+                    );
+
+                    // Sort
+                    if (sortBy === 'volume') {
+                        filtered.sort((a, b) => b.volume - a.volume);
+                    } else if (sortBy === 'liquidity') {
+                        filtered.sort((a, b) => b.liquidity - a.liquidity);
+                    }
+
+                    // Render rows
+                    const rows = filtered.slice(0, 100).map(m => {
+                        const yesPrice = (m.prices && m.prices[0]) || 0;
+                        const priceColor = yesPrice > 0.5 ? '#4ade80' : '#f87171';
+
+                        return `
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                <td style="padding: 12px; max-width: 400px;">
+                                    <div style="font-weight: 600; color: #e2e8f0; margin-bottom: 3px;">${m.question.substring(0, 100)}${m.question.length > 100 ? '...' : ''}</div>
+                                    <div style="font-size: 0.75em; color: #64748b;">${m.slug || 'N/A'}</div>
+                                </td>
+                                <td style="padding: 12px; text-align: center;">
+                                    <span style="font-weight: 700; color: ${priceColor}; font-size: 1.1em;">${(yesPrice * 100).toFixed(1)}%</span>
+                                </td>
+                                <td style="padding: 12px; text-align: right; color: #cbd5e1; font-weight: 600;">
+                                    $${m.volume >= 1000 ? (m.volume / 1000).toFixed(1) + 'k' : m.volume.toFixed(0)}
+                                </td>
+                                <td style="padding: 12px; text-align: right; color: #94a3b8;">
+                                    $${m.liquidity >= 1000 ? (m.liquidity / 1000).toFixed(1) + 'k' : m.liquidity.toFixed(0)}
+                                </td>
+                                <td style="padding: 12px; text-align: center;">
+                                    <span style="padding: 4px 10px; background: rgba(255,255,255,0.1); border-radius: 12px; font-size: 0.75em; color: #cbd5e1;">
+                                        ${m.category || 'other'}
+                                    </span>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+
+                    document.getElementById('marketplaceTableBody').innerHTML = rows ||
+                        '<tr><td colspan="5" style="padding: 40px; text-align: center; color: #64748b;">No markets match your search</td></tr>';
+
+                    console.log(`✅ Marketplace rendered: ${filtered.length} markets`);
+                } catch (e) {
+                    console.error('Marketplace Error:', e);
+                    document.getElementById('marketplaceTableBody').innerHTML =
+                        '<tr><td colspan="5" style="padding: 40px; text-align: center; color: #ef4444;">Error loading markets</td></tr>';
                 }
             }
 

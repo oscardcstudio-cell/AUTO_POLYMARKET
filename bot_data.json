@@ -1,12 +1,159 @@
 {
   "startTime": "2026-02-07T12:55:54.888Z",
-  "capital": 0,
+  "capital": 200,
   "startingCapital": 1000,
-  "totalTrades": 64,
+  "totalTrades": 72,
   "winningTrades": 0,
   "losingTrades": 0,
-  "closedTrades": [],
   "activeTrades": [
+    {
+      "id": "mlfpiwxrulm2taiw7nt",
+      "marketId": "502010",
+      "question": "Trump’s first TikTok >25M views by Sunday night?",
+      "side": "YES",
+      "amount": 100,
+      "entryPrice": 0.7272,
+      "startTime": "2026-02-09T21:51:44.703Z",
+      "shares": 137.51375137513753,
+      "status": "OPEN",
+      "confidence": 0.75,
+      "reasons": [
+        "🚀 Trend Following Verified (Vol: 100000 | Intraday: UP)",
+        "🔥 High Momentum (Vol: 100000)"
+      ],
+      "category": "political",
+      "isFresh": false,
+      "clobTokenIds": []
+    },
+    {
+      "id": "mlfpiwt144ycjnqv0ay",
+      "marketId": "502009",
+      "question": "Trump’s first TikTok >50M views by Sunday night?",
+      "side": "YES",
+      "amount": 100,
+      "entryPrice": 0.7272,
+      "startTime": "2026-02-09T21:51:44.533Z",
+      "shares": 137.51375137513753,
+      "status": "OPEN",
+      "confidence": 0.75,
+      "reasons": [
+        "🚀 Trend Following Verified (Vol: 100000 | Intraday: UP)",
+        "🔥 High Momentum (Vol: 100000)"
+      ],
+      "category": "political",
+      "isFresh": false,
+      "clobTokenIds": []
+    },
+    {
+      "id": "mlfpiwo688l6kw4nlfo",
+      "marketId": "502008",
+      "question": "Trump’s first TikTok >10M views by Sunday night?",
+      "side": "YES",
+      "amount": 100,
+      "entryPrice": 0.7272,
+      "startTime": "2026-02-09T21:51:44.358Z",
+      "shares": 137.51375137513753,
+      "status": "OPEN",
+      "confidence": 0.75,
+      "reasons": [
+        "🚀 Trend Following Verified (Vol: 100000 | Intraday: UP)",
+        "🔥 High Momentum (Vol: 100000)"
+      ],
+      "category": "political",
+      "isFresh": false,
+      "clobTokenIds": []
+    },
+    {
+      "id": "mlfpiwm4oa8o58ykaz",
+      "marketId": "502002",
+      "question": "Will Nicolas Maduro Win the 2024 Venezuela presidential election?",
+      "side": "NO",
+      "amount": 100,
+      "entryPrice": 0.7128,
+      "startTime": "2026-02-09T21:51:44.284Z",
+      "shares": 140.29180695847361,
+      "status": "OPEN",
+      "confidence": 0.45,
+      "reasons": [
+        "🔥 Smart Momentum: Following NO Favorite"
+      ],
+      "category": "political",
+      "isFresh": false,
+      "clobTokenIds": []
+    },
+    {
+      "id": "mlfpiwlcdm1p24wnd4r",
+      "marketId": "501986",
+      "question": "Will England win the 2024 Euros?",
+      "side": "NO",
+      "amount": 100,
+      "entryPrice": 0.7128,
+      "startTime": "2026-02-09T21:51:44.256Z",
+      "shares": 140.29180695847361,
+      "status": "OPEN",
+      "confidence": 0.45,
+      "reasons": [
+        "🔥 Smart Momentum: Following NO Favorite"
+      ],
+      "category": "other",
+      "isFresh": false,
+      "clobTokenIds": []
+    },
+    {
+      "id": "mlfpiwim5ytd5a4hy9x",
+      "marketId": "501667",
+      "question": "Will Russia capture Chasiv Yar before October?",
+      "side": "NO",
+      "amount": 100,
+      "entryPrice": 0.7128,
+      "startTime": "2026-02-09T21:51:44.158Z",
+      "shares": 140.29180695847361,
+      "status": "OPEN",
+      "confidence": 0.45,
+      "reasons": [
+        "🔥 Smart Momentum: Following NO Favorite"
+      ],
+      "category": "geopolitical",
+      "isFresh": false,
+      "clobTokenIds": []
+    },
+    {
+      "id": "mlfpiwh28xalpiyflpt",
+      "marketId": "501341",
+      "question": "BitBoy vs. Smic - Crypto Fight Night",
+      "side": "YES",
+      "amount": 100,
+      "entryPrice": 0.7272,
+      "startTime": "2026-02-09T21:51:44.102Z",
+      "shares": 137.51375137513753,
+      "status": "OPEN",
+      "confidence": 0.75,
+      "reasons": [
+        "🚀 Trend Following Verified (Vol: 100000 | Intraday: UP)",
+        "🔥 High Momentum (Vol: 100000)"
+      ],
+      "category": "economic",
+      "isFresh": false,
+      "clobTokenIds": []
+    },
+    {
+      "id": "mlfpiw9ygvex6rfr23r",
+      "marketId": "500741",
+      "question": "U.S. Recession in 2024?",
+      "side": "NO",
+      "amount": 100,
+      "entryPrice": 0.7128,
+      "startTime": "2026-02-09T21:51:43.846Z",
+      "shares": 140.29180695847361,
+      "status": "OPEN",
+      "confidence": 0.45,
+      "reasons": [
+        "🔥 Smart Momentum: Following NO Favorite"
+      ],
+      "category": "economic",
+      "isFresh": false,
+      "clobTokenIds": []
+    },
     {
       "id": "mlee51zfdk2ez2m0x0h",
       "marketId": "502028",
@@ -1326,6 +1473,7 @@
       "maxReturn": 0.051980198019802186
     }
   ],
+  "closedTrades": [],
   "capitalHistory": [
     {
       "t": "2026-02-07T12:56:13.989Z",
@@ -1513,8 +1661,48 @@
     "timestamp": "2026-02-08T21:23:48.372Z",
     "slug": "nfl-sea-ne-2026-02-08"
   },
-  "lastUpdate": "2026-02-08T23:45:16.107Z",
+  "lastUpdate": "2026-02-09T21:51:44.703Z",
   "logs": [
+    {
+      "timestamp": "2026-02-09T21:51:44.577Z",
+      "message": "✅ TRADE OPENED: YES sur \"Trump’s first TikTok >50M view...\" @ $0.727 ($100.00)",
+      "type": "trade"
+    },
+    {
+      "timestamp": "2026-02-09T21:51:44.532Z",
+      "message": "✅ TRADE OPENED: YES sur \"Trump’s first TikTok >10M view...\" @ $0.727 ($100.00)",
+      "type": "trade"
+    },
+    {
+      "timestamp": "2026-02-09T21:51:44.354Z",
+      "message": "✅ TRADE OPENED: NO sur \"Will Nicolas Maduro Win the 20...\" @ $0.713 ($100.00)",
+      "type": "trade"
+    },
+    {
+      "timestamp": "2026-02-09T21:51:44.282Z",
+      "message": "✅ TRADE OPENED: NO sur \"Will England win the 2024 Euro...\" @ $0.713 ($100.00)",
+      "type": "trade"
+    },
+    {
+      "timestamp": "2026-02-09T21:51:44.255Z",
+      "message": "✅ TRADE OPENED: NO sur \"Will Russia capture Chasiv Yar...\" @ $0.713 ($100.00)",
+      "type": "trade"
+    },
+    {
+      "timestamp": "2026-02-09T21:51:44.157Z",
+      "message": "✅ TRADE OPENED: YES sur \"BitBoy vs. Smic - Crypto Fight...\" @ $0.727 ($100.00)",
+      "type": "trade"
+    },
+    {
+      "timestamp": "2026-02-09T21:51:44.098Z",
+      "message": "✅ TRADE OPENED: NO sur \"U.S. Recession in 2024?...\" @ $0.713 ($100.00)",
+      "type": "trade"
+    },
+    {
+      "timestamp": "2026-02-09T21:51:43.667Z",
+      "message": "Chargement des données réussi ($0.00)",
+      "type": "success"
+    },
     {
       "timestamp": "2026-02-08T23:45:16.100Z",
       "message": "✅ TRADE OPENED: NO sur \"Roaring Kitty dumps GME calls ...\" @ $0.713 ($0.00)",
@@ -2493,24 +2681,64 @@
   ],
   "sectorStats": {
     "politics": {
-      "count": 28,
-      "lastActivity": "2026-02-08T23:45:16.107Z"
+      "count": 33,
+      "lastActivity": "2026-02-09T21:51:44.703Z"
     },
     "economics": {
-      "count": 16,
-      "lastActivity": "2026-02-08T23:45:16.107Z"
+      "count": 18,
+      "lastActivity": "2026-02-09T21:51:44.703Z"
     },
     "tech": {
       "count": 12,
-      "lastActivity": "2026-02-08T23:45:16.107Z"
+      "lastActivity": "2026-02-09T21:51:44.703Z"
     },
     "trending": {
-      "count": 48,
-      "lastActivity": "2026-02-08T23:45:16.107Z"
+      "count": 49,
+      "lastActivity": "2026-02-09T21:51:44.703Z"
     }
   },
   "sectorActivity": {
     "politics": [
+      {
+        "id": "mlfpiwua07n409g7ym6k",
+        "timestamp": "2026-02-09T21:51:44.579Z",
+        "type": "TRADE",
+        "message": "🎰 Trade Opened: $100 on YES",
+        "data": {
+          "market": "Trump’s first TikTok >50M views by Sunday night?",
+          "price": "0.73"
+        }
+      },
+      {
+        "id": "mlfpiwt07b4p5fx1khp",
+        "timestamp": "2026-02-09T21:51:44.532Z",
+        "type": "TRADE",
+        "message": "🎰 Trade Opened: $100 on YES",
+        "data": {
+          "market": "Trump’s first TikTok >10M views by Sunday night?",
+          "price": "0.73"
+        }
+      },
+      {
+        "id": "mlfpiwo3nofbm4bsv6l",
+        "timestamp": "2026-02-09T21:51:44.355Z",
+        "type": "TRADE",
+        "message": "🎰 Trade Opened: $100 on NO",
+        "data": {
+          "market": "Will Nicolas Maduro Win the 2024 Venezuela presidential election?",
+          "price": "0.71"
+        }
+      },
+      {
+        "id": "mlfpiwlbzmsezhd88yn",
+        "timestamp": "2026-02-09T21:51:44.255Z",
+        "type": "TRADE",
+        "message": "🌍 Trade Opened: $100 on NO",
+        "data": {
+          "market": "Will Russia capture Chasiv Yar before October?",
+          "price": "0.71"
+        }
+      },
       {
         "id": "mlee51qseivpyv0s924",
         "timestamp": "2026-02-08T23:45:15.796Z",
@@ -2570,49 +2798,29 @@
           "market": "Trump’s first TikTok >25M views by Sunday night?",
           "price": "0.73"
         }
-      },
-      {
-        "id": "mlee4rl36ohin437fm5",
-        "timestamp": "2026-02-08T23:45:02.631Z",
-        "type": "TRADE",
-        "message": "🎰 Trade Opened: $0 on YES",
-        "data": {
-          "market": "Trump’s first TikTok >50M views by Sunday night?",
-          "price": "0.73"
-        }
-      },
-      {
-        "id": "mlee4rk9t0hx0nh5tt",
-        "timestamp": "2026-02-08T23:45:02.601Z",
-        "type": "TRADE",
-        "message": "🎰 Trade Opened: $0 on YES",
-        "data": {
-          "market": "Trump’s first TikTok >10M views by Sunday night?",
-          "price": "0.73"
-        }
-      },
-      {
-        "id": "mlee4rjwjs543drlrm",
-        "timestamp": "2026-02-08T23:45:02.588Z",
-        "type": "TRADE",
-        "message": "🎰 Trade Opened: $0 on NO",
-        "data": {
-          "market": "Will Nicolas Maduro Win the 2024 Venezuela presidential election?",
-          "price": "0.71"
-        }
-      },
-      {
-        "id": "mlee4rj5eheqyke9488",
-        "timestamp": "2026-02-08T23:45:02.561Z",
-        "type": "TRADE",
-        "message": "🌍 Trade Opened: $0 on NO",
-        "data": {
-          "market": "Will Russia capture Chasiv Yar before October?",
-          "price": "0.71"
-        }
       }
     ],
     "economics": [
+      {
+        "id": "mlfpiwilogfx2qy3x2",
+        "timestamp": "2026-02-09T21:51:44.157Z",
+        "type": "TRADE",
+        "message": "📉 Trade Opened: $100 on YES",
+        "data": {
+          "market": "BitBoy vs. Smic - Crypto Fight Night",
+          "price": "0.73"
+        }
+      },
+      {
+        "id": "mlfpiwgy3j1ilysd513",
+        "timestamp": "2026-02-09T21:51:44.098Z",
+        "type": "TRADE",
+        "message": "📉 Trade Opened: $100 on NO",
+        "data": {
+          "market": "U.S. Recession in 2024?",
+          "price": "0.71"
+        }
+      },
       {
         "id": "mlee51kccjto6n4vy8t",
         "timestamp": "2026-02-08T23:45:15.564Z",
@@ -2690,24 +2898,6 @@
         "data": {
           "market": "Will the price of Bitcoin be above $70,000 on February 7?",
           "price": "NaN"
-        }
-      },
-      {
-        "id": "mlcakliksp592ri6qi",
-        "timestamp": "2026-02-07T12:29:50.444Z",
-        "type": "TRADE",
-        "message": "💰 Trade Closed: Max Price Reached",
-        "data": {
-          "pnl": "NaN"
-        }
-      },
-      {
-        "id": "mlcadyrna220mafv0qd",
-        "timestamp": "2026-02-07T12:24:41.027Z",
-        "type": "ANALYSIS",
-        "message": "High Alpha: Will the price of Bitcoin be a...",
-        "data": {
-          "score": "100"
         }
       }
     ],
@@ -2805,6 +2995,16 @@
     ],
     "trending": [
       {
+        "id": "mlfpiwm2zc8uk3ew66e",
+        "timestamp": "2026-02-09T21:51:44.282Z",
+        "type": "TRADE",
+        "message": "🎰 Trade Opened: $100 on NO",
+        "data": {
+          "market": "Will England win the 2024 Euros?",
+          "price": "0.71"
+        }
+      },
+      {
         "id": "mlee51z8l6mk1edzbl",
         "timestamp": "2026-02-08T23:45:16.100Z",
         "type": "TRADE",
@@ -2869,44 +3069,4 @@
         "timestamp": "2026-02-08T23:45:15.937Z",
         "type": "TRADE",
         "message": "🎰 Trade Opened: $0 on YES",
-        "data": {
-          "market": "New GME YOLO update by Friday?",
-          "price": "0.73"
-        }
-      },
-      {
-        "id": "mlee51tqhu6zw6nfmbq",
-        "timestamp": "2026-02-08T23:45:15.902Z",
-        "type": "TRADE",
-        "message": "🎰 Trade Opened: $0 on NO",
-        "data": {
-          "market": "Was Roaring Kitty GME YOLO update fake?",
-          "price": "0.71"
-        }
-      },
-      {
-        "id": "mlee51t1tgmtkc7essk",
-        "timestamp": "2026-02-08T23:45:15.877Z",
-        "type": "TRADE",
-        "message": "🎰 Trade Opened: $0 on NO",
-        "data": {
-          "market": "Will Roaring Kitty tweet on Monday?",
-          "price": "0.71"
-        }
-      },
-      {
-        "id": "mlee51siz48xqoubm0b",
-        "timestamp": "2026-02-08T23:45:15.858Z",
-        "type": "TRADE",
-        "message": "🎰 Trade Opened: $100 on NO",
-        "data": {
-          "market": "Roaring Kitty charged in 2024?",
-          "price": "0.71"
-        }
-      }
-    ]
-  },
-  "backlog": [],
-  "profit": -1000,
-  "profitPercent": "-100.00"
-}
+        "data":
