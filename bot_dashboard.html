@@ -1195,6 +1195,7 @@
                     // --- 4.5. TRADE ACTIVITY LOGS ---
                     try {
                         const activityLogsContainer = document.getElementById('tradeActivityLogs');
+                        if (!activityLogsContainer) return; // Skip if container doesn't exist
 
                         // Collect both open and closed trades
                         const openTrades = (botData.activeTrades || [])
@@ -1219,8 +1220,15 @@
                             .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
                             .slice(0, 15); // Show latest 15 activities
 
+                        // Debug log to understand what's happening
+                        console.log(`[Trade Activity] Open: ${openTrades.length}, Closed: ${closedTrades.length}, Total: ${allTrades.length}`);
+
+                        // Only update if we have content to display
                         if (allTrades.length === 0) {
-                            activityLogsContainer.innerHTML = '<div class="empty-state">⏳ Waiting for trade execution...</div>';
+                            // Only set empty state if it's not already set (avoid flickering)
+                            if (!activityLogsContainer.innerHTML.includes('Waiting for trade execution')) {
+                                activityLogsContainer.innerHTML = '<div class="empty-state">⏳ Waiting for trade execution...</div>';
+                            }
                         } else {
                             activityLogsContainer.innerHTML = allTrades.map(t => {
                                 const isBuy = t.type === 'BUY';
