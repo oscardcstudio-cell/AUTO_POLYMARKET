@@ -4,6 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { simulateTrade } from '../src/logic/engine.js';
 import { botState } from '../src/state.js';
+import { supabase } from '../src/services/supabaseService.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -218,6 +219,33 @@ async function runBacktest() {
         console.log('❌ Strategy lost money. Tuning required.');
     }
     console.log('========================================\n');
+
+    // Save results to Supabase
+    if (supabase) {
+        try {
+            const { data, error } = await supabase
+                .from('simulation_runs')
+                .insert({
+                    strategy_config: {
+                        sharpeRatio: metrics ? metrics.sharpeRatio : 0,
+                        winrate: parseFloat(winrate),
+                        maxDrawdown: metrics ? metrics.maxDrawdown : 0,
+                        avgReturnPerTrade: metrics ? metrics.avgReturnPerTrade : 0
+                    },
+                    result_pnl: totalPnL,
+                    result_roi: metrics ? metrics.roi : 0,
+                    trade_count: wins + losses
+                });
+
+            if (error) {
+                console.error('⚠️ Failed to save to Supabase:', error.message);
+            } else {
+                console.log('✅ Results saved to Supabase successfully!');
+            }
+        } catch (e) {
+            console.error('⚠️ Supabase save error:', e.message);
+        }
+    }
 
     process.exit(0);
 }

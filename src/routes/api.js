@@ -250,4 +250,47 @@ router.get('/markets', (req, res) => {
     });
 });
 
+// Backtest Results Endpoint
+router.get('/backtest-results', async (req, res) => {
+    try {
+        if (!supabase) {
+            return res.json({ runs: [] });
+        }
+
+        const { data, error } = await supabase
+            .from('simulation_runs')
+            .select('*')
+            .order('run_at', { ascending: false })
+            .limit(20);
+
+        if (error) throw error;
+
+        const runs = (data || []).map(run => ({
+            timestamp: run.run_at,
+            roi: run.result_roi || 0,
+            sharpe: run.strategy_config?.sharpeRatio || 0,
+            winrate: run.strategy_config?.winrate || 0,
+            drawdown: run.strategy_config?.maxDrawdown || 0,
+            trade_count: run.trade_count || 0
+        }));
+
+        res.json({ runs });
+    } catch (error) {
+        console.error('Backtest results error:', error);
+        res.json({ runs: [] });
+    }
+});
+
+// Run Backtest Endpoint
+router.post('/run-backtest', async (req, res) => {
+    try {
+        res.json({
+            success: false,
+            error: 'Run backtest manually: node scripts/backtest_public.js'
+        });
+    } catch (error) {
+        res.json({ success: false, error: error.message });
+    }
+});
+
 export default router;
