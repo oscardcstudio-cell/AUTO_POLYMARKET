@@ -434,6 +434,7 @@
         <div class="nav-tab active" onclick="switchView('dashboard')">📊 Dashboard</div>
         <div class="nav-tab" onclick="switchView('analytics')">📈 Analytics</div>
         <div class="nav-tab" onclick="switchView('marketplace')">🌍 Marketplace (Deep Scan)</div>
+        <div class="nav-tab" onclick="switchView('backtest')">🧪 Backtest Monitor</div>
     </div>
 
     <!-- VIEW: ANALYTICS -->
@@ -520,6 +521,53 @@
                         </tr>
                     </tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- VIEW: BACKTEST MONITOR -->
+    <div id="backtest-view" style="display: none;">
+        <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+            <h2 style="margin: 0; font-size: 1.5em;">🧪 Backtest Monitor</h2>
+            <button onclick="runBacktestNow()"
+                style="padding: 10px 20px; background: linear-gradient(135deg, #4ade80, #22c55e); border: none; border-radius: 8px; color: white; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(74, 222, 128, 0.3);">
+                ▶️ Run Backtest Now
+            </button>
+        </div>
+
+        <!-- KPIs Grid -->
+        <div class="stats-grid" style="margin-bottom: 30px;">
+            <div class="stat-card">
+                <div class="stat-label">Latest ROI</div>
+                <div class="stat-value" id="bt-roi">--%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Sharpe Ratio</div>
+                <div class="stat-value" id="bt-sharpe">--</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Winrate</div>
+                <div class="stat-value" id="bt-winrate">--%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Max Drawdown</div>
+                <div class="stat-value" id="bt-drawdown">--%</div>
+            </div>
+        </div>
+
+        <!-- ROI Progression Chart -->
+        <div class="chart-section" style="margin-bottom: 30px;">
+            <div class="stat-label">📈 ROI Progression Over Time</div>
+            <div class="chart-container">
+                <canvas id="backtestProgressionChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Backtest Runs History -->
+        <div class="chart-section">
+            <div class="stat-label">📋 Recent Backtest Runs</div>
+            <div id="backtestRunsList" style="margin-top: 15px;">
+                <div class="empty-state">No backtest runs yet. Click "Run Backtest Now" to start.</div>
             </div>
         </div>
     </div>
@@ -1672,6 +1720,108 @@
                     console.error('Marketplace Error:', e);
                     document.getElementById('marketplaceTableBody').innerHTML =
                         '<tr><td colspan="5" style="padding: 40px; text-align: center; color: #ef4444;">Error loading markets</td></tr>';
+                }
+            }
+
+            // Render Backtest Monitor
+            async function renderBacktestMonitor() {
+                try {
+                    const res = await fetch('/api/backtest-results');
+                    const data = await res.json();
+
+                    if (!data || !data.runs || data.runs.length === 0) {
+                        console.log('No backtest runs found');
+                        return;
+                    }
+
+                    // Display latest metrics
+                    const latest = data.runs[0];
+                    document.getElementById('bt-roi').textContent = `${latest.roi >= 0 ? '+' : ''}${latest.roi.toFixed(2)}%`;
+                    document.getElementById('bt-roi').className = 'stat-value ' + (latest.roi >= 0 ? 'positive' : 'negative');
+
+                    document.getElementById('bt-sharpe').textContent = latest.sharpe.toFixed(2);
+                    document.getElementById('bt-sharpe').className = 'stat-value ' + (latest.sharpe > 2 ? 'positive' : latest.sharpe > 1 ? '' : 'negative');
+
+                    document.getElementById('bt-winrate').textContent = `${latest.winrate.toFixed(1)}%`;
+                    document.getElementById('bt-drawdown').textContent = `${latest.drawdown.toFixed(2)}%`;
+                    document.getElementById('bt-drawdown').className = 'stat-value ' + (latest.drawdown < 20 ? 'positive' : 'negative');
+
+                    // Progression Chart
+                    const ctx = document.getElementById('backtestProgressionChart')?.getContext('2d');
+                    if (ctx && window.backtestProgressionChartInstance) {
+                        window.backtestProgressionChartInstance.destroy();
+                    }
+
+                    if (ctx) {
+                        const sortedRuns = [...data.runs].reverse(); // oldest first
+                        window.backtestProgressionChartInstance = new Chart(ctx, {
+                            type: 'line',
+                            data: {
+                                labels: sortedRuns.map((r, i) => `Run ${i + 1}`),
+                                datasets: [{
+                                    label: 'ROI %',
+                                    data: sortedRuns.map(r => r.roi),
+                                    borderColor: '#4ade80',
+                                    backgroundColor: 'rgba(74, 222, 128, 0.1)',
+                                    tension: 0.3,
+                                    fill: true
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        ticks: { callback: value => value + '%' }
+                                    }
+                                }
+                            }
+                        });
+                    }
+
+                    // Runs List
+                    const runsList = data.runs.map((run, i) => `
+                        <div style="padding: 15px; background: rgba(255,255,255,0.03); border-radius: 8px; margin-bottom: 10px; border-left: 3px solid ${run.roi >= 0 ? '#4ade80' : '#f87171'};">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <div style="font-weight: 600; color: #e2e8f0; margin-bottom: 5px;">Run #${data.runs.length - i} - ${new Date(run.timestamp).toLocaleString()}</div>
+                                    <div style="font-size: 0.85em; color: #94a3b8;">Trades: ${run.trade_count} | Winrate: ${run.winrate.toFixed(1)}%</div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-size: 1.3em; font-weight: 700; color: ${run.roi >= 0 ? '#4ade80' : '#f87171'};">${run.roi >= 0 ? '+' : ''}${run.roi.toFixed(2)}%</div>
+                                    <div style="font-size: 0.85em; color: #64748b;">Sharpe: ${run.sharpe.toFixed(2)}</div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+
+                    document.getElementById('backtestRunsList').innerHTML = runsList;
+
+                    console.log(`✅ Backtest Monitor rendered: ${data.runs.length} runs`);
+                } catch (e) {
+                    console.error('Backtest Monitor Error:', e);
+                }
+            }
+
+            // Run Backtest (trigger server endpoint)
+            async function runBacktestNow() {
+                if (confirm('⚠️ This will run a full backtest on historical data. This may take 10-30 seconds. Continue?')) {
+                    try {
+                        document.getElementById('bt-roi').textContent = 'Running...';
+                        const res = await fetch('/api/run-backtest', { method: 'POST' });
+                        const data = await res.json();
+
+                        if (data.success) {
+                            alert(`✅ Backtest complete!\nROI: ${data.result.roi.toFixed(2)}%\nSharpe: ${data.result.sharpe.toFixed(2)}`);
+                            renderBacktestMonitor(); // Refresh display
+                        } else {
+                            alert('❌ Backtest failed: ' + (data.error || 'Unknown error'));
+                        }
+                    } catch (e) {
+                        console.error('Backtest execution error:', e);
+                        alert('❌ Error running backtest');
+                    }
                 }
             }
 
