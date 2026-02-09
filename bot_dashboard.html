@@ -399,7 +399,12 @@
                 </div>
                 <div class="status-badge" id="priceTrackerBadge"
                     style="background: rgba(139, 92, 246, 0.1); border-color: rgba(139, 92, 246, 0.3);">
-                    <div class="pulse-dot" style="background: #8b5cf6;"></div>
+                    <div class="pulse-dot" style="background: #8b5cf6;">
+                        <svg class="pulse-dot-timer" id="priceTrackerTimer">
+                            <circle cx="8" cy="8" r="6"
+                                style="stroke: #8b5cf6; stroke-dasharray: 37.7; stroke-dashoffset: 0;"></circle>
+                        </svg>
+                    </div>
                     <span>PRICES: <span id="priceTrackerStatus">STARTING...</span></span>
                 </div>
             </div>
@@ -1310,6 +1315,8 @@
                             // Update Price Tracker Badge
                             const priceTrackerBadge = document.getElementById('priceTrackerBadge');
                             const priceTrackerStatus = document.getElementById('priceTrackerStatus');
+                            const priceTrackerTimer = document.querySelector('#priceTrackerTimer circle');
+
                             if (priceTrackerBadge && priceTrackerStatus) {
                                 const lastUpdate = botData.activeTrades
                                     .map(t => t.lastPriceUpdate)
@@ -1319,6 +1326,18 @@
 
                                 if (lastUpdate) {
                                     const minutesAgo = Math.floor((Date.now() - new Date(lastUpdate).getTime()) / 60000);
+                                    const secondsAgo = Math.floor((Date.now() - new Date(lastUpdate).getTime()) / 1000);
+                                    const UPDATE_INTERVAL_SECONDS = 5 * 60; // 5 minutes
+
+                                    // Calculate progress (0 = just updated, 300 = 5min elapsed)
+                                    const progress = Math.min(secondsAgo / UPDATE_INTERVAL_SECONDS, 1);
+                                    const circumference = 37.7; // 2 * PI * radius (6)
+                                    const offset = circumference * (1 - progress);
+
+                                    if (priceTrackerTimer) {
+                                        priceTrackerTimer.style.strokeDashoffset = offset;
+                                    }
+
                                     if (minutesAgo < 6) {
                                         priceTrackerStatus.textContent = `LIVE (${minutesAgo}m ago)`;
                                         priceTrackerBadge.style.borderColor = 'rgba(139, 92, 246, 0.5)';
@@ -1328,6 +1347,9 @@
                                     }
                                 } else {
                                     priceTrackerStatus.textContent = 'WAITING...';
+                                    if (priceTrackerTimer) {
+                                        priceTrackerTimer.style.strokeDashoffset = 37.7; // Empty circle
+                                    }
                                 }
                             }
                         }
