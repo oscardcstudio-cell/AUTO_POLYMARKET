@@ -5,6 +5,7 @@
   "totalTrades": 64,
   "winningTrades": 0,
   "losingTrades": 0,
+  "closedTrades": [],
   "activeTrades": [
     {
       "id": "mlee51zfdk2ez2m0x0h",
@@ -1325,7 +1326,6 @@
       "maxReturn": 0.051980198019802186
     }
   ],
-  "closedTrades": [],
   "capitalHistory": [
     {
       "t": "2026-02-07T12:56:13.989Z",

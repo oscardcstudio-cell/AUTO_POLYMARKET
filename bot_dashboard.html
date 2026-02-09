@@ -1078,21 +1078,26 @@
 
                     // --- 2. PERFORMANCE ANALYTICS ---
                     try {
-                        const closed = botData.closedTrades || [];
-                        const wins = closed.filter(t => t.profit > 0);
-                        const losses = closed.filter(t => t.profit <= 0);
+                        // Fetch closed trades from the trade history API (same source as Trade History section)
+                        const historyResponse = await fetch('/api/trade-history');
+                        const closed = await historyResponse.json();
+
+                        // Calculate profits for trades that have them
+                        const tradesWithProfit = closed.filter(t => t.profit !== undefined && t.profit !== null);
+                        const wins = tradesWithProfit.filter(t => t.profit > 0);
+                        const losses = tradesWithProfit.filter(t => t.profit <= 0);
 
                         // Update Performance Analytics Status Indicator
                         const perfStatus = document.getElementById('perfAnalyticsStatus');
-                        if (closed.length === 0) {
+                        if (tradesWithProfit.length === 0) {
                             perfStatus.textContent = "⏳ Waiting for first closed trade to calculate metrics...";
                             perfStatus.style.color = "#f59e0b";
                         } else {
-                            perfStatus.textContent = `✓ Based on ${closed.length} completed trade${closed.length > 1 ? 's' : ''}`;
+                            perfStatus.textContent = `✓ Based on ${tradesWithProfit.length} completed trade${tradesWithProfit.length > 1 ? 's' : ''}`;
                             perfStatus.style.color = "#4ade80";
                         }
 
-                        const avgProfit = closed.length > 0 ? (closed.reduce((a, b) => a + b.profit, 0) / closed.length) : 0;
+                        const avgProfit = tradesWithProfit.length > 0 ? (tradesWithProfit.reduce((a, b) => a + (b.profit || 0), 0) / tradesWithProfit.length) : 0;
                         const largestWin = wins.length > 0 ? Math.max(...wins.map(t => t.profit)) : 0;
                         const largestLoss = losses.length > 0 ? Math.min(...losses.map(t => t.profit)) : 0;
 
@@ -1100,14 +1105,15 @@
                         document.getElementById('avgProfit').style.color = avgProfit >= 0 ? '#4ade80' : '#f87171';
                         document.getElementById('largestWin').textContent = `$${largestWin.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
                         document.getElementById('largestLoss').textContent = `$${largestLoss.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+
                         // Duration
-                        if (closed.length > 0) {
-                            const totalDuration = closed.reduce((acc, t) => {
+                        if (tradesWithProfit.length > 0) {
+                            const totalDuration = tradesWithProfit.reduce((acc, t) => {
                                 const start = new Date(t.startTime || t.timestamp).getTime();
-                                const end = new Date(t.endTime || t.closedAt).getTime();
+                                const end = new Date(t.endTime || t.closedAt || t.timestamp).getTime();
                                 return acc + (end - start);
                             }, 0);
-                            const avgDurationMin = (totalDuration / closed.length) / 60000;
+                            const avgDurationMin = (totalDuration / tradesWithProfit.length) / 60000;
                             document.getElementById('avgDuration').textContent = avgDurationMin < 60 ? `${Math.round(avgDurationMin)}m` : `${(avgDurationMin / 60).toFixed(1)}h`;
                         } else {
                             document.getElementById('avgDuration').textContent = '-';
