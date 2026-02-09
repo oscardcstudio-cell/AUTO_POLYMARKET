@@ -14,18 +14,27 @@ const router = express.Router();
 // --- API ENDPOINTS ---
 
 router.get('/bot-data', (req, res) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
+    try {
+        res.setHeader('Access-Control-Allow-Origin', '*');
 
-    // Derived stats for dashboard
-    const profit = botState.capital - botState.startingCapital;
-    const profitPercent = ((profit) / botState.startingCapital * 100).toFixed(2);
+        // Derived stats for dashboard
+        const profit = botState.capital - botState.startingCapital;
+        const profitPercent = ((profit) / botState.startingCapital * 100).toFixed(2);
 
-    const data = {
-        ...botState,
-        profit,
-        profitPercent
-    };
-    res.json(data);
+        // Sanitize response: Exclude heavy data that has its own endpoint (marketCache)
+        // Also exclude deepScanData if it's too large, but it's usually small metadata.
+        const { marketCache, ...lightState } = botState;
+
+        const data = {
+            ...lightState,
+            profit,
+            profitPercent
+        };
+        res.json(data);
+    } catch (error) {
+        console.error("Error serving /bot-data:", error);
+        res.status(500).json({ error: "Internal Server Error serving bot data" });
+    }
 });
 
 // Endpoint pour réinitialiser la simulation

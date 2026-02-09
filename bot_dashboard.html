@@ -405,7 +405,7 @@
                                 style="stroke: #8b5cf6; stroke-dasharray: 37.7; stroke-dashoffset: 0;"></circle>
                         </svg>
                     </div>
-                    <span>PRICES: <span id="priceTrackerStatus">STARTING...</span></span>
+                    <span>PRICES: <span id="priceTrackerStatus">CONNECTING...</span></span>
                 </div>
             </div>
 
@@ -1597,8 +1597,19 @@
                     if (res.ok) {
                         botData = await res.json();
                         updateDashboard();
+                    } else {
+                        throw new Error(`Server Error: ${res.status}`);
                     }
-                } catch (e) { console.error(e); }
+                } catch (e) {
+                    console.error("Fetch Error:", e);
+                    const statusEl = document.getElementById('priceTrackerStatus');
+                    const badge = document.getElementById('priceTrackerBadge');
+                    if (statusEl) {
+                        statusEl.textContent = "OFFLINE (Retrying...)";
+                        statusEl.style.color = "#f87171";
+                    }
+                    if (badge) badge.style.borderColor = "rgba(239, 68, 68, 0.5)";
+                }
             }
 
             async function checkDB() {
