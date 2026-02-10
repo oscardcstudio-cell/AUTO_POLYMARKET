@@ -1881,10 +1881,11 @@
         0.013,
         0.013,
         0.013,
+        0.013,
         0.013
       ],
       "maxReturn": 0,
-      "lastPriceUpdate": "2026-02-10T20:30:04.339Z"
+      "lastPriceUpdate": "2026-02-10T20:31:04.594Z"
     },
     {
       "id": "mle77zlvgmb7euf27ep",
@@ -1939,10 +1940,11 @@
         0.0015,
         0.0015,
         0.0015,
+        0.0015,
         0.0015
       ],
       "maxReturn": 0.03724658180103707,
-      "lastPriceUpdate": "2026-02-10T20:30:04.339Z"
+      "lastPriceUpdate": "2026-02-10T20:31:04.594Z"
     },
     {
       "id": "mle76owl0zrdns0u688a",
@@ -2255,6 +2257,10 @@
     {
       "t": "2026-02-10T20:30:04.378Z",
       "v": 254.5630650021524
+    },
+    {
+      "t": "2026-02-10T20:31:04.638Z",
+      "v": 254.5630650021524
     }
   ],
   "lastPizzaData": {
@@ -2270,7 +2276,7 @@
     "timestamp": "2026-02-10T20:29:03.432Z",
     "slug": "nba-sas-lal-2026-02-10"
   },
-  "lastUpdate": "2026-02-10T20:30:04.385Z",
+  "lastUpdate": "2026-02-10T20:31:04.644Z",
   "logs": [
     {
       "timestamp": "2026-02-10T20:30:03.697Z",
@@ -3436,7 +3442,7 @@
       "endDate": "2026-02-11T20:30:00Z",
       "endDateIso": "2026-02-11",
       "freshScore": 95,
-      "ageHours": "0.1"
+      "ageHours": "0.2"
     },
     {
       "id": "1363786",
@@ -3447,7 +3453,7 @@
       "endDate": "2026-02-11T20:30:00Z",
       "endDateIso": "2026-02-11",
       "freshScore": 95,
-      "ageHours": "0.1"
+      "ageHours": "0.2"
     },
     {
       "id": "1363787",
@@ -3458,7 +3464,7 @@
       "endDate": "2026-02-11T20:30:00Z",
       "endDateIso": "2026-02-11",
       "freshScore": 95,
-      "ageHours": "0.1"
+      "ageHours": "0.2"
     },
     {
       "id": "1363785",
@@ -3469,7 +3475,7 @@
       "endDate": "2026-02-11T20:30:00Z",
       "endDateIso": "2026-02-11",
       "freshScore": 95,
-      "ageHours": "0.1"
+      "ageHours": "0.2"
     },
     {
       "id": "1363773",
@@ -3529,19 +3535,19 @@
   "sectorStats": {
     "politics": {
       "count": 48,
-      "lastActivity": "2026-02-10T20:30:04.385Z"
+      "lastActivity": "2026-02-10T20:31:04.644Z"
     },
     "economics": {
       "count": 24,
-      "lastActivity": "2026-02-10T20:30:04.385Z"
+      "lastActivity": "2026-02-10T20:31:04.644Z"
     },
     "tech": {
       "count": 12,
-      "lastActivity": "2026-02-10T20:30:04.385Z"
+      "lastActivity": "2026-02-10T20:31:04.644Z"
     },
     "trending": {
       "count": 57,
-      "lastActivity": "2026-02-10T20:30:04.386Z"
+      "lastActivity": "2026-02-10T20:31:04.644Z"
     }
   },
   "sectorActivity": {
@@ -3649,6 +3655,15 @@
     ],
     "economics": [
       {
+        "id": "mlh230zifvi1k7ifwfw",
+        "timestamp": "2026-02-10T20:31:04.638Z",
+        "type": "ANALYSIS",
+        "message": "Observation: 4 marchés scannés.",
+        "data": {
+          "status": "idle"
+        }
+      },
+      {
         "id": "mlh21qhmb7oyfpw9kgk",
         "timestamp": "2026-02-10T20:30:04.378Z",
         "type": "ANALYSIS",
@@ -3732,19 +3747,18 @@
           "market": "U.S. Recession in 2024?",
           "price": "0.71"
         }
-      },
-      {
-        "id": "mlfpqk381i7zbaowa0p",
-        "timestamp": "2026-02-09T21:57:41.300Z",
-        "type": "TRADE",
-        "message": "📉 Trade Opened: $100 on YES",
-        "data": {
-          "market": "BitBoy vs. Smic - Crypto Fight Night",
-          "price": "0.73"
-        }
       }
     ],
     "tech": [
+      {
+        "id": "mlh230zidvtoz45cmaf",
+        "timestamp": "2026-02-10T20:31:04.638Z",
+        "type": "ANALYSIS",
+        "message": "Observation: 2 marchés scannés.",
+        "data": {
+          "status": "idle"
+        }
+      },
       {
         "id": "mlh21qhm3qmf8kcghue",
         "timestamp": "2026-02-10T20:30:04.378Z",
@@ -3825,18 +3839,36 @@
         "data": {
           "status": "idle"
         }
-      },
-      {
-        "id": "mle8z8opbdi6vt0o4zm",
-        "timestamp": "2026-02-08T21:20:46.777Z",
-        "type": "ANALYSIS",
-        "message": "Observation: 3 marchés scannés.",
-        "data": {
-          "status": "idle"
-        }
       }
     ],
     "trending": [
+      {
+        "id": "mlh230zirlmu79a9rcc",
+        "timestamp": "2026-02-10T20:31:04.638Z",
+        "type": "ANALYSIS",
+        "message": "Observation: 8 marchés scannés.",
+        "data": {
+          "status": "idle"
+        }
+      },
+      {
+        "id": "mlh230ykcybtw60mfr8",
+        "timestamp": "2026-02-10T20:31:04.604Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: Clippers vs. Rockets...",
+        "data": {
+          "score": "100"
+        }
+      },
+      {
+        "id": "mlh230ykhdnos11u15g",
+        "timestamp": "2026-02-10T20:31:04.604Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: Spurs vs. Lakers...",
+        "data": {
+          "score": "100"
+        }
+      },
       {
         "id": "mlh21qhm2kulp1zqx64",
         "timestamp": "2026-02-10T20:30:04.378Z",
@@ -3898,33 +3930,6 @@
         "message": "High Alpha: Clippers vs. Rockets...",
         "data": {
           "score": "100"
-        }
-      },
-      {
-        "id": "mlh20fgntrhg13h3pzo",
-        "timestamp": "2026-02-10T20:29:03.431Z",
-        "type": "ANALYSIS",
-        "message": "High Alpha: Spurs vs. Lakers...",
-        "data": {
-          "score": "100"
-        }
-      },
-      {
-        "id": "mlh20ff0owpupw6j4lc",
-        "timestamp": "2026-02-10T20:29:03.372Z",
-        "type": "ANALYSIS",
-        "message": "High Alpha: Spurs vs. Lakers...",
-        "data": {
-          "score": "100"
-        }
-      },
-      {
-        "id": "mlh0f38mm9qxopyljlp",
-        "timestamp": "2026-02-10T19:44:28.198Z",
-        "type": "ANALYSIS",
-        "message": "Observation: 9 marchés scannés.",
-        "data": {
-          "status": "idle"
         }
       }
     ]
@@ -5266,5 +5271,5 @@
       "_alphaScore": 40
     }
   ],
-  "lastHeartbeat": "2026-02-10T20:29:03.450Z"
+  "lastHeartbeat": "2026-02-10T20:30:04.398Z"
 }
