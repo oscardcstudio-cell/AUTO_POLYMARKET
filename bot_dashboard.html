@@ -1051,9 +1051,9 @@
                                 borderColor: color,
                                 borderWidth: 2,
                                 pointRadius: 0,
-                                tension: 0, // FIXED: No interpolation for cleaner lines
+                                tension: 0.3, // RESTORED: Smooth curves as requested
                                 fill: false,
-                                clip: false // CRITICAL: Prevent clipping
+                                clip: false
                             },
                             {
                                 data: Array(history.length).fill(entry),
@@ -1070,14 +1070,14 @@
                         responsive: true,
                         maintainAspectRatio: false,
                         layout: {
-                            padding: 10 // Increased padding
+                            padding: 10 // Keep padding to avoid cut-off
                         },
                         plugins: { legend: { display: false }, tooltip: { enabled: false } },
                         scales: {
                             x: { display: false },
                             y: {
                                 display: false,
-                                grace: '10%' // Add breathing room
+                                grace: '5%' // Reduced slightly but kept to avoid edge clipping
                             }
                         }
                     }
