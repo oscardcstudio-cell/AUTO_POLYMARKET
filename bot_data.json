@@ -2380,6 +2380,10 @@
     {
       "t": "2026-02-10T20:57:24.355Z",
       "v": 287.937045168426
+    },
+    {
+      "t": "2026-02-10T20:58:25.129Z",
+      "v": 287.937045168426
     }
   ],
   "lastPizzaData": {
@@ -2395,7 +2399,7 @@
     "timestamp": "2026-02-10T20:54:22.210Z",
     "slug": "nba-sas-lal-2026-02-10"
   },
-  "lastUpdate": "2026-02-10T20:58:25.015Z",
+  "lastUpdate": "2026-02-10T20:58:25.136Z",
   "logs": [
     {
       "timestamp": "2026-02-10T20:54:29.347Z",
@@ -3579,7 +3583,7 @@
   ],
   "momentumData": {},
   "apiStatus": {
-    "gamma": "DEGRADED",
+    "gamma": "ONLINE",
     "clob": "DEGRADED",
     "pizzint": "ONLINE",
     "alpha": "ONLINE"
@@ -3613,15 +3617,6 @@
       "reason": "YES Alpha 75%"
     },
     {
-      "id": "1356707",
-      "side": "YES",
-      "slug": "bitcoin-up-or-down-february-10-3pm-et",
-      "question": "Bitcoin Up or Down - February 10, 3PM ET",
-      "price": "0.025",
-      "alpha": 65,
-      "reason": "YES Alpha 65%"
-    },
-    {
       "id": "528788",
       "side": "YES",
       "slug": "rojas-guilty-in-texas-illegal-abortion-case",
@@ -3636,9 +3631,8 @@
       "id": "1363812",
       "question": "Solana Up or Down - February 11, 3:45PM-4:00PM ET",
       "slug": "sol-updown-15m-1770842700",
-      "volume24hr": 0,
-      "liquidityNum": 0,
-      "volumeNum": 0,
+      "outcomePrices": "[\"0.5\", \"0.5\"]",
+      "liquidityNum": 6673.803,
       "endDate": "2026-02-11T21:00:00Z",
       "endDateIso": "2026-02-11",
       "freshScore": 95,
@@ -3648,9 +3642,8 @@
       "id": "1363811",
       "question": "Bitcoin Up or Down - February 11, 3:45PM-4:00PM ET",
       "slug": "btc-updown-15m-1770842700",
-      "volume24hr": 0,
-      "liquidityNum": 0,
-      "volumeNum": 0,
+      "outcomePrices": "[\"0.5\", \"0.5\"]",
+      "liquidityNum": 12151.518,
       "endDate": "2026-02-11T21:00:00Z",
       "endDateIso": "2026-02-11",
       "freshScore": 95,
@@ -3660,9 +3653,8 @@
       "id": "1363810",
       "question": "XRP Up or Down - February 11, 3:45PM-4:00PM ET",
       "slug": "xrp-updown-15m-1770842700",
-      "volume24hr": 0,
-      "liquidityNum": 0,
-      "volumeNum": 0,
+      "outcomePrices": "[\"0.5\", \"0.5\"]",
+      "liquidityNum": 6186.563,
       "endDate": "2026-02-11T21:00:00Z",
       "endDateIso": "2026-02-11",
       "freshScore": 95,
@@ -3672,9 +3664,8 @@
       "id": "1363809",
       "question": "Ethereum Up or Down - February 11, 3:45PM-4:00PM ET",
       "slug": "eth-updown-15m-1770842700",
-      "volume24hr": 0,
-      "liquidityNum": 0,
-      "volumeNum": 0,
+      "outcomePrices": "[\"0.5\", \"0.5\"]",
+      "liquidityNum": 9316.4126,
       "endDate": "2026-02-11T21:00:00Z",
       "endDateIso": "2026-02-11",
       "freshScore": 95,
@@ -3685,11 +3676,11 @@
       "question": "Solana Up or Down - February 11, 3:30PM-3:45PM ET",
       "slug": "sol-updown-15m-1770841800",
       "outcomePrices": "[\"0.5\", \"0.5\"]",
-      "liquidityNum": 6175.6494,
+      "liquidityNum": 6179.3994,
       "endDate": "2026-02-11T20:45:00Z",
       "endDateIso": "2026-02-11",
       "freshScore": 95,
-      "ageHours": "0.3"
+      "ageHours": "0.4"
     }
   ],
   "keywordScores": {},
@@ -3738,19 +3729,19 @@
   "sectorStats": {
     "politics": {
       "count": 48,
-      "lastActivity": "2026-02-10T20:58:25.015Z"
+      "lastActivity": "2026-02-10T20:58:25.136Z"
     },
     "economics": {
       "count": 24,
-      "lastActivity": "2026-02-10T20:58:25.015Z"
+      "lastActivity": "2026-02-10T20:58:25.136Z"
     },
     "tech": {
       "count": 10,
-      "lastActivity": "2026-02-10T20:58:25.015Z"
+      "lastActivity": "2026-02-10T20:58:25.136Z"
     },
     "trending": {
       "count": 57,
-      "lastActivity": "2026-02-10T20:58:25.015Z"
+      "lastActivity": "2026-02-10T20:58:25.136Z"
     }
   },
   "sectorActivity": {
@@ -3858,6 +3849,15 @@
     ],
     "economics": [
       {
+        "id": "mlh326spmr3o45lki2",
+        "timestamp": "2026-02-10T20:58:25.129Z",
+        "type": "ANALYSIS",
+        "message": "Observation: 4 marchés scannés.",
+        "data": {
+          "status": "idle"
+        }
+      },
+      {
         "id": "mlh30vwj1vhrv7cgjh9",
         "timestamp": "2026-02-10T20:57:24.355Z",
         "type": "ANALYSIS",
@@ -3937,18 +3937,18 @@
         "data": {
           "status": "idle"
         }
-      },
-      {
-        "id": "mlh2p667m0erzfzr1j",
-        "timestamp": "2026-02-10T20:48:17.791Z",
-        "type": "ANALYSIS",
-        "message": "Observation: 4 marchés scannés.",
-        "data": {
-          "status": "idle"
-        }
       }
     ],
     "tech": [
+      {
+        "id": "mlh326spyxmlpgi9kx",
+        "timestamp": "2026-02-10T20:58:25.129Z",
+        "type": "ANALYSIS",
+        "message": "Observation: 2 marchés scannés.",
+        "data": {
+          "status": "idle"
+        }
+      },
       {
         "id": "mlh30vwjny1ywrkqg58",
         "timestamp": "2026-02-10T20:57:24.355Z",
@@ -4029,18 +4029,36 @@
         "data": {
           "status": "idle"
         }
-      },
-      {
-        "id": "mlh2p6674es7oohe8cv",
-        "timestamp": "2026-02-10T20:48:17.791Z",
-        "type": "ANALYSIS",
-        "message": "Observation: 2 marchés scannés.",
-        "data": {
-          "status": "idle"
-        }
       }
     ],
     "trending": [
+      {
+        "id": "mlh326spmtux9eiqzl9",
+        "timestamp": "2026-02-10T20:58:25.129Z",
+        "type": "ANALYSIS",
+        "message": "Observation: 8 marchés scannés.",
+        "data": {
+          "status": "idle"
+        }
+      },
+      {
+        "id": "mlh326pr215ignxt8iw",
+        "timestamp": "2026-02-10T20:58:25.023Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: Clippers vs. Rockets...",
+        "data": {
+          "score": "100"
+        }
+      },
+      {
+        "id": "mlh326pr1zmkmqe52dj",
+        "timestamp": "2026-02-10T20:58:25.023Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: Spurs vs. Lakers...",
+        "data": {
+          "score": "100"
+        }
+      },
       {
         "id": "mlh30vwiqud2euzc6v",
         "timestamp": "2026-02-10T20:57:24.354Z",
@@ -4098,33 +4116,6 @@
       {
         "id": "mlh2ya8rfibby5wkpvu",
         "timestamp": "2026-02-10T20:55:22.971Z",
-        "type": "ANALYSIS",
-        "message": "Observation: 8 marchés scannés.",
-        "data": {
-          "status": "idle"
-        }
-      },
-      {
-        "id": "mlh2ya5o6rcjw4t19y8",
-        "timestamp": "2026-02-10T20:55:22.860Z",
-        "type": "ANALYSIS",
-        "message": "High Alpha: Clippers vs. Rockets...",
-        "data": {
-          "score": "100"
-        }
-      },
-      {
-        "id": "mlh2ya5oeg2vzmpi38b",
-        "timestamp": "2026-02-10T20:55:22.860Z",
-        "type": "ANALYSIS",
-        "message": "High Alpha: Spurs vs. Lakers...",
-        "data": {
-          "score": "100"
-        }
-      },
-      {
-        "id": "mlh2wzcygh6vntsekpr",
-        "timestamp": "2026-02-10T20:54:22.210Z",
         "type": "ANALYSIS",
         "message": "Observation: 8 marchés scannés.",
         "data": {
