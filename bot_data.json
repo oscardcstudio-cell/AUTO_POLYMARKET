@@ -2339,8 +2339,13 @@
     "timestamp": "2026-02-10T20:39:10.813Z",
     "slug": "nba-sas-lal-2026-02-10"
   },
-  "lastUpdate": "2026-02-10T20:43:13.754Z",
+  "lastUpdate": "2026-02-10T20:44:14.431Z",
   "logs": [
+    {
+      "timestamp": "2026-02-10T20:44:03.003Z",
+      "message": "🔄 Updating prices for 99 active trades...",
+      "type": "info"
+    },
     {
       "timestamp": "2026-02-10T20:39:28.585Z",
       "message": "✅ Updated 0/99 trade prices",
@@ -3483,7 +3488,7 @@
   ],
   "momentumData": {},
   "apiStatus": {
-    "gamma": "ONLINE",
+    "gamma": "DEGRADED",
     "clob": "DEGRADED",
     "pizzint": "ONLINE",
     "alpha": "ONLINE"
@@ -3638,19 +3643,19 @@
   "sectorStats": {
     "politics": {
       "count": 48,
-      "lastActivity": "2026-02-10T20:43:13.754Z"
+      "lastActivity": "2026-02-10T20:44:14.431Z"
     },
     "economics": {
       "count": 24,
-      "lastActivity": "2026-02-10T20:43:13.754Z"
+      "lastActivity": "2026-02-10T20:44:14.431Z"
     },
     "tech": {
       "count": 10,
-      "lastActivity": "2026-02-10T20:43:13.754Z"
+      "lastActivity": "2026-02-10T20:44:14.431Z"
     },
     "trending": {
       "count": 57,
-      "lastActivity": "2026-02-10T20:43:13.754Z"
+      "lastActivity": "2026-02-10T20:44:14.431Z"
     }
   },
   "sectorActivity": {
@@ -5370,5 +5375,5 @@
       "_alphaScore": 40
     }
   ],
-  "lastHeartbeat": "2026-02-10T20:42:12.998Z"
+  "lastHeartbeat": "2026-02-10T20:43:13.768Z"
 }
