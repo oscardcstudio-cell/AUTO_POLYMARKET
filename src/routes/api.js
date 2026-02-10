@@ -46,7 +46,9 @@ router.post('/reset', (req, res) => {
     // We could add a reset() method to StateManager but this works too
     Object.assign(botState, {
         startTime: new Date().toISOString(),
-        capital: CONFIG.STARTING_CAPITAL,
+        startTime: new Date().toISOString(),
+        capital: (CONFIG && CONFIG.STARTING_CAPITAL) ? CONFIG.STARTING_CAPITAL : 1000,
+        totalTrades: 0,
         totalTrades: 0,
         winningTrades: 0,
         losingTrades: 0,
@@ -95,7 +97,8 @@ router.post('/reset', (req, res) => {
 
     stateManager.save();
 
-    res.json({ success: true, message: "Simulation reset successful" });
+    console.log(`✅ RESET COMPLETE. Capital: $${botState.capital}`);
+    res.json({ success: true, message: "Simulation reset successful", capital: botState.capital });
 });
 
 // Health check endpoint pour Railway
