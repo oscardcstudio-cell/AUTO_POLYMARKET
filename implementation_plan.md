@@ -41,8 +41,10 @@ Une interface web simple pour contrôler le bot.
     - Logs des activités ("Signal détecté", "Ordre placé").
     - Affichage du solde et des positions en cours.
     - [x] Status Badges (Alpha, Gamma, Price)
+    - [x] Status Badges (Alpha, Gamma, Price)
     - [x] Backtest Monitor
     - [x] Debug Screenshots
+    - [x] Disable Auto-Git Sync (Stability)
 
 ## Architecture Technique (Actuelle)
 - **Langage** : Node.js (JavaScript/ES Modules)
