@@ -1,10 +1,10 @@
 {
   "startTime": "2026-02-07T12:55:54.888Z",
-  "capital": 200,
+  "capital": 254.5630650021524,
   "startingCapital": 1000,
   "totalTrades": 102,
   "winningTrades": 0,
-  "losingTrades": 0,
+  "losingTrades": 1,
   "activeTrades": [
     {
       "id": "mlfq417uti9k5q0yavd",
@@ -1995,7 +1995,9 @@
         0.495
       ],
       "maxReturn": 0.010101010101010211
-    },
+    }
+  ],
+  "closedTrades": [
     {
       "id": "mle75e5fayprwlibg9f",
       "marketId": "528788",
@@ -2006,7 +2008,7 @@
       "entryPrice": 0.0808,
       "startTime": "2026-02-08T20:29:34.563Z",
       "shares": 1399.0529487731383,
-      "status": "OPEN",
+      "status": "CLOSED",
       "confidence": 0.6,
       "reasons": [
         "🧙 Wizard Follow: High Alpha (40%)"
@@ -2050,13 +2052,18 @@
         0.08,
         0.036,
         0.0385,
+        0.039,
         0.039
       ],
       "maxReturn": 0.051980198019802186,
-      "lastPriceUpdate": "2026-02-10T20:29:03.340Z"
+      "lastPriceUpdate": "2026-02-10T20:30:03.696Z",
+      "endTime": "2026-02-10T20:30:03.697Z",
+      "exitPrice": 0.039,
+      "finalValue": 54.56306500215239,
+      "pnl": -58.48041325871717,
+      "closeReason": "⏱️ TIMEOUT: 48.0h (PnL: -51.7%)"
     }
   ],
-  "closedTrades": [],
   "capitalHistory": [
     {
       "t": "2026-02-07T12:56:13.989Z",
@@ -2256,8 +2263,23 @@
     "timestamp": "2026-02-10T20:29:03.432Z",
     "slug": "nba-sas-lal-2026-02-10"
   },
-  "lastUpdate": "2026-02-10T20:29:03.441Z",
+  "lastUpdate": "2026-02-10T20:30:03.698Z",
   "logs": [
+    {
+      "timestamp": "2026-02-10T20:30:03.697Z",
+      "message": "🏁 TRADE CLOSED: Rojas guilty in Texa... | PnL: $-58.48 (⏱️ TIMEOUT: 48.0h (PnL: -51.7%))",
+      "type": "warning"
+    },
+    {
+      "timestamp": "2026-02-10T20:30:03.696Z",
+      "message": "⏱️ TIMEOUT: 48.0h (PnL: -51.7%) - Freeing capital for new opportunities",
+      "type": "info"
+    },
+    {
+      "timestamp": "2026-02-10T20:29:26.677Z",
+      "message": "✅ Updated 0/102 trade prices",
+      "type": "info"
+    },
     {
       "timestamp": "2026-02-10T20:29:03.211Z",
       "message": "🌊 LANCEMENT DEEP SCAN (1000+ marchés)...",
@@ -3345,7 +3367,7 @@
   ],
   "momentumData": {},
   "apiStatus": {
-    "gamma": "ONLINE",
+    "gamma": "DEGRADED",
     "clob": "DEGRADED",
     "pizzint": "ONLINE",
     "alpha": "ONLINE"
@@ -3500,19 +3522,19 @@
   "sectorStats": {
     "politics": {
       "count": 48,
-      "lastActivity": "2026-02-10T20:29:03.441Z"
+      "lastActivity": "2026-02-10T20:30:03.698Z"
     },
     "economics": {
       "count": 24,
-      "lastActivity": "2026-02-10T20:29:03.441Z"
+      "lastActivity": "2026-02-10T20:30:03.698Z"
     },
     "tech": {
       "count": 12,
-      "lastActivity": "2026-02-10T20:29:03.441Z"
+      "lastActivity": "2026-02-10T20:30:03.698Z"
     },
     "trending": {
-      "count": 58,
-      "lastActivity": "2026-02-10T20:29:03.441Z"
+      "count": 57,
+      "lastActivity": "2026-02-10T20:30:03.698Z"
     }
   },
   "sectorActivity": {
@@ -3810,6 +3832,15 @@
     ],
     "trending": [
       {
+        "id": "mlh21pypnrycf0s3fe",
+        "timestamp": "2026-02-10T20:30:03.697Z",
+        "type": "TRADE",
+        "message": "💰 Trade Closed: ⏱️ TIMEOUT: 48.0h (PnL: -51.7%)",
+        "data": {
+          "pnl": "-58.48"
+        }
+      },
+      {
         "id": "mlh20fgps9zyb3gy1td",
         "timestamp": "2026-02-10T20:29:03.433Z",
         "type": "ANALYSIS",
@@ -3890,22 +3921,12 @@
           "market": "Will England win the 2024 Euros?",
           "price": "0.71"
         }
-      },
-      {
-        "id": "mlfpu29ojjvgopu1vum",
-        "timestamp": "2026-02-09T22:00:24.828Z",
-        "type": "TRADE",
-        "message": "🎰 Trade Opened: $100 on YES",
-        "data": {
-          "market": "$GME halted on Monday?",
-          "price": "0.73"
-        }
       }
     ]
   },
   "backlog": [],
-  "profit": -800,
-  "profitPercent": "-80.00",
+  "profit": -745.4369349978476,
+  "profitPercent": "-74.54",
   "marketCache": [
     {
       "id": "1303355",
@@ -5239,5 +5260,6 @@
       "_category": "other",
       "_alphaScore": 40
     }
-  ]
+  ],
+  "lastHeartbeat": "2026-02-10T20:29:03.450Z"
 }
