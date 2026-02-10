@@ -10,7 +10,8 @@ L'objectif est de récupérer les données en temps réel (ou quasi réel) de `p
 - [ ] **Implémentation** :
     - Utiliser `puppeteer` ou `cheerio`/`axios` pour lire les données.
     - Extraire les indicateurs clés (ex: "Doughcon Level" ou autre métrique spécifique).
-    - Mettre en place un système de polling (vérification toutes les X secondes).
+    - Extraire les indicateurs clés (ex: "Doughcon Level" ou autre métrique spécifique).
+    - [x] Mettre en place un système de polling (vérification toutes les X secondes).
 
 ## Phase 2 : Connexion Polymarket (Le "Trader")
 L'objectif est de pouvoir exécuter des ordres sur Polymarket via code.
@@ -36,7 +37,12 @@ Une interface web simple pour contrôler le bot.
 - [ ] **Fonctionnalités** :
     - Bouton Start/Stop.
     - Logs des activités ("Signal détecté", "Ordre placé").
+    - Bouton Start/Stop.
+    - Logs des activités ("Signal détecté", "Ordre placé").
     - Affichage du solde et des positions en cours.
+    - [x] Status Badges (Alpha, Gamma, Price)
+    - [x] Backtest Monitor
+    - [x] Debug Screenshots
 
 ## Architecture Technique (Actuelle)
 - **Langage** : Node.js (JavaScript/ES Modules)
