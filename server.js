@@ -165,6 +165,7 @@ async function mainLoop() {
                 // Run AI Feedback Analysis
                 if (botState.capitalHistory.length % 20 === 0) { // Less frequent
                     await feedbackLoop.analyzePerformance();
+                    await feedbackLoop.runAutonomousBacktest();
                 }
             }
 

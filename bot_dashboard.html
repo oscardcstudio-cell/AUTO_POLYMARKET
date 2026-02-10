@@ -581,7 +581,14 @@
                         style="background: var(--accent-blue); color: white; border: none;">
                         🚀 Run Backtest Now
                     </button>
+                    <div id="backtestConsole"
+                        style="display:none; margin-top: 20px; text-align: left; background: #0f172a; padding: 15px; border-radius: 8px; font-family: monospace; font-size: 0.8em; color: #cbd5e1; max-height: 300px; overflow-y: auto; border: 1px solid var(--border);">
+                    </div>
                 </div>
+            </div>
+            <!-- Console for Top-Level Button too -->
+            <div id="backtestConsoleMain"
+                style="display:none; margin-top: 20px; background: #0f172a; padding: 15px; border-radius: 8px; font-family: monospace; font-size: 0.8em; color: #cbd5e1; max-height: 400px; overflow-y: auto; border: 1px solid var(--border);">
             </div>
         </div>
     </div>
@@ -1303,12 +1310,39 @@
                     try {
                         const tradeLogsList = document.getElementById('tradeActivityLogs');
                         if (tradeLogsList && botData.logs && botData.logs.length > 0) {
-                            const tradeLogs = botData.logs.filter(l => l.type === 'trade');
+                            // Filter for Trades AND Closures/Resolutions
+                            const tradeLogs = botData.logs.filter(l =>
+                                l.type === 'trade' ||
+                                l.message.includes('TRADE CLOSED') ||
+                                l.message.includes('Trade gagné') ||
+                                l.message.includes('Trade perdu')
+                            );
+
                             if (tradeLogs.length > 0) {
-                                tradeLogsList.innerHTML = tradeLogs.slice(0, 15).map(l => {
-                                    const isBuy = l.message.includes('BUY') || l.message.includes('YES') || l.message.includes('✅');
-                                    const color = isBuy ? '#22c55e' : '#f59e0b'; // Green or Orange/Red
-                                    const icon = isBuy ? '🟢 BUY' : '🔴 SELL';
+                                tradeLogsList.innerHTML = tradeLogs.slice(0, 20).map(l => {
+                                    let color = '#64748b'; // Default
+                                    let icon = '📝 LOG';
+
+                                    // Detect Type
+                                    const isBuy = l.message.includes('OPENED') || l.message.includes('BUY') || (l.type === 'trade' && l.message.includes('✅'));
+                                    const isWin = l.message.includes('gagné') || l.message.includes('WIN');
+                                    const isLoss = l.message.includes('perdu') || l.message.includes('LOST');
+                                    const isClose = l.message.includes('CLOSED') || l.message.includes('SOLD');
+
+                                    if (isBuy) {
+                                        color = '#22c55e'; // Green
+                                        icon = '🟢 BUY';
+                                    } else if (isWin) {
+                                        color = '#4ade80'; // Bright Green
+                                        icon = '🏆 WIN';
+                                    } else if (isLoss) {
+                                        color = '#ef4444'; // Red
+                                        icon = '💀 LOSS';
+                                    } else if (isClose) {
+                                        color = '#f59e0b'; // Orange
+                                        icon = '🏁 CLOSE';
+                                    }
+
                                     return `<div style="border-left: 3px solid ${color}; padding: 8px 12px; background: rgba(0,0,0,0.2); border-radius: 5px; margin-bottom: 5px;">
                                     <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
                                         <span style="color: ${color}; font-weight: 700; font-size: 0.9em;">${icon}</span>
@@ -1697,19 +1731,39 @@
             // Run Backtest (trigger server endpoint)
             async function runBacktestNow() {
                 if (confirm('⚠️ This will run a full backtest on historical data. This may take 10-30 seconds. Continue?')) {
+                    const consoleDiv = document.getElementById('backtestConsoleMain') || document.getElementById('backtestConsole');
+                    const roiStat = document.getElementById('bt-roi');
+
                     try {
-                        document.getElementById('bt-roi').textContent = 'Running...';
+                        if (roiStat) roiStat.textContent = 'Running...';
+                        if (consoleDiv) {
+                            consoleDiv.style.display = 'block';
+                            consoleDiv.innerHTML = '<span style="color: #60a5fa">⏳ Initializing generic backtest protocol...<br>🔄 Loading historical data...<br>🚀 Running simulation (please wait 10-30s)...</span>';
+                        }
+
                         const res = await fetch('/api/run-backtest', { method: 'POST' });
                         const data = await res.json();
 
                         if (data.success) {
-                            alert(`✅ Backtest complete!\nROI: ${data.result.roi.toFixed(2)}%\nSharpe: ${data.result.sharpe.toFixed(2)}`);
+                            if (consoleDiv) {
+                                // Format output for better readability
+                                const formattedOutput = (data.output || 'No output recorded.')
+                                    .replace(/\n/g, '<br>')
+                                    .replace(/✅/g, '<span style="color:#4ade80">✅</span>')
+                                    .replace(/❌/g, '<span style="color:#f87171">❌</span>')
+                                    .replace(/💎/g, '<span style="color:#60a5fa">💎</span>');
+
+                                consoleDiv.innerHTML = `<div style="color:#4ade80; font-weight:bold; margin-bottom:10px;">✅ Analysis Complete</div>${formattedOutput}`;
+                            }
+                            alert(`✅ Backtest complete!\nROI: ${data.result?.roi?.toFixed(2) || '?'}%`);
                             renderBacktestMonitor(); // Refresh display
                         } else {
+                            if (consoleDiv) consoleDiv.innerHTML += `<br><br><span style="color:#f87171">❌ Error: ${data.error}</span>`;
                             alert('❌ Backtest failed: ' + (data.error || 'Unknown error'));
                         }
                     } catch (e) {
                         console.error('Backtest execution error:', e);
+                        if (consoleDiv) consoleDiv.innerHTML += `<br><br><span style="color:#f87171">❌ System Error: ${e.message}</span>`;
                         alert('❌ Error running backtest');
                     }
                 }
