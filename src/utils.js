@@ -57,3 +57,30 @@ export function saveToGithub(commitMessage = "Auto-save bot state") {
         if (stdout) console.log(`Git Output: ${stdout.trim()}`);
     });
 }
+// --- SYSTEM LOG OVERRIDE (Capture everything for /logs endpoint) ---
+const originalConsoleLog = console.log;
+const originalConsoleError = console.error;
+
+function appendToSystemLog(type, args) {
+    try {
+        const msg = args.map(a => (typeof a === 'object' ? JSON.stringify(a) : String(a))).join(' ');
+        const timestamp = new Date().toISOString();
+        const line = `[${timestamp}] [${type}] ${msg}\n`;
+        const logFile = path.join(process.cwd(), 'logs.txt');
+        fs.appendFileSync(logFile, line);
+    } catch (e) {
+        // Ignored to prevent loop
+    }
+}
+
+console.log = function (...args) {
+    originalConsoleLog.apply(console, args);
+    appendToSystemLog('INFO', args);
+};
+
+console.error = function (...args) {
+    originalConsoleError.apply(console, args);
+    appendToSystemLog('ERROR', args);
+};
+
+export { addLog, saveToGithub };
