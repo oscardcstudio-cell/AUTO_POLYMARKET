@@ -1130,9 +1130,8 @@
 
                     // --- 2. PERFORMANCE ANALYTICS ---
                     try {
-                        // Fetch closed trades from the trade history API (same source as Trade History section)
-                        const historyResponse = await fetch('/api/trade-history');
-                        const closed = await historyResponse.json();
+                        // USE IN-MEMORY STATE (Faster & More Consistent than DB fetch)
+                        const closed = botData.closedTrades || [];
 
                         // Calculate profits for trades that have them
                         const tradesWithProfit = closed.filter(t => t.profit !== undefined && t.profit !== null);
