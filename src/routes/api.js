@@ -33,12 +33,25 @@ router.get('/bot-data', (req, res) => {
         };
 
 
-        // SAFE JSON SERIALIZATION (Handle BigInt)
-        const jsonString = JSON.stringify(data, (key, value) =>
-            typeof value === 'bigint'
-                ? value.toString()
-                : value
-        );
+
+        // ROBUST SAFE SERIALIZATION (BigInt + Circular Refs)
+        const getSafeReplacer = () => {
+            const seen = new WeakSet();
+            return (key, value) => {
+                if (typeof value === "object" && value !== null) {
+                    if (seen.has(value)) {
+                        return '[Circular]';
+                    }
+                    seen.add(value);
+                }
+                if (typeof value === 'bigint') {
+                    return value.toString();
+                }
+                return value;
+            };
+        };
+
+        const jsonString = JSON.stringify(data, getSafeReplacer());
 
         res.setHeader('Content-Type', 'application/json');
         res.send(jsonString);
@@ -56,9 +69,7 @@ router.post('/reset', (req, res) => {
     // We could add a reset() method to StateManager but this works too
     Object.assign(botState, {
         startTime: new Date().toISOString(),
-        startTime: new Date().toISOString(),
         capital: (CONFIG && CONFIG.STARTING_CAPITAL) ? CONFIG.STARTING_CAPITAL : 1000,
-        totalTrades: 0,
         totalTrades: 0,
         winningTrades: 0,
         losingTrades: 0,
