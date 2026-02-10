@@ -104,6 +104,7 @@ router.get('/health', (req, res) => {
         status: 'healthy',
         uptime: process.uptime(),
         timestamp: new Date().toISOString(),
+        lastHeartbeat: botState.lastHeartbeat || null,
         capital: botState.capital,
         activeTrades: botState.activeTrades.length
     });

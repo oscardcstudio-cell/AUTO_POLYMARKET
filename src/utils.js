@@ -6,8 +6,9 @@ import { CONFIG } from './config.js';
 
 // --- LOGGING ---
 export function addLog(botState, message, type = 'info') {
+    const timestamp = new Date().toISOString();
     const logEntry = {
-        timestamp: new Date().toISOString(),
+        timestamp,
         message,
         type
     };
@@ -25,6 +26,15 @@ export function addLog(botState, message, type = 'info') {
     };
     const color = colors[type] || colors.info;
     console.log(color, `[${type.toUpperCase()}] ${message}`);
+
+    // --- PERSISTENT FILE LOGGING (Self-Governance) ---
+    try {
+        const logLine = `[${timestamp}] [${type.toUpperCase()}] ${message}\n`;
+        const logFile = path.join(process.cwd(), 'logs.txt');
+        fs.appendFileSync(logFile, logLine);
+    } catch (e) {
+        console.error("Failed to write to logs.txt:", e);
+    }
 }
 
 // --- GITHUB SYNC ---

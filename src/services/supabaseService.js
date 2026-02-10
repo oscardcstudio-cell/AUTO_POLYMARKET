@@ -201,7 +201,42 @@ export const supabaseService = {
             const activeInvested = activeTrades.reduce((sum, t) => sum + t.amount, 0);
             reconstructedCapital -= activeInvested;
 
-            console.log(`✅ État reconstruit : Capital $${reconstructedCapital.toFixed(2)} | Actifs: ${activeTrades.length} | Fermés: ${closedTrades.length}`);
+            // Fix: Add missing 'shares' field to recovered active trades (needed for PnL calc)
+            activeTrades.forEach(t => {
+                if (!t.shares && t.amount && t.entryPrice && t.entryPrice > 0) {
+                    t.shares = t.amount / t.entryPrice;
+                }
+            });
+
+            // Fix: Generate synthetic logs from recovered trades so the dashboard
+            // Trade Activity Logs section has data to display (instead of "Waiting...")
+            const recoveredLogs = [];
+            allTrades.forEach(trade => {
+                const amount = parseFloat(trade.amount) || 0;
+                const pnl = parseFloat(trade.pnl) || 0;
+
+                if (trade.status === 'OPEN') {
+                    recoveredLogs.push({
+                        timestamp: trade.created_at,
+                        message: `✅ TRADE OPENED: ${trade.side} sur "${(trade.question || '').substring(0, 30)}..." @ $${(trade.entry_price || 0).toFixed(3)} ($${amount.toFixed(2)})`,
+                        type: 'trade'
+                    });
+                } else {
+                    const isWin = pnl > 0;
+                    recoveredLogs.push({
+                        timestamp: trade.created_at,
+                        message: isWin
+                            ? `✅ Trade gagné: ${(trade.question || '').substring(0, 30)}... (+${pnl.toFixed(2)} USDC)`
+                            : `❌ Trade perdu: ${(trade.question || '').substring(0, 30)}... (${pnl.toFixed(2)} USDC)`,
+                        type: isWin ? 'success' : 'warning'
+                    });
+                }
+            });
+
+            // Sort newest first, limit to 200 (same as addLog limit)
+            recoveredLogs.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+            console.log(`✅ État reconstruit : Capital $${reconstructedCapital.toFixed(2)} | Actifs: ${activeTrades.length} | Fermés: ${closedTrades.length} | Logs: ${recoveredLogs.length}`);
 
             return {
                 capital: reconstructedCapital,
@@ -210,6 +245,7 @@ export const supabaseService = {
                 losingTrades,
                 activeTrades,
                 closedTrades: closedTrades.slice(-50).reverse(), // Keep last 50, newest first
+                logs: recoveredLogs.slice(0, 200), // Synthetic logs for dashboard display
                 recovered: true
             };
 

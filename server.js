@@ -8,6 +8,7 @@ import { stateManager, botState } from './src/state.js';
 import { addLog, saveToGithub } from './src/utils.js';
 import apiRoutes from './src/routes/api.js';
 import analyticsRoutes from './src/api/analyticsRoutes.js';
+import debugRoutes from './src/api/debugRoutes.js';
 import { startPriceUpdateLoop } from './src/services/priceUpdateService.js';
 
 // Logic & Signals
@@ -39,6 +40,7 @@ app.use(express.json());
 app.use(express.static(__dirname));
 app.use('/api', apiRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/debug', debugRoutes);
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'bot_dashboard.html'));
@@ -286,6 +288,9 @@ async function mainLoop() {
             saveToGithub();
 
             stateManager.save();
+
+            // Heartbeat for Health Check
+            botState.lastHeartbeat = new Date().toISOString();
 
         } catch (error) {
             console.error('❌ Main Loop Error:', error);
