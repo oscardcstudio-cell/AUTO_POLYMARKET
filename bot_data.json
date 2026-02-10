@@ -2335,7 +2335,7 @@
     "timestamp": "2026-02-10T20:39:10.813Z",
     "slug": "nba-sas-lal-2026-02-10"
   },
-  "lastUpdate": "2026-02-10T20:42:12.972Z",
+  "lastUpdate": "2026-02-10T20:43:13.630Z",
   "logs": [
     {
       "timestamp": "2026-02-10T20:39:28.585Z",
@@ -3479,7 +3479,7 @@
   ],
   "momentumData": {},
   "apiStatus": {
-    "gamma": "ONLINE",
+    "gamma": "DEGRADED",
     "clob": "DEGRADED",
     "pizzint": "ONLINE",
     "alpha": "ONLINE"
@@ -3634,19 +3634,19 @@
   "sectorStats": {
     "politics": {
       "count": 48,
-      "lastActivity": "2026-02-10T20:42:12.972Z"
+      "lastActivity": "2026-02-10T20:43:13.630Z"
     },
     "economics": {
       "count": 24,
-      "lastActivity": "2026-02-10T20:42:12.972Z"
+      "lastActivity": "2026-02-10T20:43:13.630Z"
     },
     "tech": {
       "count": 10,
-      "lastActivity": "2026-02-10T20:42:12.972Z"
+      "lastActivity": "2026-02-10T20:43:13.630Z"
     },
     "trending": {
       "count": 57,
-      "lastActivity": "2026-02-10T20:42:12.972Z"
+      "lastActivity": "2026-02-10T20:43:13.630Z"
     }
   },
   "sectorActivity": {
@@ -5366,5 +5366,5 @@
       "_alphaScore": 40
     }
   ],
-  "lastHeartbeat": "2026-02-10T20:41:12.291Z"
+  "lastHeartbeat": "2026-02-10T20:42:12.998Z"
 }
