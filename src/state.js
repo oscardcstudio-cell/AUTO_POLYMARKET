@@ -62,7 +62,9 @@ export class StateManager {
                 if (buffer.trim().length > 0) {
                     const savedData = JSON.parse(buffer);
                     // Merge saved data with initial structure to ensure new fields exists
-                    this.data = { ...INITIAL_STATE, ...savedData };
+                    // PRESERVE REFERENCE by using Object.assign instead of reassignment
+                    Object.assign(this.data, INITIAL_STATE, savedData);
+
                     // Ensure deep objects exist (merging only top level might miss nested defaults)
                     if (!this.data.apiStatus) this.data.apiStatus = { ...INITIAL_STATE.apiStatus };
                     if (!this.data.sectorActivity) this.data.sectorActivity = { ...INITIAL_STATE.sectorActivity };
@@ -175,7 +177,8 @@ export class StateManager {
             const recovered = await supabaseService.recoverState();
 
             if (recovered && recovered.activeTrades.length > 0 || recovered && recovered.totalTrades > 0) {
-                this.data = { ...this.data, ...recovered };
+                // PRESERVE REFERENCE
+                Object.assign(this.data, recovered);
                 this.save();
                 addLog(this.data, "✅ ÉTAT RESTAURÉ DEPUIS SUPABASE !", 'success');
                 return true;

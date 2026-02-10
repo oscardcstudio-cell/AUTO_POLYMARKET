@@ -98,6 +98,11 @@ router.post('/reset', (req, res) => {
 
     addLog(botState, '♻️ SIMULATION RESET: Portefeuille réinitialisé à $1000', 'warning');
 
+    // PERSISTENCE FIX
+    stateManager.save();
+
+    res.json({ success: true, message: 'Simulation reset to default state' });
+
     // Delete trade history file if exists
     const historyFile = path.join(process.cwd(), 'trade_decisions.jsonl');
     if (fs.existsSync(historyFile)) {
