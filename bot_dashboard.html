@@ -1036,26 +1036,50 @@
             function createMiniChart(id, history, entryPrice, color) {
                 const ctx = document.getElementById(`chart-${id}`).getContext('2d');
                 const labels = history.map((_, i) => i);
+
+                // Ensure data points are numbers
+                const data = history.map(v => Number(v));
+                const entry = Number(entryPrice);
+
                 return new Chart(ctx, {
                     type: 'line',
                     data: {
                         labels: labels,
                         datasets: [
-                            { data: history, borderColor: color, borderWidth: 2, pointRadius: 0, tension: 0.3, fill: false },
-                            { data: Array(history.length).fill(entryPrice), borderColor: 'rgba(255,255,255,0.2)', borderWidth: 1, borderDash: [5, 5], pointRadius: 0, fill: false }
+                            {
+                                data: data,
+                                borderColor: color,
+                                borderWidth: 2,
+                                pointRadius: 0,
+                                tension: 0.3,
+                                fill: false,
+                                clip: false // CRITICAL: Prevent clipping
+                            },
+                            {
+                                data: Array(history.length).fill(entry),
+                                borderColor: 'rgba(255,255,255,0.2)',
+                                borderWidth: 1,
+                                borderDash: [5, 5],
+                                pointRadius: 0,
+                                fill: false,
+                                clip: false
+                            }
                         ]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
                         layout: {
-                            padding: {
-                                top: 5,
-                                bottom: 5
-                            }
+                            padding: 10 // Increased padding
                         },
                         plugins: { legend: { display: false }, tooltip: { enabled: false } },
-                        scales: { x: { display: false }, y: { display: false } }
+                        scales: {
+                            x: { display: false },
+                            y: {
+                                display: false,
+                                grace: '10%' // Add breathing room
+                            }
+                        }
                     }
                 });
             }
