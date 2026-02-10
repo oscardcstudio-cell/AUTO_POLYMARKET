@@ -410,6 +410,9 @@
                             style="width: 8px; height: 8px; background: #4ade80; border-radius: 50%; box-shadow: 0 0 8px #4ade80; z-index: 2;">
                         </div>
                     </div>
+                    <span id="priceStatusText"
+                        style="display:none; font-size: 0.6em; font-weight: 800; color: #ef4444; margin-left: 8px; white-space: nowrap;">CHECK
+                        PRICES</span>
                 </div>
             </div>
 
@@ -1465,11 +1468,16 @@
                     // console.error("Fetch Error:", e); // Silence console spam
 
                     const led = document.getElementById('priceLed');
+                    const errText = document.getElementById('priceStatusText');
                     if (led) {
                         led.style.background = '#ef4444'; // Red
                         led.style.boxShadow = '0 0 8px #ef4444';
                         // Blink effect
                         led.style.animation = 'pulse 1s infinite';
+                    }
+                    if (errText) {
+                        errText.style.display = 'block';
+                        errText.textContent = "CHECK PRICES (API ERROR)";
                     }
                 }
             }

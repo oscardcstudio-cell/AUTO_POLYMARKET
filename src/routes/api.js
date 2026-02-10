@@ -31,7 +31,17 @@ router.get('/bot-data', (req, res) => {
             profit,
             profitPercent
         };
-        res.json(data);
+
+
+        // SAFE JSON SERIALIZATION (Handle BigInt)
+        const jsonString = JSON.stringify(data, (key, value) =>
+            typeof value === 'bigint'
+                ? value.toString()
+                : value
+        );
+
+        res.setHeader('Content-Type', 'application/json');
+        res.send(jsonString);
     } catch (error) {
         console.error("Error serving /bot-data:", error);
         res.status(500).json({ error: "Internal Server Error serving bot data" });
