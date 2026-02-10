@@ -1295,46 +1295,7 @@
                                 createMiniChart(t.id, history, entry, diff >= 0 ? '#4ade80' : '#f87171');
                             });
 
-                            // Update Price Tracker Badge
-                            const priceTrackerBadge = document.getElementById('priceTrackerBadge');
-                            const priceTrackerStatus = document.getElementById('priceTrackerStatus');
-                            const priceTrackerTimer = document.querySelector('#priceTrackerTimer circle');
 
-                            if (priceTrackerBadge && priceTrackerStatus) {
-                                const lastUpdate = botData.activeTrades
-                                    .map(t => t.lastPriceUpdate)
-                                    .filter(Boolean)
-                                    .sort()
-                                    .pop();
-
-                                if (lastUpdate) {
-                                    const minutesAgo = Math.floor((Date.now() - new Date(lastUpdate).getTime()) / 60000);
-                                    const secondsAgo = Math.floor((Date.now() - new Date(lastUpdate).getTime()) / 1000);
-                                    const UPDATE_INTERVAL_SECONDS = 5 * 60; // 5 minutes
-
-                                    // Calculate progress (0 = just updated, 300 = 5min elapsed)
-                                    const progress = Math.min(secondsAgo / UPDATE_INTERVAL_SECONDS, 1);
-                                    const circumference = 37.7; // 2 * PI * radius (6)
-                                    const offset = circumference * (1 - progress);
-
-                                    if (priceTrackerTimer) {
-                                        priceTrackerTimer.style.strokeDashoffset = offset;
-                                    }
-
-                                    if (minutesAgo < 6) {
-                                        priceTrackerStatus.textContent = `LIVE (${minutesAgo}m ago)`;
-                                        priceTrackerBadge.style.borderColor = 'rgba(139, 92, 246, 0.5)';
-                                    } else {
-                                        priceTrackerStatus.textContent = `STALE (${minutesAgo}m)`;
-                                        priceTrackerBadge.style.borderColor = 'rgba(245, 158, 11, 0.5)';
-                                    }
-                                } else {
-                                    priceTrackerStatus.textContent = 'WAITING...';
-                                    if (priceTrackerTimer) {
-                                        priceTrackerTimer.style.strokeDashoffset = 37.7; // Empty circle
-                                    }
-                                }
-                            }
                         }
                     } catch (e) { console.error("Active Trades Error:", e); }
 
