@@ -2299,8 +2299,13 @@
     "timestamp": "2026-02-10T20:29:03.432Z",
     "slug": "nba-sas-lal-2026-02-10"
   },
-  "lastUpdate": "2026-02-10T20:33:06.496Z",
+  "lastUpdate": "2026-02-10T20:34:07.144Z",
   "logs": [
+    {
+      "timestamp": "2026-02-10T20:34:03.004Z",
+      "message": "🔄 Updating prices for 99 active trades...",
+      "type": "info"
+    },
     {
       "timestamp": "2026-02-10T20:33:06.011Z",
       "message": "🏁 TRADE CLOSED: Will Elon cut the bu... | PnL: $-53.37 (⏱️ TIMEOUT: 48.0h (PnL: -68.2%))",
@@ -3423,7 +3428,7 @@
   ],
   "momentumData": {},
   "apiStatus": {
-    "gamma": "ONLINE",
+    "gamma": "DEGRADED",
     "clob": "DEGRADED",
     "pizzint": "ONLINE",
     "alpha": "ONLINE"
@@ -3578,19 +3583,19 @@
   "sectorStats": {
     "politics": {
       "count": 48,
-      "lastActivity": "2026-02-10T20:33:06.496Z"
+      "lastActivity": "2026-02-10T20:34:07.144Z"
     },
     "economics": {
       "count": 24,
-      "lastActivity": "2026-02-10T20:33:06.496Z"
+      "lastActivity": "2026-02-10T20:34:07.144Z"
     },
     "tech": {
       "count": 10,
-      "lastActivity": "2026-02-10T20:33:06.496Z"
+      "lastActivity": "2026-02-10T20:34:07.144Z"
     },
     "trending": {
       "count": 57,
-      "lastActivity": "2026-02-10T20:33:06.496Z"
+      "lastActivity": "2026-02-10T20:34:07.144Z"
     }
   },
   "sectorActivity": {
@@ -5312,5 +5317,5 @@
       "_alphaScore": 40
     }
   ],
-  "lastHeartbeat": "2026-02-10T20:32:05.820Z"
+  "lastHeartbeat": "2026-02-10T20:33:06.504Z"
 }
