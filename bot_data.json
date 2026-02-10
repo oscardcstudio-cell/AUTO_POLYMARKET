@@ -2296,6 +2296,10 @@
     {
       "t": "2026-02-10T20:36:08.572Z",
       "v": 287.937045168426
+    },
+    {
+      "t": "2026-02-10T20:37:09.311Z",
+      "v": 287.937045168426
     }
   ],
   "lastPizzaData": {
@@ -2311,7 +2315,7 @@
     "timestamp": "2026-02-10T20:34:07.241Z",
     "slug": "nba-sas-lal-2026-02-10"
   },
-  "lastUpdate": "2026-02-10T20:37:09.207Z",
+  "lastUpdate": "2026-02-10T20:37:09.317Z",
   "logs": [
     {
       "timestamp": "2026-02-10T20:34:29.734Z",
@@ -3445,7 +3449,7 @@
   ],
   "momentumData": {},
   "apiStatus": {
-    "gamma": "DEGRADED",
+    "gamma": "ONLINE",
     "clob": "DEGRADED",
     "pizzint": "ONLINE",
     "alpha": "ONLINE"
@@ -3483,7 +3487,7 @@
       "side": "YES",
       "slug": "bitcoin-up-or-down-february-10-3pm-et",
       "question": "Bitcoin Up or Down - February 10, 3PM ET",
-      "price": "0.205",
+      "price": "0.065",
       "alpha": 65,
       "reason": "YES Alpha 65%"
     },
@@ -3503,11 +3507,11 @@
       "question": "Solana Up or Down - February 11, 3:15PM-3:30PM ET",
       "slug": "sol-updown-15m-1770840900",
       "outcomePrices": "[\"0.5\", \"0.5\"]",
-      "liquidityNum": 5748.2716,
+      "liquidityNum": 5755.0716,
       "endDate": "2026-02-11T20:30:00Z",
       "endDateIso": "2026-02-11",
       "freshScore": 95,
-      "ageHours": "0.2"
+      "ageHours": "0.3"
     },
     {
       "id": "1363786",
@@ -3518,7 +3522,7 @@
       "endDate": "2026-02-11T20:30:00Z",
       "endDateIso": "2026-02-11",
       "freshScore": 95,
-      "ageHours": "0.2"
+      "ageHours": "0.3"
     },
     {
       "id": "1363787",
@@ -3529,18 +3533,18 @@
       "endDate": "2026-02-11T20:30:00Z",
       "endDateIso": "2026-02-11",
       "freshScore": 95,
-      "ageHours": "0.2"
+      "ageHours": "0.3"
     },
     {
       "id": "1363785",
       "question": "Bitcoin Up or Down - February 11, 3:15PM-3:30PM ET",
       "slug": "btc-updown-15m-1770840900",
       "outcomePrices": "[\"0.5\", \"0.5\"]",
-      "liquidityNum": 11365.2013,
+      "liquidityNum": 11377.0013,
       "endDate": "2026-02-11T20:30:00Z",
       "endDateIso": "2026-02-11",
       "freshScore": 95,
-      "ageHours": "0.2"
+      "ageHours": "0.3"
     },
     {
       "id": "1363773",
@@ -3600,19 +3604,19 @@
   "sectorStats": {
     "politics": {
       "count": 48,
-      "lastActivity": "2026-02-10T20:37:09.207Z"
+      "lastActivity": "2026-02-10T20:37:09.318Z"
     },
     "economics": {
       "count": 24,
-      "lastActivity": "2026-02-10T20:37:09.207Z"
+      "lastActivity": "2026-02-10T20:37:09.318Z"
     },
     "tech": {
       "count": 10,
-      "lastActivity": "2026-02-10T20:37:09.207Z"
+      "lastActivity": "2026-02-10T20:37:09.318Z"
     },
     "trending": {
       "count": 57,
-      "lastActivity": "2026-02-10T20:37:09.207Z"
+      "lastActivity": "2026-02-10T20:37:09.318Z"
     }
   },
   "sectorActivity": {
@@ -3720,6 +3724,15 @@
     ],
     "economics": [
       {
+        "id": "mlh2audbdgb29ear0ac",
+        "timestamp": "2026-02-10T20:37:09.311Z",
+        "type": "ANALYSIS",
+        "message": "Observation: 4 marchés scannés.",
+        "data": {
+          "status": "idle"
+        }
+      },
+      {
         "id": "mlh29ji4csj0y9jef8a",
         "timestamp": "2026-02-10T20:36:08.572Z",
         "type": "ANALYSIS",
@@ -3799,18 +3812,18 @@
         "data": {
           "status": "idle"
         }
-      },
-      {
-        "id": "mlh0f379g81ddkkh7oc",
-        "timestamp": "2026-02-10T19:44:28.149Z",
-        "type": "ANALYSIS",
-        "message": "High Alpha: Bitcoin Up or Down - February ...",
-        "data": {
-          "score": "100"
-        }
       }
     ],
     "tech": [
+      {
+        "id": "mlh2audbreetgaobs5",
+        "timestamp": "2026-02-10T20:37:09.311Z",
+        "type": "ANALYSIS",
+        "message": "Observation: 2 marchés scannés.",
+        "data": {
+          "status": "idle"
+        }
+      },
       {
         "id": "mlh29ji4obntq99vn7",
         "timestamp": "2026-02-10T20:36:08.572Z",
@@ -3891,18 +3904,36 @@
         "data": {
           "status": "idle"
         }
-      },
-      {
-        "id": "mlh20fgpenk9f8vt82p",
-        "timestamp": "2026-02-10T20:29:03.433Z",
-        "type": "ANALYSIS",
-        "message": "Observation: 2 marchés scannés.",
-        "data": {
-          "status": "idle"
-        }
       }
     ],
     "trending": [
+      {
+        "id": "mlh2audbg3a6iflka1",
+        "timestamp": "2026-02-10T20:37:09.311Z",
+        "type": "ANALYSIS",
+        "message": "Observation: 8 marchés scannés.",
+        "data": {
+          "status": "idle"
+        }
+      },
+      {
+        "id": "mlh2auani4laxet0ykn",
+        "timestamp": "2026-02-10T20:37:09.215Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: Clippers vs. Rockets...",
+        "data": {
+          "score": "100"
+        }
+      },
+      {
+        "id": "mlh2auam7yrf4nd6cr",
+        "timestamp": "2026-02-10T20:37:09.214Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: Spurs vs. Lakers...",
+        "data": {
+          "score": "100"
+        }
+      },
       {
         "id": "mlh29ji4accgx5qhq04",
         "timestamp": "2026-02-10T20:36:08.572Z",
@@ -3964,33 +3995,6 @@
         "message": "Observation: 8 marchés scannés.",
         "data": {
           "status": "idle"
-        }
-      },
-      {
-        "id": "mlh26xvt4jmiquavczm",
-        "timestamp": "2026-02-10T20:34:07.241Z",
-        "type": "SIGNAL",
-        "message": "Top Signal Detected: 100/100",
-        "data": {
-          "market": "Spurs vs. Lakers"
-        }
-      },
-      {
-        "id": "mlh26xvs5ey3k11pm3v",
-        "timestamp": "2026-02-10T20:34:07.240Z",
-        "type": "ANALYSIS",
-        "message": "High Alpha: Clippers vs. Rockets...",
-        "data": {
-          "score": "100"
-        }
-      },
-      {
-        "id": "mlh26xvsv8yhk4r6s6m",
-        "timestamp": "2026-02-10T20:34:07.240Z",
-        "type": "ANALYSIS",
-        "message": "High Alpha: Spurs vs. Lakers...",
-        "data": {
-          "score": "100"
         }
       }
     ]
