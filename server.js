@@ -9,7 +9,7 @@ import { addLog, saveToGithub } from './src/utils.js';
 import apiRoutes from './src/routes/api.js';
 import analyticsRoutes from './src/api/analyticsRoutes.js';
 import debugRoutes from './src/api/debugRoutes.js';
-import backtestRoutes from './src/api/backtestRoutes.js';
+// import backtestRoutes from './src/api/backtestRoutes.js';
 import { startPriceUpdateLoop } from './src/services/priceUpdateService.js';
 
 // Logic & Signals
@@ -41,7 +41,7 @@ app.use(express.json());
 app.use(express.static(__dirname));
 app.use('/api/debug', debugRoutes);
 
-app.use('/api', backtestRoutes);
+// app.use('/api', backtestRoutes);
 app.use('/api', apiRoutes);
 app.use('/api/analytics', analyticsRoutes);
 
