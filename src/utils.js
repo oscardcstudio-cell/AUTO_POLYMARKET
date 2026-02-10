@@ -83,4 +83,4 @@ console.error = function (...args) {
     appendToSystemLog('ERROR', args);
 };
 
-export { addLog, saveToGithub };
+
