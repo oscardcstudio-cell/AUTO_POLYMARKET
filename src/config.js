@@ -16,7 +16,7 @@ const VOLUME_PATH = process.env.RAILWAY_VOLUME_MOUNT_PATH ||
 const DATA_FILE_PATH = VOLUME_PATH ? path.join(VOLUME_PATH, 'bot_data.json') : path.join(ROOT_DIR, 'bot_data.json');
 
 const IS_PROD = process.env.NODE_ENV === 'production' || !!process.env.RAILWAY_STATIC_URL;
-const ENABLE_GITHUB_SYNC = true; // Always enable to allow AI to see the backlog
+const ENABLE_GITHUB_SYNC = false; // Disabled by default to prevent Railway Infinite Loops
 
 export const CONFIG = {
     ROOT_DIR,
