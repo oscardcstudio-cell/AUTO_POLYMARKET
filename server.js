@@ -71,6 +71,13 @@ app.listen(CONFIG.PORT, () => {
 async function mainLoop() {
     addLog(botState, '🔄 Démarrage de la boucle de trading...', 'info');
 
+    // 0. Disaster Recovery (Cloud Restore)
+    try {
+        await stateManager.tryRecovery();
+    } catch (e) {
+        console.error("Recovery failed:", e);
+    }
+
     // Start Real-Time Price Tracking Service
     console.log('🔄 Starting real-time price tracking service...');
     startPriceUpdateLoop(botState);

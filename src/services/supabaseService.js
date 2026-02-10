@@ -115,5 +115,107 @@ export const supabaseService = {
             return [];
         }
         return data;
+    },
+
+    /**
+     * Reconstructs the entire bot state from Supabase history.
+     * Useful for disaster recovery (e.g. lost local file on Railway).
+     */
+    async recoverState() {
+        if (!supabase) return null;
+
+        try {
+            console.log("🔄 Tentative de reconstruction de l'état depuis Supabase...");
+
+            // 1. Fetch ALL trades (might need pagination for large history, limiting to 2000 for now)
+            const { data: allTrades, error } = await supabase
+                .from('trades')
+                .select('*')
+                .order('created_at', { ascending: true }); // Chronological order
+
+            if (error) throw error;
+            if (!allTrades || allTrades.length === 0) return null;
+
+            // 2. Re-calculate metrics
+            let reconstructedCapital = CONFIG.STARTING_CAPITAL || 1000;
+            let totalTrades = 0;
+            let winningTrades = 0;
+            let losingTrades = 0;
+            const activeTrades = [];
+            const closedTrades = [];
+
+            allTrades.forEach(trade => {
+                const amount = parseFloat(trade.amount) || 0;
+                const pnl = parseFloat(trade.pnl) || 0;
+                const status = trade.status;
+
+                totalTrades++;
+
+                if (status === 'OPEN') {
+                    // Deduct capital for active trades
+                    reconstructedCapital -= amount;
+                    // Map back to bot format
+                    activeTrades.push({
+                        id: trade.metadata?.marketData?.id || trade.market_id, // Prefer original ID
+                        marketId: trade.market_id,
+                        question: trade.question,
+                        side: trade.side,
+                        amount: amount,
+                        entryPrice: trade.entry_price,
+                        status: 'OPEN',
+                        confidence: trade.confidence,
+                        decisionReasons: trade.metadata?.reasons || [],
+                        category: trade.metadata?.marketData?.category || 'unknown',
+                        supabase_id: trade.id,
+                        startTime: trade.created_at
+                    });
+                } else {
+                    // Closed trades: Capital reflects PnL (Start + PnL - ActiveCost, but here we just Add PnL to base? 
+                    // No. Cash = Start + Sum(Realized PnL) - Sum(Active Cost)
+                    // So we don't deduct amount here, we just add PnL which is (Return - Cost).
+                    // If PnL is accurate in DB (Net Profit), then:
+                    // NewCash = OldCash + PnL.
+                    // But wait. When we buy, we do Capital -= Amount. 
+                    // When we sell, Capital += (Amount + PnL).
+                    // So Net Change = PnL.
+                    // Correct logic: ReconstructedCapital = 1000 + Sum(All PnL) - Sum(Open Trade Amounts).
+                }
+
+                if (status !== 'OPEN') {
+                    if (pnl > 0) winningTrades++;
+                    else losingTrades++;
+
+                    closedTrades.push(trade);
+                }
+            });
+
+            // Calculate Total Realized PnL
+            const totalRealizedPnL = allTrades
+                .filter(t => t.status !== 'OPEN')
+                .reduce((sum, t) => sum + (parseFloat(t.pnl) || 0), 0);
+
+            // Final Calculation
+            reconstructedCapital = (CONFIG.STARTING_CAPITAL || 1000) + totalRealizedPnL;
+
+            // Deduct Open Trades Cost (since they are "Invested")
+            const activeInvested = activeTrades.reduce((sum, t) => sum + t.amount, 0);
+            reconstructedCapital -= activeInvested;
+
+            console.log(`✅ État reconstruit : Capital $${reconstructedCapital.toFixed(2)} | Actifs: ${activeTrades.length} | Fermés: ${closedTrades.length}`);
+
+            return {
+                capital: reconstructedCapital,
+                totalTrades,
+                winningTrades,
+                losingTrades,
+                activeTrades,
+                closedTrades: closedTrades.slice(-50).reverse(), // Keep last 50, newest first
+                recovered: true
+            };
+
+        } catch (err) {
+            console.error("❌ Erreur reconstruction via Supabase:", err.message);
+            return null;
+        }
     }
 };

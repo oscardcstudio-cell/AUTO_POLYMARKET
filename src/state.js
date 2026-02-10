@@ -2,6 +2,7 @@
 import fs from 'fs';
 import { CONFIG } from './config.js';
 import { addLog, saveToGithub } from './utils.js';
+import { supabaseService } from './services/supabaseService.js';
 
 // Initial State Template
 const INITIAL_STATE = {
@@ -160,7 +161,32 @@ export class StateManager {
         this.data.sectorActivity[key].unshift(event);
         if (this.data.sectorActivity[key].length > 10) this.data.sectorActivity[key].pop();
     }
+
+    /**
+     * Attempts to recover state from Supabase if local state seems empty or reset.
+     * Should be called on server startup.
+     */
+    async tryRecovery() {
+        // Only try recovery if we are effectively at INITIAL_STATE (no trades, default capital)
+        const isDefault = this.data.totalTrades === 0 && this.data.capital === CONFIG.STARTING_CAPITAL;
+
+        if (isDefault || !fs.existsSync(this.filePath)) {
+            addLog(this.data, "⚠️ État local vide/par défaut. Tentative de récupération Cloud...", 'warning');
+            const recovered = await supabaseService.recoverState();
+
+            if (recovered && recovered.activeTrades.length > 0 || recovered && recovered.totalTrades > 0) {
+                this.data = { ...this.data, ...recovered };
+                this.save();
+                addLog(this.data, "✅ ÉTAT RESTAURÉ DEPUIS SUPABASE !", 'success');
+                return true;
+            } else {
+                addLog(this.data, "ℹ️ Aucune donnée trouvée sur Supabase ou échec récupération.", 'info');
+            }
+        }
+        return false;
+    }
 }
+
 
 export const stateManager = new StateManager();
 export const botState = stateManager.data; // Export direct reference for backward compatibility in logic
