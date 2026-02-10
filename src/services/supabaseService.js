@@ -39,6 +39,7 @@ export const supabaseService = {
                 status: trade.status || (trade.exitPrice ? 'CLOSED' : 'OPEN'),
                 confidence: trade.confidence,
                 strategy: trade.strategy || 'standard',
+                category: trade.category || 'General',
                 metadata: {
                     reasons: trade.decisionReasons || [],
                     marketData: trade.marketData || {},
