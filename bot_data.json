@@ -1,10 +1,10 @@
 {
   "startTime": "2026-02-07T12:55:54.888Z",
-  "capital": 254.5630650021524,
+  "capital": 263.07469279783834,
   "startingCapital": 1000,
   "totalTrades": 102,
   "winningTrades": 0,
-  "losingTrades": 1,
+  "losingTrades": 2,
   "activeTrades": [
     {
       "id": "mlfq417uti9k5q0yavd",
@@ -1888,65 +1888,6 @@
       "lastPriceUpdate": "2026-02-10T20:31:04.594Z"
     },
     {
-      "id": "mle77zlvgmb7euf27ep",
-      "marketId": "521963",
-      "question": "Will Elon cut the budget by at least 10% in 2025?",
-      "slug": "will-elon-cut-the-budget-by-at-least-10-in-2025",
-      "side": "YES",
-      "amount": 60.177208515499714,
-      "entryPrice": 0.010605000000000002,
-      "startTime": "2026-02-08T20:31:35.683Z",
-      "shares": 5674.418530457304,
-      "status": "OPEN",
-      "confidence": 0.35,
-      "reasons": [
-        "Contrarian Momentum"
-      ],
-      "category": "tech",
-      "isFresh": false,
-      "clobTokenIds": "[\"80230236018433940569996058935444651347308266584430516013229815570706872276819\", \"107000426448217931795450451304515386602910396776318075817601265223856116134349\"]",
-      "eventSlug": "will-elon-cut-the-budget-by-at-least-10-in-2025",
-      "priceHistory": [
-        0.0105,
-        0.0105,
-        0.0105,
-        0.0105,
-        0.0105,
-        0.0105,
-        0.0105,
-        0.0105,
-        0.0105,
-        0.0105,
-        0.0105,
-        0.0105,
-        0.0105,
-        0.0105,
-        0.0105,
-        0.0105,
-        0.011,
-        0.011,
-        0.011,
-        0.011,
-        0.011,
-        0.011,
-        0.011,
-        0.011,
-        0.011,
-        0.011,
-        0.011,
-        0.011,
-        0.011,
-        0.011,
-        0.0015,
-        0.0015,
-        0.0015,
-        0.0015,
-        0.0015
-      ],
-      "maxReturn": 0.03724658180103707,
-      "lastPriceUpdate": "2026-02-10T20:31:04.594Z"
-    },
-    {
       "id": "mle76owl0zrdns0u688a",
       "marketId": "1271400",
       "question": "Spread: Seahawks (-4.5)",
@@ -2002,6 +1943,71 @@
     }
   ],
   "closedTrades": [
+    {
+      "id": "mle77zlvgmb7euf27ep",
+      "marketId": "521963",
+      "question": "Will Elon cut the budget by at least 10% in 2025?",
+      "slug": "will-elon-cut-the-budget-by-at-least-10-in-2025",
+      "side": "YES",
+      "amount": 60.177208515499714,
+      "entryPrice": 0.010605000000000002,
+      "startTime": "2026-02-08T20:31:35.683Z",
+      "shares": 5674.418530457304,
+      "status": "CLOSED",
+      "confidence": 0.35,
+      "reasons": [
+        "Contrarian Momentum"
+      ],
+      "category": "tech",
+      "isFresh": false,
+      "clobTokenIds": "[\"80230236018433940569996058935444651347308266584430516013229815570706872276819\", \"107000426448217931795450451304515386602910396776318075817601265223856116134349\"]",
+      "eventSlug": "will-elon-cut-the-budget-by-at-least-10-in-2025",
+      "priceHistory": [
+        0.0105,
+        0.0105,
+        0.0105,
+        0.0105,
+        0.0105,
+        0.0105,
+        0.0105,
+        0.0105,
+        0.0105,
+        0.0105,
+        0.0105,
+        0.0105,
+        0.0105,
+        0.0105,
+        0.0105,
+        0.0105,
+        0.011,
+        0.011,
+        0.011,
+        0.011,
+        0.011,
+        0.011,
+        0.011,
+        0.011,
+        0.011,
+        0.011,
+        0.011,
+        0.011,
+        0.011,
+        0.011,
+        0.0015,
+        0.0015,
+        0.0015,
+        0.0015,
+        0.0015,
+        0.0015
+      ],
+      "maxReturn": 0.03724658180103707,
+      "lastPriceUpdate": "2026-02-10T20:32:05.230Z",
+      "endTime": "2026-02-10T20:32:05.242Z",
+      "exitPrice": 0.0015,
+      "finalValue": 8.511627795685955,
+      "pnl": -51.66558071981376,
+      "closeReason": "⏱️ TIMEOUT: 48.0h (PnL: -85.9%)"
+    },
     {
       "id": "mle75e5fayprwlibg9f",
       "marketId": "528788",
@@ -2276,8 +2282,18 @@
     "timestamp": "2026-02-10T20:29:03.432Z",
     "slug": "nba-sas-lal-2026-02-10"
   },
-  "lastUpdate": "2026-02-10T20:31:04.644Z",
+  "lastUpdate": "2026-02-10T20:32:05.244Z",
   "logs": [
+    {
+      "timestamp": "2026-02-10T20:32:05.242Z",
+      "message": "🏁 TRADE CLOSED: Will Elon cut the bu... | PnL: $-51.67 (⏱️ TIMEOUT: 48.0h (PnL: -85.9%))",
+      "type": "warning"
+    },
+    {
+      "timestamp": "2026-02-10T20:32:05.230Z",
+      "message": "⏱️ TIMEOUT: 48.0h (PnL: -85.9%) - Freeing capital for new opportunities",
+      "type": "info"
+    },
     {
       "timestamp": "2026-02-10T20:30:03.697Z",
       "message": "🏁 TRADE CLOSED: Rojas guilty in Texa... | PnL: $-58.48 (⏱️ TIMEOUT: 48.0h (PnL: -51.7%))",
@@ -3380,7 +3396,7 @@
   ],
   "momentumData": {},
   "apiStatus": {
-    "gamma": "ONLINE",
+    "gamma": "DEGRADED",
     "clob": "DEGRADED",
     "pizzint": "ONLINE",
     "alpha": "ONLINE"
@@ -3535,19 +3551,19 @@
   "sectorStats": {
     "politics": {
       "count": 48,
-      "lastActivity": "2026-02-10T20:31:04.644Z"
+      "lastActivity": "2026-02-10T20:32:05.244Z"
     },
     "economics": {
       "count": 24,
-      "lastActivity": "2026-02-10T20:31:04.644Z"
+      "lastActivity": "2026-02-10T20:32:05.244Z"
     },
     "tech": {
-      "count": 12,
-      "lastActivity": "2026-02-10T20:31:04.644Z"
+      "count": 11,
+      "lastActivity": "2026-02-10T20:32:05.244Z"
     },
     "trending": {
       "count": 57,
-      "lastActivity": "2026-02-10T20:31:04.644Z"
+      "lastActivity": "2026-02-10T20:32:05.244Z"
     }
   },
   "sectorActivity": {
@@ -3751,6 +3767,15 @@
     ],
     "tech": [
       {
+        "id": "mlh24bqy85zsyzbipq9",
+        "timestamp": "2026-02-10T20:32:05.242Z",
+        "type": "TRADE",
+        "message": "💰 Trade Closed: ⏱️ TIMEOUT: 48.0h (PnL: -85.9%)",
+        "data": {
+          "pnl": "-51.67"
+        }
+      },
+      {
         "id": "mlh230zidvtoz45cmaf",
         "timestamp": "2026-02-10T20:31:04.638Z",
         "type": "ANALYSIS",
@@ -3825,15 +3850,6 @@
       {
         "id": "mle91u61ngg51xy2kac",
         "timestamp": "2026-02-08T21:22:47.929Z",
-        "type": "ANALYSIS",
-        "message": "Observation: 3 marchés scannés.",
-        "data": {
-          "status": "idle"
-        }
-      },
-      {
-        "id": "mle90jfgdeeapzp9n3n",
-        "timestamp": "2026-02-08T21:21:47.356Z",
         "type": "ANALYSIS",
         "message": "Observation: 3 marchés scannés.",
         "data": {
@@ -3935,8 +3951,8 @@
     ]
   },
   "backlog": [],
-  "profit": -745.4369349978476,
-  "profitPercent": "-74.54",
+  "profit": -736.9253072021617,
+  "profitPercent": "-73.69",
   "marketCache": [
     {
       "id": "1303355",
@@ -5271,5 +5287,5 @@
       "_alphaScore": 40
     }
   ],
-  "lastHeartbeat": "2026-02-10T20:30:04.398Z"
+  "lastHeartbeat": "2026-02-10T20:31:04.652Z"
 }
