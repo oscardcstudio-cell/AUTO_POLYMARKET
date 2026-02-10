@@ -49,6 +49,16 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'bot_dashboard.html'));
 });
 
+// Analytics Route
+app.get('/analytics', (req, res) => {
+    res.sendFile(path.join(__dirname, 'analytics.html'));
+});
+
+// Legacy Dashboard Redirect (Fixing "old page not updating" issue)
+app.get('/dashboard.html', (req, res) => {
+    res.redirect('/analytics');
+});
+
 // Helper logic for dynamic capacity
 function calculateMaxTrades(capital, defcon = 5) {
     let base = CONFIG.BASE_MAX_TRADES || 10;
