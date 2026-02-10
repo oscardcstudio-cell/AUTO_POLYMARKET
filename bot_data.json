@@ -1,11 +1,29 @@
 {
   "startTime": "2026-02-07T12:55:54.888Z",
-  "capital": 100,
+  "capital": 0,
   "startingCapital": 1000,
-  "totalTrades": 111,
+  "totalTrades": 112,
   "winningTrades": 0,
   "losingTrades": 3,
   "activeTrades": [
+    {
+      "id": "mlh2jzpptbkd76qm4ii",
+      "marketId": "502012",
+      "question": "Roaring Kitty charged in 2024?",
+      "side": "NO",
+      "amount": 100,
+      "entryPrice": 0.7128,
+      "startTime": "2026-02-10T20:44:16.141Z",
+      "shares": 140.29180695847361,
+      "status": "OPEN",
+      "confidence": 0.45,
+      "reasons": [
+        "🔥 Smart Momentum: Following NO Favorite"
+      ],
+      "category": "other",
+      "isFresh": false,
+      "clobTokenIds": []
+    },
     {
       "id": "mlh2jzna0jpvszzxg2pf",
       "marketId": "502011",
@@ -2510,8 +2528,13 @@
     "timestamp": "2026-02-10T20:44:14.516Z",
     "slug": "nba-sas-lal-2026-02-10"
   },
-  "lastUpdate": "2026-02-10T20:44:16.054Z",
+  "lastUpdate": "2026-02-10T20:44:16.141Z",
   "logs": [
+    {
+      "timestamp": "2026-02-10T20:44:16.136Z",
+      "message": "✅ TRADE OPENED: YES sur \"$GME halted on Monday?...\" @ $0.727 ($100.00)",
+      "type": "trade"
+    },
     {
       "timestamp": "2026-02-10T20:44:16.051Z",
       "message": "✅ TRADE OPENED: YES sur \"Trump’s first TikTok >25M view...\" @ $0.727 ($100.00)",
@@ -3864,19 +3887,19 @@
   "sectorStats": {
     "politics": {
       "count": 53,
-      "lastActivity": "2026-02-10T20:44:16.054Z"
+      "lastActivity": "2026-02-10T20:44:16.142Z"
     },
     "economics": {
       "count": 26,
-      "lastActivity": "2026-02-10T20:44:16.054Z"
+      "lastActivity": "2026-02-10T20:44:16.142Z"
     },
     "tech": {
       "count": 10,
-      "lastActivity": "2026-02-10T20:44:16.054Z"
+      "lastActivity": "2026-02-10T20:44:16.142Z"
     },
     "trending": {
-      "count": 59,
-      "lastActivity": "2026-02-10T20:44:16.054Z"
+      "count": 60,
+      "lastActivity": "2026-02-10T20:44:16.142Z"
     }
   },
   "sectorActivity": {
@@ -4170,6 +4193,16 @@
     ],
     "trending": [
       {
+        "id": "mlh2jzplx8srv0rsyt",
+        "timestamp": "2026-02-10T20:44:16.137Z",
+        "type": "TRADE",
+        "message": "🎰 Trade Opened: $100 on YES",
+        "data": {
+          "market": "$GME halted on Monday?",
+          "price": "0.73"
+        }
+      },
+      {
         "id": "mlh2jzfyixr1n4a11",
         "timestamp": "2026-02-10T20:44:15.790Z",
         "type": "TRADE",
@@ -4250,21 +4283,12 @@
         "data": {
           "score": "100"
         }
-      },
-      {
-        "id": "mlh2inhhrf4fn5p89q",
-        "timestamp": "2026-02-10T20:43:13.637Z",
-        "type": "ANALYSIS",
-        "message": "High Alpha: Spurs vs. Lakers...",
-        "data": {
-          "score": "100"
-        }
       }
     ]
   },
   "backlog": [],
-  "profit": -900,
-  "profitPercent": "-90.00",
+  "profit": -1000,
+  "profitPercent": "-100.00",
   "marketCache": [
     {
       "id": "1303355",
@@ -5575,4 +5599,30 @@
       "spread": 0.002,
       "oneDayPriceChange": -0.0015,
       "oneHourPriceChange": -0.0005,
-      "oneWeekPriceChange": -
+      "oneWeekPriceChange": -0.0035,
+      "oneMonthPriceChange": -0.004,
+      "lastTradePrice": 0.007,
+      "bestBid": 0.007,
+      "bestAsk": 0.009,
+      "automaticallyActive": true,
+      "clearBookOnStart": true,
+      "manualActivation": false,
+      "negRiskOther": false,
+      "umaResolutionStatuses": "[]",
+      "pendingDeployment": false,
+      "deploying": false,
+      "rfqEnabled": false,
+      "holdingRewardsEnabled": false,
+      "feesEnabled": false,
+      "requiresTranslation": false,
+      "_scoreReasons": [
+        "Momentum fort (+30)",
+        "Diversification (+10)"
+      ],
+      "_category": "other",
+      "_alphaScore": 40
+    }
+  ],
+  "lastHeartbeat": "2026-02-10T20:43:13.768Z",
+  "lastBacktestRequest": 1770756254857
+}
