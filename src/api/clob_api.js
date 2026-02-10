@@ -40,12 +40,19 @@ async function fetchWithRetry(url, options = {}, retries = 3) {
                 throw error;
             }
 
+            // Don't retry on 401/403 (Auth failure)
+            if (error.message.includes('401') || error.message.includes('403')) {
+                throw error;
+            }
+
             const delay = Math.pow(2, attempt - 1) * 1000;
             console.log(`⚠️ CLOB fetch attempt ${attempt} failed, retrying in ${delay}ms...`);
             await new Promise(r => setTimeout(r, delay));
         }
     }
 }
+
+let hasLoggedAuthError = false; // Prevent log spam
 
 /**
  * Get cached data if valid, otherwise return null
@@ -80,7 +87,14 @@ export async function getCLOBOrderBook(tokenId) {
         const response = await fetchWithRetry(url);
 
         if (response.status === 404) {
-            // 404 means the order book doesn't exist (e.g. expired market), just return null silently
+            return null;
+        }
+
+        if (response.status === 401 || response.status === 403) {
+            if (!hasLoggedAuthError) {
+                console.warn(`⚠️ CLOB Access Denied (${response.status}). Public data might be restricted. Disabling CLOB calls.`);
+                hasLoggedAuthError = true;
+            }
             return null;
         }
 
@@ -133,6 +147,7 @@ export async function getCLOBPrice(tokenId) {
 
         return null;
     } catch (error) {
+        if (error.message.includes('401') || error.message.includes('403')) return null;
         console.error(`❌ CLOB Price Error (${tokenId}):`, error.message);
         return null;
     }
@@ -166,6 +181,7 @@ export async function getCLOBMidpoint(tokenId) {
 
         return null;
     } catch (error) {
+        if (error.message.includes('401') || error.message.includes('403')) return null;
         console.error(`❌ CLOB Midpoint Error (${tokenId}):`, error.message);
         return null;
     }
@@ -198,6 +214,7 @@ export async function getCLOBTradeHistory(marketId) {
 
         return null;
     } catch (error) {
+        if (error.message.includes('401') || error.message.includes('403')) return null;
         console.error(`❌ CLOB Trades Error (${marketId}):`, error.message);
         return null;
     }
