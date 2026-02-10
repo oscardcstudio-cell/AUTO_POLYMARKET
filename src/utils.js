@@ -77,7 +77,7 @@ function appendToSystemLog(type, args) {
             supabase.from('system_logs').insert({
                 type,
                 message: msg,
-                item_timestamp: timestamp, // Using different name to avoid reserved word conflict if any
+                timestamp: timestamp,
                 metadata: {}
             }).then(({ error }) => {
                 if (error) {
