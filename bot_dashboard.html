@@ -1439,6 +1439,8 @@
                     const ring = document.getElementById('priceProgress');
                     const led = document.getElementById('priceLed');
 
+                    const res = await fetch('/api/bot-data'); // Restored missing fetch
+
                     if (res.ok) {
                         botData = await res.json();
                         updateDashboard();
