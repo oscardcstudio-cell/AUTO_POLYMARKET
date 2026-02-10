@@ -38,9 +38,9 @@ app.use(express.json());
 
 // Serve static files (Dashboard)
 app.use(express.static(__dirname));
+app.use('/api/debug', debugRoutes);
 app.use('/api', apiRoutes);
 app.use('/api/analytics', analyticsRoutes);
-app.use('/api/debug', debugRoutes);
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'bot_dashboard.html'));

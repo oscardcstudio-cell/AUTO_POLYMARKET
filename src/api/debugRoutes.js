@@ -16,6 +16,10 @@ const checkAdminKey = (req, res, next) => {
     next();
 };
 
+router.get('/ping', (req, res) => {
+    res.send('pong');
+});
+
 /**
  * GET /api/debug/screenshot
  * Params:
