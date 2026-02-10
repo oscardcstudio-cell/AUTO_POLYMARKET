@@ -60,14 +60,14 @@ async function fetchMarketPrice(marketId, retryCount = 0) {
         }
 
         // Cache the result
-        if (currentPrice !== null) {
+        if (currentPrice !== null && !isNaN(currentPrice)) {
             priceCache.set(marketId, {
                 price: currentPrice,
                 timestamp: Date.now()
             });
         }
 
-        return currentPrice;
+        return (currentPrice !== null && !isNaN(currentPrice)) ? currentPrice : null;
     } catch (error) {
         addLog(botState, `❌ Error fetching price for market ${marketId}: ${error.message}`, 'error');
         return null;

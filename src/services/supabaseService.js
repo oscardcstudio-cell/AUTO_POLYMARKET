@@ -206,6 +206,15 @@ export const supabaseService = {
                 if (!t.shares && t.amount && t.entryPrice && t.entryPrice > 0) {
                     t.shares = t.amount / t.entryPrice;
                 }
+                // Fix: Parse clobTokenIds if string (Railway bug)
+                if (t.clobTokenIds && typeof t.clobTokenIds === 'string') {
+                    try {
+                        t.clobTokenIds = JSON.parse(t.clobTokenIds);
+                    } catch (e) {
+                        // If double encoded or bad format, try again or fail gracefully
+                        try { t.clobTokenIds = JSON.parse(JSON.parse(t.clobTokenIds)); } catch (e2) { t.clobTokenIds = []; }
+                    }
+                }
             });
 
             // Fix: Generate synthetic logs from recovered trades so the dashboard
