@@ -245,7 +245,7 @@ export const supabaseService = {
                 losingTrades,
                 activeTrades,
                 closedTrades: closedTrades.slice(-50).reverse(), // Keep last 50, newest first
-                logs: recoveredLogs.slice(0, 200), // Synthetic logs for dashboard display
+                logs: recoveredLogs.slice(0, 1000), // Synthetic logs for dashboard display
                 recovered: true
             };
 

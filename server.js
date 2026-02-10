@@ -183,7 +183,9 @@ async function mainLoop() {
             const isFull = botState.activeTrades.length >= maxTrades;
 
             if (isFull) {
-                addLog(botState, `📊 Portefeuille plein (${botState.activeTrades.length}/${maxTrades}). Mode observation.`, 'info');
+                if (isFull) {
+                    console.log(`📊 Portefeuille plein (${botState.activeTrades.length}/${maxTrades}). Mode observation.`);
+                }
             }
 
             // Collect potential candidates ALWAYS (for logging)
@@ -266,7 +268,7 @@ async function mainLoop() {
                     const uniqueReasons = [...new Set(rejectionReasons)].slice(0, 3);
                     const reasonSummary = uniqueReasons.length > 0 ? " | " + uniqueReasons.join(", ") : "";
                     const prefix = isFull ? "👁️ OBS: " : "🔍 ";
-                    addLog(botState, `${prefix}Scanned ${uniqueCandidates.length} markets. No entry found${reasonSummary}`, 'info');
+                    console.log(`${prefix}Scanned ${uniqueCandidates.length} markets. No entry found${reasonSummary}`);
 
                     // Add observational pulses for surveillance visibility
                     const sectorsFound = [...new Set(uniqueCandidates.map(c => c.market._category || categorizeMarket(c.market.question)))];

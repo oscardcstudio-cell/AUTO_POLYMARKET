@@ -14,7 +14,7 @@ export function addLog(botState, message, type = 'info') {
     };
     if (!botState.logs) botState.logs = [];
     botState.logs.unshift(logEntry);
-    if (botState.logs.length > 200) botState.logs.pop();
+    if (botState.logs.length > 1000) botState.logs.pop();
 
     // Console output with colors
     const colors = {

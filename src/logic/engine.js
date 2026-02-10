@@ -461,7 +461,7 @@ function saveNewTrade(trade) {
 export async function checkAndCloseTrades(getRealMarketPriceFn) {
     if (botState.activeTrades.length === 0) return;
 
-    addLog(botState, `🔍 Checking ${botState.activeTrades.length} active trades...`, 'info');
+    console.log(`🔍 Checking ${botState.activeTrades.length} active trades...`);
 
     for (let i = botState.activeTrades.length - 1; i >= 0; i--) {
         const trade = botState.activeTrades[i];
