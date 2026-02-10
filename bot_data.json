@@ -2408,6 +2408,10 @@
     {
       "t": "2026-02-10T21:04:29.904Z",
       "v": 287.937045168426
+    },
+    {
+      "t": "2026-02-10T21:05:30.604Z",
+      "v": 287.937045168426
     }
   ],
   "lastPizzaData": {
@@ -2423,7 +2427,7 @@
     "timestamp": "2026-02-10T21:04:29.587Z",
     "slug": "nba-sas-lal-2026-02-10"
   },
-  "lastUpdate": "2026-02-10T21:05:30.537Z",
+  "lastUpdate": "2026-02-10T21:06:31.209Z",
   "logs": [
     {
       "timestamp": "2026-02-10T21:04:29.512Z",
@@ -3782,19 +3786,19 @@
   "sectorStats": {
     "politics": {
       "count": 48,
-      "lastActivity": "2026-02-10T21:05:30.537Z"
+      "lastActivity": "2026-02-10T21:06:31.209Z"
     },
     "economics": {
       "count": 24,
-      "lastActivity": "2026-02-10T21:05:30.537Z"
+      "lastActivity": "2026-02-10T21:06:31.209Z"
     },
     "tech": {
       "count": 10,
-      "lastActivity": "2026-02-10T21:05:30.537Z"
+      "lastActivity": "2026-02-10T21:06:31.209Z"
     },
     "trending": {
       "count": 57,
-      "lastActivity": "2026-02-10T21:05:30.537Z"
+      "lastActivity": "2026-02-10T21:06:31.209Z"
     }
   },
   "sectorActivity": {
@@ -3902,6 +3906,15 @@
     ],
     "economics": [
       {
+        "id": "mlh3bb3grjbgwkr73m",
+        "timestamp": "2026-02-10T21:05:30.604Z",
+        "type": "ANALYSIS",
+        "message": "Observation: 3 marchés scannés.",
+        "data": {
+          "status": "idle"
+        }
+      },
+      {
         "id": "mlh3a09crewonkrai79",
         "timestamp": "2026-02-10T21:04:29.904Z",
         "type": "ANALYSIS",
@@ -3981,18 +3994,18 @@
         "data": {
           "status": "idle"
         }
-      },
-      {
-        "id": "mlh2ya8rhzwhom7q1f7",
-        "timestamp": "2026-02-10T20:55:22.971Z",
-        "type": "ANALYSIS",
-        "message": "Observation: 4 marchés scannés.",
-        "data": {
-          "status": "idle"
-        }
       }
     ],
     "tech": [
+      {
+        "id": "mlh3bb3g40aop9mzv2l",
+        "timestamp": "2026-02-10T21:05:30.604Z",
+        "type": "ANALYSIS",
+        "message": "Observation: 2 marchés scannés.",
+        "data": {
+          "status": "idle"
+        }
+      },
       {
         "id": "mlh3a09c5itdxz773te",
         "timestamp": "2026-02-10T21:04:29.904Z",
@@ -4073,18 +4086,36 @@
         "data": {
           "status": "idle"
         }
-      },
-      {
-        "id": "mlh2ya8r31aqyumyqdb",
-        "timestamp": "2026-02-10T20:55:22.971Z",
-        "type": "ANALYSIS",
-        "message": "Observation: 2 marchés scannés.",
-        "data": {
-          "status": "idle"
-        }
       }
     ],
     "trending": [
+      {
+        "id": "mlh3bb3g87su4en4377",
+        "timestamp": "2026-02-10T21:05:30.604Z",
+        "type": "ANALYSIS",
+        "message": "Observation: 8 marchés scannés.",
+        "data": {
+          "status": "idle"
+        }
+      },
+      {
+        "id": "mlh3bb1toddh0iqmfmq",
+        "timestamp": "2026-02-10T21:05:30.545Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: Clippers vs. Rockets...",
+        "data": {
+          "score": "100"
+        }
+      },
+      {
+        "id": "mlh3bb1t4udrnlzhbsy",
+        "timestamp": "2026-02-10T21:05:30.545Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: Spurs vs. Lakers...",
+        "data": {
+          "score": "100"
+        }
+      },
       {
         "id": "mlh3a09c99lwg72eo5",
         "timestamp": "2026-02-10T21:04:29.904Z",
@@ -4142,33 +4173,6 @@
       {
         "id": "mlh38p1y65hd5ks3176",
         "timestamp": "2026-02-10T21:03:28.726Z",
-        "type": "ANALYSIS",
-        "message": "Observation: 8 marchés scannés.",
-        "data": {
-          "status": "idle"
-        }
-      },
-      {
-        "id": "mlh38p04vdnyvcqa0a",
-        "timestamp": "2026-02-10T21:03:28.660Z",
-        "type": "ANALYSIS",
-        "message": "High Alpha: Clippers vs. Rockets...",
-        "data": {
-          "score": "100"
-        }
-      },
-      {
-        "id": "mlh38p04zsv33c982p8",
-        "timestamp": "2026-02-10T21:03:28.660Z",
-        "type": "ANALYSIS",
-        "message": "High Alpha: Spurs vs. Lakers...",
-        "data": {
-          "score": "100"
-        }
-      },
-      {
-        "id": "mlh37e6p0iteenumsc3u",
-        "timestamp": "2026-02-10T21:02:27.985Z",
         "type": "ANALYSIS",
         "message": "Observation: 8 marchés scannés.",
         "data": {
@@ -5514,6 +5518,6 @@
       "_alphaScore": 40
     }
   ],
-  "lastHeartbeat": "2026-02-10T21:04:29.915Z",
+  "lastHeartbeat": "2026-02-10T21:05:30.616Z",
   "lastBacktestRequest": 1770756254857
 }
