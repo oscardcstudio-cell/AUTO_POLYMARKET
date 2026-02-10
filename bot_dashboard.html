@@ -548,6 +548,12 @@
                 ▶️ Run Backtest Now
             </button>
         </div>
+        <div
+            style="background: rgba(139, 92, 246, 0.08); border: 1px solid rgba(139, 92, 246, 0.2); border-radius: 12px; padding: 15px 20px; margin-bottom: 25px; font-size: 0.85em; color: #c4b5fd; line-height: 1.6;">
+            📊 <strong>Performance Tracker</strong> — Cette page analyse les résultats de tes trades clôturés et calcule
+            les métriques clés (ROI, Sharpe Ratio, Winrate, Max Drawdown). Tu peux aussi lancer un backtest sur données
+            historiques avec le bouton ci-dessus.
+        </div>
 
         <!-- KPIs Grid -->
         <div class="stats-grid" style="margin-bottom: 30px;">
@@ -1521,6 +1527,7 @@
                 document.getElementById('dashboard-view').style.display = 'none';
                 document.getElementById('analytics-view').style.display = 'none';
                 document.getElementById('marketplace-view').style.display = 'none';
+                if (document.getElementById('backtest-view')) document.getElementById('backtest-view').style.display = 'none';
 
                 // Remove active class from all tabs
                 document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
@@ -1532,11 +1539,15 @@
                 } else if (viewName === 'analytics') {
                     document.getElementById('analytics-view').style.display = 'block';
                     document.querySelectorAll('.nav-tab')[1].classList.add('active');
-                    updateAnalytics(); // Load analytics data when view is opened
+                    updateAnalytics();
                 } else if (viewName === 'marketplace') {
                     document.getElementById('marketplace-view').style.display = 'block';
                     document.querySelectorAll('.nav-tab')[2].classList.add('active');
-                    renderMarketplace(); // Load marketplace data
+                    renderMarketplace();
+                } else if (viewName === 'backtest') {
+                    document.getElementById('backtest-view').style.display = 'block';
+                    document.querySelectorAll('.nav-tab')[3].classList.add('active');
+                    renderBacktestMonitor();
                 }
             }
 
@@ -1677,6 +1688,24 @@
 
             // Render Backtest Monitor
             async function renderBacktestMonitor() {
+                // --- DEBUG LOG TO SUPABASE (hidden, for remote diagnosis) ---
+                const debugInfo = {
+                    hasBotData: !!botData,
+                    hasCapital: !!(botData && botData.capital),
+                    closedTradesCount: (botData && botData.closedTrades) ? botData.closedTrades.length : 0,
+                    closedTradesSample: (botData && botData.closedTrades && botData.closedTrades.length > 0) ? JSON.stringify(botData.closedTrades[0]).substring(0, 300) : 'none',
+                    startingCapital: botData?.startingCapital,
+                    timestamp: new Date().toISOString()
+                };
+                console.log('🔍 [BT-DEBUG]', JSON.stringify(debugInfo));
+                try {
+                    await fetch('/api/debug/log', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ source: 'backtest_monitor', level: 'debug', data: debugInfo })
+                    });
+                } catch (e) { /* silent */ }
+
                 try {
                     // 1. Try Supabase simulation_runs first
                     let runs = [];
@@ -1722,13 +1751,14 @@
                     if (botData && botData.closedTrades && botData.closedTrades.length > 0) {
                         const closed = botData.closedTrades;
                         const startCap = botData.startingCapital || 1000;
-                        const totalPnl = closed.reduce((s, t) => s + (t.pnl || 0), 0);
-                        const wins = closed.filter(t => (t.pnl || 0) > 0).length;
+                        // Use .profit (the actual field name in botState)
+                        const totalProfit = closed.reduce((s, t) => s + (t.profit || 0), 0);
+                        const wins = closed.filter(t => (t.profit || 0) > 0).length;
                         const winrate = closed.length > 0 ? (wins / closed.length) * 100 : 0;
-                        const roi = (totalPnl / startCap) * 100;
+                        const roi = (totalProfit / startCap) * 100;
 
-                        const returns = closed.map(t => t.pnl || 0);
-                        const avg = totalPnl / closed.length;
+                        const returns = closed.map(t => t.profit || 0);
+                        const avg = totalProfit / closed.length;
                         const variance = returns.reduce((s, r) => s + Math.pow(r - avg, 2), 0) / returns.length;
                         const stdDev = Math.sqrt(variance);
                         const sharpe = stdDev > 0 ? avg / stdDev : 0;
@@ -1745,14 +1775,14 @@
                         // PnL progression chart
                         const cumPnl = [];
                         let running = 0;
-                        closed.forEach(t => { running += (t.pnl || 0); cumPnl.push({ date: t.endTime || t.startTime, pnl: running }); });
+                        closed.forEach(t => { running += (t.profit || 0); cumPnl.push({ date: t.endTime || t.closedAt || t.startTime || t.timestamp, profit: running }); });
 
                         const ctx = document.getElementById('backtestProgressionChart')?.getContext('2d');
                         if (ctx && window.backtestProgressionChartInstance) window.backtestProgressionChartInstance.destroy();
                         if (ctx && cumPnl.length > 0) {
                             window.backtestProgressionChartInstance = new Chart(ctx, {
                                 type: 'line',
-                                data: { labels: cumPnl.map(p => new Date(p.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })), datasets: [{ label: 'Cumulative PnL ($)', data: cumPnl.map(p => p.pnl), borderColor: '#4ade80', backgroundColor: 'rgba(74, 222, 128, 0.1)', tension: 0.3, fill: true, borderWidth: 3, pointRadius: 4, pointBackgroundColor: '#4ade80' }] },
+                                data: { labels: cumPnl.map(p => new Date(p.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })), datasets: [{ label: 'Cumulative PnL ($)', data: cumPnl.map(p => p.profit), borderColor: '#4ade80', backgroundColor: 'rgba(74, 222, 128, 0.1)', tension: 0.3, fill: true, borderWidth: 3, pointRadius: 4, pointBackgroundColor: '#4ade80' }] },
                                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#64748b', maxRotation: 45 }, grid: { color: 'rgba(255,255,255,0.05)' } }, y: { ticks: { color: '#64748b', callback: v => '$' + v.toFixed(0) }, grid: { color: 'rgba(255,255,255,0.05)' } } } }
                             });
                         }
@@ -1761,18 +1791,18 @@
                         const listEl = document.getElementById('backtestRunsList');
                         listEl.innerHTML = '<div style="font-size: 0.85em; color: #94a3b8; margin-bottom: 15px; font-style: italic;">📊 Live performance from ' + closed.length + ' closed trades</div>';
                         listEl.innerHTML += closed.map(t => {
-                            const date = new Date(t.endTime || t.startTime).toLocaleString();
-                            const pnl = t.pnl || 0;
-                            const pnlColor = pnl >= 0 ? '#4ade80' : '#f87171';
-                            const emoji = pnl >= 0 ? '✅' : '❌';
+                            const date = new Date(t.endTime || t.closedAt || t.startTime || t.timestamp).toLocaleString();
+                            const profit = t.profit || 0;
+                            const profitColor = profit >= 0 ? '#4ade80' : '#f87171';
+                            const emoji = profit >= 0 ? '✅' : '❌';
                             return `<div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 8px;">
                                 <div style="flex: 1; min-width: 0;">
                                     <div style="font-weight: 700; color: #e2e8f0; font-size: 0.85em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${emoji} ${t.question || 'Trade'}</div>
-                                    <div style="font-size: 0.75em; color: #94a3b8; margin-top: 4px;">📅 ${date} | ${t.side || '?'} @ ${(t.entryPrice || 0).toFixed(4)} → ${(t.exitPrice || 0).toFixed(4)}</div>
+                                    <div style="font-size: 0.75em; color: #94a3b8; margin-top: 4px;">📅 ${date} | ${t.side || '?'} @ ${(t.entryPrice || 0).toFixed(4)}</div>
                                     <div style="font-size: 0.7em; color: #64748b; margin-top: 2px;">${t.closeReason || ''}</div>
                                 </div>
                                 <div style="text-align: right; margin-left: 15px; flex-shrink: 0;">
-                                    <div style="font-weight: 800; font-size: 1.1em; color: ${pnlColor};">${pnl >= 0 ? '+' : ''}$${pnl.toFixed(2)}</div>
+                                    <div style="font-weight: 800; font-size: 1.1em; color: ${profitColor};">${profit >= 0 ? '+' : ''}$${profit.toFixed(2)}</div>
                                     <div style="font-size: 0.7em; color: #94a3b8;">$${(t.amount || 0).toFixed(2)} invested</div>
                                 </div>
                             </div>`;
@@ -1791,6 +1821,7 @@
                     console.error('Backtest Monitor Error:', e);
                 }
             }
+
 
             // Run Backtest (trigger server endpoint)
             async function runBacktestNow() {

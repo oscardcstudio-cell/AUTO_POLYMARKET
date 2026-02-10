@@ -65,4 +65,35 @@ router.get('/logs', checkAdminKey, (req, res) => {
     }
 });
 
+/**
+ * POST /api/debug/log
+ * Accept frontend debug logs and store in Supabase for remote diagnosis
+ */
+router.post('/log', async (req, res) => {
+    try {
+        const { source, level, data } = req.body;
+        const logEntry = {
+            source: source || 'frontend',
+            level: level || 'debug',
+            data: typeof data === 'string' ? data : JSON.stringify(data),
+            timestamp: new Date().toISOString()
+        };
+
+        // Try to insert into Supabase
+        try {
+            const { supabase } = await import('../services/supabaseService.js');
+            if (supabase) {
+                await supabase.from('debug_logs').insert([logEntry]);
+            }
+        } catch (e) {
+            // Supabase not available, just log to console
+            console.log(`[DEBUG-LOG] ${logEntry.source}: ${logEntry.data}`);
+        }
+
+        res.json({ ok: true });
+    } catch (error) {
+        res.json({ ok: false, error: error.message });
+    }
+});
+
 export default router;
