@@ -396,14 +396,20 @@
                     <span>GAMMA: <span id="gammaStatus">OK</span></span>
                 </div>
                 <div class="status-badge" id="priceTrackerBadge"
-                    style="background: rgba(139, 92, 246, 0.1); border-color: rgba(139, 92, 246, 0.3);">
-                    <div class="pulse-dot" style="background: #8b5cf6;">
-                        <svg class="pulse-dot-timer" id="priceTrackerTimer">
-                            <circle cx="8" cy="8" r="6"
-                                style="stroke: #8b5cf6; stroke-dasharray: 37.7; stroke-dashoffset: 0;"></circle>
+                    style="background: rgba(139, 92, 246, 0.1); border-color: rgba(139, 92, 246, 0.3); padding: 8px 12px; display: flex; align-items: center; justify-content: center; width: 45px; height: 45px; border-radius: 50%;">
+                    <div
+                        style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+                        <svg class="progress-ring" width="28" height="28"
+                            style="transform: rotate(-90deg); position: absolute;">
+                            <circle id="priceProgress" stroke="#8b5cf6" stroke-width="2" fill="transparent" r="12"
+                                cx="14" cy="14"
+                                style="stroke-dasharray: 75; stroke-dashoffset: 75; transition: stroke-dashoffset 3s linear;">
+                            </circle>
                         </svg>
+                        <div id="priceLed"
+                            style="width: 8px; height: 8px; background: #4ade80; border-radius: 50%; box-shadow: 0 0 8px #4ade80; z-index: 2;">
+                        </div>
                     </div>
-                    <span>PRICES: <span id="priceTrackerStatus">CONNECTING...</span></span>
                 </div>
             </div>
 
@@ -1466,22 +1472,44 @@
 
             async function fetchRealData() {
                 try {
-                    const res = await fetch('/api/bot-data');
+                    const ring = document.getElementById('priceProgress');
+                    const led = document.getElementById('priceLed');
+
                     if (res.ok) {
                         botData = await res.json();
                         updateDashboard();
+
+                        // Success State
+                        if (led) {
+                            led.style.background = '#4ade80'; // Green
+                            led.style.boxShadow = '0 0 8px #4ade80';
+                        }
+
+                        // Reset and Replay Animation
+                        if (ring) {
+                            ring.style.transition = 'none';
+                            ring.style.strokeDashoffset = '75'; // Reset to empty
+
+                            // Force reflow
+                            void ring.offsetWidth;
+
+                            ring.style.transition = 'stroke-dashoffset 3s linear';
+                            ring.style.strokeDashoffset = '0'; // Animate to full
+                        }
+
                     } else {
                         throw new Error(`Server Error: ${res.status}`);
                     }
                 } catch (e) {
-                    console.error("Fetch Error:", e);
-                    const statusEl = document.getElementById('priceTrackerStatus');
-                    const badge = document.getElementById('priceTrackerBadge');
-                    if (statusEl) {
-                        statusEl.textContent = "OFFLINE (Retrying...)";
-                        statusEl.style.color = "#f87171";
+                    // console.error("Fetch Error:", e); // Silence console spam
+
+                    const led = document.getElementById('priceLed');
+                    if (led) {
+                        led.style.background = '#ef4444'; // Red
+                        led.style.boxShadow = '0 0 8px #ef4444';
+                        // Blink effect
+                        led.style.animation = 'pulse 1s infinite';
                     }
-                    if (badge) badge.style.borderColor = "rgba(239, 68, 68, 0.5)";
                 }
             }
 
