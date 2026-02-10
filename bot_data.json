@@ -2384,6 +2384,10 @@
     {
       "t": "2026-02-10T20:58:25.129Z",
       "v": 287.937045168426
+    },
+    {
+      "t": "2026-02-10T20:59:25.797Z",
+      "v": 287.937045168426
     }
   ],
   "lastPizzaData": {
@@ -2396,10 +2400,10 @@
     "question": "Spurs vs. Lakers",
     "score": 100,
     "reason": "Alpha Matrix: Corrélation de signal maximale",
-    "timestamp": "2026-02-10T20:54:22.210Z",
+    "timestamp": "2026-02-10T20:59:25.797Z",
     "slug": "nba-sas-lal-2026-02-10"
   },
-  "lastUpdate": "2026-02-10T20:59:25.723Z",
+  "lastUpdate": "2026-02-10T20:59:25.804Z",
   "logs": [
     {
       "timestamp": "2026-02-10T20:59:25.446Z",
@@ -3593,7 +3597,7 @@
   ],
   "momentumData": {},
   "apiStatus": {
-    "gamma": "DEGRADED",
+    "gamma": "ONLINE",
     "clob": "DEGRADED",
     "pizzint": "ONLINE",
     "alpha": "ONLINE"
@@ -3739,19 +3743,19 @@
   "sectorStats": {
     "politics": {
       "count": 48,
-      "lastActivity": "2026-02-10T20:59:25.724Z"
+      "lastActivity": "2026-02-10T20:59:25.804Z"
     },
     "economics": {
       "count": 24,
-      "lastActivity": "2026-02-10T20:59:25.724Z"
+      "lastActivity": "2026-02-10T20:59:25.804Z"
     },
     "tech": {
       "count": 10,
-      "lastActivity": "2026-02-10T20:59:25.724Z"
+      "lastActivity": "2026-02-10T20:59:25.804Z"
     },
     "trending": {
       "count": 57,
-      "lastActivity": "2026-02-10T20:59:25.724Z"
+      "lastActivity": "2026-02-10T20:59:25.805Z"
     }
   },
   "sectorActivity": {
@@ -3859,6 +3863,15 @@
     ],
     "economics": [
       {
+        "id": "mlh33hlxqh10ir4lojl",
+        "timestamp": "2026-02-10T20:59:25.797Z",
+        "type": "ANALYSIS",
+        "message": "Observation: 4 marchés scannés.",
+        "data": {
+          "status": "idle"
+        }
+      },
+      {
         "id": "mlh326spmr3o45lki2",
         "timestamp": "2026-02-10T20:58:25.129Z",
         "type": "ANALYSIS",
@@ -3938,18 +3951,18 @@
         "data": {
           "status": "idle"
         }
-      },
-      {
-        "id": "mlh2qh3iwzkqygdsqst",
-        "timestamp": "2026-02-10T20:49:18.606Z",
-        "type": "ANALYSIS",
-        "message": "Observation: 4 marchés scannés.",
-        "data": {
-          "status": "idle"
-        }
       }
     ],
     "tech": [
+      {
+        "id": "mlh33hlxbe0hufoyi15",
+        "timestamp": "2026-02-10T20:59:25.797Z",
+        "type": "ANALYSIS",
+        "message": "Observation: 2 marchés scannés.",
+        "data": {
+          "status": "idle"
+        }
+      },
       {
         "id": "mlh326spyxmlpgi9kx",
         "timestamp": "2026-02-10T20:58:25.129Z",
@@ -4030,18 +4043,63 @@
         "data": {
           "status": "idle"
         }
-      },
-      {
-        "id": "mlh2qh3iexe1lwx8znf",
-        "timestamp": "2026-02-10T20:49:18.606Z",
-        "type": "ANALYSIS",
-        "message": "Observation: 2 marchés scannés.",
-        "data": {
-          "status": "idle"
-        }
       }
     ],
     "trending": [
+      {
+        "id": "mlh33hlxh56y6on8sy8",
+        "timestamp": "2026-02-10T20:59:25.797Z",
+        "type": "ANALYSIS",
+        "message": "Observation: 8 marchés scannés.",
+        "data": {
+          "status": "idle"
+        }
+      },
+      {
+        "id": "mlh33hlxiyyapmrls6",
+        "timestamp": "2026-02-10T20:59:25.797Z",
+        "type": "SIGNAL",
+        "message": "Top Signal Detected: 100/100",
+        "data": {
+          "market": "Spurs vs. Lakers"
+        }
+      },
+      {
+        "id": "mlh33hlwx0sqvuxwm6",
+        "timestamp": "2026-02-10T20:59:25.796Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: Clippers vs. Rockets...",
+        "data": {
+          "score": "100"
+        }
+      },
+      {
+        "id": "mlh33hlwgn4hwtkkw0j",
+        "timestamp": "2026-02-10T20:59:25.796Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: Spurs vs. Lakers...",
+        "data": {
+          "score": "100"
+        }
+      },
+      {
+        "id": "mlh33hk3fu1zxakb5x9",
+        "timestamp": "2026-02-10T20:59:25.731Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: Clippers vs. Rockets...",
+        "data": {
+          "score": "100"
+        }
+      },
+      {
+        "id": "mlh33hk3rajzclxqvz",
+        "timestamp": "2026-02-10T20:59:25.731Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: Spurs vs. Lakers...",
+        "data": {
+          "score": "100"
+        }
+      },
       {
         "id": "mlh326spmtux9eiqzl9",
         "timestamp": "2026-02-10T20:58:25.129Z",
@@ -4072,60 +4130,6 @@
       {
         "id": "mlh30vwiqud2euzc6v",
         "timestamp": "2026-02-10T20:57:24.354Z",
-        "type": "ANALYSIS",
-        "message": "Observation: 8 marchés scannés.",
-        "data": {
-          "status": "idle"
-        }
-      },
-      {
-        "id": "mlh30vurpx6m1bz5lv",
-        "timestamp": "2026-02-10T20:57:24.291Z",
-        "type": "ANALYSIS",
-        "message": "High Alpha: Clippers vs. Rockets...",
-        "data": {
-          "score": "100"
-        }
-      },
-      {
-        "id": "mlh30vur9tu17uokjmh",
-        "timestamp": "2026-02-10T20:57:24.291Z",
-        "type": "ANALYSIS",
-        "message": "High Alpha: Spurs vs. Lakers...",
-        "data": {
-          "score": "100"
-        }
-      },
-      {
-        "id": "mlh2zl2m28fp09s6hn7",
-        "timestamp": "2026-02-10T20:56:23.662Z",
-        "type": "ANALYSIS",
-        "message": "Observation: 8 marchés scannés.",
-        "data": {
-          "status": "idle"
-        }
-      },
-      {
-        "id": "mlh2zl0ywnl1facbiys",
-        "timestamp": "2026-02-10T20:56:23.602Z",
-        "type": "ANALYSIS",
-        "message": "High Alpha: Clippers vs. Rockets...",
-        "data": {
-          "score": "100"
-        }
-      },
-      {
-        "id": "mlh2zl0yt4ul28s0wi",
-        "timestamp": "2026-02-10T20:56:23.602Z",
-        "type": "ANALYSIS",
-        "message": "High Alpha: Spurs vs. Lakers...",
-        "data": {
-          "score": "100"
-        }
-      },
-      {
-        "id": "mlh2ya8rfibby5wkpvu",
-        "timestamp": "2026-02-10T20:55:22.971Z",
         "type": "ANALYSIS",
         "message": "Observation: 8 marchés scannés.",
         "data": {
@@ -4289,7 +4293,14 @@
       "rfqEnabled": false,
       "holdingRewardsEnabled": false,
       "feesEnabled": false,
-      "requiresTranslation": false
+      "requiresTranslation": false,
+      "_scoreReasons": [
+        "Momentum fort (+30)",
+        "🐳 Whale Alert (+35)",
+        "Diversification (+10)"
+      ],
+      "_category": "economic",
+      "_alphaScore": 75
     },
     {
       "id": "1333630",
@@ -4447,7 +4458,15 @@
       "rfqEnabled": false,
       "holdingRewardsEnabled": false,
       "feesEnabled": false,
-      "requiresTranslation": false
+      "requiresTranslation": false,
+      "_scoreReasons": [
+        "Expire <5j (+25)",
+        "Momentum fort (+30)",
+        "🐳 Whale Alert (+35)",
+        "Diversification (+10)"
+      ],
+      "_category": "other",
+      "_alphaScore": 100
     },
     {
       "id": "1333617",
@@ -4605,7 +4624,15 @@
       "rfqEnabled": false,
       "holdingRewardsEnabled": false,
       "feesEnabled": false,
-      "requiresTranslation": false
+      "requiresTranslation": false,
+      "_scoreReasons": [
+        "Expire <5j (+25)",
+        "Momentum fort (+30)",
+        "🐳 Whale Alert (+35)",
+        "Diversification (+10)"
+      ],
+      "_category": "other",
+      "_alphaScore": 100
     },
     {
       "id": "1303380",
@@ -4760,7 +4787,14 @@
       "rfqEnabled": false,
       "holdingRewardsEnabled": false,
       "feesEnabled": false,
-      "requiresTranslation": false
+      "requiresTranslation": false,
+      "_scoreReasons": [
+        "Momentum fort (+30)",
+        "🐳 Whale Alert (+35)",
+        "Diversification (+10)"
+      ],
+      "_category": "economic",
+      "_alphaScore": 75
     },
     {
       "id": "1356707",
@@ -4910,7 +4944,14 @@
       "eventStartTime": "2026-02-10T20:00:00Z",
       "holdingRewardsEnabled": false,
       "feesEnabled": false,
-      "requiresTranslation": false
+      "requiresTranslation": false,
+      "_scoreReasons": [
+        "Expire <5j (+25)",
+        "Momentum fort (+30)",
+        "Diversification (+10)"
+      ],
+      "_category": "economic",
+      "_alphaScore": 65
     },
     {
       "id": "521963",
@@ -5035,7 +5076,13 @@
       "rfqEnabled": false,
       "holdingRewardsEnabled": false,
       "feesEnabled": false,
-      "requiresTranslation": false
+      "requiresTranslation": false,
+      "_scoreReasons": [
+        "Momentum moyen (+15)",
+        "Diversification (+10)"
+      ],
+      "_category": "tech",
+      "_alphaScore": 25
     },
     {
       "id": "521964",
@@ -5159,7 +5206,12 @@
       "rfqEnabled": false,
       "holdingRewardsEnabled": false,
       "feesEnabled": false,
-      "requiresTranslation": false
+      "requiresTranslation": false,
+      "_scoreReasons": [
+        "Diversification (+10)"
+      ],
+      "_category": "tech",
+      "_alphaScore": 10
     },
     {
       "id": "528788",
@@ -5283,7 +5335,13 @@
       "rfqEnabled": false,
       "holdingRewardsEnabled": false,
       "feesEnabled": false,
-      "requiresTranslation": false
+      "requiresTranslation": false,
+      "_scoreReasons": [
+        "Momentum fort (+30)",
+        "Diversification (+10)"
+      ],
+      "_category": "other",
+      "_alphaScore": 40
     },
     {
       "id": "527079",
@@ -5408,7 +5466,13 @@
       "rfqEnabled": false,
       "holdingRewardsEnabled": false,
       "feesEnabled": false,
-      "requiresTranslation": false
+      "requiresTranslation": false,
+      "_scoreReasons": [
+        "Momentum fort (+30)",
+        "Diversification (+10)"
+      ],
+      "_category": "other",
+      "_alphaScore": 40
     }
   ],
   "lastHeartbeat": "2026-02-10T20:58:25.146Z",
