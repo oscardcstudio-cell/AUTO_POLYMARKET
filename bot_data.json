@@ -2403,8 +2403,13 @@
     "timestamp": "2026-02-10T20:59:25.797Z",
     "slug": "nba-sas-lal-2026-02-10"
   },
-  "lastUpdate": "2026-02-10T20:59:25.804Z",
+  "lastUpdate": "2026-02-10T21:00:26.430Z",
   "logs": [
+    {
+      "timestamp": "2026-02-10T20:59:29.206Z",
+      "message": "✅ Updated 0/99 trade prices",
+      "type": "info"
+    },
     {
       "timestamp": "2026-02-10T20:59:25.446Z",
       "message": "🌊 LANCEMENT DEEP SCAN (1000+ marchés)...",
@@ -3577,15 +3582,15 @@
     {
       "title": "Trend Alert: \"BITCOIN\" (Avg Prob: NaN%)",
       "sentiment": "neutral",
-      "source": "Polymarket Internal (3 mkts)"
-    },
-    {
-      "title": "Trend Alert: \"FEBRUARY\" (Avg Prob: NaN%)",
-      "sentiment": "neutral",
-      "source": "Polymarket Internal (3 mkts)"
+      "source": "Polymarket Internal (2 mkts)"
     },
     {
       "title": "Trend Alert: \"REACH\" (Avg Prob: NaN%)",
+      "sentiment": "neutral",
+      "source": "Polymarket Internal (2 mkts)"
+    },
+    {
+      "title": "Trend Alert: \"FEBRUARY\" (Avg Prob: NaN%)",
       "sentiment": "neutral",
       "source": "Polymarket Internal (2 mkts)"
     },
@@ -3597,7 +3602,7 @@
   ],
   "momentumData": {},
   "apiStatus": {
-    "gamma": "ONLINE",
+    "gamma": "DEGRADED",
     "clob": "DEGRADED",
     "pizzint": "ONLINE",
     "alpha": "ONLINE"
@@ -3743,19 +3748,19 @@
   "sectorStats": {
     "politics": {
       "count": 48,
-      "lastActivity": "2026-02-10T20:59:25.804Z"
+      "lastActivity": "2026-02-10T21:00:26.430Z"
     },
     "economics": {
       "count": 24,
-      "lastActivity": "2026-02-10T20:59:25.804Z"
+      "lastActivity": "2026-02-10T21:00:26.430Z"
     },
     "tech": {
       "count": 10,
-      "lastActivity": "2026-02-10T20:59:25.804Z"
+      "lastActivity": "2026-02-10T21:00:26.430Z"
     },
     "trending": {
       "count": 57,
-      "lastActivity": "2026-02-10T20:59:25.805Z"
+      "lastActivity": "2026-02-10T21:00:26.431Z"
     }
   },
   "sectorActivity": {
@@ -5475,6 +5480,6 @@
       "_alphaScore": 40
     }
   ],
-  "lastHeartbeat": "2026-02-10T20:58:25.146Z",
+  "lastHeartbeat": "2026-02-10T20:59:25.812Z",
   "lastBacktestRequest": 1770756254857
 }
