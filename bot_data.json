@@ -1880,10 +1880,11 @@
         0.0405,
         0.013,
         0.013,
+        0.013,
         0.013
       ],
       "maxReturn": 0,
-      "lastPriceUpdate": "2026-02-10T20:29:03.340Z"
+      "lastPriceUpdate": "2026-02-10T20:30:04.339Z"
     },
     {
       "id": "mle77zlvgmb7euf27ep",
@@ -1937,10 +1938,11 @@
         0.011,
         0.0015,
         0.0015,
+        0.0015,
         0.0015
       ],
       "maxReturn": 0.03724658180103707,
-      "lastPriceUpdate": "2026-02-10T20:29:03.340Z"
+      "lastPriceUpdate": "2026-02-10T20:30:04.339Z"
     },
     {
       "id": "mle76owl0zrdns0u688a",
@@ -2061,7 +2063,8 @@
       "exitPrice": 0.039,
       "finalValue": 54.56306500215239,
       "pnl": -58.48041325871717,
-      "closeReason": "⏱️ TIMEOUT: 48.0h (PnL: -51.7%)"
+      "closeReason": "⏱️ TIMEOUT: 48.0h (PnL: -51.7%)",
+      "supabase_id": "7f65bb6d-56c8-49eb-b67d-50a9bccc3666"
     }
   ],
   "capitalHistory": [
@@ -2248,6 +2251,10 @@
     {
       "t": "2026-02-10T20:29:03.433Z",
       "v": 200
+    },
+    {
+      "t": "2026-02-10T20:30:04.378Z",
+      "v": 254.5630650021524
     }
   ],
   "lastPizzaData": {
@@ -2263,7 +2270,7 @@
     "timestamp": "2026-02-10T20:29:03.432Z",
     "slug": "nba-sas-lal-2026-02-10"
   },
-  "lastUpdate": "2026-02-10T20:30:03.698Z",
+  "lastUpdate": "2026-02-10T20:30:04.385Z",
   "logs": [
     {
       "timestamp": "2026-02-10T20:30:03.697Z",
@@ -3367,7 +3374,7 @@
   ],
   "momentumData": {},
   "apiStatus": {
-    "gamma": "DEGRADED",
+    "gamma": "ONLINE",
     "clob": "DEGRADED",
     "pizzint": "ONLINE",
     "alpha": "ONLINE"
@@ -3388,8 +3395,17 @@
       "slug": "nba-lac-hou-2026-02-10",
       "question": "Clippers vs. Rockets",
       "price": "0.275",
-      "alpha": 65,
-      "reason": "YES Alpha 65%"
+      "alpha": 100,
+      "reason": "YES Alpha 100%"
+    },
+    {
+      "id": "1303380",
+      "side": "YES",
+      "slug": "will-bitcoin-reach-95k-in-february-2026",
+      "question": "Will Bitcoin reach $95,000 in February?",
+      "price": "0.011",
+      "alpha": 75,
+      "reason": "YES Alpha 75%"
     },
     {
       "id": "1356707",
@@ -3399,15 +3415,6 @@
       "price": "0.165",
       "alpha": 65,
       "reason": "YES Alpha 65%"
-    },
-    {
-      "id": "1303380",
-      "side": "YES",
-      "slug": "will-bitcoin-reach-95k-in-february-2026",
-      "question": "Will Bitcoin reach $95,000 in February?",
-      "price": "0.011",
-      "alpha": 40,
-      "reason": "YES Alpha 40%"
     },
     {
       "id": "528788",
@@ -3522,19 +3529,19 @@
   "sectorStats": {
     "politics": {
       "count": 48,
-      "lastActivity": "2026-02-10T20:30:03.698Z"
+      "lastActivity": "2026-02-10T20:30:04.385Z"
     },
     "economics": {
       "count": 24,
-      "lastActivity": "2026-02-10T20:30:03.698Z"
+      "lastActivity": "2026-02-10T20:30:04.385Z"
     },
     "tech": {
       "count": 12,
-      "lastActivity": "2026-02-10T20:30:03.698Z"
+      "lastActivity": "2026-02-10T20:30:04.385Z"
     },
     "trending": {
       "count": 57,
-      "lastActivity": "2026-02-10T20:30:03.698Z"
+      "lastActivity": "2026-02-10T20:30:04.386Z"
     }
   },
   "sectorActivity": {
@@ -3642,6 +3649,15 @@
     ],
     "economics": [
       {
+        "id": "mlh21qhmb7oyfpw9kgk",
+        "timestamp": "2026-02-10T20:30:04.378Z",
+        "type": "ANALYSIS",
+        "message": "Observation: 4 marchés scannés.",
+        "data": {
+          "status": "idle"
+        }
+      },
+      {
         "id": "mlh20fgpyytrv78chy8",
         "timestamp": "2026-02-10T20:29:03.433Z",
         "type": "ANALYSIS",
@@ -3726,19 +3742,18 @@
           "market": "BitBoy vs. Smic - Crypto Fight Night",
           "price": "0.73"
         }
-      },
-      {
-        "id": "mlfpqk0i690ryqqit79",
-        "timestamp": "2026-02-09T21:57:41.202Z",
-        "type": "TRADE",
-        "message": "📉 Trade Opened: $100 on NO",
-        "data": {
-          "market": "U.S. Recession in 2024?",
-          "price": "0.71"
-        }
       }
     ],
     "tech": [
+      {
+        "id": "mlh21qhm3qmf8kcghue",
+        "timestamp": "2026-02-10T20:30:04.378Z",
+        "type": "ANALYSIS",
+        "message": "Observation: 2 marchés scannés.",
+        "data": {
+          "status": "idle"
+        }
+      },
       {
         "id": "mlh20fgpenk9f8vt82p",
         "timestamp": "2026-02-10T20:29:03.433Z",
@@ -3819,18 +3834,36 @@
         "data": {
           "status": "idle"
         }
-      },
-      {
-        "id": "mle8xxwg64x3ytbzsii",
-        "timestamp": "2026-02-08T21:19:46.144Z",
-        "type": "ANALYSIS",
-        "message": "Observation: 3 marchés scannés.",
-        "data": {
-          "status": "idle"
-        }
       }
     ],
     "trending": [
+      {
+        "id": "mlh21qhm2kulp1zqx64",
+        "timestamp": "2026-02-10T20:30:04.378Z",
+        "type": "ANALYSIS",
+        "message": "Observation: 8 marchés scannés.",
+        "data": {
+          "status": "idle"
+        }
+      },
+      {
+        "id": "mlh21qgrwcknd9xzo3l",
+        "timestamp": "2026-02-10T20:30:04.347Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: Clippers vs. Rockets...",
+        "data": {
+          "score": "100"
+        }
+      },
+      {
+        "id": "mlh21qgr63p4bkny46q",
+        "timestamp": "2026-02-10T20:30:04.347Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: Spurs vs. Lakers...",
+        "data": {
+          "score": "100"
+        }
+      },
       {
         "id": "mlh21pypnrycf0s3fe",
         "timestamp": "2026-02-10T20:30:03.697Z",
@@ -3892,34 +3925,6 @@
         "message": "Observation: 9 marchés scannés.",
         "data": {
           "status": "idle"
-        }
-      },
-      {
-        "id": "mlh0f378msj7t0bodbb",
-        "timestamp": "2026-02-10T19:44:28.148Z",
-        "type": "ANALYSIS",
-        "message": "High Alpha: Spurs vs. Lakers...",
-        "data": {
-          "score": "100"
-        }
-      },
-      {
-        "id": "mlh03xhc3h5iwaucbnh",
-        "timestamp": "2026-02-10T19:35:47.520Z",
-        "type": "ANALYSIS",
-        "message": "Observation: 8 marchés scannés.",
-        "data": {
-          "status": "idle"
-        }
-      },
-      {
-        "id": "mlfq411xvana0hjncak",
-        "timestamp": "2026-02-09T22:08:09.813Z",
-        "type": "TRADE",
-        "message": "🎰 Trade Opened: $100 on NO",
-        "data": {
-          "market": "Will England win the 2024 Euros?",
-          "price": "0.71"
         }
       }
     ]
