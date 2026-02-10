@@ -2392,6 +2392,10 @@
     {
       "t": "2026-02-10T21:00:26.511Z",
       "v": 287.937045168426
+    },
+    {
+      "t": "2026-02-10T21:01:27.247Z",
+      "v": 287.937045168426
     }
   ],
   "lastPizzaData": {
@@ -2407,7 +2411,7 @@
     "timestamp": "2026-02-10T20:59:25.797Z",
     "slug": "nba-sas-lal-2026-02-10"
   },
-  "lastUpdate": "2026-02-10T21:01:27.145Z",
+  "lastUpdate": "2026-02-10T21:01:27.261Z",
   "logs": [
     {
       "timestamp": "2026-02-10T20:59:29.206Z",
@@ -3606,7 +3610,7 @@
   ],
   "momentumData": {},
   "apiStatus": {
-    "gamma": "DEGRADED",
+    "gamma": "ONLINE",
     "clob": "DEGRADED",
     "pizzint": "ONLINE",
     "alpha": "ONLINE"
@@ -3655,44 +3659,44 @@
       "question": "Solana Up or Down - February 11, 3:45PM-4:00PM ET",
       "slug": "sol-updown-15m-1770842700",
       "outcomePrices": "[\"0.5\", \"0.5\"]",
-      "liquidityNum": 6673.803,
+      "liquidityNum": 6683.093,
       "endDate": "2026-02-11T21:00:00Z",
       "endDateIso": "2026-02-11",
       "freshScore": 95,
-      "ageHours": "0.1"
+      "ageHours": "0.2"
     },
     {
       "id": "1363811",
       "question": "Bitcoin Up or Down - February 11, 3:45PM-4:00PM ET",
       "slug": "btc-updown-15m-1770842700",
       "outcomePrices": "[\"0.5\", \"0.5\"]",
-      "liquidityNum": 12151.518,
+      "liquidityNum": 13389.0774,
       "endDate": "2026-02-11T21:00:00Z",
       "endDateIso": "2026-02-11",
       "freshScore": 95,
-      "ageHours": "0.1"
+      "ageHours": "0.2"
     },
     {
       "id": "1363810",
       "question": "XRP Up or Down - February 11, 3:45PM-4:00PM ET",
       "slug": "xrp-updown-15m-1770842700",
       "outcomePrices": "[\"0.5\", \"0.5\"]",
-      "liquidityNum": 6186.563,
+      "liquidityNum": 6196.253,
       "endDate": "2026-02-11T21:00:00Z",
       "endDateIso": "2026-02-11",
       "freshScore": 95,
-      "ageHours": "0.1"
+      "ageHours": "0.2"
     },
     {
       "id": "1363809",
       "question": "Ethereum Up or Down - February 11, 3:45PM-4:00PM ET",
       "slug": "eth-updown-15m-1770842700",
       "outcomePrices": "[\"0.5\", \"0.5\"]",
-      "liquidityNum": 9316.4126,
+      "liquidityNum": 9970.8526,
       "endDate": "2026-02-11T21:00:00Z",
       "endDateIso": "2026-02-11",
       "freshScore": 95,
-      "ageHours": "0.1"
+      "ageHours": "0.2"
     },
     {
       "id": "1363806",
@@ -3752,19 +3756,19 @@
   "sectorStats": {
     "politics": {
       "count": 48,
-      "lastActivity": "2026-02-10T21:01:27.145Z"
+      "lastActivity": "2026-02-10T21:01:27.261Z"
     },
     "economics": {
       "count": 24,
-      "lastActivity": "2026-02-10T21:01:27.145Z"
+      "lastActivity": "2026-02-10T21:01:27.261Z"
     },
     "tech": {
       "count": 10,
-      "lastActivity": "2026-02-10T21:01:27.145Z"
+      "lastActivity": "2026-02-10T21:01:27.261Z"
     },
     "trending": {
       "count": 57,
-      "lastActivity": "2026-02-10T21:01:27.145Z"
+      "lastActivity": "2026-02-10T21:01:27.261Z"
     }
   },
   "sectorActivity": {
@@ -3872,6 +3876,15 @@
     ],
     "economics": [
       {
+        "id": "mlh363bjo1hyiu4nnig",
+        "timestamp": "2026-02-10T21:01:27.247Z",
+        "type": "ANALYSIS",
+        "message": "Observation: 3 marchés scannés.",
+        "data": {
+          "status": "idle"
+        }
+      },
+      {
         "id": "mlh34sgfu6gzvnvd5u",
         "timestamp": "2026-02-10T21:00:26.511Z",
         "type": "ANALYSIS",
@@ -3951,18 +3964,18 @@
         "data": {
           "status": "idle"
         }
-      },
-      {
-        "id": "mlh2t2qpc2xyre7adm",
-        "timestamp": "2026-02-10T20:51:19.969Z",
-        "type": "ANALYSIS",
-        "message": "Observation: 4 marchés scannés.",
-        "data": {
-          "status": "idle"
-        }
       }
     ],
     "tech": [
+      {
+        "id": "mlh363bj0xt4x40ijb1",
+        "timestamp": "2026-02-10T21:01:27.247Z",
+        "type": "ANALYSIS",
+        "message": "Observation: 2 marchés scannés.",
+        "data": {
+          "status": "idle"
+        }
+      },
       {
         "id": "mlh34sgfeexu5imuog",
         "timestamp": "2026-02-10T21:00:26.511Z",
@@ -4043,18 +4056,36 @@
         "data": {
           "status": "idle"
         }
-      },
-      {
-        "id": "mlh2t2qpt5jhmy9jdz",
-        "timestamp": "2026-02-10T20:51:19.969Z",
-        "type": "ANALYSIS",
-        "message": "Observation: 2 marchés scannés.",
-        "data": {
-          "status": "idle"
-        }
       }
     ],
     "trending": [
+      {
+        "id": "mlh363bjts9ssaustp",
+        "timestamp": "2026-02-10T21:01:27.247Z",
+        "type": "ANALYSIS",
+        "message": "Observation: 8 marchés scannés.",
+        "data": {
+          "status": "idle"
+        }
+      },
+      {
+        "id": "mlh3638xj27tzsfv7cd",
+        "timestamp": "2026-02-10T21:01:27.153Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: Clippers vs. Rockets...",
+        "data": {
+          "score": "100"
+        }
+      },
+      {
+        "id": "mlh3638xa4d7ss2v8h5",
+        "timestamp": "2026-02-10T21:01:27.153Z",
+        "type": "ANALYSIS",
+        "message": "High Alpha: Spurs vs. Lakers...",
+        "data": {
+          "score": "100"
+        }
+      },
       {
         "id": "mlh34sgfphcd72c6r5",
         "timestamp": "2026-02-10T21:00:26.511Z",
@@ -4116,33 +4147,6 @@
         "message": "High Alpha: Spurs vs. Lakers...",
         "data": {
           "score": "100"
-        }
-      },
-      {
-        "id": "mlh33hk3fu1zxakb5x9",
-        "timestamp": "2026-02-10T20:59:25.731Z",
-        "type": "ANALYSIS",
-        "message": "High Alpha: Clippers vs. Rockets...",
-        "data": {
-          "score": "100"
-        }
-      },
-      {
-        "id": "mlh33hk3rajzclxqvz",
-        "timestamp": "2026-02-10T20:59:25.731Z",
-        "type": "ANALYSIS",
-        "message": "High Alpha: Spurs vs. Lakers...",
-        "data": {
-          "score": "100"
-        }
-      },
-      {
-        "id": "mlh326spmtux9eiqzl9",
-        "timestamp": "2026-02-10T20:58:25.129Z",
-        "type": "ANALYSIS",
-        "message": "Observation: 8 marchés scannés.",
-        "data": {
-          "status": "idle"
         }
       }
     ]
