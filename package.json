@@ -6,7 +6,9 @@
   "type": "module",
   "scripts": {
     "start": "node server.js",
-    "dev": "node server.js"
+    "dev": "node server.js",
+    "debug": "node scripts/audit_system.js",
+    "diagnose": "node scripts/diagnose_railway_state.js"
   },
   "engines": {
     "node": ">=18.0.0"

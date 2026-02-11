@@ -1,5 +1,4 @@
-import fetch from 'node-fetch';
-import { addLog } from '../utils.js';
+import { fetchWithRetry, addLog } from '../utils.js';
 import { botState } from '../state.js';
 
 /**
@@ -9,8 +8,6 @@ import { botState } from '../state.js';
 
 const PRICE_UPDATE_INTERVAL = 5 * 60 * 1000; // 5 minutes
 const PRICE_CACHE_DURATION = 4 * 60 * 1000; // 4 minutes
-const MAX_RETRIES = 3;
-const RETRY_DELAY = 2000; // 2 seconds
 
 // Cache to avoid redundant API calls
 const priceCache = new Map();
@@ -20,7 +17,7 @@ const priceCache = new Map();
  * @param {string} marketId - The market ID
  * @returns {Promise<number|null>} Current price or null if error
  */
-async function fetchMarketPrice(marketId, retryCount = 0) {
+async function fetchMarketPrice(marketId) {
     // Check cache first
     const cached = priceCache.get(marketId);
     if (cached && Date.now() - cached.timestamp < PRICE_CACHE_DURATION) {
@@ -29,21 +26,12 @@ async function fetchMarketPrice(marketId, retryCount = 0) {
 
     try {
         const url = `https://gamma-api.polymarket.com/markets/${marketId}`;
-        const response = await fetch(url);
-
-        if (response.status === 429) {
-            // Rate limited - exponential backoff
-            if (retryCount < MAX_RETRIES) {
-                const delay = RETRY_DELAY * Math.pow(2, retryCount);
-                addLog(botState, `⚠️ Rate limited, retrying in ${delay}ms...`, 'warning');
-                await new Promise(resolve => setTimeout(resolve, delay));
-                return fetchMarketPrice(marketId, retryCount + 1);
-            }
-            addLog(botState, `❌ Max retries reached for market ${marketId}`, 'error');
-            return null;
-        }
+        // fetchWithRetry handles retries for network errors AND internal logging of attempts
+        const response = await fetchWithRetry(url);
 
         if (!response.ok) {
+            // If it's 429, fetchWithRetry might have already retried up to MAX_RETRIES.
+            // If we are here, it means even after retries it failed or it's another error (404, 500).
             addLog(botState, `⚠️ Failed to fetch price for market ${marketId}: ${response.status}`, 'warning');
             return null;
         }

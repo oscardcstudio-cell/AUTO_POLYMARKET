@@ -1,4 +1,4 @@
--- 📊 SUPABASE_FIX.sql
+-- 📊 SUPABASE_FIX.sql (FINAL VERSION)
 -- Run this in the Supabase SQL Editor.
 
 -- 1. FIX TABLE: Add missing 'category' column to 'trades' table (If not already done)
@@ -76,3 +76,46 @@ CREATE POLICY "Allow all for trade_archive" ON trade_archive FOR ALL USING (true
 
 -- 6. Clean up fake backtest results (all identical: 36.62% ROI)
 DELETE FROM simulation_runs WHERE result_roi BETWEEN 36.60 AND 36.65;
+
+-- 7. BOT STATE TABLE (Critical for Dashboard Persistence)
+CREATE TABLE IF NOT EXISTS bot_state (
+    id TEXT PRIMARY KEY,
+    updated_at TIMESTAMPTZ DEFAULT NOW(),
+    capital NUMERIC,
+    total_trades INTEGER,
+    win_rate NUMERIC,
+    state_data JSONB
+);
+ALTER TABLE bot_state ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Allow all for bot_state" ON bot_state;
+CREATE POLICY "Allow all for bot_state" ON bot_state FOR ALL USING (true);
+
+-- 8. SIMULATION RUNS TABLE (For Auto-Training History)
+CREATE TABLE IF NOT EXISTS simulation_runs (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    timestamp TIMESTAMPTZ DEFAULT NOW(),
+    run_type TEXT,
+    markets_tested INTEGER,
+    trades_count INTEGER,
+    win_rate NUMERIC,
+    result_pnl NUMERIC,
+    result_roi NUMERIC,
+    initial_capital NUMERIC,
+    final_capital NUMERIC,
+    sharpe_ratio NUMERIC,
+    max_drawdown NUMERIC,
+    metrics JSONB,
+    logs JSONB
+);
+
+-- 8b. PATCH: Ensure ALL columns exist (if table was created before)
+ALTER TABLE simulation_runs ADD COLUMN IF NOT EXISTS initial_capital NUMERIC;
+ALTER TABLE simulation_runs ADD COLUMN IF NOT EXISTS final_capital NUMERIC;
+ALTER TABLE simulation_runs ADD COLUMN IF NOT EXISTS sharpe_ratio NUMERIC;
+ALTER TABLE simulation_runs ADD COLUMN IF NOT EXISTS max_drawdown NUMERIC;
+ALTER TABLE simulation_runs ADD COLUMN IF NOT EXISTS metrics JSONB;
+ALTER TABLE simulation_runs ADD COLUMN IF NOT EXISTS logs JSONB;
+
+ALTER TABLE simulation_runs ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Allow all for simulation_runs" ON simulation_runs;
+CREATE POLICY "Allow all for simulation_runs" ON simulation_runs FOR ALL USING (true);
