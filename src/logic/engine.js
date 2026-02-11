@@ -309,8 +309,12 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
 
 
 
-    if (entryPrice < (CONFIG.MIN_PRICE_THRESHOLD || 0.05)) {
-        const reason = `Price too low (<${CONFIG.MIN_PRICE_THRESHOLD || 0.05}) - Penny Stock Filter`;
+    // CHECK: Penny Stock Filter (unless allowed by profile)
+    const currentProfile = riskManager.getProfile();
+    const minThreshold = CONFIG.MIN_PRICE_THRESHOLD || 0.05;
+
+    if (entryPrice < minThreshold && !currentProfile.allowPennyStocks) {
+        const reason = `Price too low (<${minThreshold}) - Penny Stock Filter (Active in ${currentProfile.label})`;
         if (reasonsCollector) reasonsCollector.push(reason);
         // Optional: log rejected decision 
         // logTradeDecision(market, null, [...decisionReasons, reason], pizzaData);
@@ -395,9 +399,9 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
                     entryPrice = executionData.price;
                 }
 
-                // Re-check Min Price Threshold with Real Price
-                if (entryPrice < (CONFIG.MIN_PRICE_THRESHOLD || 0.05)) {
-                    const reason = `⛔ Real Price too low (<${CONFIG.MIN_PRICE_THRESHOLD}) - Penny Stock Filter`;
+                // Re-check Min Price Threshold with Real Price (unless allowed by profile)
+                if (entryPrice < (CONFIG.MIN_PRICE_THRESHOLD || 0.05) && !currentProfile.allowPennyStocks) {
+                    const reason = `⛔ Real Price too low (<${CONFIG.MIN_PRICE_THRESHOLD}) - Penny Stock Filter (Active in ${currentProfile.label})`;
                     if (reasonsCollector) reasonsCollector.push(reason);
                     return null;
                 }
