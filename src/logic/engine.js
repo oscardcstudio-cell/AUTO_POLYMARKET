@@ -1,6 +1,6 @@
 
 import { botState, stateManager } from '../state.js';
-import { addLog } from '../utils.js';
+import { addLog, fetchWithRetry } from '../utils.js';
 import { CONFIG } from '../config.js';
 import { categorizeMarket } from './signals.js';
 import { getBestExecutionPrice, getCLOBOrderBook, getCLOBTradeHistory } from '../api/clob_api.js';
@@ -376,10 +376,13 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
     if (!market.clobTokenIds || market.clobTokenIds.length !== 2) {
         try {
             // console.warn(`⚠️ Missing CLOB IDs for ${market.question}. Attempting to fetch...`);
-            const freshData = await fetch(`https://gamma-api.polymarket.com/markets/${market.id}`).then(r => r.json());
-            if (freshData && freshData.clobTokenIds) {
-                market.clobTokenIds = freshData.clobTokenIds;
-                // console.log(`✅ Recovered CLOB IDs for ${market.question}`);
+            const response = await fetchWithRetry(`https://gamma-api.polymarket.com/markets/${market.id}`);
+            if (response && response.ok) {
+                const freshData = await response.json();
+                if (freshData && freshData.clobTokenIds) {
+                    market.clobTokenIds = freshData.clobTokenIds;
+                    // console.log(`✅ Recovered CLOB IDs for ${market.question}`);
+                }
             }
         } catch (e) { /* ignore fetch error */ }
     }
