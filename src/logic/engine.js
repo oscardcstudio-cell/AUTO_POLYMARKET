@@ -53,26 +53,40 @@ function logTradeDecision(market, trade, reasons, pizzaData) {
     // fs.appendFileSync('trade_decisions.jsonl', JSON.stringify(logEntry) + '\n');
 }
 
+const recoveryCache = new Map(); // Global session-based failure cache to avoid log spam
+
 export async function simulateTrade(market, pizzaData, isFreshMarket = false, dependencies = {}) {
-    // --- SELF-HEALING (Moved to Top) ---
-    // Critical: Fetch IDs BEFORE strategy checks so checkLiquidityDepth works properly.
+    // --- SELF-HEALING (Improved with Cache) ---
     if (!market.clobTokenIds || market.clobTokenIds.length !== 2) {
-        try {
-            addLog(botState, `🩹 Attempting to recover CLOB IDs for: ${market.question.substring(0, 20)}...`, 'warning');
-            const response = await fetchWithRetry(`https://gamma-api.polymarket.com/markets/${market.id}`);
-            if (response && response.ok) {
-                const freshData = await response.json();
-                if (freshData && freshData.clobTokenIds && freshData.clobTokenIds.length === 2) {
-                    market.clobTokenIds = freshData.clobTokenIds;
-                    addLog(botState, `✅ Recovered CLOB IDs successfully.`, 'success');
-                } else {
-                    addLog(botState, `❌ Recovery failed: Incomplete IDs in API response.`, 'error');
+        const lastAttempt = recoveryCache.get(market.id);
+        const now = Date.now();
+        const RECOVERY_COOLDOWN = 10 * 60 * 1000; // 10 minutes
+
+        if (!lastAttempt || (now - lastAttempt > RECOVERY_COOLDOWN)) {
+            try {
+                // Persistent silencing: only log if it's not a known failure or time to retry
+                if (!lastAttempt) {
+                    addLog(botState, `🩹 Self-Healing: Attempting ID recovery for "${market.question.substring(0, 30)}..."`, 'warning');
                 }
-            } else {
-                addLog(botState, `❌ Recovery failed: API Error ${response ? response.status : 'No Response'}`, 'error');
+
+                const response = await fetchWithRetry(`https://gamma-api.polymarket.com/markets/${market.id}`);
+                if (response && response.ok) {
+                    const freshData = await response.json();
+                    if (freshData && freshData.clobTokenIds && freshData.clobTokenIds.length === 2) {
+                        market.clobTokenIds = freshData.clobTokenIds;
+                        addLog(botState, `✅ ID Recovery Success for "${market.question.substring(0, 30)}..."`, 'success');
+                        recoveryCache.delete(market.id); // Success! Clear cache
+                    } else {
+                        // Silent failure to avoid spam
+                        recoveryCache.set(market.id, now);
+                        console.log(`[RECOVERY-SILENT] Still no valid IDs for: ${market.id}`);
+                    }
+                } else {
+                    recoveryCache.set(market.id, now);
+                }
+            } catch (e) {
+                recoveryCache.set(market.id, now);
             }
-        } catch (e) {
-            addLog(botState, `❌ Recovery Error: ${e.message}`, 'error');
         }
     }
 
