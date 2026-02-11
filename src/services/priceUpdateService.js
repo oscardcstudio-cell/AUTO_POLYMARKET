@@ -52,11 +52,23 @@ async function fetchMarketPrice(marketId, retryCount = 0) {
 
         // Extract current price (usually the YES token price)
         let currentPrice = null;
-        if (data.outcomePrices && Array.isArray(data.outcomePrices)) {
-            currentPrice = parseFloat(data.outcomePrices[0]);
+        let prices = data.outcomePrices;
+
+        // PARSING FIX: Handle stringified JSON from Gamma API
+        if (typeof prices === 'string') {
+            try {
+                prices = JSON.parse(prices);
+            } catch (e) {
+                prices = null;
+            }
+        }
+
+        if (prices && Array.isArray(prices) && prices.length > 0) {
+            currentPrice = parseFloat(prices[0]);
         } else if (data.clobTokenIds && data.clobTokenIds.length > 0) {
-            // Fallback: use CLOB token price
-            currentPrice = parseFloat(data.outcomePrices?.[0] || 0.5);
+            // Fallback: If we had a CLOB client here we could use it, but for now just fail gracefully
+            // or rely on what we have. If no prices, we can't update.
+            currentPrice = null;
         }
 
         // Cache the result

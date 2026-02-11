@@ -98,7 +98,15 @@ function calculateRealPnL(betAmount, betPrice, actualWinner, betSide) {
 }
 
 function calculateMetrics(tradeResults, initialCapital) {
-    if (tradeResults.length === 0) return null;
+    if (tradeResults.length === 0) {
+        return {
+            sharpeRatio: 0,
+            maxDrawdown: 0,
+            roi: 0,
+            avgReturnPerTrade: 0,
+            stdDev: 0
+        };
+    }
 
     const returns = tradeResults.map(t => t.pnl);
     const avgReturn = returns.reduce((a, b) => a + b, 0) / returns.length;
