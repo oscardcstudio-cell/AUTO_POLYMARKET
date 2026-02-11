@@ -81,8 +81,8 @@ function calculateMaxTrades(capital, defcon = 5) {
 app.listen(CONFIG.PORT, () => {
     console.log(`\n🚀 SERVER STARTED ON PORT ${CONFIG.PORT}`);
     console.log(`📅 ${new Date().toLocaleString()}`);
-    console.log(`⚠️ Version: 2.6.5 (NUCLEAR RESET + DB WIPE)`);
-    addLog(botState, `Serveur démarré sur le port ${CONFIG.PORT} (v2.6.5 NUCLEAR+DB)`, 'warning');
+    console.log(`✅ Version: 2.6.6 (Stable - Nuclear Disabled)`);
+    addLog(botState, `Serveur démarré sur le port ${CONFIG.PORT} (v2.6.6 Stable)`, 'success');
 });
 
 // --- MAIN LOOP ---
@@ -90,24 +90,10 @@ async function mainLoop() {
     addLog(botState, '🔄 Démarrage de la boucle de trading...', 'info');
 
     // 0. Disaster Recovery (Cloud Restore)
-    // DISABLED: We want a clean slate for this deployment
-
-    // NUCLEAR RESET (Force Clean Slate - DB + Memory)
-    console.log("☢️ NUCLEAR RESET: Clearing Memory...");
-    stateManager.reset();
-
     try {
-        const { supabase } = await import('./src/services/supabaseService.js');
-        if (supabase) {
-            console.log("☢️ NUCLEAR RESET: Clearing Supabase...");
-            await supabase.from('trades').delete().neq('id', 'placeholder');
-            await supabase.from('bot_state').delete().neq('id', 'placeholder');
-            await supabase.from('simulation_runs').delete().neq('id', 'placeholder');
-            await supabase.from('trade_archive').delete().neq('id', 'placeholder');
-            console.log("✅ Supabase Nuked.");
-        }
+        await stateManager.tryRecovery();
     } catch (e) {
-        console.error("Nuclear Reset DB Error:", e);
+        console.error("Recovery failed:", e);
     }
 
     // Start Real-Time Price Tracking Service
