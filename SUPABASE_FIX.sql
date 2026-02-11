@@ -14,8 +14,9 @@ CREATE TABLE IF NOT EXISTS system_logs (
     metadata JSONB
 );
 
--- 3. ENABLE RLS (Optional, for safety)
+-- 3. ENABLE RLS and Add Policy (Idempotent)
 ALTER TABLE system_logs ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Enable read/write access for all users" ON system_logs;
 CREATE POLICY "Enable read/write access for all users" ON system_logs FOR ALL USING (true);
 
 
@@ -40,7 +41,13 @@ CREATE TABLE IF NOT EXISTS debug_logs (
     timestamp TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Trade Archive Table (preserve closedTrades across resets)
+-- Enable RLS for debug_logs too (just safe default policy)
+ALTER TABLE debug_logs ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Allow all for debug_logs" ON debug_logs;
+CREATE POLICY "Allow all for debug_logs" ON debug_logs FOR ALL USING (true);
+
+
+-- 5. Trade Archive Table (preserve closedTrades across resets)
 CREATE TABLE IF NOT EXISTS trade_archive (
     id TEXT PRIMARY KEY,
     market_id TEXT,
@@ -61,6 +68,11 @@ CREATE TABLE IF NOT EXISTS trade_archive (
     raw_data JSONB
 );
 
--- Clean up fake backtest results (all identical: 36.62% ROI, 100% winrate)
--- Run this once after creating the table:
--- DELETE FROM simulation_runs WHERE result_roi BETWEEN 36.60 AND 36.65;
+-- Enable RLS for trade_archive
+ALTER TABLE trade_archive ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Allow all for trade_archive" ON trade_archive;
+CREATE POLICY "Allow all for trade_archive" ON trade_archive FOR ALL USING (true);
+
+
+-- 6. Clean up fake backtest results (all identical: 36.62% ROI)
+DELETE FROM simulation_runs WHERE result_roi BETWEEN 36.60 AND 36.65;
