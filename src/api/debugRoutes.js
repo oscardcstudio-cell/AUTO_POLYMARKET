@@ -112,8 +112,9 @@ router.post('/reset-bot', checkAdminKey, async (req, res) => {
             await supabase.from('trades').delete().neq('id', '00000000-0000-0000-0000-000000000000');
             await supabase.from('bot_state').delete().neq('id', 'placeholder');
             await supabase.from('simulation_runs').delete().neq('id', 'placeholder'); // Clear sim runs correctly
+            await supabase.from('trade_archive').delete().neq('id', 'placeholder'); // Clear historical archive for metrics
             // Keep logs or clear? Let's keep logs for diagnosis, but clear analytics
-            console.log("✅ Supabase cleared.");
+            console.log("✅ Supabase cleared (including archive).");
             // Keep logs or clear? Let's keep logs for diagnosis, but clear analytics
             console.log("✅ Supabase cleared.");
         }

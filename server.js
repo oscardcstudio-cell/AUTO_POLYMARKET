@@ -81,8 +81,8 @@ function calculateMaxTrades(capital, defcon = 5) {
 app.listen(CONFIG.PORT, () => {
     console.log(`\n🚀 SERVER STARTED ON PORT ${CONFIG.PORT}`);
     console.log(`📅 ${new Date().toLocaleString()}`);
-    console.log(`✅ Version: 2.6.2 (Deploy Fix & Reset Patch)`);
-    addLog(botState, `Serveur démarré sur le port ${CONFIG.PORT} (v2.6.2)`, 'success');
+    console.log(`✅ Version: 2.6.3 (Clean Trade Archive)`);
+    addLog(botState, `Serveur démarré sur le port ${CONFIG.PORT} (v2.6.3)`, 'success');
 });
 
 // --- MAIN LOOP ---
