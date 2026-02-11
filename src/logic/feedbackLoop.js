@@ -48,7 +48,7 @@ export const feedbackLoop = {
 
             // Update State
             botState.confidenceAdjustments = adjustments;
-            stateManager.save();
+            await stateManager.save();
 
             if (Object.keys(adjustments).length > 0) {
                 console.log(logMessage);
@@ -76,7 +76,7 @@ export const feedbackLoop = {
             addLog(botState, '🧪 Lancement du Backtest Autonome (Vérification Stratégie)...', 'info');
 
             botState.lastBacktestRequest = NOW; // Update immediately to prevent double-fire
-            stateManager.save();
+            await stateManager.save();
 
             const scriptPath = path.join(process.cwd(), 'scripts', 'backtest_public.js');
 

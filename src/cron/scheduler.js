@@ -38,7 +38,7 @@ async function runAutoTraining() {
 
         // Apply to Bot State
         botState.learningParams = newParams;
-        stateManager.save(); // Persist changes
+        await stateManager.save(); // Persist changes
 
         // Log result to Console & Bot Logs
         const msg = `AI Adaptation: Mode=${newParams.mode} (ROI: ${metrics.roi.toFixed(2)}%)`;

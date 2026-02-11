@@ -202,7 +202,7 @@ router.get('/backlog', (req, res) => {
     res.json(botState.backlog || []);
 });
 
-router.post('/backlog', (req, res) => {
+router.post('/backlog', async (req, res) => {
     const { title, description, priority, type } = req.body;
     if (!title) return res.status(400).json({ error: 'Title is required' });
 
@@ -218,13 +218,13 @@ router.post('/backlog', (req, res) => {
 
     if (!botState.backlog) botState.backlog = [];
     botState.backlog.unshift(newItem);
-    stateManager.save();
+    await stateManager.save();
 
     addLog(botState, `📝 Nouveau ${type}: ${title}`, 'info');
     res.json(newItem);
 });
 
-router.patch('/backlog/:id', (req, res) => {
+router.patch('/backlog/:id', async (req, res) => {
     const { id } = req.params;
     const { status, title, description, priority } = req.body;
 
@@ -236,17 +236,17 @@ router.patch('/backlog/:id', (req, res) => {
     if (description) item.description = description;
     if (priority) item.priority = priority;
 
-    stateManager.save();
+    await stateManager.save();
     res.json(item);
 });
 
-router.delete('/backlog/:id', (req, res) => {
+router.delete('/backlog/:id', async (req, res) => {
     const { id } = req.params;
     const index = botState.backlog.findIndex(b => b.id === id);
     if (index === -1) return res.status(404).json({ error: 'Item not found' });
 
     botState.backlog.splice(index, 1);
-    stateManager.save();
+    await stateManager.save();
     res.json({ success: true });
 });
 

@@ -84,12 +84,12 @@ function calculateMaxTrades(capital, defcon = 5) {
 
 
 // --- SETTINGS ENDPOINTS ---
-app.post('/api/settings', (req, res) => {
+app.post('/api/settings', async (req, res) => {
     const { riskProfile } = req.body;
     if (riskProfile) {
         if (riskManager.setProfile(riskProfile)) {
             botState.riskProfile = riskProfile;
-            stateManager.save();
+            await stateManager.save();
             addLog(botState, `⚙️ Risk Profile changed to: ${riskProfile}`, 'info');
             res.json({ success: true, profile: riskManager.getProfile() });
         } else {
@@ -299,9 +299,12 @@ async function mainLoop() {
 
                             for (const t of tradesToProcess) {
                                 addLog(botState, `🚀 [${candidate.priority}] Trade: ${t.question.substring(0, 30)}...`, 'success');
-                                getEventSlug(t.marketId, t.question).then(s => {
-                                    if (s) { t.eventSlug = s; stateManager.save(); }
-                                });
+                                // Sequential sync for slug if possible, or at least ensure we don't race state saves
+                                const slug = await getEventSlug(t.marketId, t.question);
+                                if (slug) {
+                                    t.eventSlug = slug;
+                                    stateManager.save();
+                                }
                             }
                             break; // Limit to 1 trade group per loop for stability
                         } else {
@@ -340,7 +343,7 @@ async function mainLoop() {
             // Trigger Git Sync occasionally
             saveToGithub();
 
-            stateManager.save();
+            await stateManager.save();
 
             // Heartbeat for Health Check
             botState.lastHeartbeat = new Date().toISOString();

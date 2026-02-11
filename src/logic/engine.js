@@ -496,7 +496,7 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
         clobTokenIds: market.clobTokenIds || []
     };
 
-    saveNewTrade(trade);
+    await saveNewTrade(trade);
     logTradeDecision(market, trade, decisionReasons, pizzaData);
 
     const icon = category === 'geopolitical' ? '🌍' : (category === 'economic' ? '📉' : '🎰');
@@ -508,16 +508,19 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
     return trade;
 }
 
-function saveNewTrade(trade) {
+async function saveNewTrade(trade) {
     botState.capital -= trade.amount;
     botState.activeTrades.unshift(trade);
     botState.totalTrades += 1;
 
-    // Limiter l'historique des trades actifs pour éviter le bloat
-    // (Note: La limite de trades autorisés est gérée dynamiquement dans server.js)
+    // Persist synchronously to local file and asynchronously but awaited to Cloud
+    await stateManager.save();
+    try {
+        await supabaseService.saveTrade(trade);
+    } catch (err) {
+        console.error('Supabase Save Error:', err);
+    }
 
-    stateManager.save();
-    supabaseService.saveTrade(trade).catch(err => console.error('Supabase Save Error:', err));
     addLog(botState, `✅ TRADE OPENED: ${trade.side} sur "${trade.question.substring(0, 30)}..." @ $${trade.entryPrice.toFixed(3)} ($${trade.amount.toFixed(2)})`, 'trade');
 }
 
@@ -567,14 +570,14 @@ export async function checkAndCloseTrades(getRealMarketPriceFn) {
 
         if (pnlPercent <= requiredStopPercent) {
             const reason = `STOP LOSS: ${(pnlPercent * 100).toFixed(1)}% (Limit: ${(requiredStopPercent * 100).toFixed(1)}%)`;
-            await closeTrade(i, currentPrice, reason);
+            await closeTrade(trade, i, currentPrice, reason);
             continue;
         }
 
         // --- 3. TAKE PROFIT CHECK ---
         const tpPercent = CONFIG.TAKE_PROFIT_PERCENT || 0.20;
         if (pnlPercent >= tpPercent) {
-            await closeTrade(i, currentPrice, `TAKE PROFIT: ${(pnlPercent * 100).toFixed(1)}% reached`);
+            await closeTrade(trade, i, currentPrice, `TAKE PROFIT: ${(pnlPercent * 100).toFixed(1)}% reached`);
             continue;
         }
 
@@ -586,7 +589,7 @@ export async function checkAndCloseTrades(getRealMarketPriceFn) {
         if (tradeAge >= timeoutHours) {
             const reason = `⏱️ TIMEOUT: ${tradeAge.toFixed(1)}h (PnL: ${(pnlPercent * 100).toFixed(1)}%)`;
             addLog(botState, `${reason} - Freeing capital for new opportunities`, 'info');
-            await closeTrade(i, currentPrice, reason);
+            await closeTrade(trade, i, currentPrice, reason);
             continue;
         }
 
@@ -594,7 +597,7 @@ export async function checkAndCloseTrades(getRealMarketPriceFn) {
         // If trade has +5% profit and is 24h old, lock it in
         if (pnlPercent >= 0.05 && tradeAge >= 24) {
             const reason = `🎯 SPIKE LOCK: ${(pnlPercent * 100).toFixed(1)}% after ${tradeAge.toFixed(0)}h`;
-            await closeTrade(i, currentPrice, reason);
+            await closeTrade(trade, i, currentPrice, reason);
             continue;
         }
 
@@ -602,15 +605,10 @@ export async function checkAndCloseTrades(getRealMarketPriceFn) {
         const marketEndDate = new Date(trade.endDate);
         if (now > marketEndDate) {
             try {
-                const resolution = await resolveTradeWithRealOutcome(trade);
+                const resolution = await resolveTradeWithRealOutcome(trade, i);
                 if (resolution) {
-                    botState.activeTrades.splice(i, 1);
-                    botState.closedTrades.unshift(resolution);
-                    if (botState.closedTrades.length > 50) botState.closedTrades.pop();
-
-                    stateManager.save();
-                    // Sync to Supabase
-                    await supabaseService.saveTrade(resolution);
+                    // The resolveTradeWithRealOutcome function now handles state updates and Supabase sync
+                    // No need to splice/unshift here or save state again
                 }
             } catch (e) {
                 console.error(`Error resolving trade ${trade.id}:`, e.message);
@@ -618,12 +616,12 @@ export async function checkAndCloseTrades(getRealMarketPriceFn) {
         }
     }
 
-    stateManager.save();
+    await stateManager.save(); // Save state after the loop in case no trades were closed but some were updated
 }
 
 // --- RESOLUTION LOGIC ---
 
-async function resolveTradeWithRealOutcome(trade) {
+async function resolveTradeWithRealOutcome(trade, index) {
     try {
         const response = await fetch(`https://gamma-api.polymarket.com/markets/${trade.marketId}`);
         if (!response.ok) throw new Error('Failed to fetch market data');
@@ -635,11 +633,17 @@ async function resolveTradeWithRealOutcome(trade) {
         }
 
         let wonTrade = false;
+        let marketOutcome = null; // 'YES' or 'NO'
         if (market.acceptingOrders === false && market.outcomePrices) {
             const yesPrice = parseFloat(market.outcomePrices[0]);
             const noPrice = parseFloat(market.outcomePrices[1]);
-            if (yesPrice > 0.99 && trade.side === 'YES') wonTrade = true;
-            if (noPrice > 0.99 && trade.side === 'NO') wonTrade = true;
+            if (yesPrice > 0.99) {
+                marketOutcome = 'YES';
+            } else if (noPrice > 0.99) {
+                marketOutcome = 'NO';
+            }
+
+            if (marketOutcome === trade.side) wonTrade = true;
         } else {
             return null; // Still active
         }
@@ -663,7 +667,7 @@ async function resolveTradeWithRealOutcome(trade) {
             addLog(botState, `❌ Trade perdu: ${trade.question.substring(0, 30)}... (${profit.toFixed(2)} USDC)`, 'warning');
         }
 
-        return {
+        const resolvedTrade = {
             ...trade,
             status: 'CLOSED',
             exitPrice: exitPrice,
@@ -673,15 +677,25 @@ async function resolveTradeWithRealOutcome(trade) {
             resolutionMethod: 'REAL_MARKET_OUTCOME'
         };
 
+        botState.capital += (resolvedTrade.shares * exitPrice); // Add capital back
+        botState.activeTrades.splice(index, 1);
+        botState.closedTrades.unshift(resolvedTrade);
+        if (botState.closedTrades.length > 50) botState.closedTrades.pop();
+
+        await stateManager.save();
+        try {
+            await supabaseService.saveTrade(resolvedTrade);
+        } catch (e) { console.error("Supabase Resolve Error:", e); }
+
+        return resolvedTrade;
+
     } catch (error) {
         console.error(`Error resolving trade ${trade.id}:`, error.message);
         return null;
     }
 }
 
-async function closeTrade(index, exitPrice, reason) {
-    // ... existing closeTrade logic ...
-    const trade = botState.activeTrades[index];
+async function closeTrade(trade, index, exitPrice, reason) {
     const finalValue = trade.shares * exitPrice;
     const invested = trade.amount || trade.size || 0;
     const pnl = finalValue - invested;
@@ -707,10 +721,12 @@ async function closeTrade(index, exitPrice, reason) {
     addLog(botState, `🏁 TRADE CLOSED: ${trade.question.substring(0, 20)}... | PnL: $${pnl.toFixed(2)} (${reason})`, pnl > 0 ? 'success' : 'warning');
 
     // Save state
-    stateManager.save();
+    await stateManager.save();
 
     // Sync to Supabase
-    await supabaseService.saveTrade(trade);
+    try {
+        await supabaseService.saveTrade(trade);
+    } catch (e) { console.error("Supabase Close Error:", e); }
 }
 
 function calculateDynamicStopLoss(trade, currentReturn, maxReturn) {

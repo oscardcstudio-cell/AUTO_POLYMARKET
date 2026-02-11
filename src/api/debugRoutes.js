@@ -138,7 +138,7 @@ router.post('/reset-bot', checkAdminKey, async (req, res) => {
         });
 
         // Save to disk
-        stateManager.save();
+        await stateManager.save();
 
         res.json({ ok: true, message: 'Bot reset successfully' });
 
