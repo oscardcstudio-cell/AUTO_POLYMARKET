@@ -2071,6 +2071,31 @@
                 }
             }
 
+            // --- RESET FUNCTION ---
+            async function confirmReset() {
+                if (confirm("⚠️ ATTENTION : VOULEZ-VOUS VRAIMENT RÉINITIALISER LE BOT ?\n\nCela va :\n1. Effacer tout l'historique des trades (Supabase + Local)\n2. Remettre le capital à 1000$\n3. Oublier l'apprentissage IA\n\nCette action est irréversible.")) {
+                    try {
+                        const pwd = prompt("Pour confirmer, tapez 'RESET' :");
+                        if (pwd !== 'RESET') {
+                            alert("Annulé.");
+                            return;
+                        }
+
+                        const res = await fetch('/api/debug/reset-bot?key=debug123', { method: 'POST' });
+                        const data = await res.json();
+
+                        if (data.ok) {
+                            alert("✅ Bot réinitialisé avec succès !");
+                            location.reload();
+                        } else {
+                            alert("❌ Erreur: " + (data.error || 'Inconnue'));
+                        }
+                    } catch (e) {
+                        alert("❌ Erreur réseau: " + e.message);
+                    }
+                }
+            }
+
             window.onload = () => {
                 initMainChart();
                 fetchRealData();
@@ -2079,6 +2104,11 @@
                 setInterval(checkDB, 30000);
                 document.getElementById('searchTrades')?.addEventListener('input', updateDashboard);
                 document.getElementById('filterProfit')?.addEventListener('change', updateDashboard);
+
+                // Initial Load
+                updateDashboard();
+                // Poll every 2 seconds
+                setInterval(updateDashboard, 2000);
 
                 // Marketplace listeners
                 document.getElementById('marketSearch')?.addEventListener('input', renderMarketplace);

@@ -96,4 +96,53 @@ router.post('/log', async (req, res) => {
     }
 });
 
+/**
+ * POST /api/debug/reset-bot
+ * Trigger full bot reset (database + memory)
+ * Uses the script functionality but via API
+ */
+router.post('/reset-bot', checkAdminKey, async (req, res) => {
+    try {
+        console.log("⚠️ RESET REQUESTED VIA DASHBOARD");
+
+        const { supabase } = await import('../services/supabaseService.js');
+
+        // 1. Reset Supabase
+        if (supabase) {
+            await supabase.from('trades').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+            await supabase.from('bot_state').delete().neq('id', 'placeholder');
+            await supabase.from('active_trades').delete().neq('id', 'placeholder');
+            // Keep logs or clear? Let's keep logs for diagnosis, but clear analytics
+            console.log("✅ Supabase cleared.");
+        }
+
+        // 2. Reset Local State - we need to access StateManager
+        const { stateManager } = await import('../state.js');
+        const { CONFIG } = await import('../config.js');
+
+        // Reset memory
+        stateManager.data.capital = CONFIG.STARTING_CAPITAL || 1000;
+        stateManager.data.activeTrades = [];
+        stateManager.data.closedTrades = [];
+        stateManager.data.totalTrades = 0;
+        stateManager.data.winningTrades = 0;
+        stateManager.data.losingTrades = 0;
+        stateManager.data.profit = 0;
+        stateManager.data.logs.unshift({
+            timestamp: new Date().toISOString(),
+            type: 'warning',
+            message: '⚠️ BOT RESET VIA DASHBOARD'
+        });
+
+        // Save to disk
+        stateManager.save();
+
+        res.json({ ok: true, message: 'Bot reset successfully' });
+
+    } catch (error) {
+        console.error("Reset Error:", error);
+        res.status(500).json({ error: 'Reset failed', details: error.message });
+    }
+});
+
 export default router;
