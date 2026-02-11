@@ -543,16 +543,29 @@
     <div id="backtest-view" style="display: none;">
         <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
             <h2 style="margin: 0; font-size: 1.5em;">🧪 Backtest Monitor</h2>
-            <button onclick="runBacktestNow()"
-                style="padding: 10px 20px; background: linear-gradient(135deg, #4ade80, #22c55e); border: none; border-radius: 8px; color: white; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(74, 222, 128, 0.3);">
-                ▶️ Run Backtest Now
-            </button>
+            <div style="display: flex; gap: 8px; align-items: center;">
+                <!-- Mode Tabs -->
+                <div
+                    style="display: flex; background: rgba(30, 41, 59, 0.8); border-radius: 10px; padding: 3px; border: 1px solid var(--border);">
+                    <button onclick="switchBacktestMode('live')" id="bt-tab-live"
+                        style="padding: 8px 16px; border: none; border-radius: 8px; font-size: 0.82em; font-weight: 600; cursor: pointer; transition: all 0.2s; background: linear-gradient(135deg, #8b5cf6, #6d28d9); color: white;">
+                        📊 Live Performance
+                    </button>
+                    <button onclick="switchBacktestMode('sim')" id="bt-tab-sim"
+                        style="padding: 8px 16px; border: none; border-radius: 8px; font-size: 0.82em; font-weight: 600; cursor: pointer; transition: all 0.2s; background: transparent; color: #94a3b8;">
+                        🧪 Training Sim
+                    </button>
+                </div>
+                <button onclick="runBacktestNow()" id="bt-run-btn"
+                    style="display: none; padding: 10px 20px; background: linear-gradient(135deg, #4ade80, #22c55e); border: none; border-radius: 8px; color: white; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(74, 222, 128, 0.3);">
+                    ▶️ Lancer Simulation
+                </button>
+            </div>
         </div>
-        <div
+        <div id="bt-description"
             style="background: rgba(139, 92, 246, 0.08); border: 1px solid rgba(139, 92, 246, 0.2); border-radius: 12px; padding: 15px 20px; margin-bottom: 25px; font-size: 0.85em; color: #c4b5fd; line-height: 1.6;">
-            📊 <strong>Performance Tracker</strong> — Cette page analyse les résultats de tes trades clôturés et calcule
-            les métriques clés (ROI, Sharpe Ratio, Winrate, Max Drawdown). Tu peux aussi lancer un backtest sur données
-            historiques avec le bouton ci-dessus.
+            📊 <strong>Live Performance</strong> — Analyse les résultats réels de tes trades clôturés : ROI, Sharpe
+            Ratio, Winrate, Max Drawdown. Ces métriques sont basées sur les vrais trades exécutés par le bot.
         </div>
 
         <!-- KPIs Grid -->
@@ -1687,153 +1700,252 @@
             }
 
             // Render Backtest Monitor
+            let currentBacktestMode = 'live'; // 'live' or 'sim'
+
+            function switchBacktestMode(mode) {
+                currentBacktestMode = mode;
+                const liveTab = document.getElementById('bt-tab-live');
+                const simTab = document.getElementById('bt-tab-sim');
+                const runBtn = document.getElementById('bt-run-btn');
+                const desc = document.getElementById('bt-description');
+
+                if (mode === 'live') {
+                    liveTab.style.background = 'linear-gradient(135deg, #8b5cf6, #6d28d9)';
+                    liveTab.style.color = 'white';
+                    simTab.style.background = 'transparent';
+                    simTab.style.color = '#94a3b8';
+                    runBtn.style.display = 'none';
+                    desc.innerHTML = '📊 <strong>Live Performance</strong> — Analyse les résultats réels de tes trades clôturés (session active + archives). ROI, Sharpe Ratio, Winrate, Max Drawdown basés sur les vrais trades du bot.';
+                } else {
+                    simTab.style.background = 'linear-gradient(135deg, #22c55e, #16a34a)';
+                    simTab.style.color = 'white';
+                    liveTab.style.background = 'transparent';
+                    liveTab.style.color = '#94a3b8';
+                    runBtn.style.display = 'inline-block';
+                    desc.innerHTML = '🧪 <strong>Training Simulation</strong> — Le bot rejoue des marchés résolus de Polymarket en accéléré, fait ses choix de trading, et voit le résultat immédiatement. Chaque run utilise des marchés différents.';
+                }
+                renderBacktestMonitor();
+            }
+
             async function renderBacktestMonitor() {
-                // --- DEBUG LOG TO SUPABASE (hidden, for remote diagnosis) ---
-                const debugInfo = {
-                    hasBotData: !!botData,
-                    hasCapital: !!(botData && botData.capital),
-                    closedTradesCount: (botData && botData.closedTrades) ? botData.closedTrades.length : 0,
-                    closedTradesSample: (botData && botData.closedTrades && botData.closedTrades.length > 0) ? JSON.stringify(botData.closedTrades[0]).substring(0, 300) : 'none',
-                    startingCapital: botData?.startingCapital,
-                    timestamp: new Date().toISOString()
-                };
-                console.log('🔍 [BT-DEBUG]', JSON.stringify(debugInfo));
                 try {
-                    await fetch('/api/debug/log', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ source: 'backtest_monitor', level: 'debug', data: debugInfo })
-                    });
-                } catch (e) { /* silent */ }
-
-                try {
-                    // 1. Try Supabase simulation_runs first
-                    let runs = [];
-                    try {
-                        const res = await fetch('/api/backtest-results');
-                        const data = await res.json();
-                        runs = data.runs || [];
-                    } catch (e) { console.warn('Could not fetch backtest-results:', e); }
-
-                    // 2. If Supabase has data, use it
-                    if (runs.length > 0) {
-                        const latest = runs[0];
-                        document.getElementById('bt-roi').textContent = `${latest.roi >= 0 ? '+' : ''}${latest.roi.toFixed(2)}%`;
-                        document.getElementById('bt-roi').className = 'stat-value ' + (latest.roi >= 0 ? 'positive' : 'negative');
-                        document.getElementById('bt-sharpe').textContent = (latest.sharpe || 0).toFixed(2);
-                        document.getElementById('bt-winrate').textContent = `${(latest.winrate || 0).toFixed(1)}%`;
-                        document.getElementById('bt-drawdown').textContent = `${(latest.drawdown || 0).toFixed(2)}%`;
-
-                        const ctx = document.getElementById('backtestProgressionChart')?.getContext('2d');
-                        if (ctx && window.backtestProgressionChartInstance) window.backtestProgressionChartInstance.destroy();
-                        if (ctx) {
-                            const sortedRuns = [...runs].reverse();
-                            window.backtestProgressionChartInstance = new Chart(ctx, {
-                                type: 'line',
-                                data: { labels: sortedRuns.map((r, i) => `Run ${i + 1}`), datasets: [{ label: 'ROI %', data: sortedRuns.map(r => r.roi), borderColor: '#4ade80', backgroundColor: 'rgba(74, 222, 128, 0.1)', tension: 0.3, fill: true }] },
-                                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { callback: v => v + '%' } } } }
-                            });
-                        }
-
-                        document.getElementById('backtestRunsList').innerHTML = runs.map((run, i) => `
-                            <div style="padding: 15px; background: rgba(255,255,255,0.03); border-radius: 8px; margin-bottom: 10px; border-left: 3px solid ${run.roi >= 0 ? '#4ade80' : '#f87171'};">
-                                <div style="display: flex; justify-content: space-between; align-items: center;">
-                                    <div><div style="font-weight: 600; color: #e2e8f0; margin-bottom: 5px;">Run #${runs.length - i} - ${new Date(run.timestamp).toLocaleString()}</div><div style="font-size: 0.85em; color: #94a3b8;">Trades: ${run.trade_count} | Winrate: ${(run.winrate || 0).toFixed(1)}%</div></div>
-                                    <div style="text-align: right;"><div style="font-size: 1.3em; font-weight: 700; color: ${run.roi >= 0 ? '#4ade80' : '#f87171'};">${run.roi >= 0 ? '+' : ''}${(run.roi || 0).toFixed(2)}%</div><div style="font-size: 0.85em; color: #64748b;">Sharpe: ${(run.sharpe || 0).toFixed(2)}</div></div>
-                                </div>
-                            </div>
-                        `).join('');
-                        console.log(`✅ Backtest Monitor rendered: ${runs.length} runs`);
-                        return;
+                    if (currentBacktestMode === 'sim') {
+                        await renderSimMode();
+                    } else {
+                        await renderLiveMode();
                     }
-
-                    // 3. FALLBACK: Compute live metrics from botData.closedTrades
-                    if (botData && botData.closedTrades && botData.closedTrades.length > 0) {
-                        const closed = botData.closedTrades;
-                        const startCap = botData.startingCapital || 1000;
-                        // Use .profit (the actual field name in botState)
-                        const totalProfit = closed.reduce((s, t) => s + (t.profit || 0), 0);
-                        const wins = closed.filter(t => (t.profit || 0) > 0).length;
-                        const winrate = closed.length > 0 ? (wins / closed.length) * 100 : 0;
-                        const roi = (totalProfit / startCap) * 100;
-
-                        const returns = closed.map(t => t.profit || 0);
-                        const avg = totalProfit / closed.length;
-                        const variance = returns.reduce((s, r) => s + Math.pow(r - avg, 2), 0) / returns.length;
-                        const stdDev = Math.sqrt(variance);
-                        const sharpe = stdDev > 0 ? avg / stdDev : 0;
-
-                        let peak = startCap, maxDD = 0, cap = startCap;
-                        returns.forEach(r => { cap += r; if (cap > peak) peak = cap; const dd = (peak - cap) / peak; if (dd > maxDD) maxDD = dd; });
-
-                        document.getElementById('bt-roi').textContent = `${roi >= 0 ? '+' : ''}${roi.toFixed(2)}%`;
-                        document.getElementById('bt-roi').className = 'stat-value ' + (roi >= 0 ? 'positive' : 'negative');
-                        document.getElementById('bt-sharpe').textContent = sharpe.toFixed(2);
-                        document.getElementById('bt-winrate').textContent = `${winrate.toFixed(1)}%`;
-                        document.getElementById('bt-drawdown').textContent = `${(maxDD * 100).toFixed(1)}%`;
-
-                        // PnL progression chart
-                        const cumPnl = [];
-                        let running = 0;
-                        closed.forEach(t => { running += (t.profit || 0); cumPnl.push({ date: t.endTime || t.closedAt || t.startTime || t.timestamp, profit: running }); });
-
-                        const ctx = document.getElementById('backtestProgressionChart')?.getContext('2d');
-                        if (ctx && window.backtestProgressionChartInstance) window.backtestProgressionChartInstance.destroy();
-                        if (ctx && cumPnl.length > 0) {
-                            window.backtestProgressionChartInstance = new Chart(ctx, {
-                                type: 'line',
-                                data: { labels: cumPnl.map(p => new Date(p.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })), datasets: [{ label: 'Cumulative PnL ($)', data: cumPnl.map(p => p.profit), borderColor: '#4ade80', backgroundColor: 'rgba(74, 222, 128, 0.1)', tension: 0.3, fill: true, borderWidth: 3, pointRadius: 4, pointBackgroundColor: '#4ade80' }] },
-                                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#64748b', maxRotation: 45 }, grid: { color: 'rgba(255,255,255,0.05)' } }, y: { ticks: { color: '#64748b', callback: v => '$' + v.toFixed(0) }, grid: { color: 'rgba(255,255,255,0.05)' } } } }
-                            });
-                        }
-
-                        // Render closed trades list
-                        const listEl = document.getElementById('backtestRunsList');
-                        listEl.innerHTML = '<div style="font-size: 0.85em; color: #94a3b8; margin-bottom: 15px; font-style: italic;">📊 Live performance from ' + closed.length + ' closed trades</div>';
-                        listEl.innerHTML += closed.map(t => {
-                            const date = new Date(t.endTime || t.closedAt || t.startTime || t.timestamp).toLocaleString();
-                            const profit = t.profit || 0;
-                            const profitColor = profit >= 0 ? '#4ade80' : '#f87171';
-                            const emoji = profit >= 0 ? '✅' : '❌';
-                            return `<div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 8px;">
-                                <div style="flex: 1; min-width: 0;">
-                                    <div style="font-weight: 700; color: #e2e8f0; font-size: 0.85em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${emoji} ${t.question || 'Trade'}</div>
-                                    <div style="font-size: 0.75em; color: #94a3b8; margin-top: 4px;">📅 ${date} | ${t.side || '?'} @ ${(t.entryPrice || 0).toFixed(4)}</div>
-                                    <div style="font-size: 0.7em; color: #64748b; margin-top: 2px;">${t.closeReason || ''}</div>
-                                </div>
-                                <div style="text-align: right; margin-left: 15px; flex-shrink: 0;">
-                                    <div style="font-weight: 800; font-size: 1.1em; color: ${profitColor};">${profit >= 0 ? '+' : ''}$${profit.toFixed(2)}</div>
-                                    <div style="font-size: 0.7em; color: #94a3b8;">$${(t.amount || 0).toFixed(2)} invested</div>
-                                </div>
-                            </div>`;
-                        }).join('');
-                        console.log(`✅ Backtest Monitor rendered from ${closed.length} closed trades`);
-                        return;
-                    }
-
-                    // 4. Truly empty
-                    document.getElementById('backtestRunsList').innerHTML = `<div class="empty-state">
-                        Aucun trade clôturé pour le moment.<br>Les métriques apparaîtront ici dès qu'un trade sera fermé.<br><br>
-                        <button onclick="runBacktestNow()" class="trade-action-btn" style="background: var(--accent-blue); color: white; border: none;">🚀 Lancer un Backtest</button>
-                    </div>`;
-
                 } catch (e) {
                     console.error('Backtest Monitor Error:', e);
                 }
             }
 
+            async function renderLiveMode() {
+                // Combine current closedTrades + archived trades from Supabase
+                let allTrades = [];
 
-            // Run Backtest (trigger server endpoint)
+                // Current session trades
+                if (botData && botData.closedTrades && botData.closedTrades.length > 0) {
+                    allTrades = [...botData.closedTrades];
+                }
+
+                // Load archived trades from Supabase
+                try {
+                    const res = await fetch('/api/trade-archive');
+                    const data = await res.json();
+                    if (data.trades && data.trades.length > 0) {
+                        // Merge, dedup by id
+                        const existingIds = new Set(allTrades.map(t => t.id));
+                        for (const t of data.trades) {
+                            if (!existingIds.has(t.id)) {
+                                allTrades.push(t);
+                                existingIds.add(t.id);
+                            }
+                        }
+                    }
+                } catch (e) { console.warn('Could not fetch trade archive:', e); }
+
+                if (allTrades.length === 0) {
+                    document.getElementById('bt-roi').textContent = '--%';
+                    document.getElementById('bt-roi').className = 'stat-value';
+                    document.getElementById('bt-sharpe').textContent = '--';
+                    document.getElementById('bt-winrate').textContent = '--%';
+                    document.getElementById('bt-drawdown').textContent = '--%';
+                    document.getElementById('backtestRunsList').innerHTML = `<div class="empty-state">
+                        Aucun trade clôturé pour le moment.<br>Les métriques apparaîtront ici dès qu'un trade sera fermé.<br><br>
+                        <span style="font-size: 0.85em; color: #64748b;">💡 Les trades actifs apparaissent dans le Dashboard principal.<br>Ici tu verras l'analyse une fois qu'ils seront clôturés.</span>
+                    </div>`;
+                    return;
+                }
+
+                // Sort by date (newest first for list, oldest first for chart)
+                allTrades.sort((a, b) => new Date(b.endTime || b.closedAt || b.startTime || 0) - new Date(a.endTime || a.closedAt || a.startTime || 0));
+
+                const startCap = botData?.startingCapital || 1000;
+                const totalProfit = allTrades.reduce((s, t) => s + (t.profit || t.pnl || 0), 0);
+                const wins = allTrades.filter(t => (t.profit || t.pnl || 0) > 0).length;
+                const winrate = allTrades.length > 0 ? (wins / allTrades.length) * 100 : 0;
+                const roi = (totalProfit / startCap) * 100;
+
+                const returns = allTrades.map(t => t.profit || t.pnl || 0);
+                const avg = totalProfit / allTrades.length;
+                const variance = returns.reduce((s, r) => s + Math.pow(r - avg, 2), 0) / returns.length;
+                const sharpe = Math.sqrt(variance) > 0 ? avg / Math.sqrt(variance) : 0;
+
+                let peak = startCap, maxDD = 0, cap = startCap;
+                [...allTrades].reverse().forEach(t => {
+                    cap += (t.profit || t.pnl || 0);
+                    if (cap > peak) peak = cap;
+                    const dd = (peak - cap) / peak;
+                    if (dd > maxDD) maxDD = dd;
+                });
+
+                document.getElementById('bt-roi').textContent = `${roi >= 0 ? '+' : ''}${roi.toFixed(2)}%`;
+                document.getElementById('bt-roi').className = 'stat-value ' + (roi >= 0 ? 'positive' : 'negative');
+                document.getElementById('bt-sharpe').textContent = sharpe.toFixed(2);
+                document.getElementById('bt-winrate').textContent = `${winrate.toFixed(1)}%`;
+                document.getElementById('bt-drawdown').textContent = `${(maxDD * 100).toFixed(1)}%`;
+
+                // PnL progression chart (oldest to newest)
+                const chronological = [...allTrades].reverse();
+                const cumPnl = [];
+                let running = 0;
+                chronological.forEach(t => {
+                    running += (t.profit || t.pnl || 0);
+                    cumPnl.push({ date: t.endTime || t.closedAt || t.startTime, profit: running });
+                });
+
+                const ctx = document.getElementById('backtestProgressionChart')?.getContext('2d');
+                if (ctx && window.backtestProgressionChartInstance) window.backtestProgressionChartInstance.destroy();
+                if (ctx && cumPnl.length > 0) {
+                    window.backtestProgressionChartInstance = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: cumPnl.map(p => new Date(p.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })),
+                            datasets: [{
+                                label: 'PnL Cumulé ($)',
+                                data: cumPnl.map(p => p.profit),
+                                borderColor: '#8b5cf6',
+                                backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                                tension: 0.3, fill: true, borderWidth: 3, pointRadius: 4, pointBackgroundColor: '#8b5cf6'
+                            }]
+                        },
+                        options: {
+                            responsive: true, maintainAspectRatio: false,
+                            plugins: { legend: { display: false } },
+                            scales: {
+                                x: { ticks: { color: '#64748b', maxRotation: 45 }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                                y: { ticks: { color: '#64748b', callback: v => '$' + v.toFixed(0) }, grid: { color: 'rgba(255,255,255,0.05)' } }
+                            }
+                        }
+                    });
+                }
+
+                // Render trades list (newest first)
+                const archivedCount = allTrades.filter(t => t.archivedAt).length;
+                const sessionCount = allTrades.length - archivedCount;
+                let headerText = `📊 ${allTrades.length} trades analysés`;
+                if (archivedCount > 0 && sessionCount > 0) headerText += ` (${sessionCount} session + ${archivedCount} archivés)`;
+                else if (archivedCount > 0) headerText += ` (archivés)`;
+
+                const listEl = document.getElementById('backtestRunsList');
+                listEl.innerHTML = `<div style="font-size: 0.85em; color: #94a3b8; margin-bottom: 15px; font-style: italic;">${headerText}</div>`;
+                listEl.innerHTML += allTrades.map(t => {
+                    const date = new Date(t.endTime || t.closedAt || t.startTime || 0).toLocaleString();
+                    const profit = t.profit || t.pnl || 0;
+                    const profitColor = profit >= 0 ? '#4ade80' : '#f87171';
+                    const emoji = profit >= 0 ? '✅' : '❌';
+                    const archiveBadge = t.archivedAt ? '<span style="font-size: 0.65em; background: rgba(139,92,246,0.2); color: #c4b5fd; padding: 2px 6px; border-radius: 4px; margin-left: 6px;">Archivé</span>' : '';
+                    return `<div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 8px;">
+                        <div style="flex: 1; min-width: 0;">
+                            <div style="font-weight: 700; color: #e2e8f0; font-size: 0.85em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${emoji} ${t.question || 'Trade'}${archiveBadge}</div>
+                            <div style="font-size: 0.75em; color: #94a3b8; margin-top: 4px;">📅 ${date} | ${t.side || '?'} @ ${(t.entryPrice || 0).toFixed(4)}</div>
+                            <div style="font-size: 0.7em; color: #64748b; margin-top: 2px;">${t.closeReason || ''}</div>
+                        </div>
+                        <div style="text-align: right; margin-left: 15px; flex-shrink: 0;">
+                            <div style="font-weight: 800; font-size: 1.1em; color: ${profitColor};">${profit >= 0 ? '+' : ''}$${profit.toFixed(2)}</div>
+                            <div style="font-size: 0.7em; color: #94a3b8;">$${(t.amount || 0).toFixed(2)} invested</div>
+                        </div>
+                    </div>`;
+                }).join('');
+            }
+
+            async function renderSimMode() {
+                let runs = [];
+                try {
+                    const res = await fetch('/api/backtest-results');
+                    const data = await res.json();
+                    runs = data.runs || [];
+                } catch (e) { console.warn('Could not fetch backtest-results:', e); }
+
+                if (runs.length > 0) {
+                    const latest = runs[0];
+                    document.getElementById('bt-roi').textContent = `${latest.roi >= 0 ? '+' : ''}${latest.roi.toFixed(2)}%`;
+                    document.getElementById('bt-roi').className = 'stat-value ' + (latest.roi >= 0 ? 'positive' : 'negative');
+                    document.getElementById('bt-sharpe').textContent = (latest.sharpe || 0).toFixed(2);
+                    document.getElementById('bt-winrate').textContent = `${(latest.winrate || 0).toFixed(1)}%`;
+                    document.getElementById('bt-drawdown').textContent = `${(latest.drawdown || 0).toFixed(2)}%`;
+
+                    const ctx = document.getElementById('backtestProgressionChart')?.getContext('2d');
+                    if (ctx && window.backtestProgressionChartInstance) window.backtestProgressionChartInstance.destroy();
+                    if (ctx) {
+                        const sortedRuns = [...runs].reverse();
+                        window.backtestProgressionChartInstance = new Chart(ctx, {
+                            type: 'line',
+                            data: {
+                                labels: sortedRuns.map((r, i) => `Run ${i + 1}`),
+                                datasets: [{
+                                    label: 'ROI %',
+                                    data: sortedRuns.map(r => r.roi),
+                                    borderColor: '#22c55e',
+                                    backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                                    tension: 0.3, fill: true, borderWidth: 3, pointRadius: 5, pointBackgroundColor: '#22c55e'
+                                }]
+                            },
+                            options: {
+                                responsive: true, maintainAspectRatio: false,
+                                scales: { y: { ticks: { callback: v => v + '%', color: '#64748b' }, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { ticks: { color: '#64748b' }, grid: { color: 'rgba(255,255,255,0.05)' } } }
+                            }
+                        });
+                    }
+
+                    document.getElementById('backtestRunsList').innerHTML = runs.map((run, i) => `
+                        <div style="padding: 15px; background: rgba(255,255,255,0.03); border-radius: 8px; margin-bottom: 10px; border-left: 3px solid ${run.roi >= 0 ? '#22c55e' : '#f87171'};">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <div style="font-weight: 600; color: #e2e8f0; margin-bottom: 5px;">Sim #${runs.length - i} - ${new Date(run.timestamp).toLocaleString()}</div>
+                                    <div style="font-size: 0.85em; color: #94a3b8;">Trades: ${run.trade_count} | Winrate: ${(run.winrate || 0).toFixed(1)}%</div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-size: 1.3em; font-weight: 700; color: ${run.roi >= 0 ? '#22c55e' : '#f87171'};">${run.roi >= 0 ? '+' : ''}${(run.roi || 0).toFixed(2)}%</div>
+                                    <div style="font-size: 0.85em; color: #64748b;">Sharpe: ${(run.sharpe || 0).toFixed(2)}</div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    document.getElementById('bt-roi').textContent = '--%';
+                    document.getElementById('bt-sharpe').textContent = '--';
+                    document.getElementById('bt-winrate').textContent = '--%';
+                    document.getElementById('bt-drawdown').textContent = '--%';
+                    document.getElementById('backtestRunsList').innerHTML = `<div class="empty-state">
+                        Aucune simulation lancée.<br><br>
+                        <button onclick="runBacktestNow()" class="trade-action-btn" style="background: linear-gradient(135deg, #22c55e, #16a34a); color: white; border: none;">🧪 Lancer une Simulation</button>
+                        <div id="backtestConsoleMain" style="display:none; margin-top: 20px; text-align: left; background: #0f172a; padding: 15px; border-radius: 8px; font-family: monospace; font-size: 0.8em; color: #cbd5e1; max-height: 300px; overflow-y: auto; border: 1px solid var(--border);"></div>
+                    </div>`;
+                }
+            }
+
+            // Run Training Simulation
             async function runBacktestNow() {
-                if (confirm('⚠️ This will run a full backtest on historical data. This may take 10-30 seconds. Continue?')) {
+                if (confirm('🧪 Lancer une simulation sur des marchés résolus de Polymarket ? (10-30 secondes)')) {
                     const consoleDiv = document.getElementById('backtestConsoleMain') || document.getElementById('backtestConsole');
                     const roiStat = document.getElementById('bt-roi');
 
                     try {
-                        if (roiStat) roiStat.textContent = 'Running...';
+                        if (roiStat) roiStat.textContent = '⏳ Running...';
                         if (consoleDiv) {
                             consoleDiv.style.display = 'block';
-                            consoleDiv.innerHTML = '<span style="color: #60a5fa">⏳ Initializing generic backtest protocol...<br>🔄 Loading historical data...<br>🚀 Running simulation (please wait 10-30s)...</span>';
+                            consoleDiv.innerHTML = '<span style="color: #60a5fa">⏳ Connexion à l\'API Polymarket...<br>🔄 Chargement des marchés résolus...<br>🧪 Simulation en cours (10-30s)...</span>';
                         }
 
                         const res = await fetch('/api/run-backtest', { method: 'POST' });
@@ -1841,25 +1953,24 @@
 
                         if (data.success) {
                             if (consoleDiv) {
-                                // Format output for better readability
-                                const formattedOutput = (data.output || 'No output recorded.')
+                                const formattedOutput = (data.output || 'No output.')
                                     .replace(/\n/g, '<br>')
                                     .replace(/✅/g, '<span style="color:#4ade80">✅</span>')
                                     .replace(/❌/g, '<span style="color:#f87171">❌</span>')
                                     .replace(/💎/g, '<span style="color:#60a5fa">💎</span>');
-
-                                consoleDiv.innerHTML = `<div style="color:#4ade80; font-weight:bold; margin-bottom:10px;">✅ Analysis Complete</div>${formattedOutput}`;
+                                consoleDiv.innerHTML = `<div style="color:#22c55e; font-weight:bold; margin-bottom:10px;">✅ Simulation Terminée</div>${formattedOutput}`;
                             }
-                            alert(`✅ Backtest complete!\nROI: ${data.result?.roi?.toFixed(2) || '?'}%`);
-                            renderBacktestMonitor(); // Refresh display
+                            const roiResult = data.result?.roi?.toFixed(2) || data.stats?.totalPnL?.toFixed(2) || '?';
+                            alert(`✅ Simulation terminée !\nROI: ${roiResult}%\nWins: ${data.stats?.wins || 0} | Losses: ${data.stats?.losses || 0}`);
+                            renderBacktestMonitor();
                         } else {
-                            if (consoleDiv) consoleDiv.innerHTML += `<br><br><span style="color:#f87171">❌ Error: ${data.error}</span>`;
-                            alert('❌ Backtest failed: ' + (data.error || 'Unknown error'));
+                            if (consoleDiv) consoleDiv.innerHTML += `<br><br><span style="color:#f87171">❌ Erreur: ${data.error}</span>`;
+                            alert('❌ Simulation échouée: ' + (data.error || 'Unknown'));
                         }
                     } catch (e) {
                         console.error('Backtest execution error:', e);
-                        if (consoleDiv) consoleDiv.innerHTML += `<br><br><span style="color:#f87171">❌ System Error: ${e.message}</span>`;
-                        alert('❌ Error running backtest');
+                        if (consoleDiv) consoleDiv.innerHTML += `<br><br><span style="color:#f87171">❌ Erreur: ${e.message}</span>`;
+                        alert('❌ Erreur technique');
                     }
                 }
             }

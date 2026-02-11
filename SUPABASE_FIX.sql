@@ -39,3 +39,28 @@ CREATE TABLE IF NOT EXISTS debug_logs (
     data TEXT,
     timestamp TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Trade Archive Table (preserve closedTrades across resets)
+CREATE TABLE IF NOT EXISTS trade_archive (
+    id TEXT PRIMARY KEY,
+    market_id TEXT,
+    question TEXT,
+    side TEXT,
+    amount NUMERIC,
+    entry_price NUMERIC,
+    exit_price NUMERIC,
+    profit NUMERIC,
+    shares NUMERIC,
+    confidence NUMERIC,
+    category TEXT,
+    status TEXT DEFAULT 'CLOSED',
+    close_reason TEXT,
+    start_time TIMESTAMPTZ,
+    end_time TIMESTAMPTZ,
+    archived_at TIMESTAMPTZ DEFAULT NOW(),
+    raw_data JSONB
+);
+
+-- Clean up fake backtest results (all identical: 36.62% ROI, 100% winrate)
+-- Run this once after creating the table:
+-- DELETE FROM simulation_runs WHERE result_roi BETWEEN 36.60 AND 36.65;

@@ -62,11 +62,46 @@ router.get('/bot-data', (req, res) => {
 });
 
 // Endpoint pour réinitialiser la simulation
-router.post('/reset', (req, res) => {
+router.post('/reset', async (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
 
-    // Resetting State via Manager manually
-    // We could add a reset() method to StateManager but this works too
+    // ARCHIVE trades to Supabase before clearing
+    const allTrades = [
+        ...botState.closedTrades,
+        ...botState.activeTrades.map(t => ({ ...t, status: 'FORCE_CLOSED', closeReason: 'RESET' }))
+    ];
+
+    if (allTrades.length > 0 && supabase) {
+        try {
+            const archiveRows = allTrades.map(t => ({
+                id: t.id,
+                market_id: t.marketId,
+                question: t.question,
+                side: t.side,
+                amount: t.amount || 0,
+                entry_price: t.entryPrice || 0,
+                exit_price: t.exitPrice || 0,
+                profit: t.profit || t.pnl || 0,
+                shares: t.shares || 0,
+                confidence: t.confidence || 0,
+                category: t.category || 'unknown',
+                status: t.status || 'CLOSED',
+                close_reason: t.closeReason || t.resolvedOutcome || 'RESET',
+                start_time: t.startTime || null,
+                end_time: t.endTime || t.closedAt || new Date().toISOString(),
+                archived_at: new Date().toISOString(),
+                raw_data: t
+            }));
+
+            const { error } = await supabase.from('trade_archive').upsert(archiveRows, { onConflict: 'id' });
+            if (error) console.error('Archive error:', error.message);
+            else console.log(`✅ Archived ${archiveRows.length} trades before reset`);
+        } catch (e) {
+            console.error('Archive failed:', e.message);
+        }
+    }
+
+    // Resetting State
     Object.assign(botState, {
         startTime: new Date().toISOString(),
         capital: (CONFIG && CONFIG.STARTING_CAPITAL) ? CONFIG.STARTING_CAPITAL : 1000,
@@ -91,7 +126,6 @@ router.post('/reset', (req, res) => {
             alpha: 'Checking...'
         },
         wizards: [],
-        wizards: [],
         freshMarkets: [],
         marketCache: []
     });
@@ -101,7 +135,8 @@ router.post('/reset', (req, res) => {
     // PERSISTENCE FIX
     stateManager.save();
 
-    res.json({ success: true, message: 'Simulation reset to default state' });
+    res.json({ success: true, message: 'Simulation reset. Trades archived to Supabase.' });
+
 
     // Delete trade history file if exists
     const historyFile = path.join(process.cwd(), 'trade_decisions.jsonl');
@@ -331,32 +366,45 @@ router.get('/backtest-results', async (req, res) => {
     }
 });
 
-// Run Backtest Endpoint
-// Run Backtest Endpoint
-router.post('/run-backtest', async (req, res) => {
+// Archived trades endpoint (for Live Performance mode)
+router.get('/trade-archive', async (req, res) => {
     try {
-        const scriptPath = path.join(process.cwd(), 'scripts', 'backtest_public.js');
+        if (!supabase) return res.json({ trades: [] });
 
-        exec(`node ${scriptPath}`, (error, stdout, stderr) => {
-            if (error) {
-                console.error(`Backtest error: ${error.message}`);
-                return res.json({ success: false, error: error.message });
-            }
-            if (stderr) {
-                console.error(`Backtest stderr: ${stderr}`);
-            }
+        const { data, error } = await supabase
+            .from('trade_archive')
+            .select('*')
+            .order('archived_at', { ascending: false })
+            .limit(100);
 
-            // Parse stdout to find the JSON result or just return success
-            // The script saves to Supabase, which is the source of truth for the frontend
+        if (error) throw error;
 
-            // We can try to parse the last line if it outputs JSON, but for now just return success
-            // and let the frontend refresh the list from Supabase
+        // Map back to closedTrades format for the frontend
+        const trades = (data || []).map(row => ({
+            id: row.id,
+            marketId: row.market_id,
+            question: row.question,
+            side: row.side,
+            amount: parseFloat(row.amount) || 0,
+            entryPrice: parseFloat(row.entry_price) || 0,
+            exitPrice: parseFloat(row.exit_price) || 0,
+            profit: parseFloat(row.profit) || 0,
+            pnl: parseFloat(row.profit) || 0,
+            shares: parseFloat(row.shares) || 0,
+            confidence: parseFloat(row.confidence) || 0,
+            category: row.category,
+            status: row.status,
+            closeReason: row.close_reason,
+            startTime: row.start_time,
+            endTime: row.end_time,
+            closedAt: row.end_time,
+            archivedAt: row.archived_at
+        }));
 
-            res.json({ success: true, message: 'Backtest completed successfully', output: stdout });
-        });
-
+        res.json({ trades });
     } catch (error) {
-        res.json({ success: false, error: error.message });
+        console.error('Trade archive error:', error);
+        res.json({ trades: [] });
     }
 });
 

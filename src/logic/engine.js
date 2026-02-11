@@ -618,6 +618,7 @@ async function closeTrade(index, exitPrice, reason) {
     trade.exitPrice = exitPrice;
     trade.finalValue = finalValue;
     trade.pnl = pnl;
+    trade.profit = pnl; // Alias for consistency with resolveTradeWithRealOutcome
     trade.closeReason = reason;
 
     botState.activeTrades.splice(index, 1);
