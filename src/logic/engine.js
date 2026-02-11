@@ -371,6 +371,19 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
 
     // --- STRICT REALISM: FETCH REAL EXECUTION PRICE FROM ORDER BOOK ---
     // This ensures we don't "Paper Trade" at phantom prices (e.g. 1 cent)
+
+    // SELF-HEALING: If CLOB IDs are missing, try to fetch them from Gamma API
+    if (!market.clobTokenIds || market.clobTokenIds.length !== 2) {
+        try {
+            // console.warn(`⚠️ Missing CLOB IDs for ${market.question}. Attempting to fetch...`);
+            const freshData = await fetch(`https://gamma-api.polymarket.com/markets/${market.id}`).then(r => r.json());
+            if (freshData && freshData.clobTokenIds) {
+                market.clobTokenIds = freshData.clobTokenIds;
+                // console.log(`✅ Recovered CLOB IDs for ${market.question}`);
+            }
+        } catch (e) { /* ignore fetch error */ }
+    }
+
     if (market.clobTokenIds && market.clobTokenIds.length === 2) {
         const tokenId = side === 'YES' ? market.clobTokenIds[0] : market.clobTokenIds[1];
         if (tokenId) {
