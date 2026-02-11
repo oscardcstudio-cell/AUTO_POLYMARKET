@@ -63,19 +63,23 @@ app.get('/dashboard.html', (req, res) => {
 
 // Helper logic for dynamic capacity
 function calculateMaxTrades(capital, defcon = 5) {
-    let base = CONFIG.BASE_MAX_TRADES || 10;
+    // 1. Get base limit from Risk Profile (Definitive Source)
+    let limit = riskManager.getProfile().maxActiveTrades;
 
-    // Capital bonus: +1 trade per $500 gained above starting $1000
-    const profitBonus = Math.floor(Math.max(0, capital - 1000) / 500);
-    base += profitBonus;
-
-    // Crisis modifier: Reduce capacity during DEFCON 1-2 to avoid spreading too thin
-    if (defcon <= 2) {
-        base = Math.max(5, Math.floor(base * 0.5));
+    // 2. Capital Scaling (Optional: Allow slight increase if rich)
+    // Only applied if capital > $2000 to reward success, but cap at +5
+    if (capital > 2000) {
+        limit += Math.floor((capital - 2000) / 1000);
     }
 
-    // Safety Cap
-    return Math.min(base, 25);
+    // 3. Crisis Modifier (DEFCON)
+    // Reduce capacity during DEFCON 1-2 to avoid spreading too thin
+    if (defcon <= 2) {
+        limit = Math.max(5, Math.floor(limit * 0.5));
+    }
+
+    // 4. Hard Safety Cap (Server Stability)
+    return Math.min(limit, 50); // Increased from 25 to allow YOLO scaling
 }
 
 

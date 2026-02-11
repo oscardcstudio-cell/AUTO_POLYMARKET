@@ -52,7 +52,7 @@ async function fetchWithRetry(url, options = {}, retries = 3) {
     }
 }
 
-let hasLoggedAuthError = false; // Prevent log spam
+// let hasLoggedAuthError = false; // Deprecated in favor of clobBlockedUntil
 
 /**
  * Get cached data if valid, otherwise return null
@@ -72,12 +72,19 @@ function setCache(key, data) {
     cache.set(key, { data, timestamp: Date.now() });
 }
 
+let clobBlockedUntil = 0; // Timestamp for cooldown
+
 /**
  * GET /book - Retrieve order book for a specific token
  * @param {string} tokenId - The token ID (outcome token ID from market)
  * @returns {Object|null} Order book with bids and asks
  */
 export async function getCLOBOrderBook(tokenId) {
+    // Check Cooldown
+    if (Date.now() < clobBlockedUntil) {
+        return null; // Silently skip while in cooldown
+    }
+
     const cacheKey = `book_${tokenId}`;
     const cached = getCached(cacheKey, CACHE_TTL_ORDER_BOOK);
     if (cached) return cached;
@@ -91,10 +98,14 @@ export async function getCLOBOrderBook(tokenId) {
         }
 
         if (response.status === 401 || response.status === 403) {
-            if (!hasLoggedAuthError) {
-                console.warn(`⚠️ CLOB Access Denied (${response.status}). Public data might be restricted. Disabling CLOB calls.`);
-                hasLoggedAuthError = true;
-            }
+            console.warn(`⚠️ CLOB Access Denied (${response.status}). Pausing CLOB for 5 minutes.`);
+            clobBlockedUntil = Date.now() + 5 * 60 * 1000; // 5 min cooldown
+            return null;
+        }
+
+        if (response.status === 429) { // Rate Limit
+            console.warn(`⚠️ CLOB Rate Limit. Pausing for 1 minute.`);
+            clobBlockedUntil = Date.now() + 60 * 1000;
             return null;
         }
 
