@@ -56,11 +56,44 @@ Une fois déployé, Railway vous donnera une URL publique (ex: `https://your-app
 
 Votre dashboard sera accessible directement à cette URL !
 
-## Monitoring
+## Monitoring & Logs 🕵️‍♂️
 
-- **Health check**: `https://your-app.railway.app/health`
-- **Logs**: Consultez les logs directement dans le dashboard Railway
-- **Redémarrage automatique**: Le bot redémarre automatiquement en cas d'erreur
+### 1. Via le Dashboard Railway (Facile)
+- Allez dans votre projet sur Railway.
+- Cliquez sur le service actif.
+- Allez dans l'onglet **"Logs"**.
+- Vous verrez le flux en direct.
+
+### 2. Via le Terminal (Pro)
+Pour voir les logs directement dans votre terminal local :
+
+1. Installez le CLI Railway :
+   ```bash
+   npm i -g @railway/cli
+   ```
+   *Note : Si vous avez une erreur de script sur Windows PowerShell, lancez d'abord :*
+   `Set-ExecutionPolicy RemoteSigned - Scope CurrentUser`
+
+2. Connectez-vous :
+   ```bash
+   railway login
+   ```
+
+3. Affichez les logs :
+   ```bash
+   railway logs
+   ```
+
+### 3. Logs de Secours (Supabase)
+Si Railway est inaccessible, le bot sauvegarde les événements critiques dans Supabase.
+Utilisez le script inclus pour les lire :
+```bash
+node scripts/read_remote_logs.js
+```
+
+### Redémarrage
+- Le bot redémarre automatiquement en cas d'erreur critique.
+- Vous pouvez forcer un redémarrage depuis le dashboard Railway (Command Palette > Restart).
 
 ## Notes importantes
 
