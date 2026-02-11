@@ -61,16 +61,41 @@ export async function getRelevantMarkets(useDeepScan = false) {
 
         // Filter
         const dateNow = new Date();
+        const currentProfile = botState.riskProfile; // "YOLO", "SAFE", etc.
+
         const filtered = mergedMarkets.filter(m => {
             const text = (m.question + ' ' + (m.description || '')).toLowerCase();
             const hasKeyword = CONFIG.KEYWORDS.length === 0 ||
                 CONFIG.KEYWORDS.some(kw => text.includes(kw.toLowerCase()));
-            const hasLiquidity = parseFloat(m.liquidityNum || 0) > 100;
+
+            // Liquidity Check: Relaxed for YOLO
+            const liquidity = parseFloat(m.liquidityNum || 0);
+            let hasLiquidity = liquidity > 100;
+            if (currentProfile === 'YOLO') {
+                hasLiquidity = liquidity > 10; // Much lower threshold for degen plays
+            }
+
             const expiry = new Date(m.endDate);
             const daysToExpiry = (expiry - dateNow) / (1000 * 60 * 60 * 24);
             const isRelevantTerm = daysToExpiry < 30 && daysToExpiry > 0;
 
-            return (hasKeyword || hasLiquidity) && isRelevantTerm;
+            // In YOLO mode, we might want to see EVERYTHING even without keywords if it's hot?
+            // But let's keep keyword constraint for now to avoid spam, unless it's a "Top Mover".
+            // Actually, for "Wizard" or "Whale" detection, we need these markets to pass through!
+            // Wait, this function returns "Relevant Markets". 
+            // Detectors (Whales/Wizards) use THIS output. 
+            // So if we filter here, we blind the detectors.
+
+            // FIX: Always include markets with high volume (Whales) regardless of keywords
+            const vol24h = parseFloat(m.volume24hr || 0);
+            const isWhaleCandidate = vol24h > 10000;
+
+            // FIX: Always include potential Penny Stocks/Long Shots in YOLO mode
+            const prices = m.outcomePrices ? JSON.parse(m.outcomePrices) : [0.5, 0.5];
+            const isPennyStock = (parseFloat(prices[0]) < 0.10 || parseFloat(prices[1]) < 0.10);
+            const isYoloCandidate = (currentProfile === 'YOLO' && isPennyStock);
+
+            return (hasKeyword || hasLiquidity || isWhaleCandidate || isYoloCandidate) && isRelevantTerm;
         });
 
         relevantMarketsCache = filtered;
