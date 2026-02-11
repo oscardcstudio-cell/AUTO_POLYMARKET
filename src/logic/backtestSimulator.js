@@ -1,10 +1,7 @@
 
 import { simulateTrade } from './engine.js';
 import { botState } from '../state.js';
-// Removed explicit supabase import if not used directly, or keep if needed for archiving results here?
-// Actually, backtestRoutes handles the response. 
-// But if we run this from scheduler, we might want to save results here or in the caller.
-// Let's return the results and let the caller handle saving/logging.
+import { riskManager } from './riskManagement.js';
 
 // REALISTIC COSTS
 const SLIPPAGE = 0.015;
@@ -143,8 +140,10 @@ export async function runBacktestSimulation() {
 
     const initialCapital = 1000;
     const simCapital = { value: initialCapital };
+    const currentProfile = riskManager.getProfile();
 
-    log('📡 Fetching resolved markets...');
+    log(`🔬 Starting Backtest with Risk Profile: ${currentProfile.label} (${currentProfile.id})`);
+    log(`📡 Fetching resolved markets...`);
     const randomOffset = Math.floor(Math.random() * 200);
     const resolvedMarkets = await fetchResolvedMarkets(50, randomOffset);
 

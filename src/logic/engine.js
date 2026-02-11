@@ -62,11 +62,11 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
             const response = await fetchWithRetry(`https://gamma-api.polymarket.com/markets/${market.id}`);
             if (response && response.ok) {
                 const freshData = await response.json();
-                if (freshData && freshData.clobTokenIds) {
+                if (freshData && freshData.clobTokenIds && freshData.clobTokenIds.length === 2) {
                     market.clobTokenIds = freshData.clobTokenIds;
                     addLog(botState, `✅ Recovered CLOB IDs successfully.`, 'success');
                 } else {
-                    addLog(botState, `❌ Recovery failed: No IDs in API response.`, 'error');
+                    addLog(botState, `❌ Recovery failed: Incomplete IDs in API response.`, 'error');
                 }
             } else {
                 addLog(botState, `❌ Recovery failed: API Error ${response ? response.status : 'No Response'}`, 'error');
@@ -438,13 +438,27 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
             }
         }
     } else {
-        // If we can't verify with CLOB, we skip (User demanded certainty)
-        const reason = `⚠️ No CLOB IDs - Cannot verify real price. Skipped.`;
-        if (reasonsCollector) reasonsCollector.push(reason);
-        return null;
+        const currentProfile = riskManager.getProfile();
+        const fallbackAllowed = CONFIG.ALLOW_GAMMA_FALLBACK || ['YOLO', 'RISKY'].includes(currentProfile.id);
+
+        if (fallbackAllowed) {
+            const fallbackSlippage = 0.015; // 1.5% penalty for using Gamma instead of Order Book
+            const oldPrice = entryPrice;
+            entryPrice = entryPrice * (1 + (side === 'YES' ? fallbackSlippage : -fallbackSlippage));
+
+            const reason = `⚠️ [GAMMA-FALLBACK] No CLOB IDs. Using Gamma price + 1.5% slippage penalty ($${oldPrice.toFixed(3)} -> $${entryPrice.toFixed(3)})`;
+            decisionReasons.push(reason);
+            if (reasonsCollector) reasonsCollector.push(reason);
+            // We proceed with the trade
+        } else {
+            // If we can't verify with CLOB and fallback not allowed, we skip
+            const reason = `⚠️ No CLOB IDs - Cannot verify real price. Skipped (SAFE/MEDIUM mode).`;
+            if (reasonsCollector) reasonsCollector.push(reason);
+            return null;
+        }
     }
 
-    // Simulation de slippage et frais
+    // Simulation de slippage et frais STANDARDS (ajouté au prix déjà potentiellement pénalisé par le fallback)
     const slippage = 0.01;
     const fee = 0.00;
     const executionPrice = entryPrice * (1 + (side === 'YES' ? slippage : -slippage));
@@ -457,6 +471,7 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
         side: side,
         amount: tradeSize,
         entryPrice: executionPrice,
+        priceSource: (market.clobTokenIds && market.clobTokenIds.length === 2) ? 'CLOB' : 'GAMMA_FALLBACK',
         startTime: new Date().toISOString(),
         shares: tradeSize / executionPrice,
         status: 'OPEN',
@@ -510,6 +525,21 @@ export async function checkAndCloseTrades(getRealMarketPriceFn) {
         trade.priceHistory = trade.priceHistory || [];
         trade.priceHistory.push(currentPrice);
         if (trade.priceHistory.length > 50) trade.priceHistory.shift();
+
+        // --- NEW: AUDIT & DRIFT CHECK ---
+        // If trade was entered via Gamma Fallback, try to see if CLOB IDs are now available to verify "Real" price
+        if (trade.priceSource === 'GAMMA_FALLBACK' && trade.clobTokenIds && trade.clobTokenIds.length === 2) {
+            try {
+                const tokenId = trade.side === 'YES' ? trade.clobTokenIds[0] : trade.clobTokenIds[1];
+                const realPriceInfo = await getBestExecutionPrice(tokenId, trade.side.toLowerCase());
+                if (realPriceInfo && realPriceInfo.price) {
+                    const drift = realPriceInfo.price - trade.entryPrice;
+                    trade.clobDrift = drift;
+                    trade.priceSource = 'CLOB_VERIFIED'; // Mark as audited
+                    console.log(`📊 [AUDIT] Drift detected for ${trade.id}: ${drift.toFixed(4)} (Gamma: ${trade.entryPrice.toFixed(3)} | CLOB: ${realPriceInfo.price.toFixed(3)})`);
+                }
+            } catch (e) { /* Silently fail audit */ }
+        }
 
         // Update timestamp for Dashboard "PRICES: LIVE" indicator
         trade.lastPriceUpdate = new Date().toISOString();

@@ -32,6 +32,7 @@ export const CONFIG = {
     MIN_VOLUME: 100,
     BASE_MAX_TRADES: 10,          // Starting limit for diversification
     KEYWORDS: [],
+    ALLOW_GAMMA_FALLBACK: true, // Allow trading based on Gamma prices when CLOB IDs are missing
     FALLBACK_KEYWORDS: ['War', 'Strike', 'Election', 'Bitcoin', 'Economy'],
     DATA_FILE: DATA_FILE_PATH,
     PORT: process.env.PORT || 3000,
