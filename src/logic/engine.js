@@ -375,16 +375,22 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
     // SELF-HEALING: If CLOB IDs are missing, try to fetch them from Gamma API
     if (!market.clobTokenIds || market.clobTokenIds.length !== 2) {
         try {
-            // console.warn(`⚠️ Missing CLOB IDs for ${market.question}. Attempting to fetch...`);
+            addLog(botState, `🩹 Attempting to recover CLOB IDs for: ${market.question.substring(0, 20)}...`, 'warning');
             const response = await fetchWithRetry(`https://gamma-api.polymarket.com/markets/${market.id}`);
             if (response && response.ok) {
                 const freshData = await response.json();
                 if (freshData && freshData.clobTokenIds) {
                     market.clobTokenIds = freshData.clobTokenIds;
-                    // console.log(`✅ Recovered CLOB IDs for ${market.question}`);
+                    addLog(botState, `✅ Recovered CLOB IDs successfully.`, 'success');
+                } else {
+                    addLog(botState, `❌ Recovery failed: No IDs in API response.`, 'error');
                 }
+            } else {
+                addLog(botState, `❌ Recovery failed: API Error ${response ? response.status : 'No Response'}`, 'error');
             }
-        } catch (e) { /* ignore fetch error */ }
+        } catch (e) {
+            addLog(botState, `❌ Recovery Error: ${e.message}`, 'error');
+        }
     }
 
     if (market.clobTokenIds && market.clobTokenIds.length === 2) {
