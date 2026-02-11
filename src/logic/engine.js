@@ -429,6 +429,56 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
         return null;
     }
 
+    // --- STRICT REALISM: FETCH REAL EXECUTION PRICE FROM ORDER BOOK ---
+    // This ensures we don't "Paper Trade" at phantom prices (e.g. 1 cent)
+    if (market.clobTokenIds && market.clobTokenIds.length === 2) {
+        const tokenId = side === 'YES' ? market.clobTokenIds[0] : market.clobTokenIds[1];
+        if (tokenId) {
+            try {
+                // Fetch REAL Ask Price (what we would actually pay)
+                const executionData = await getBestExecutionPrice(tokenId, 'buy');
+
+                if (!executionData || !executionData.price || executionData.price <= 0) {
+                    const reason = `⛔ REALISM CHECK FAILED: No Liquidity in Order Book for ${side}`;
+                    if (reasonsCollector) reasonsCollector.push(reason);
+                    // logTradeDecision(market, null, [...decisionReasons, reason], pizzaData); 
+                    return null; // ABORT
+                }
+
+                // Filter out extreme spreads (e.g. Bid 0.10 / Ask 0.90)
+                if (executionData.spreadPercent > 50) {
+                    const reason = `⛔ Spread too wide (${executionData.spreadPercent}%) - Unsafe execution`;
+                    if (reasonsCollector) reasonsCollector.push(reason);
+                    return null;
+                }
+
+                // FORCE UPDATE Entry Price to Real Ask
+                // If Gamma said 0.01 but Order Book Ask is 0.05, we MUST use 0.05
+                if (Math.abs(entryPrice - executionData.price) > 0.001) {
+                    decisionReasons.push(`⚡ Price Adjusted: ${entryPrice.toFixed(3)} -> ${executionData.price.toFixed(3)} (Real Order Book)`);
+                    entryPrice = executionData.price;
+                }
+
+                // Re-check Min Price Threshold with Real Price
+                if (entryPrice < (CONFIG.MIN_PRICE_THRESHOLD || 0.05)) {
+                    const reason = `⛔ Real Price too low (<${CONFIG.MIN_PRICE_THRESHOLD}) - Penny Stock Filter`;
+                    if (reasonsCollector) reasonsCollector.push(reason);
+                    return null;
+                }
+
+            } catch (e) {
+                console.warn(`CLOB Check Failed for ${market.question}:`, e.message);
+                // If CLOB fails, better to skip than trade on fake data if user wants certainty
+                return null;
+            }
+        }
+    } else {
+        // If we can't verify with CLOB, we skip (User demanded certainty)
+        const reason = `⚠️ No CLOB IDs - Cannot verify real price. Skipped.`;
+        if (reasonsCollector) reasonsCollector.push(reason);
+        return null;
+    }
+
     // Simulation de slippage et frais
     const slippage = 0.01;
     const fee = 0.00;
