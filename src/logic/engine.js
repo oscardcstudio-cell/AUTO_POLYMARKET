@@ -54,6 +54,28 @@ function logTradeDecision(market, trade, reasons, pizzaData) {
 }
 
 export async function simulateTrade(market, pizzaData, isFreshMarket = false, dependencies = {}) {
+    // --- SELF-HEALING (Moved to Top) ---
+    // Critical: Fetch IDs BEFORE strategy checks so checkLiquidityDepth works properly.
+    if (!market.clobTokenIds || market.clobTokenIds.length !== 2) {
+        try {
+            addLog(botState, `🩹 Attempting to recover CLOB IDs for: ${market.question.substring(0, 20)}...`, 'warning');
+            const response = await fetchWithRetry(`https://gamma-api.polymarket.com/markets/${market.id}`);
+            if (response && response.ok) {
+                const freshData = await response.json();
+                if (freshData && freshData.clobTokenIds) {
+                    market.clobTokenIds = freshData.clobTokenIds;
+                    addLog(botState, `✅ Recovered CLOB IDs successfully.`, 'success');
+                } else {
+                    addLog(botState, `❌ Recovery failed: No IDs in API response.`, 'error');
+                }
+            } else {
+                addLog(botState, `❌ Recovery failed: API Error ${response ? response.status : 'No Response'}`, 'error');
+            }
+        } catch (e) {
+            addLog(botState, `❌ Recovery Error: ${e.message}`, 'error');
+        }
+    }
+
     const {
         checkLiquidityDepthFn = checkLiquidityDepth,
         calculateIntradayTrendFn = calculateIntradayTrend,
@@ -372,26 +394,7 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
     // --- STRICT REALISM: FETCH REAL EXECUTION PRICE FROM ORDER BOOK ---
     // This ensures we don't "Paper Trade" at phantom prices (e.g. 1 cent)
 
-    // SELF-HEALING: If CLOB IDs are missing, try to fetch them from Gamma API
-    if (!market.clobTokenIds || market.clobTokenIds.length !== 2) {
-        try {
-            addLog(botState, `🩹 Attempting to recover CLOB IDs for: ${market.question.substring(0, 20)}...`, 'warning');
-            const response = await fetchWithRetry(`https://gamma-api.polymarket.com/markets/${market.id}`);
-            if (response && response.ok) {
-                const freshData = await response.json();
-                if (freshData && freshData.clobTokenIds) {
-                    market.clobTokenIds = freshData.clobTokenIds;
-                    addLog(botState, `✅ Recovered CLOB IDs successfully.`, 'success');
-                } else {
-                    addLog(botState, `❌ Recovery failed: No IDs in API response.`, 'error');
-                }
-            } else {
-                addLog(botState, `❌ Recovery failed: API Error ${response ? response.status : 'No Response'}`, 'error');
-            }
-        } catch (e) {
-            addLog(botState, `❌ Recovery Error: ${e.message}`, 'error');
-        }
-    }
+    // Self-healing block moved to top of function
 
     if (market.clobTokenIds && market.clobTokenIds.length === 2) {
         const tokenId = side === 'YES' ? market.clobTokenIds[0] : market.clobTokenIds[1];
