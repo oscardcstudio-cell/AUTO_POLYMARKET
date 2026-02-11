@@ -81,8 +81,8 @@ function calculateMaxTrades(capital, defcon = 5) {
 app.listen(CONFIG.PORT, () => {
     console.log(`\n🚀 SERVER STARTED ON PORT ${CONFIG.PORT}`);
     console.log(`📅 ${new Date().toLocaleString()}`);
-    console.log(`✅ Version: 2.6.3 (Clean Trade Archive)`);
-    addLog(botState, `Serveur démarré sur le port ${CONFIG.PORT} (v2.6.3)`, 'success');
+    console.log(`⚠️ Version: 2.6.4 (NUCLEAR RESET ON STARTUP)`);
+    addLog(botState, `Serveur démarré sur le port ${CONFIG.PORT} (v2.6.4 NUCLEAR)`, 'warning');
 });
 
 // --- MAIN LOOP ---
@@ -90,8 +90,13 @@ async function mainLoop() {
     addLog(botState, '🔄 Démarrage de la boucle de trading...', 'info');
 
     // 0. Disaster Recovery (Cloud Restore)
+    // DISABLED: We want a clean slate for this deployment
+
+    // NUCLEAR RESET (Force Clean Slate)
+    stateManager.reset();
+
     try {
-        await stateManager.tryRecovery();
+        // await stateManager.tryRecovery();
     } catch (e) {
         console.error("Recovery failed:", e);
     }

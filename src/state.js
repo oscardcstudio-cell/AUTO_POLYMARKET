@@ -61,6 +61,15 @@ export class StateManager {
         this.load();
     }
 
+    reset() {
+        console.log("☢️ NUCLEAR RESET TRIGGERED");
+        // Deep copy initial state
+        this.data = JSON.parse(JSON.stringify(INITIAL_STATE));
+        this.data.startTime = new Date().toISOString();
+        this.data.lastUpdate = new Date().toISOString();
+        this.save();
+    }
+
     load() {
         if (fs.existsSync(this.filePath)) {
             try {
