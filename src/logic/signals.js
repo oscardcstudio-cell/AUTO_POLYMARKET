@@ -353,7 +353,8 @@ export async function detectWhales(markets = null) {
                     id: m.id,
                     question: m.question,
                     volume: vol,
-                    slug: m.slug
+                    slug: m.slug,
+                    clobTokenIds: m.clobTokenIds // Critical for execution
                 });
             }
         });
@@ -377,7 +378,8 @@ export async function scanArbitrage(markets = null) {
                         question: m.question,
                         sum: sum.toFixed(3),
                         profit: ((1 - sum) * 100).toFixed(1),
-                        slug: m.slug
+                        slug: m.slug,
+                        clobTokenIds: m.clobTokenIds // Critical for execution
                     });
                 }
             }
@@ -403,14 +405,32 @@ export async function detectWizards(markets = null) {
             if (pYes < 0.35 && pYes > 0.01 && liq > 500) {
                 const alpha = calculateAlphaScore(m, botState.lastPizzaData);
                 if (alpha > 30) {
-                    botState.wizards.push({ id: m.id, side: 'YES', slug: m.slug, question: m.question, price: pYes.toFixed(3), alpha: alpha, reason: `YES Alpha ${alpha}%` });
+                    botState.wizards.push({
+                        id: m.id,
+                        side: 'YES',
+                        slug: m.slug,
+                        question: m.question,
+                        price: pYes.toFixed(3),
+                        alpha: alpha,
+                        reason: `YES Alpha ${alpha}%`,
+                        clobTokenIds: m.clobTokenIds // Critical for execution
+                    });
                 }
             }
             // Check NO Wizards
             else if (pNo < 0.35 && pNo > 0.01 && liq > 500) {
                 const alpha = calculateAlphaScore(m, botState.lastPizzaData);
                 if (alpha > 30) {
-                    botState.wizards.push({ id: m.id, side: 'NO', slug: m.slug, question: m.question, price: pNo.toFixed(3), alpha: alpha, reason: `NO Alpha ${alpha}%` });
+                    botState.wizards.push({
+                        id: m.id,
+                        side: 'NO',
+                        slug: m.slug,
+                        question: m.question,
+                        price: pNo.toFixed(3),
+                        alpha: alpha,
+                        reason: `NO Alpha ${alpha}%`,
+                        clobTokenIds: m.clobTokenIds // Critical for execution
+                    });
                 }
             }
         });
@@ -458,7 +478,8 @@ export async function detectFreshMarkets() {
                         endDate: market.endDate,
                         endDateIso: market.endDateIso,
                         freshScore: score,
-                        ageHours: ageHours.toFixed(1)
+                        ageHours: ageHours.toFixed(1),
+                        clobTokenIds: market.clobTokenIds // Critical for execution
                     });
                 }
             }
