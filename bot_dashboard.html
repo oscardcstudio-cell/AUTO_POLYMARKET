@@ -654,6 +654,32 @@
     <div id="dashboard-view">
         <!-- KPIS GRID -->
         <div class="kpi-grid">
+
+            <!-- RISK PROFILE CARD -->
+            <div class="glass-card"
+                style="margin-bottom: 20px; background: rgba(30, 41, 59, 0.7); border: 1px solid var(--border); border-radius: 20px; padding: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <h2 style="margin: 0; font-size: 1.2em;">🔥 Risk Profile</h2>
+                        <span class="badge" id="risk-badge"
+                            style="padding: 5px 10px; border-radius: 8px; font-weight: 700; font-size: 0.8em; background: #3b82f6; color: white;">MEDIUM</span>
+                    </div>
+                    <div id="risk-description" class="subtext" style="font-size: 0.9em; color: #94a3b8;">Balanced
+                        approach. 5% max exposure.</div>
+                </div>
+                <div class="risk-controls" style="position: relative; padding: 0 10px;">
+                    <input type="range" id="risk-slider" min="0" max="3" step="1" value="1"
+                        style="width: 100%; cursor: pointer; accent-color: #3b82f6;">
+                    <div class="risk-labels"
+                        style="display: flex; justify-content: space-between; margin-top: 10px; font-size: 0.8em; color: #64748b; font-weight: 600;">
+                        <span>SAFE</span>
+                        <span>MEDIUM</span>
+                        <span>RISKY</span>
+                        <span>YOLO</span>
+                    </div>
+                </div>
+            </div>
+
             <!-- Stats Grid -->
             <div class="stats-grid">
                 <div class="stat-card">
@@ -2071,6 +2097,54 @@
                 }
             }
 
+
+            // --- RISK PROFILE LOGIC ---
+            const riskSlider = document.getElementById('risk-slider');
+            const riskBadge = document.getElementById('risk-badge');
+            const riskDesc = document.getElementById('risk-description');
+            const PROFILES = ['SAFE', 'MEDIUM', 'RISKY', 'YOLO'];
+
+            function updateRiskUI(profileId) {
+                const index = PROFILES.indexOf(profileId);
+                if (index !== -1) {
+                    if (riskSlider) riskSlider.value = index;
+                    if (riskBadge) {
+                        riskBadge.textContent = profileId;
+                        riskBadge.style.background = ''; // Reset inline
+                        riskBadge.className = 'badge'; // Reset class
+                        riskBadge.style.padding = '5px 10px';
+                        riskBadge.style.borderRadius = '8px';
+                        riskBadge.style.fontWeight = '700';
+                        riskBadge.style.fontSize = '0.8em';
+                        riskBadge.style.color = 'white';
+
+                        if (profileId === 'SAFE') riskBadge.style.background = '#10b981'; // Green
+                        if (profileId === 'MEDIUM') riskBadge.style.background = '#3b82f6'; // Blue
+                        if (profileId === 'RISKY') riskBadge.style.background = '#f59e0b'; // Orange
+                        if (profileId === 'YOLO') riskBadge.style.background = '#ef4444'; // Red
+                    }
+
+                    if (riskDesc) {
+                        if (profileId === 'SAFE') riskDesc.textContent = "Conservative. 2% max. Whale/Arb only.";
+                        if (profileId === 'MEDIUM') riskDesc.textContent = "Balanced. 5% max. Standard strategies.";
+                        if (profileId === 'RISKY') riskDesc.textContent = "Aggressive. 10% max. Contrarian allowed.";
+                        if (profileId === 'YOLO') riskDesc.textContent = "🔥 DEGEN MODE. 20% max. Penny stocks allowed.";
+                    }
+                }
+            }
+
+            async function fetchSettings() {
+                try {
+                    const res = await fetch('/api/settings');
+                    const data = await res.json();
+                    if (data.success) {
+                        updateRiskUI(data.riskProfile.id);
+                    }
+                } catch (e) {
+                    console.error("Failed to fetch settings", e);
+                }
+            }
+
             // --- RESET FUNCTION ---
             async function confirmReset() {
                 if (confirm("⚠️ ATTENTION : VOULEZ-VOUS VRAIMENT RÉINITIALISER LE BOT ?\n\nCela va :\n1. Effacer tout l'historique des trades (Supabase + Local)\n2. Remettre le capital à 1000$\n3. Oublier l'apprentissage IA\n\nCette action est irréversible.")) {
@@ -2113,6 +2187,25 @@
                 // Marketplace listeners
                 document.getElementById('marketSearch')?.addEventListener('input', renderMarketplace);
                 document.getElementById('marketSort')?.addEventListener('change', renderMarketplace);
+
+                // Risk Slider Listener
+                if (document.getElementById('risk-slider')) {
+                    document.getElementById('risk-slider').addEventListener('change', async (e) => {
+                        const profileId = PROFILES[e.target.value];
+                        updateRiskUI(profileId); // Optimistic update
+                        try {
+                            const res = await fetch('/api/settings', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ riskProfile: profileId })
+                            });
+                            const data = await res.json();
+                            if (data.success) console.log("Risk profile updated:", profileId);
+                        } catch (e) { console.error("Failed to update settings", e); }
+                    });
+                    // Initial fetch
+                    fetchSettings();
+                }
             };
         </script>
 </body>

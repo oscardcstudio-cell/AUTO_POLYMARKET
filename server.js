@@ -11,6 +11,7 @@ import analyticsRoutes from './src/api/analyticsRoutes.js';
 import debugRoutes from './src/api/debugRoutes.js';
 import backtestRoutes from './src/api/backtestRoutes.js';
 import { startPriceUpdateLoop } from './src/services/priceUpdateService.js';
+import { riskManager } from './src/logic/riskManagement.js';
 import { startScheduler } from './src/cron/scheduler.js';
 
 // Logic & Signals
@@ -76,6 +77,31 @@ function calculateMaxTrades(capital, defcon = 5) {
     // Safety Cap
     return Math.min(base, 25);
 }
+
+
+// --- SETTINGS ENDPOINTS ---
+app.post('/api/settings', (req, res) => {
+    const { riskProfile } = req.body;
+    if (riskProfile) {
+        if (riskManager.setProfile(riskProfile)) {
+            botState.riskProfile = riskProfile;
+            stateManager.save();
+            addLog(botState, `⚙️ Risk Profile changed to: ${riskProfile}`, 'info');
+            res.json({ success: true, profile: riskManager.getProfile() });
+        } else {
+            res.status(400).json({ success: false, error: 'Invalid risk profile' });
+        }
+    } else {
+        res.status(400).json({ success: false, error: 'Missing settings' });
+    }
+});
+
+app.get('/api/settings', (req, res) => {
+    res.json({
+        success: true,
+        riskProfile: riskManager.getProfile()
+    });
+});
 
 // Start Server
 app.listen(CONFIG.PORT, () => {
