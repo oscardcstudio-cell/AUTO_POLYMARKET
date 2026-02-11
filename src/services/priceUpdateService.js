@@ -81,6 +81,7 @@ async function fetchMarketPrice(marketId) {
  */
 export async function updateActiveTradePrices(activeTrades) {
     if (!activeTrades || activeTrades.length === 0) {
+        addLog(botState, `🔄 Heartbeat: Price Service Alive (0 active trades)`);
         return 0;
     }
 

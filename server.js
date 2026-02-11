@@ -317,7 +317,9 @@ async function mainLoop() {
                     const uniqueReasons = [...new Set(rejectionReasons)].slice(0, 3);
                     const reasonSummary = uniqueReasons.length > 0 ? " | " + uniqueReasons.join(", ") : "";
                     const prefix = isFull ? "👁️ OBS: " : "🔍 ";
-                    console.log(`${prefix}Scanned ${uniqueCandidates.length} markets. No entry found${reasonSummary}`);
+                    const summaryMsg = `${prefix}Scanned ${uniqueCandidates.length} markets. No entry found${reasonSummary}`;
+                    console.log(summaryMsg); // Keep console
+                    addLog(botState, summaryMsg, 'info'); // Add to Dashboard
 
                     // Add observational pulses for surveillance visibility
                     const sectorsFound = [...new Set(uniqueCandidates.map(c => c.market._category || categorizeMarket(c.market.question)))];
