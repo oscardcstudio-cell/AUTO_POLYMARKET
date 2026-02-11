@@ -373,8 +373,11 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
     if (!side || !entryPrice) return null; // Added safety return
 
 
-    if (entryPrice < 0.01) {
-        if (reasonsCollector) reasonsCollector.push("Price too low (<0.01)");
+    if (entryPrice < (CONFIG.MIN_PRICE_THRESHOLD || 0.05)) {
+        const reason = `Price too low (<${CONFIG.MIN_PRICE_THRESHOLD || 0.05}) - Penny Stock Filter`;
+        if (reasonsCollector) reasonsCollector.push(reason);
+        // Optional: log rejected decision 
+        // logTradeDecision(market, null, [...decisionReasons, reason], pizzaData);
         return null;
     }
 

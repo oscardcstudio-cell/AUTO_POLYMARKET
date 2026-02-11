@@ -25,6 +25,7 @@ export const CONFIG = {
     POLL_INTERVAL_MINUTES: 1,
     DEFCON_THRESHOLD: 5,
     MIN_TRADE_SIZE: 10,
+    MIN_PRICE_THRESHOLD: 0.05, // Filter out penny stocks (<5 cents) to avoid realistic fill issues
     MAX_TRADE_SIZE_PERCENT: 0.05, // 5% maximum of total capital (research-backed)
     KELLY_FRACTION: 0.2,          // 20% of full Kelly (conservative)
     MIN_LIQUIDITY: 100,
