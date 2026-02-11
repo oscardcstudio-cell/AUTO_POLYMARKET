@@ -2086,34 +2086,6 @@
   ],
   "capitalHistory": [
     {
-      "t": "2026-02-11T03:11:55.048Z",
-      "v": 287.937045168426
-    },
-    {
-      "t": "2026-02-11T03:12:56.143Z",
-      "v": 287.937045168426
-    },
-    {
-      "t": "2026-02-11T03:13:57.055Z",
-      "v": 287.937045168426
-    },
-    {
-      "t": "2026-02-11T03:14:58.336Z",
-      "v": 287.937045168426
-    },
-    {
-      "t": "2026-02-11T03:15:59.282Z",
-      "v": 287.937045168426
-    },
-    {
-      "t": "2026-02-11T03:17:00.237Z",
-      "v": 287.937045168426
-    },
-    {
-      "t": "2026-02-11T03:18:01.093Z",
-      "v": 287.937045168426
-    },
-    {
       "t": "2026-02-11T03:19:01.896Z",
       "v": 287.937045168426
     },
@@ -2484,6 +2456,34 @@
     {
       "t": "2026-02-11T04:52:47.061Z",
       "v": 287.937045168426
+    },
+    {
+      "t": "2026-02-11T04:53:48.040Z",
+      "v": 287.937045168426
+    },
+    {
+      "t": "2026-02-11T04:54:48.997Z",
+      "v": 287.937045168426
+    },
+    {
+      "t": "2026-02-11T04:55:49.886Z",
+      "v": 287.937045168426
+    },
+    {
+      "t": "2026-02-11T04:56:50.745Z",
+      "v": 287.937045168426
+    },
+    {
+      "t": "2026-02-11T04:57:51.808Z",
+      "v": 287.937045168426
+    },
+    {
+      "t": "2026-02-11T04:58:52.655Z",
+      "v": 287.937045168426
+    },
+    {
+      "t": "2026-02-11T04:59:53.641Z",
+      "v": 287.937045168426
     }
   ],
   "lastPizzaData": {
@@ -2496,11 +2496,26 @@
     "question": "Knicks vs. 76ers",
     "score": 100,
     "reason": "Alpha Matrix: Corrélation de signal maximale",
-    "timestamp": "2026-02-11T04:52:46.796Z",
+    "timestamp": "2026-02-11T04:59:53.362Z",
     "slug": "nba-nyk-phi-2026-02-11"
   },
-  "lastUpdate": "2026-02-11T04:52:47.061Z",
+  "lastUpdate": "2026-02-11T04:59:53.641Z",
   "logs": [
+    {
+      "timestamp": "2026-02-11T04:57:51.117Z",
+      "message": "🌊 LANCEMENT DEEP SCAN (1000+ marchés)...",
+      "type": "info"
+    },
+    {
+      "timestamp": "2026-02-11T04:55:26.719Z",
+      "message": "✅ Updated 0/99 trade prices",
+      "type": "info"
+    },
+    {
+      "timestamp": "2026-02-11T04:55:01.056Z",
+      "message": "🔄 Updating prices for 99 active trades...",
+      "type": "info"
+    },
     {
       "timestamp": "2026-02-11T04:50:26.884Z",
       "message": "✅ Updated 0/99 trade prices",
@@ -4746,22 +4761,33 @@
       "side": "YES",
       "slug": "rojas-guilty-in-texas-illegal-abortion-case",
       "question": "Rojas guilty in Texas illegal abortion case?",
-      "price": "0.105",
+      "price": "0.104",
       "alpha": 40,
       "reason": "YES Alpha 40%"
     }
   ],
   "freshMarkets": [
     {
+      "id": "1364733",
+      "question": "Bitcoin Up or Down - February 11, 11:45PM-12:00AM ET",
+      "slug": "btc-updown-15m-1770871500",
+      "outcomePrices": "[\"0.5\", \"0.5\"]",
+      "liquidityNum": 12749.8142,
+      "endDate": "2026-02-12T05:00:00Z",
+      "endDateIso": "2026-02-12",
+      "freshScore": 95,
+      "ageHours": "0.1"
+    },
+    {
       "id": "1364726",
       "question": "Bitcoin Up or Down - February 11, 11:30PM-11:45PM ET",
       "slug": "btc-updown-15m-1770870600",
       "outcomePrices": "[\"0.5\", \"0.5\"]",
-      "liquidityNum": 12788.6132,
+      "liquidityNum": 12793.0332,
       "endDate": "2026-02-12T04:45:00Z",
       "endDateIso": "2026-02-12",
       "freshScore": 95,
-      "ageHours": "0.3"
+      "ageHours": "0.4"
     },
     {
       "id": "1364724",
@@ -4772,7 +4798,7 @@
       "endDate": "2026-02-12T04:30:00Z",
       "endDateIso": "2026-02-12",
       "freshScore": 95,
-      "ageHours": "0.5"
+      "ageHours": "0.6"
     },
     {
       "id": "1364695",
@@ -4783,7 +4809,7 @@
       "endDate": "2026-02-12T04:15:00Z",
       "endDateIso": "2026-02-12",
       "freshScore": 95,
-      "ageHours": "0.8"
+      "ageHours": "0.9"
     },
     {
       "id": "1364686",
@@ -4794,23 +4820,12 @@
       "endDate": "2026-02-13T05:00:00Z",
       "endDateIso": "2026-02-13",
       "freshScore": 95,
-      "ageHours": "0.9"
-    },
-    {
-      "id": "1364684",
-      "question": "Bitcoin Up or Down - February 11, 10:45PM-11:00PM ET",
-      "slug": "btc-updown-15m-1770867900",
-      "outcomePrices": "[\"0.5\", \"0.5\"]",
-      "liquidityNum": 13304.7726,
-      "endDate": "2026-02-12T04:00:00Z",
-      "endDateIso": "2026-02-12",
-      "freshScore": 95,
       "ageHours": "1.0"
     }
   ],
   "keywordScores": {},
   "deepScanData": {
-    "lastScan": "2026-02-11T04:27:02.828Z",
+    "lastScan": "2026-02-11T04:57:51.278Z",
     "marketCount": 6,
     "scanDuration": 0
   },
@@ -4854,19 +4869,19 @@
   "sectorStats": {
     "politics": {
       "count": 48,
-      "lastActivity": "2026-02-11T04:52:47.061Z"
+      "lastActivity": "2026-02-11T04:59:53.641Z"
     },
     "economics": {
       "count": 24,
-      "lastActivity": "2026-02-11T04:52:47.061Z"
+      "lastActivity": "2026-02-11T04:59:53.641Z"
     },
     "tech": {
       "count": 10,
-      "lastActivity": "2026-02-11T04:52:47.061Z"
+      "lastActivity": "2026-02-11T04:59:53.641Z"
     },
     "trending": {
       "count": 57,
-      "lastActivity": "2026-02-11T04:52:47.061Z"
+      "lastActivity": "2026-02-11T04:59:53.641Z"
     }
   },
   "sectorActivity": {
@@ -4964,6 +4979,69 @@
     ],
     "economics": [
       {
+        "id": "mlhk9dbdfqt8bhmar4",
+        "timestamp": "2026-02-11T04:59:53.641Z",
+        "type": "ANALYSIS",
+        "message": "Observation: 6 marchés scannés.",
+        "data": {
+          "status": "idle"
+        }
+      },
+      {
+        "id": "mlhk829bwjd4eesslim",
+        "timestamp": "2026-02-11T04:58:52.655Z",
+        "type": "ANALYSIS",
+        "message": "Observation: 6 marchés scannés.",
+        "data": {
+          "status": "idle"
+        }
+      },
+      {
+        "id": "mlhk6rb4ymkpcalqwla",
+        "timestamp": "2026-02-11T04:57:51.808Z",
+        "type": "ANALYSIS",
+        "message": "Observation: 6 marchés scannés.",
+        "data": {
+          "status": "idle"
+        }
+      },
+      {
+        "id": "mlhk5g6xpi9pgjua77o",
+        "timestamp": "2026-02-11T04:56:50.745Z",
+        "type": "ANALYSIS",
+        "message": "Observation: 6 marchés scannés.",
+        "data": {
+          "status": "idle"
+        }
+      },
+      {
+        "id": "mlhk458e3l5nwm8al2t",
+        "timestamp": "2026-02-11T04:55:49.886Z",
+        "type": "ANALYSIS",
+        "message": "Observation: 6 marchés scannés.",
+        "data": {
+          "status": "idle"
+        }
+      },
+      {
+        "id": "mlhk2u91ne4apxot14",
+        "timestamp": "2026-02-11T04:54:48.997Z",
+        "type": "ANALYSIS",
+        "message": "Observation: 6 marchés scannés.",
+        "data": {
+          "status": "idle"
+        }
+      },
+      {
+        "id": "mlhk1j7sl8kappzlu6",
+        "timestamp": "2026-02-11T04:53:48.040Z",
+        "type": "ANALYSIS",
+        "message": "Observation: 6 marchés scannés.",
+        "data": {
+          "status": "idle"
+        }
+      },
+      {
         "id": "mlhk085xyfhrtk8g5yq",
         "timestamp": "2026-02-11T04:52:47.061Z",
         "type": "ANALYSIS",
@@ -4989,72 +5067,72 @@
         "data": {
           "status": "idle"
         }
-      },
-      {
-        "id": "mlhjwb5h12dy1uh4pvg",
-        "timestamp": "2026-02-11T04:49:44.309Z",
-        "type": "ANALYSIS",
-        "message": "Observation: 6 marchés scannés.",
-        "data": {
-          "status": "idle"
-        }
-      },
-      {
-        "id": "mlhjv061vaamrqbd3",
-        "timestamp": "2026-02-11T04:48:43.417Z",
-        "type": "ANALYSIS",
-        "message": "Observation: 6 marchés scannés.",
-        "data": {
-          "status": "idle"
-        }
-      },
-      {
-        "id": "mlhjthf1vztkbhdohfa",
-        "timestamp": "2026-02-11T04:47:32.461Z",
-        "type": "ANALYSIS",
-        "message": "Observation: 6 marchés scannés.",
-        "data": {
-          "status": "idle"
-        }
-      },
-      {
-        "id": "mlhjs6dbchwltj04bq",
-        "timestamp": "2026-02-11T04:46:31.487Z",
-        "type": "ANALYSIS",
-        "message": "Observation: 6 marchés scannés.",
-        "data": {
-          "status": "idle"
-        }
-      },
-      {
-        "id": "mlhjqvd9axjxubivfz6",
-        "timestamp": "2026-02-11T04:45:30.573Z",
-        "type": "ANALYSIS",
-        "message": "Observation: 6 marchés scannés.",
-        "data": {
-          "status": "idle"
-        }
-      },
-      {
-        "id": "mlhjpkbnmioeha5yn",
-        "timestamp": "2026-02-11T04:44:29.603Z",
-        "type": "ANALYSIS",
-        "message": "Observation: 6 marchés scannés.",
-        "data": {
-          "status": "idle"
-        }
-      },
-      {
-        "id": "mlhjo9bils24btq6tf",
-        "timestamp": "2026-02-11T04:43:28.686Z",
-        "type": "ANALYSIS",
-        "message": "Observation: 6 marchés scannés.",
-        "data": {
-          "status": "idle"
-        }
       }
     ],
     "tech": [
+      {
+        "id": "mlhk9dbd1sb9zmur7ut",
+        "timestamp": "2026-02-11T04:59:53.641Z",
+        "type": "ANALYSIS",
+        "message": "Observation: 2 marchés scannés.",
+        "data": {
+          "status": "idle"
+        }
+      },
+      {
+        "id": "mlhk829bu8ovf0ydfbi",
+        "timestamp": "2026-02-11T04:58:52.655Z",
+        "type": "ANALYSIS",
+        "message": "Observation: 2 marchés scannés.",
+        "data": {
+          "status": "idle"
+        }
+      },
+      {
+        "id": "mlhk6rb44ken9m95chg",
+        "timestamp": "2026-02-11T04:57:51.808Z",
+        "type": "ANALYSIS",
+        "message": "Observation: 2 marchés scannés.",
+        "data": {
+          "status": "idle"
+        }
+      },
+      {
+        "id": "mlhk5g6x4qjagdxoi12",
+        "timestamp": "2026-02-11T04:56:50.745Z",
+        "type": "ANALYSIS",
+        "message": "Observation: 2 marchés scannés.",
+        "data": {
+          "status": "idle"
+        }
+      },
+      {
+        "id": "mlhk458e6y9joifxls8",
+        "timestamp": "2026-02-11T04:55:49.886Z",
+        "type": "ANALYSIS",
+        "message": "Observation: 2 marchés scannés.",
+        "data": {
+          "status": "idle"
+        }
+      },
+      {
+        "id": "mlhk2u91i0biyrbcsn",
+        "timestamp": "2026-02-11T04:54:48.997Z",
+        "type": "ANALYSIS",
+        "message": "Observation: 2 marchés scannés.",
+        "data": {
+          "status": "idle"
+        }
+      },
+      {
+        "id": "mlhk1j7sgx5tv6eghjp",
+        "timestamp": "2026-02-11T04:53:48.040Z",
+        "type": "ANALYSIS",
+        "message": "Observation: 2 marchés scannés.",
+        "data": {
+          "status": "idle"
+        }
+      },
       {
         "id": "mlhk085xk6z8v572m6",
         "timestamp": "2026-02-11T04:52:47.061Z",
@@ -5081,75 +5159,12 @@
         "data": {
           "status": "idle"
         }
-      },
-      {
-        "id": "mlhjwb5heieai1uxpj",
-        "timestamp": "2026-02-11T04:49:44.309Z",
-        "type": "ANALYSIS",
-        "message": "Observation: 2 marchés scannés.",
-        "data": {
-          "status": "idle"
-        }
-      },
-      {
-        "id": "mlhjv061cm5le77taqe",
-        "timestamp": "2026-02-11T04:48:43.417Z",
-        "type": "ANALYSIS",
-        "message": "Observation: 2 marchés scannés.",
-        "data": {
-          "status": "idle"
-        }
-      },
-      {
-        "id": "mlhjthf1lqww741cj7e",
-        "timestamp": "2026-02-11T04:47:32.461Z",
-        "type": "ANALYSIS",
-        "message": "Observation: 2 marchés scannés.",
-        "data": {
-          "status": "idle"
-        }
-      },
-      {
-        "id": "mlhjs6dbccqwx8q4djs",
-        "timestamp": "2026-02-11T04:46:31.487Z",
-        "type": "ANALYSIS",
-        "message": "Observation: 2 marchés scannés.",
-        "data": {
-          "status": "idle"
-        }
-      },
-      {
-        "id": "mlhjqvd9chkbslwjnx9",
-        "timestamp": "2026-02-11T04:45:30.573Z",
-        "type": "ANALYSIS",
-        "message": "Observation: 2 marchés scannés.",
-        "data": {
-          "status": "idle"
-        }
-      },
-      {
-        "id": "mlhjpkbn8gqjas3k89",
-        "timestamp": "2026-02-11T04:44:29.603Z",
-        "type": "ANALYSIS",
-        "message": "Observation: 2 marchés scannés.",
-        "data": {
-          "status": "idle"
-        }
-      },
-      {
-        "id": "mlhjo9bj0avv3k4l9s4n",
-        "timestamp": "2026-02-11T04:43:28.687Z",
-        "type": "ANALYSIS",
-        "message": "Observation: 2 marchés scannés.",
-        "data": {
-          "status": "idle"
-        }
       }
     ],
     "trending": [
       {
-        "id": "mlhk085xe11d1qbr204",
-        "timestamp": "2026-02-11T04:52:47.061Z",
+        "id": "mlhk9dbdjlg4y3i6th",
+        "timestamp": "2026-02-11T04:59:53.641Z",
         "type": "ANALYSIS",
         "message": "Observation: 3 marchés scannés.",
         "data": {
@@ -5157,8 +5172,8 @@
         }
       },
       {
-        "id": "mlhk07yki09rmpeola",
-        "timestamp": "2026-02-11T04:52:46.796Z",
+        "id": "mlhk9d3m426yso9a69h",
+        "timestamp": "2026-02-11T04:59:53.362Z",
         "type": "SIGNAL",
         "message": "Top Signal Detected: 100/100",
         "data": {
@@ -5166,8 +5181,8 @@
         }
       },
       {
-        "id": "mlhk07ykz74m9uw1xcp",
-        "timestamp": "2026-02-11T04:52:46.796Z",
+        "id": "mlhk9d3mag1x6llme38",
+        "timestamp": "2026-02-11T04:59:53.362Z",
         "type": "ANALYSIS",
         "message": "High Alpha: Knicks vs. 76ers...",
         "data": {
@@ -5175,8 +5190,8 @@
         }
       },
       {
-        "id": "mlhjyx4723ur47cu9g5",
-        "timestamp": "2026-02-11T04:51:46.087Z",
+        "id": "mlhk829b1q6mwfn5qku",
+        "timestamp": "2026-02-11T04:58:52.655Z",
         "type": "ANALYSIS",
         "message": "Observation: 3 marchés scannés.",
         "data": {
@@ -5184,8 +5199,8 @@
         }
       },
       {
-        "id": "mlhjywx455gvlamhdc7",
-        "timestamp": "2026-02-11T04:51:45.832Z",
+        "id": "mlhk822y09cluv8mg578",
+        "timestamp": "2026-02-11T04:58:52.426Z",
         "type": "SIGNAL",
         "message": "Top Signal Detected: 100/100",
         "data": {
@@ -5193,8 +5208,8 @@
         }
       },
       {
-        "id": "mlhjywx43up45gkncrt",
-        "timestamp": "2026-02-11T04:51:45.832Z",
+        "id": "mlhk822y53ip8t5a3n3",
+        "timestamp": "2026-02-11T04:58:52.426Z",
         "type": "ANALYSIS",
         "message": "High Alpha: Knicks vs. 76ers...",
         "data": {
@@ -5202,8 +5217,8 @@
         }
       },
       {
-        "id": "mlhjxm3srdttb7y3sje",
-        "timestamp": "2026-02-11T04:50:45.160Z",
+        "id": "mlhk6rb4ergihxy7tjg",
+        "timestamp": "2026-02-11T04:57:51.808Z",
         "type": "ANALYSIS",
         "message": "Observation: 3 marchés scannés.",
         "data": {
@@ -5211,8 +5226,8 @@
         }
       },
       {
-        "id": "mlhjxlyco3anbm27yf",
-        "timestamp": "2026-02-11T04:50:44.964Z",
+        "id": "mlhk6r4ofykkvi4dq2u",
+        "timestamp": "2026-02-11T04:57:51.576Z",
         "type": "SIGNAL",
         "message": "Top Signal Detected: 100/100",
         "data": {
@@ -5220,8 +5235,8 @@
         }
       },
       {
-        "id": "mlhjxlyc3buz3gw0iap",
-        "timestamp": "2026-02-11T04:50:44.964Z",
+        "id": "mlhk6r4oclsmhhhmaor",
+        "timestamp": "2026-02-11T04:57:51.576Z",
         "type": "ANALYSIS",
         "message": "High Alpha: Knicks vs. 76ers...",
         "data": {
@@ -5229,8 +5244,8 @@
         }
       },
       {
-        "id": "mlhjwb5h48zh5enfne6",
-        "timestamp": "2026-02-11T04:49:44.309Z",
+        "id": "mlhk5g6xgrib9tovifq",
+        "timestamp": "2026-02-11T04:56:50.745Z",
         "type": "ANALYSIS",
         "message": "Observation: 3 marchés scannés.",
         "data": {
@@ -5249,19 +5264,19 @@
       "conditionId": "0x5e5c9dfaf695371a0cc321b47b35f66a6dbd1482f0503526603d2bd2a91bfdc7",
       "slug": "will-bitcoin-reach-150k-in-february-2026",
       "endDate": "2026-03-01T05:00:00Z",
-      "liquidity": "996031.16038",
+      "liquidity": "995603.07836",
       "startDate": "2026-01-31T02:16:17.311269Z",
       "image": "https://polymarket-upload.s3.us-east-2.amazonaws.com/BTC+fullsize.png",
       "icon": "https://polymarket-upload.s3.us-east-2.amazonaws.com/BTC+fullsize.png",
       "description": "This market will immediately resolve to \"Yes\" if any Binance 1 minute candle for BTC/USDT during the month specified in the title (from 00:00 AM ET on the first day to 11:59 PM ET on the last), has a final High price equal to or greater than the price specified in the title. Otherwise, this market will resolve to \"No.\"\n\nThe resolution source for this market is Binance, specifically the BTC/USDT High prices available at https://www.binance.com/en/trade/BTC_USDT, with the chart settings on \"1m\" for one-minute candles selected on the top bar.\n\nPlease note that the outcome of this market depends solely on the price data from the Binance BTC/USDT trading pair. Prices from other exchanges, different trading pairs, or spot markets will not be considered for the resolution of this market.",
       "outcomes": "[\"Yes\", \"No\"]",
       "outcomePrices": "[\"0.0025\", \"0.9975\"]",
-      "volume": "7593173.202538",
+      "volume": "7593669.064538",
       "active": true,
       "closed": false,
       "marketMakerAddress": "",
       "createdAt": "2026-01-31T02:13:34.065821Z",
-      "updatedAt": "2026-02-11T04:21:33.46773Z",
+      "updatedAt": "2026-02-11T04:53:35.343793Z",
       "new": false,
       "featured": false,
       "submitted_by": "0x91430CaD2d3975766499717fA0D66A78D814E5c5",
@@ -5274,8 +5289,8 @@
       "enableOrderBook": true,
       "orderPriceMinTickSize": 0.001,
       "orderMinSize": 5,
-      "volumeNum": 7593173.202538,
-      "liquidityNum": 996031.16038,
+      "volumeNum": 7593669.064538,
+      "liquidityNum": 995603.07836,
       "endDateIso": "2026-03-01",
       "startDateIso": "2026-01-31",
       "hasReviewedDates": true,
@@ -5290,8 +5305,8 @@
       "volume1wkClob": 5288208.0765669895,
       "volume1moClob": 7479494.360374025,
       "volume1yrClob": 7479494.360374025,
-      "volumeClob": 7593173.202538,
-      "liquidityClob": 996031.16038,
+      "volumeClob": 7593669.064538,
+      "liquidityClob": 995603.07836,
       "customLiveness": 0,
       "acceptingOrders": true,
       "negRisk": false,
@@ -5315,18 +5330,18 @@
           "new": false,
           "featured": true,
           "restricted": true,
-          "liquidity": 3645170.17424,
-          "volume": 47010071.17102,
+          "liquidity": 3627122.32518,
+          "volume": 47080109.679676,
           "openInterest": 0,
           "createdAt": "2026-01-31T02:13:32.238365Z",
-          "updatedAt": "2026-02-11T04:22:01.466597Z",
-          "competitive": 0.9869476177551876,
+          "updatedAt": "2026-02-11T04:54:02.965159Z",
+          "competitive": 0.9846153846153846,
           "volume24hr": 3692566.6698289965,
           "volume1wk": 38003848.684445985,
           "volume1mo": 46700764.951319024,
           "volume1yr": 46700764.951319024,
           "enableOrderBook": true,
-          "liquidityClob": 3645170.17424,
+          "liquidityClob": 3627122.32518,
           "negRisk": false,
           "commentCount": 0,
           "series": [
@@ -5345,11 +5360,11 @@
               "featured": false,
               "restricted": true,
               "createdAt": "2025-01-31T22:03:50.00441Z",
-              "updatedAt": "2026-02-11T04:22:05.372695Z",
+              "updatedAt": "2026-02-11T04:54:08.053494Z",
               "volume24hr": 4093507.1606939966,
-              "volume": 63198449.437562,
-              "liquidity": 4611300.53337,
-              "commentCount": 5615,
+              "volume": 63285530.81508,
+              "liquidity": 4589669.32299,
+              "commentCount": 5616,
               "requiresTranslation": false
             }
           ],
@@ -5410,19 +5425,19 @@
       "slug": "nba-nyk-phi-2026-02-11",
       "resolutionSource": "https://www.nba.com/",
       "endDate": "2026-02-12T00:30:00Z",
-      "liquidity": "27580.7284",
+      "liquidity": "33034.4587",
       "startDate": "2026-02-05T15:03:13.211507Z",
       "image": "https://polymarket-upload.s3.us-east-2.amazonaws.com/super+cool+basketball+in+red+and+blue+wow.png",
       "icon": "https://polymarket-upload.s3.us-east-2.amazonaws.com/super+cool+basketball+in+red+and+blue+wow.png",
       "description": "In the upcoming NBA game, scheduled for February 11 at 7:30PM ET:\nIf the Knicks win, the market will resolve to \"Knicks\".\nIf the 76ers win, the market will resolve to \"76ers\".\nIf the game is postponed, this market will remain open until the game has been completed.\nIf the game is canceled entirely, with no make-up game, this market will resolve 50-50.\nThe result will be determined based on the final score including any overtime periods.",
       "outcomes": "[\"Knicks\", \"76ers\"]",
-      "outcomePrices": "[\"0.46\", \"0.54\"]",
-      "volume": "618301.387324",
+      "outcomePrices": "[\"0.455\", \"0.545\"]",
+      "volume": "622954.474958",
       "active": true,
       "closed": false,
       "marketMakerAddress": "",
       "createdAt": "2026-02-05T15:00:40.625204Z",
-      "updatedAt": "2026-02-11T04:21:19.140605Z",
+      "updatedAt": "2026-02-11T04:53:20.049344Z",
       "new": false,
       "featured": false,
       "submitted_by": "0x91430CaD2d3975766499717fA0D66A78D814E5c5",
@@ -5434,8 +5449,8 @@
       "enableOrderBook": true,
       "orderPriceMinTickSize": 0.01,
       "orderMinSize": 5,
-      "volumeNum": 618301.387324,
-      "liquidityNum": 27580.7284,
+      "volumeNum": 622954.474958,
+      "liquidityNum": 33034.4587,
       "endDateIso": "2026-02-12",
       "startDateIso": "2026-02-05",
       "hasReviewedDates": true,
@@ -5452,8 +5467,8 @@
       "volume1wkClob": 589397.8749040001,
       "volume1moClob": 589397.8749040001,
       "volume1yrClob": 589397.8749040001,
-      "volumeClob": 618301.387324,
-      "liquidityClob": 27580.7284,
+      "volumeClob": 622954.474958,
+      "liquidityClob": 33034.4587,
       "customLiveness": 0,
       "acceptingOrders": true,
       "negRisk": false,
@@ -5477,18 +5492,18 @@
           "new": false,
           "featured": false,
           "restricted": true,
-          "liquidity": 37155.0167,
-          "volume": 623888.564003,
+          "liquidity": 57484.0163,
+          "volume": 628697.658897,
           "openInterest": 0,
           "createdAt": "2026-02-05T15:00:40.500033Z",
-          "updatedAt": "2026-02-11T04:21:53.008251Z",
-          "competitive": 0.9993753903810119,
+          "updatedAt": "2026-02-11T04:53:57.354354Z",
+          "competitive": 0.9999000099990001,
           "volume24hr": 588835.661636,
           "volume1wk": 589547.8649040001,
           "volume1mo": 589547.8649040001,
           "volume1yr": 589547.8649040001,
           "enableOrderBook": true,
-          "liquidityClob": 37155.0167,
+          "liquidityClob": 57484.0163,
           "negRisk": false,
           "commentCount": 0,
           "series": [
@@ -5507,11 +5522,11 @@
               "featured": false,
               "restricted": true,
               "createdAt": "2025-10-02T17:23:18.780864Z",
-              "updatedAt": "2026-02-11T04:22:07.603048Z",
+              "updatedAt": "2026-02-11T04:54:08.189135Z",
               "volume24hr": 37091484.72595499,
-              "volume": 49802890.976232,
-              "liquidity": 7799475.83605,
-              "commentCount": 3944,
+              "volume": 50848099.532946,
+              "liquidity": 10405780.52831,
+              "commentCount": 3946,
               "requiresTranslation": false
             }
           ],
@@ -5536,16 +5551,17 @@
       "funded": false,
       "acceptingOrdersTimestamp": "2026-02-05T15:02:07Z",
       "cyom": false,
-      "competitive": 0.998402555910543,
+      "competitive": 0.9979790923380155,
       "pagerDutyNotificationEnabled": false,
       "approved": true,
       "rewardsMinSize": 0,
       "rewardsMaxSpread": 0,
-      "spread": 0.02,
-      "oneDayPriceChange": -0.05,
-      "lastTradePrice": 0.47,
+      "spread": 0.01,
+      "oneDayPriceChange": -0.055,
+      "oneHourPriceChange": 0.005,
+      "lastTradePrice": 0.46,
       "bestBid": 0.45,
-      "bestAsk": 0.47,
+      "bestAsk": 0.46,
       "automaticallyActive": true,
       "clearBookOnStart": true,
       "manualActivation": false,
@@ -5575,19 +5591,19 @@
       "slug": "will-elon-cut-the-budget-by-at-least-10-in-2025",
       "resolutionSource": "",
       "endDate": "2026-02-28T12:00:00Z",
-      "liquidity": "7037.08604",
+      "liquidity": "7025.44439",
       "startDate": "2025-02-05T23:04:53.919Z",
       "image": "https://polymarket-upload.s3.us-east-2.amazonaws.com/will-elon-cut-the-budget-by-at-least-10-in-2025-KQWXFwQwSRYV.jpg",
       "icon": "https://polymarket-upload.s3.us-east-2.amazonaws.com/will-elon-cut-the-budget-by-at-least-10-in-2025-KQWXFwQwSRYV.jpg",
       "description": "In Q4 2024, government expenditures were $7,106,807,000,000 see (https://fred.stlouisfed.org/series/FGEXPND). \n\nThis market will resolve to “Yes” if federal government current expenditures decrease by 10% or more between the Q4 2024 report and the Q4 2025 report. Otherwise, it will resolve to \"No\".\n\nAny 2025 quarterly report of $6,396,126,000,000 or less will qualify for a “Yes” resolution.\n\nRevisions made to these figures will not be considered, only the values reported in the initial reports will be used.\n\nThis market's resolution source is the Federal Government: Current Expenditures chart maintained by the St. Louis Federal Reserve Bank, displayed here (https://fred.stlouisfed.org/series/FGEXPND).",
       "outcomes": "[\"Yes\", \"No\"]",
-      "outcomePrices": "[\"0.0375\", \"0.9625\"]",
-      "volume": "176135.077699",
+      "outcomePrices": "[\"0.037\", \"0.963\"]",
+      "volume": "176240.267699",
       "active": true,
       "closed": false,
       "marketMakerAddress": "",
       "createdAt": "2025-02-05T22:52:51.337049Z",
-      "updatedAt": "2026-02-11T04:25:00.410933Z",
+      "updatedAt": "2026-02-11T04:53:30.96701Z",
       "new": false,
       "featured": false,
       "submitted_by": "0x91430CaD2d3975766499717fA0D66A78D814E5c5",
@@ -5600,8 +5616,8 @@
       "enableOrderBook": true,
       "orderPriceMinTickSize": 0.001,
       "orderMinSize": 5,
-      "volumeNum": 176135.077699,
-      "liquidityNum": 7037.08604,
+      "volumeNum": 176240.267699,
+      "liquidityNum": 7025.44439,
       "endDateIso": "2026-02-28",
       "startDateIso": "2025-02-05",
       "hasReviewedDates": true,
@@ -5616,8 +5632,8 @@
       "volume1wkClob": 21065.158175,
       "volume1moClob": 70272.79407799992,
       "volume1yrClob": 147874.89889999933,
-      "volumeClob": 176135.077699,
-      "liquidityClob": 7037.08604,
+      "volumeClob": 176240.267699,
+      "liquidityClob": 7025.44439,
       "acceptingOrders": true,
       "negRisk": false,
       "events": [
@@ -5639,18 +5655,18 @@
           "new": false,
           "featured": false,
           "restricted": true,
-          "liquidity": 7037.08604,
-          "volume": 176135.077699,
+          "liquidity": 7025.44439,
+          "volume": 176240.267699,
           "openInterest": 0,
           "createdAt": "2025-02-05T22:52:50.504126Z",
-          "updatedAt": "2026-02-11T04:25:35.649123Z",
-          "competitive": 0.8237868451538164,
+          "updatedAt": "2026-02-11T04:54:00.44638Z",
+          "competitive": 0.8234729312095417,
           "volume24hr": 6379.245081000001,
           "volume1wk": 21065.158175,
           "volume1mo": 70272.79407799992,
           "volume1yr": 147874.89889999933,
           "enableOrderBook": true,
-          "liquidityClob": 7037.08604,
+          "liquidityClob": 7025.44439,
           "commentCount": 1,
           "cyom": false,
           "showAllOutcomes": true,
@@ -5668,19 +5684,19 @@
       "funded": false,
       "acceptingOrdersTimestamp": "2025-02-05T23:03:41Z",
       "cyom": false,
-      "competitive": 0.8237868451538164,
+      "competitive": 0.8234729312095417,
       "pagerDutyNotificationEnabled": false,
       "approved": true,
       "rewardsMinSize": 100,
       "rewardsMaxSpread": 3.5,
-      "spread": 0.001,
-      "oneDayPriceChange": 0.027,
-      "oneHourPriceChange": 0.0015,
-      "oneWeekPriceChange": -0.006,
-      "oneMonthPriceChange": 0.0345,
-      "oneYearPriceChange": -0.1275,
+      "spread": 0.002,
+      "oneDayPriceChange": 0.0265,
+      "oneHourPriceChange": -0.006,
+      "oneWeekPriceChange": -0.0065,
+      "oneMonthPriceChange": 0.034,
+      "oneYearPriceChange": -0.128,
       "lastTradePrice": 0.045,
-      "bestBid": 0.037,
+      "bestBid": 0.036,
       "bestAsk": 0.038,
       "automaticallyActive": true,
       "clearBookOnStart": true,
@@ -5707,7 +5723,7 @@
       "slug": "will-elon-cut-the-budget-by-at-least-5-in-2025",
       "resolutionSource": "",
       "endDate": "2026-02-28T12:00:00Z",
-      "liquidity": "6889.53177",
+      "liquidity": "6877.84657",
       "startDate": "2025-02-05T23:15:54.926Z",
       "image": "https://polymarket-upload.s3.us-east-2.amazonaws.com/will-elon-cut-the-budget-by-at-least-5-in-2025-YEZDluotrm-Q.jpg",
       "icon": "https://polymarket-upload.s3.us-east-2.amazonaws.com/will-elon-cut-the-budget-by-at-least-5-in-2025-YEZDluotrm-Q.jpg",
@@ -5719,7 +5735,7 @@
       "closed": false,
       "marketMakerAddress": "",
       "createdAt": "2025-02-05T23:06:36.600673Z",
-      "updatedAt": "2026-02-11T04:25:11.288775Z",
+      "updatedAt": "2026-02-11T04:53:40.214013Z",
       "new": false,
       "featured": false,
       "submitted_by": "0x91430CaD2d3975766499717fA0D66A78D814E5c5",
@@ -5733,7 +5749,7 @@
       "orderPriceMinTickSize": 0.001,
       "orderMinSize": 5,
       "volumeNum": 183373.293745,
-      "liquidityNum": 6889.53177,
+      "liquidityNum": 6877.84657,
       "endDateIso": "2026-02-28",
       "startDateIso": "2025-02-05",
       "hasReviewedDates": true,
@@ -5749,7 +5765,7 @@
       "volume1moClob": 38439.51584499997,
       "volume1yrClob": 157044.12584399988,
       "volumeClob": 183373.293745,
-      "liquidityClob": 6889.53177,
+      "liquidityClob": 6877.84657,
       "acceptingOrders": true,
       "negRisk": false,
       "events": [
@@ -5771,18 +5787,18 @@
           "new": false,
           "featured": false,
           "restricted": true,
-          "liquidity": 6889.53177,
+          "liquidity": 6877.84657,
           "volume": 183373.293745,
           "openInterest": 0,
           "createdAt": "2025-02-05T23:06:35.814878Z",
-          "updatedAt": "2026-02-11T04:25:33.465486Z",
+          "updatedAt": "2026-02-11T04:53:59.161122Z",
           "competitive": 0.8136946435905578,
           "volume24hr": 1769.144117,
           "volume1wk": 10837.935085000003,
           "volume1mo": 38439.51584499997,
           "volume1yr": 157044.12584399988,
           "enableOrderBook": true,
-          "liquidityClob": 6889.53177,
+          "liquidityClob": 6877.84657,
           "commentCount": 4,
           "cyom": false,
           "showAllOutcomes": true,
@@ -5838,19 +5854,19 @@
       "slug": "rojas-guilty-in-texas-illegal-abortion-case",
       "resolutionSource": "",
       "endDate": "2026-02-28T12:00:00Z",
-      "liquidity": "4123.42193",
+      "liquidity": "4153.49206",
       "startDate": "2025-03-18T16:52:11.450706Z",
       "image": "https://polymarket-upload.s3.us-east-2.amazonaws.com/rojas-guilty-in-texas-illegal-abortion-case-wbJ6bN2zp3ER.jpg",
       "icon": "https://polymarket-upload.s3.us-east-2.amazonaws.com/rojas-guilty-in-texas-illegal-abortion-case-wbJ6bN2zp3ER.jpg",
       "description": "On March 17, Texas announced it had arrested Maria Margarita Rojas for her role in providing illegal abortions and illegally operating a network of clinics in the state. You can read more about that here: https://www.texasattorneygeneral.gov/news/releases/attorney-general-ken-paxton-announces-arrest-houston-area-abortionist-and-crackdown-clinics\n\nThis market will resolve to \"Yes\" if Rojas is found guilty on any charge relating to providing illegal abortions in this case by February 28, 2026, 11:59 PM ET. Otherwise, this market will resolve to \"No\".\n\nIf all charges related to providing illegal abortions in this case are dismissed, end due to a plea agreement without an admission of guilt, or if a mistrial is declared for the relevant charges, this market will resolve to \"No\".\n\nIf all illegal abortion charges dismissed at any point, this market will resolve to \"No\".\n\nThis market will resolve according to the initial judgment rendered in this case. Any appeals will have no bearing on the resolution of this market.\n\nThe primary resolution source will be an official judgement delivered by the ruling court; however, other credible reporting may be used.\n",
       "outcomes": "[\"Yes\", \"No\"]",
-      "outcomePrices": "[\"0.105\", \"0.895\"]",
-      "volume": "36244.934765",
+      "outcomePrices": "[\"0.104\", \"0.896\"]",
+      "volume": "36344.840424",
       "active": true,
       "closed": false,
       "marketMakerAddress": "",
       "createdAt": "2025-03-18T16:16:24.327505Z",
-      "updatedAt": "2026-02-11T04:25:04.095962Z",
+      "updatedAt": "2026-02-11T04:53:34.066675Z",
       "new": false,
       "featured": false,
       "submitted_by": "0x91430CaD2d3975766499717fA0D66A78D814E5c5",
@@ -5863,8 +5879,8 @@
       "enableOrderBook": true,
       "orderPriceMinTickSize": 0.001,
       "orderMinSize": 5,
-      "volumeNum": 36244.934765,
-      "liquidityNum": 4123.42193,
+      "volumeNum": 36344.840424,
+      "liquidityNum": 4153.49206,
       "endDateIso": "2026-02-28",
       "startDateIso": "2025-03-18",
       "hasReviewedDates": true,
@@ -5879,8 +5895,8 @@
       "volume1wkClob": 16942.65084800001,
       "volume1moClob": 29688.95142299999,
       "volume1yrClob": 35697.189544999994,
-      "volumeClob": 36244.934765,
-      "liquidityClob": 4123.42193,
+      "volumeClob": 36344.840424,
+      "liquidityClob": 4153.49206,
       "acceptingOrders": true,
       "events": [
         {
@@ -5901,18 +5917,18 @@
           "new": false,
           "featured": false,
           "restricted": true,
-          "liquidity": 4123.42193,
-          "volume": 36244.934765,
+          "liquidity": 4153.49206,
+          "volume": 36344.840424,
           "openInterest": 0,
           "createdAt": "2025-03-18T16:16:21.907624Z",
-          "updatedAt": "2026-02-11T04:25:36.188961Z",
-          "competitive": 0.865033195648883,
+          "updatedAt": "2026-02-11T04:54:00.937593Z",
+          "competitive": 0.864441708966681,
           "volume24hr": 2214.534024,
           "volume1wk": 16942.65084800001,
           "volume1mo": 29688.95142299999,
           "volume1yr": 35697.189544999994,
           "enableOrderBook": true,
-          "liquidityClob": 4123.42193,
+          "liquidityClob": 4153.49206,
           "commentCount": 4,
           "cyom": false,
           "showAllOutcomes": true,
@@ -5930,19 +5946,18 @@
       "funded": false,
       "acceptingOrdersTimestamp": "2025-03-18T16:51:01Z",
       "cyom": false,
-      "competitive": 0.865033195648883,
+      "competitive": 0.864441708966681,
       "pagerDutyNotificationEnabled": false,
       "approved": true,
       "rewardsMinSize": 100,
       "rewardsMaxSpread": 3.5,
-      "spread": 0.004,
-      "oneDayPriceChange": 0.066,
-      "oneHourPriceChange": 0.0005,
-      "oneWeekPriceChange": -0.0135,
-      "oneMonthPriceChange": -0.2935,
-      "lastTradePrice": 0.11,
+      "spread": 0.002,
+      "oneDayPriceChange": 0.0635,
+      "oneWeekPriceChange": -0.021,
+      "oneMonthPriceChange": -0.321,
+      "lastTradePrice": 0.105,
       "bestBid": 0.103,
-      "bestAsk": 0.107,
+      "bestAsk": 0.105,
       "automaticallyActive": true,
       "clearBookOnStart": true,
       "manualActivation": false,
@@ -5968,19 +5983,19 @@
       "slug": "will-gta-6-cost-100",
       "resolutionSource": "",
       "endDate": "2026-02-28T12:00:00Z",
-      "liquidity": "66867.81854",
+      "liquidity": "66366.02009",
       "startDate": "2025-03-06T20:51:01.626726Z",
       "image": "https://polymarket-upload.s3.us-east-2.amazonaws.com/gta-6-launch-price-l4GiOIOGhdvA.jpg",
       "icon": "https://polymarket-upload.s3.us-east-2.amazonaws.com/gta-6-launch-price-l4GiOIOGhdvA.jpg",
       "description": "This market will resolve to \"Yes\" if the standard edition of Grand Theft Auto VI (GTA 6) launches at $100.00 or more. Otherwise, this market will resolve to \"No\".\n\nThis market will resolve based on the pre-tax launch price in USD of the standard edition of GTA 6 on Xbox or PlayStation as listed on the Microsoft Store or PlayStation Store on the first official day of its release in the United States.\n\nIf the price differs between the Microsoft and PlayStation stores, this market will resolve according to the lower price.\n\nThis market will resolve based on the lowest price version that includes the full standard game with no DLC, etc.\n\nIf GTA 6 is not released by February 28, 2026, this market will resolve to \"No\".\n\nThe primary resolution source for this market will be the Microsoft Store/PlayStation Store, however a consensus of credible reporting will also be used.",
       "outcomes": "[\"Yes\", \"No\"]",
-      "outcomePrices": "[\"0.009\", \"0.991\"]",
-      "volume": "3404823.355511",
+      "outcomePrices": "[\"0.0095\", \"0.9905\"]",
+      "volume": "3405126.165511",
       "active": true,
       "closed": false,
       "marketMakerAddress": "",
       "createdAt": "2025-03-06T20:41:04.672081Z",
-      "updatedAt": "2026-02-11T04:25:04.707439Z",
+      "updatedAt": "2026-02-11T04:53:34.662262Z",
       "new": false,
       "featured": false,
       "submitted_by": "0x91430CaD2d3975766499717fA0D66A78D814E5c5",
@@ -5993,8 +6008,8 @@
       "enableOrderBook": true,
       "orderPriceMinTickSize": 0.001,
       "orderMinSize": 5,
-      "volumeNum": 3404823.355511,
-      "liquidityNum": 66867.81854,
+      "volumeNum": 3405126.165511,
+      "liquidityNum": 66366.02009,
       "endDateIso": "2026-02-28",
       "startDateIso": "2025-03-06",
       "hasReviewedDates": true,
@@ -6009,8 +6024,8 @@
       "volume1wkClob": 862729.7001200014,
       "volume1moClob": 2558078.1723219953,
       "volume1yrClob": 3403757.546510987,
-      "volumeClob": 3404823.355511,
-      "liquidityClob": 66867.81854,
+      "volumeClob": 3405126.165511,
+      "liquidityClob": 66366.02009,
       "acceptingOrders": true,
       "negRisk": false,
       "events": [
@@ -6032,18 +6047,18 @@
           "new": false,
           "featured": false,
           "restricted": true,
-          "liquidity": 66867.81854,
-          "volume": 3404823.355511,
+          "liquidity": 66366.02009,
+          "volume": 3405126.165511,
           "openInterest": 0,
           "createdAt": "2025-03-06T20:41:02.747485Z",
-          "updatedAt": "2026-02-11T04:25:34.975981Z",
-          "competitive": 0.8057491815602688,
+          "updatedAt": "2026-02-11T04:53:59.492488Z",
+          "competitive": 0.806067918073675,
           "volume24hr": 46963.749178000005,
           "volume1wk": 862729.7001200014,
           "volume1mo": 2558078.1723219953,
           "volume1yr": 3403757.546510987,
           "enableOrderBook": true,
-          "liquidityClob": 66867.81854,
+          "liquidityClob": 66366.02009,
           "commentCount": 83,
           "cyom": false,
           "showAllOutcomes": true,
@@ -6061,17 +6076,18 @@
       "funded": false,
       "acceptingOrdersTimestamp": "2025-03-06T20:49:54Z",
       "cyom": false,
-      "competitive": 0.8057491815602688,
+      "competitive": 0.806067918073675,
       "pagerDutyNotificationEnabled": false,
       "approved": true,
       "rewardsMinSize": 100,
       "rewardsMaxSpread": 3.5,
-      "spread": 0.002,
-      "oneDayPriceChange": -0.0015,
-      "oneWeekPriceChange": -0.0025,
-      "oneMonthPriceChange": -0.0045,
-      "lastTradePrice": 0.008,
-      "bestBid": 0.008,
+      "spread": 0.001,
+      "oneDayPriceChange": -0.001,
+      "oneHourPriceChange": 0.0005,
+      "oneWeekPriceChange": -0.003,
+      "oneMonthPriceChange": -0.004,
+      "lastTradePrice": 0.01,
+      "bestBid": 0.009,
       "bestAsk": 0.01,
       "automaticallyActive": true,
       "clearBookOnStart": true,
@@ -6092,7 +6108,7 @@
       "_alphaScore": 40
     }
   ],
-  "lastHeartbeat": "2026-02-11T04:51:46.090Z",
+  "lastHeartbeat": "2026-02-11T04:58:52.656Z",
   "lastBacktestRequest": 1770777870204,
   "confidenceAdjustments": {}
 }
