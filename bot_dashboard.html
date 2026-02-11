@@ -284,6 +284,38 @@
             border-color: var(--accent-blue);
         }
 
+        .tab-btn.active {
+            background: var(--accent-blue);
+            color: white;
+            border-color: var(--accent-blue);
+        }
+
+        /* LOGS TABS */
+        .logs-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        .log-tab {
+            padding: 5px 12px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #94a3b8;
+            font-size: 0.8em;
+            cursor: pointer;
+            border: 1px solid transparent;
+            white-space: nowrap;
+        }
+
+        .log-tab.active {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+            border-color: #3b82f6;
+        }
+
         .marketplace-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -658,8 +690,12 @@
             <!-- TRADE ACTIVITY LOGS -->
             <div class="chart-section" style="margin-top: 30px; border-color: rgba(34, 197, 94, 0.3);">
                 <div class="stat-label">💰 Trade Activity Logs</div>
+
+                <!-- Date Tabs -->
+                <div class="logs-tabs" id="logsTabs"></div>
+
                 <div id="tradeActivityLogs"
-                    style="height: 250px; overflow-y: auto; font-family: monospace; font-size: 0.85em; margin-top: 15px; color: #cbd5e1; display: flex; flex-direction: column; gap: 8px; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 10px;">
+                    style="height: 400px; overflow-y: auto; font-family: monospace; font-size: 0.85em; margin-top: 5px; color: #cbd5e1; display: flex; flex-direction: column; gap: 8px; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 10px;">
                     <div class="empty-state">⏳ Waiting for trade execution...</div>
                 </div>
             </div>
@@ -1351,53 +1387,86 @@
                         }
                     } catch (e) { console.error("Active Trades Error:", e); }
 
-                    // --- 4.5. TRADE ACTIVITY LOGS (Restored User Preference) ---
+                    // --- 4.5. TRADE ACTIVITY LOGS (Refactored with Tabs) ---
                     try {
                         const tradeLogsList = document.getElementById('tradeActivityLogs');
-                        if (tradeLogsList && botData.logs && botData.logs.length > 0) {
-                            // Filter for Trades AND Closures/Resolutions
+                        const tabsContainer = document.getElementById('logsTabs');
+
+                        if (tradeLogsList && tabsContainer && botData.logs) {
+                            // 1. Filter relevant logs
                             const tradeLogs = botData.logs.filter(l =>
                                 l.type === 'trade' ||
                                 l.message.includes('TRADE CLOSED') ||
                                 l.message.includes('Trade gagné') ||
-                                l.message.includes('Trade perdu')
+                                l.message.includes('Trade perdu') ||
+                                l.message.includes('OPENED') ||
+                                l.message.includes('SOLD')
                             );
 
-                            if (tradeLogs.length > 0) {
-                                tradeLogsList.innerHTML = tradeLogs.slice(0, 20).map(l => {
-                                    let color = '#64748b'; // Default
-                                    let icon = '📝 LOG';
+                            // 2. Group by Date
+                            const groupedLogs = {};
+                            tradeLogs.forEach(l => {
+                                const date = new Date(l.timestamp).toLocaleDateString(); // Local Format
+                                if (!groupedLogs[date]) groupedLogs[date] = [];
+                                groupedLogs[date].push(l);
+                            });
 
-                                    // Detect Type
+                            const dates = Object.keys(groupedLogs).sort((a, b) => {
+                                // Sort by date object (assuming dd/mm/yyyy or similar, better to use timestamp if possible but logs have iso)
+                                // Actually, let's just reverse them as they come from array?
+                                // Better: Sort by first log timestamp in group
+                                return new Date(groupedLogs[b][0].timestamp).getTime() - new Date(groupedLogs[a][0].timestamp).getTime();
+                            });
+
+                            // Always add "Today" if missing and we have no logs? 
+                            // No, just show what we have.
+
+                            // 3. Init Tab State
+                            if (!window.currentLogTab || !groupedLogs[window.currentLogTab]) {
+                                window.currentLogTab = dates[0];
+                            }
+
+                            // 4. Render Tabs
+                            tabsContainer.innerHTML = dates.map(d => {
+                                let label = d;
+                                const today = new Date().toLocaleDateString();
+                                const yesterday = new Date(Date.now() - 86400000).toLocaleDateString();
+                                if (d === today) label = "Aujourd'hui";
+                                else if (d === yesterday) label = "Hier";
+
+                                const isActive = d === window.currentLogTab ? 'active' : '';
+                                return `<div class="log-tab ${isActive}" onclick="window.currentLogTab = '${d}'; updateDashboard()">
+                                    ${label} <span style="opacity:0.6">(${groupedLogs[d].length})</span>
+                                </div>`;
+                            }).join('');
+
+                            // 5. Render Logs
+                            const currentLogs = groupedLogs[window.currentLogTab] || [];
+
+                            if (currentLogs.length > 0) {
+                                tradeLogsList.innerHTML = currentLogs.map(l => {
+                                    let color = '#64748b';
+                                    let icon = '📝 LOG';
                                     const isBuy = l.message.includes('OPENED') || l.message.includes('BUY') || (l.type === 'trade' && l.message.includes('✅'));
                                     const isWin = l.message.includes('gagné') || l.message.includes('WIN');
                                     const isLoss = l.message.includes('perdu') || l.message.includes('LOST');
                                     const isClose = l.message.includes('CLOSED') || l.message.includes('SOLD');
 
-                                    if (isBuy) {
-                                        color = '#22c55e'; // Green
-                                        icon = '🟢 BUY';
-                                    } else if (isWin) {
-                                        color = '#4ade80'; // Bright Green
-                                        icon = '🏆 WIN';
-                                    } else if (isLoss) {
-                                        color = '#ef4444'; // Red
-                                        icon = '💀 LOSS';
-                                    } else if (isClose) {
-                                        color = '#f59e0b'; // Orange
-                                        icon = '🏁 CLOSE';
-                                    }
+                                    if (isWin) { color = '#4ade80'; icon = '🏆 WIN'; }
+                                    else if (isLoss) { color = '#ef4444'; icon = '💀 LOSS'; }
+                                    else if (isBuy) { color = '#22c55e'; icon = '🟢 BUY'; } // Order matters
+                                    else if (isClose) { color = '#f59e0b'; icon = '🏁 CLOSE'; }
 
                                     return `<div style="border-left: 3px solid ${color}; padding: 8px 12px; background: rgba(0,0,0,0.2); border-radius: 5px; margin-bottom: 5px;">
-                                    <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-                                        <span style="color: ${color}; font-weight: 700; font-size: 0.9em;">${icon}</span>
-                                        <span style="color: #64748b; font-size: 0.75em;">${new Date(l.timestamp).toLocaleTimeString()}</span>
-                                    </div>
-                                    <div style="color: #e2e8f0; font-size: 0.85em;">${l.message}</div>
-                                 </div>`;
+                                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                            <span style="color: ${color}; font-weight: 700; font-size: 0.9em;">${icon}</span>
+                                            <span style="color: #64748b; font-size: 0.75em;">${new Date(l.timestamp).toLocaleTimeString()}</span>
+                                        </div>
+                                        <div style="color: #e2e8f0; font-size: 0.85em;">${l.message}</div>
+                                     </div>`;
                                 }).join('');
                             } else {
-                                tradeLogsList.innerHTML = '<div class="empty-state">⏳ Waiting for trade execution...</div>';
+                                tradeLogsList.innerHTML = '<div class="empty-state">⏳ No trades for this date.</div>';
                             }
                         }
                     } catch (e) { console.error("Trade Logs Error:", e); }
