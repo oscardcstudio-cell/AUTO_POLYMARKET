@@ -140,6 +140,14 @@ export class StateManager {
             if (CONFIG.ENABLE_GITHUB_SYNC) {
                 saveToGithub("Update bot state & backlog");
             }
+
+            // --- SYNC TO SUPABASE (Fix for Persistence/Analytics) ---
+            if (supabaseService) {
+                // Fire and forget (don't block main loop)
+                supabaseService.saveState(this.data).catch(err =>
+                    console.error("Background Supabase Save Error:", err)
+                );
+            }
         } catch (error) {
             console.error('❌ Erreur sauvegarde:', error.message);
         }

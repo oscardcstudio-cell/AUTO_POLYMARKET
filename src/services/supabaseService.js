@@ -17,6 +17,39 @@ export const supabase = (SUPABASE_URL && SUPABASE_KEY) ? createClient(SUPABASE_U
 
 export const supabaseService = {
     /**
+     * Save the entire bot state to Supabase (JSON blob)
+     * Limit frequency to avoid rate limits (e.g. only on major updates)
+     */
+    async saveState(stateData) {
+        if (!supabase) return;
+
+        try {
+            // Remove heavy log arrays to save bandwidth/storage
+            const cleanState = { ...stateData };
+            if (cleanState.logs && cleanState.logs.length > 50) {
+                cleanState.logs = cleanState.logs.slice(0, 50);
+            }
+
+            const { error } = await supabase
+                .from('bot_state')
+                .upsert({
+                    id: 'global_state',
+                    updated_at: new Date().toISOString(),
+                    capital: cleanState.capital,
+                    total_trades: cleanState.totalTrades,
+                    win_rate: cleanState.winRate || 0,
+                    state_data: cleanState
+                }, { onConflict: 'id' });
+
+            if (error) {
+                console.error("❌ Supabase State Save Error:", error.message);
+            }
+        } catch (e) {
+            console.error("❌ State Save Exception:", e);
+        }
+    },
+
+    /**
      * Save or update a trade in Supabase
      * @param {Object} trade - The trade object from botState
      */
@@ -49,6 +82,11 @@ export const supabaseService = {
                 }
             };
 
+            // Explicitly set created_at if provided (for history sync)
+            if (trade.startTime) {
+                dbTrade.created_at = trade.startTime;
+            }
+
             let result;
 
             if (trade.supabase_id) {
@@ -72,7 +110,6 @@ export const supabaseService = {
                     .limit(1);
 
                 if (existing && existing.length > 0) {
-                    console.log(`⚠️ Trade already exists in Supabase, skipping: ${trade.question.substring(0, 40)}...`);
                     // Attach the existing ID to avoid future duplicates
                     trade.supabase_id = existing[0].id;
                     return existing[0];
