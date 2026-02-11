@@ -646,6 +646,13 @@
                     <div class="stat-label">Open Risk</div>
                     <div class="stat-value" id="moneySpent">$0.00</div>
                 </div>
+                <div class="stat-card">
+                    <div class="stat-label">AI Strategy</div>
+                    <div class="stat-value" id="aiMode" style="font-size: 1.2em;">NEUTRAL</div>
+                    <div style="font-size: 0.8em; color: #64748b; margin-top: 10px; font-weight: 600;">
+                        <span id="aiDetails">Conf x1.0 | Size x1.0</span>
+                    </div>
+                </div>
             </div>
 
             <!-- TRADE ACTIVITY LOGS -->
@@ -901,6 +908,26 @@
                     fetch('/api/analytics/global').then(res => res.json()).then(data => {
                         if (data.error) return;
                         document.getElementById('ana-volume').innerText = '$' + (data.total_volume || 0).toFixed(2);
+                        const realizedPnL = parseFloat(botData.profit || 0);
+                        document.getElementById('profit').innerText = `$${realizedPnL.toFixed(2)}`;
+                        document.getElementById('profit').className = 'stat-value ' + (realizedPnL >= 0 ? 'positive' : 'negative');
+
+                        // AI STRATEGY
+                        if (botData.learningParams) {
+                            const aiMode = document.getElementById('aiMode');
+                            const aiDetails = document.getElementById('aiDetails');
+                            if (aiMode && aiDetails) {
+                                aiMode.innerText = botData.learningParams.mode || 'NEUTRAL';
+
+                                let color = '#e2e8f0';
+                                if (botData.learningParams.mode === 'AGGRESSIVE') color = '#ef4444'; // Red/Hot
+                                else if (botData.learningParams.mode === 'DEFENSIVE') color = '#3b82f6'; // Blue/Cool
+                                else if (botData.learningParams.mode === 'CONSERVATIVE') color = '#f59e0b'; // Orange
+                                aiMode.style.color = color;
+
+                                aiDetails.innerText = `Conf x${(botData.learningParams.confidenceMultiplier || 1).toFixed(2)} | Size x${(botData.learningParams.sizeMultiplier || 1).toFixed(2)}`;
+                            }
+                        }
                         document.getElementById('ana-pnl').innerText = '$' + (data.total_pnl || 0).toFixed(2);
                         document.getElementById('ana-pnl').className = 'stat-value ' + (data.total_pnl >= 0 ? 'positive' : 'negative');
                         document.getElementById('ana-winrate').innerText = (data.win_rate_percent || 0).toFixed(1) + '%';

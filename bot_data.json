@@ -2086,106 +2086,6 @@
   ],
   "capitalHistory": [
     {
-      "t": "2026-02-11T03:19:01.896Z",
-      "v": 287.937045168426
-    },
-    {
-      "t": "2026-02-11T03:20:02.850Z",
-      "v": 287.937045168426
-    },
-    {
-      "t": "2026-02-11T03:21:03.810Z",
-      "v": 287.937045168426
-    },
-    {
-      "t": "2026-02-11T03:22:04.675Z",
-      "v": 287.937045168426
-    },
-    {
-      "t": "2026-02-11T03:23:05.672Z",
-      "v": 287.937045168426
-    },
-    {
-      "t": "2026-02-11T03:24:06.527Z",
-      "v": 287.937045168426
-    },
-    {
-      "t": "2026-02-11T03:25:07.382Z",
-      "v": 287.937045168426
-    },
-    {
-      "t": "2026-02-11T03:26:08.442Z",
-      "v": 287.937045168426
-    },
-    {
-      "t": "2026-02-11T03:27:09.382Z",
-      "v": 287.937045168426
-    },
-    {
-      "t": "2026-02-11T03:28:10.274Z",
-      "v": 287.937045168426
-    },
-    {
-      "t": "2026-02-11T03:29:11.186Z",
-      "v": 287.937045168426
-    },
-    {
-      "t": "2026-02-11T03:30:12.006Z",
-      "v": 287.937045168426
-    },
-    {
-      "t": "2026-02-11T03:31:13.112Z",
-      "v": 287.937045168426
-    },
-    {
-      "t": "2026-02-11T03:32:14.131Z",
-      "v": 287.937045168426
-    },
-    {
-      "t": "2026-02-11T03:33:15.019Z",
-      "v": 287.937045168426
-    },
-    {
-      "t": "2026-02-11T03:34:15.881Z",
-      "v": 287.937045168426
-    },
-    {
-      "t": "2026-02-11T03:35:16.820Z",
-      "v": 287.937045168426
-    },
-    {
-      "t": "2026-02-11T03:36:17.839Z",
-      "v": 287.937045168426
-    },
-    {
-      "t": "2026-02-11T03:37:18.743Z",
-      "v": 287.937045168426
-    },
-    {
-      "t": "2026-02-11T03:38:19.636Z",
-      "v": 287.937045168426
-    },
-    {
-      "t": "2026-02-11T03:39:20.508Z",
-      "v": 287.937045168426
-    },
-    {
-      "t": "2026-02-11T03:40:21.395Z",
-      "v": 287.937045168426
-    },
-    {
-      "t": "2026-02-11T03:41:22.388Z",
-      "v": 287.937045168426
-    },
-    {
-      "t": "2026-02-11T03:42:23.237Z",
-      "v": 287.937045168426
-    },
-    {
-      "t": "2026-02-11T03:43:24.087Z",
-      "v": 287.937045168426
-    },
-    {
       "t": "2026-02-11T03:44:25.247Z",
       "v": 287.937045168426
     },
@@ -2484,6 +2384,106 @@
     {
       "t": "2026-02-11T04:59:53.641Z",
       "v": 287.937045168426
+    },
+    {
+      "t": "2026-02-11T05:00:54.603Z",
+      "v": 287.937045168426
+    },
+    {
+      "t": "2026-02-11T05:01:55.630Z",
+      "v": 287.937045168426
+    },
+    {
+      "t": "2026-02-11T05:02:56.584Z",
+      "v": 287.937045168426
+    },
+    {
+      "t": "2026-02-11T05:03:57.555Z",
+      "v": 287.937045168426
+    },
+    {
+      "t": "2026-02-11T05:04:58.451Z",
+      "v": 287.937045168426
+    },
+    {
+      "t": "2026-02-11T05:05:59.478Z",
+      "v": 287.937045168426
+    },
+    {
+      "t": "2026-02-11T05:07:00.395Z",
+      "v": 287.937045168426
+    },
+    {
+      "t": "2026-02-11T05:08:01.343Z",
+      "v": 287.937045168426
+    },
+    {
+      "t": "2026-02-11T05:09:02.234Z",
+      "v": 287.937045168426
+    },
+    {
+      "t": "2026-02-11T05:10:03.177Z",
+      "v": 287.937045168426
+    },
+    {
+      "t": "2026-02-11T05:11:03.945Z",
+      "v": 287.937045168426
+    },
+    {
+      "t": "2026-02-11T05:12:04.867Z",
+      "v": 287.937045168426
+    },
+    {
+      "t": "2026-02-11T05:13:05.873Z",
+      "v": 287.937045168426
+    },
+    {
+      "t": "2026-02-11T05:14:06.708Z",
+      "v": 287.937045168426
+    },
+    {
+      "t": "2026-02-11T05:15:07.629Z",
+      "v": 287.937045168426
+    },
+    {
+      "t": "2026-02-11T05:16:08.588Z",
+      "v": 287.937045168426
+    },
+    {
+      "t": "2026-02-11T05:17:09.450Z",
+      "v": 287.937045168426
+    },
+    {
+      "t": "2026-02-11T05:18:10.565Z",
+      "v": 287.937045168426
+    },
+    {
+      "t": "2026-02-11T05:19:11.546Z",
+      "v": 287.937045168426
+    },
+    {
+      "t": "2026-02-11T05:20:12.428Z",
+      "v": 287.937045168426
+    },
+    {
+      "t": "2026-02-11T05:21:13.371Z",
+      "v": 287.937045168426
+    },
+    {
+      "t": "2026-02-11T05:22:14.422Z",
+      "v": 287.937045168426
+    },
+    {
+      "t": "2026-02-11T05:23:15.547Z",
+      "v": 287.937045168426
+    },
+    {
+      "t": "2026-02-11T05:24:16.531Z",
+      "v": 287.937045168426
+    },
+    {
+      "t": "2026-02-11T05:25:17.439Z",
+      "v": 287.937045168426
     }
   ],
   "lastPizzaData": {
@@ -2496,11 +2496,66 @@
     "question": "Knicks vs. 76ers",
     "score": 100,
     "reason": "Alpha Matrix: Corrélation de signal maximale",
-    "timestamp": "2026-02-11T04:59:53.362Z",
+    "timestamp": "2026-02-11T05:25:17.241Z",
     "slug": "nba-nyk-phi-2026-02-11"
   },
-  "lastUpdate": "2026-02-11T04:59:53.641Z",
+  "lastUpdate": "2026-02-11T05:25:17.439Z",
   "logs": [
+    {
+      "timestamp": "2026-02-11T05:25:01.060Z",
+      "message": "🔄 Updating prices for 99 active trades...",
+      "type": "info"
+    },
+    {
+      "timestamp": "2026-02-11T05:20:26.677Z",
+      "message": "✅ Updated 0/99 trade prices",
+      "type": "info"
+    },
+    {
+      "timestamp": "2026-02-11T05:20:01.057Z",
+      "message": "🔄 Updating prices for 99 active trades...",
+      "type": "info"
+    },
+    {
+      "timestamp": "2026-02-11T05:15:26.995Z",
+      "message": "✅ Updated 0/99 trade prices",
+      "type": "info"
+    },
+    {
+      "timestamp": "2026-02-11T05:15:01.057Z",
+      "message": "🔄 Updating prices for 99 active trades...",
+      "type": "info"
+    },
+    {
+      "timestamp": "2026-02-11T05:10:26.806Z",
+      "message": "✅ Updated 0/99 trade prices",
+      "type": "info"
+    },
+    {
+      "timestamp": "2026-02-11T05:10:01.056Z",
+      "message": "🔄 Updating prices for 99 active trades...",
+      "type": "info"
+    },
+    {
+      "timestamp": "2026-02-11T05:05:26.639Z",
+      "message": "✅ Updated 0/99 trade prices",
+      "type": "info"
+    },
+    {
+      "timestamp": "2026-02-11T05:05:01.057Z",
+      "message": "🔄 Updating prices for 99 active trades...",
+      "type": "info"
+    },
+    {
+      "timestamp": "2026-02-11T05:00:27.006Z",
+      "message": "✅ Updated 0/99 trade prices",
+      "type": "info"
+    },
+    {
+      "timestamp": "2026-02-11T05:00:01.057Z",
+      "message": "🔄 Updating prices for 99 active trades...",
+      "type": "info"
+    },
     {
       "timestamp": "2026-02-11T04:57:51.117Z",
       "message": "🌊 LANCEMENT DEEP SCAN (1000+ marchés)...",
@@ -4752,7 +4807,7 @@
       "side": "YES",
       "slug": "will-elon-cut-the-budget-by-at-least-10-in-2025",
       "question": "Will Elon cut the budget by at least 10% in 2025?",
-      "price": "0.037",
+      "price": "0.036",
       "alpha": 40,
       "reason": "YES Alpha 40%"
     },
@@ -4761,66 +4816,69 @@
       "side": "YES",
       "slug": "rojas-guilty-in-texas-illegal-abortion-case",
       "question": "Rojas guilty in Texas illegal abortion case?",
-      "price": "0.104",
+      "price": "0.103",
       "alpha": 40,
       "reason": "YES Alpha 40%"
     }
   ],
   "freshMarkets": [
     {
-      "id": "1364733",
-      "question": "Bitcoin Up or Down - February 11, 11:45PM-12:00AM ET",
-      "slug": "btc-updown-15m-1770871500",
-      "outcomePrices": "[\"0.5\", \"0.5\"]",
-      "liquidityNum": 12749.8142,
-      "endDate": "2026-02-12T05:00:00Z",
+      "id": "1364917",
+      "question": "Bitcoin Up or Down - February 12, 12:15AM-12:30AM ET",
+      "slug": "btc-updown-15m-1770873300",
+      "volume24hr": 0,
+      "liquidityNum": 0,
+      "volumeNum": 0,
+      "endDate": "2026-02-12T05:30:00Z",
       "endDateIso": "2026-02-12",
       "freshScore": 95,
       "ageHours": "0.1"
     },
     {
-      "id": "1364726",
-      "question": "Bitcoin Up or Down - February 11, 11:30PM-11:45PM ET",
-      "slug": "btc-updown-15m-1770870600",
-      "outcomePrices": "[\"0.5\", \"0.5\"]",
-      "liquidityNum": 12793.0332,
-      "endDate": "2026-02-12T04:45:00Z",
+      "id": "1364920",
+      "question": "Solana Up or Down - February 12, 12:15AM-12:30AM ET",
+      "slug": "sol-updown-15m-1770873300",
+      "volume24hr": 0,
+      "liquidityNum": 0,
+      "volumeNum": 0,
+      "endDate": "2026-02-12T05:30:00Z",
       "endDateIso": "2026-02-12",
-      "freshScore": 95,
-      "ageHours": "0.4"
+      "freshScore": 75,
+      "ageHours": "0.1"
     },
     {
-      "id": "1364724",
-      "question": "Bitcoin Up or Down - February 11, 11:15PM-11:30PM ET",
-      "slug": "btc-updown-15m-1770869700",
-      "outcomePrices": "[\"0.5\", \"0.5\"]",
-      "liquidityNum": 12804.1896,
-      "endDate": "2026-02-12T04:30:00Z",
+      "id": "1364919",
+      "question": "Ethereum Up or Down - February 12, 12:15AM-12:30AM ET",
+      "slug": "eth-updown-15m-1770873300",
+      "volume24hr": 0,
+      "liquidityNum": 0,
+      "volumeNum": 0,
+      "endDate": "2026-02-12T05:30:00Z",
       "endDateIso": "2026-02-12",
-      "freshScore": 95,
-      "ageHours": "0.6"
+      "freshScore": 75,
+      "ageHours": "0.1"
     },
     {
-      "id": "1364695",
-      "question": "Bitcoin Up or Down - February 11, 11:00PM-11:15PM ET",
-      "slug": "btc-updown-15m-1770868800",
+      "id": "1364918",
+      "question": "XRP Up or Down - February 12, 12:15AM-12:30AM ET",
+      "slug": "xrp-updown-15m-1770873300",
       "outcomePrices": "[\"0.5\", \"0.5\"]",
-      "liquidityNum": 13136.0006,
-      "endDate": "2026-02-12T04:15:00Z",
+      "liquidityNum": 5826.2866,
+      "endDate": "2026-02-12T05:30:00Z",
       "endDateIso": "2026-02-12",
-      "freshScore": 95,
-      "ageHours": "0.9"
+      "freshScore": 75,
+      "ageHours": "0.1"
     },
     {
-      "id": "1364686",
-      "question": "Bitcoin Up or Down - February 12, 11PM ET",
-      "slug": "bitcoin-up-or-down-february-12-11pm-et",
+      "id": "1364913",
+      "question": "Dennis Schröder: Rebounds O/U 2.5",
+      "slug": "nba-was-cle-2026-02-11-rebounds-dennis-schroder-2pt5",
       "outcomePrices": "[\"0.5\", \"0.5\"]",
-      "liquidityNum": 9214.545,
-      "endDate": "2026-02-13T05:00:00Z",
-      "endDateIso": "2026-02-13",
-      "freshScore": 95,
-      "ageHours": "1.0"
+      "liquidityNum": 10.8096,
+      "endDate": "2026-02-12T00:00:00Z",
+      "endDateIso": "2026-02-12",
+      "freshScore": 75,
+      "ageHours": "0.3"
     }
   ],
   "keywordScores": {},
@@ -4869,26 +4927,26 @@
   "sectorStats": {
     "politics": {
       "count": 48,
-      "lastActivity": "2026-02-11T04:59:53.641Z"
+      "lastActivity": "2026-02-11T05:25:17.439Z"
     },
     "economics": {
       "count": 24,
-      "lastActivity": "2026-02-11T04:59:53.641Z"
+      "lastActivity": "2026-02-11T05:25:17.439Z"
     },
     "tech": {
       "count": 10,
-      "lastActivity": "2026-02-11T04:59:53.641Z"
+      "lastActivity": "2026-02-11T05:25:17.439Z"
     },
     "trending": {
       "count": 57,
-      "lastActivity": "2026-02-11T04:59:53.641Z"
+      "lastActivity": "2026-02-11T05:25:17.439Z"
     }
   },
   "sectorActivity": {
     "politics": [
       {
-        "id": "mlhiebxvs6eublevup",
-        "timestamp": "2026-02-11T04:07:45.907Z",
+        "id": "mlhl4q37isawsr2x3l",
+        "timestamp": "2026-02-11T05:24:16.531Z",
         "type": "ANALYSIS",
         "message": "Observation: 1 marchés scannés.",
         "data": {
@@ -4896,8 +4954,8 @@
         }
       },
       {
-        "id": "mlhid0zfjb2c9vsw2a",
-        "timestamp": "2026-02-11T04:06:45.051Z",
+        "id": "mlhl3f17coi9wuhfy8",
+        "timestamp": "2026-02-11T05:23:15.547Z",
         "type": "ANALYSIS",
         "message": "Observation: 1 marchés scannés.",
         "data": {
@@ -4905,8 +4963,8 @@
         }
       },
       {
-        "id": "mlhibpwivn55l4uq05",
-        "timestamp": "2026-02-11T04:05:44.034Z",
+        "id": "mlhl23vafx85y709nka",
+        "timestamp": "2026-02-11T05:22:14.422Z",
         "type": "ANALYSIS",
         "message": "Observation: 1 marchés scannés.",
         "data": {
@@ -4914,8 +4972,8 @@
         }
       },
       {
-        "id": "mlhhb63bnzlmdq8s0ok",
-        "timestamp": "2026-02-11T03:37:18.743Z",
+        "id": "mlhl0srfkj8m5zufsx",
+        "timestamp": "2026-02-11T05:21:13.371Z",
         "type": "ANALYSIS",
         "message": "Observation: 1 marchés scannés.",
         "data": {
@@ -4923,8 +4981,8 @@
         }
       },
       {
-        "id": "mlhh9v3jybxtdi5uuq",
-        "timestamp": "2026-02-11T03:36:17.839Z",
+        "id": "mlhkzhqk4eevfw8toes",
+        "timestamp": "2026-02-11T05:20:12.428Z",
         "type": "ANALYSIS",
         "message": "Observation: 1 marchés scannés.",
         "data": {
@@ -4932,8 +4990,8 @@
         }
       },
       {
-        "id": "mlhh8k0kvyr361aoezm",
-        "timestamp": "2026-02-11T03:35:16.820Z",
+        "id": "mlhky6re148hq4a4r2jb",
+        "timestamp": "2026-02-11T05:19:11.546Z",
         "type": "ANALYSIS",
         "message": "Observation: 1 marchés scannés.",
         "data": {
@@ -4941,8 +4999,8 @@
         }
       },
       {
-        "id": "mlhh0pw2m7sbj767ffm",
-        "timestamp": "2026-02-11T03:29:11.186Z",
+        "id": "mlhkwvphck57xe583ua",
+        "timestamp": "2026-02-11T05:18:10.565Z",
         "type": "ANALYSIS",
         "message": "Observation: 1 marchés scannés.",
         "data": {
@@ -4950,8 +5008,8 @@
         }
       },
       {
-        "id": "mlhgzew20w3vy1oz974",
-        "timestamp": "2026-02-11T03:28:10.274Z",
+        "id": "mlhkvkju8lr73sp632v",
+        "timestamp": "2026-02-11T05:17:09.450Z",
         "type": "ANALYSIS",
         "message": "Observation: 1 marchés scannés.",
         "data": {
@@ -4959,8 +5017,8 @@
         }
       },
       {
-        "id": "mlhgy3wmlbt6sv2etf",
-        "timestamp": "2026-02-11T03:27:09.382Z",
+        "id": "mlhku9l8ei8lf7wurf7",
+        "timestamp": "2026-02-11T05:16:08.588Z",
         "type": "ANALYSIS",
         "message": "Observation: 1 marchés scannés.",
         "data": {
@@ -4968,8 +5026,8 @@
         }
       },
       {
-        "id": "mlhgwsvu83eqy7ac9e",
-        "timestamp": "2026-02-11T03:26:08.442Z",
+        "id": "mlhksyjxnyli8epmtcj",
+        "timestamp": "2026-02-11T05:15:07.629Z",
         "type": "ANALYSIS",
         "message": "Observation: 1 marchés scannés.",
         "data": {
@@ -4979,91 +5037,91 @@
     ],
     "economics": [
       {
-        "id": "mlhk9dbdfqt8bhmar4",
-        "timestamp": "2026-02-11T04:59:53.641Z",
+        "id": "mlhl6133gz7spva0oah",
+        "timestamp": "2026-02-11T05:25:17.439Z",
         "type": "ANALYSIS",
-        "message": "Observation: 6 marchés scannés.",
+        "message": "Observation: 2 marchés scannés.",
         "data": {
           "status": "idle"
         }
       },
       {
-        "id": "mlhk829bwjd4eesslim",
-        "timestamp": "2026-02-11T04:58:52.655Z",
+        "id": "mlhl4q37e2t3f386lh6",
+        "timestamp": "2026-02-11T05:24:16.531Z",
         "type": "ANALYSIS",
-        "message": "Observation: 6 marchés scannés.",
+        "message": "Observation: 1 marchés scannés.",
         "data": {
           "status": "idle"
         }
       },
       {
-        "id": "mlhk6rb4ymkpcalqwla",
-        "timestamp": "2026-02-11T04:57:51.808Z",
+        "id": "mlhl3f173z6ppn78cre",
+        "timestamp": "2026-02-11T05:23:15.547Z",
         "type": "ANALYSIS",
-        "message": "Observation: 6 marchés scannés.",
+        "message": "Observation: 1 marchés scannés.",
         "data": {
           "status": "idle"
         }
       },
       {
-        "id": "mlhk5g6xpi9pgjua77o",
-        "timestamp": "2026-02-11T04:56:50.745Z",
+        "id": "mlhl23vazai6by1k7u",
+        "timestamp": "2026-02-11T05:22:14.422Z",
         "type": "ANALYSIS",
-        "message": "Observation: 6 marchés scannés.",
+        "message": "Observation: 1 marchés scannés.",
         "data": {
           "status": "idle"
         }
       },
       {
-        "id": "mlhk458e3l5nwm8al2t",
-        "timestamp": "2026-02-11T04:55:49.886Z",
+        "id": "mlhl0srfunezhzqoj2i",
+        "timestamp": "2026-02-11T05:21:13.371Z",
         "type": "ANALYSIS",
-        "message": "Observation: 6 marchés scannés.",
+        "message": "Observation: 1 marchés scannés.",
         "data": {
           "status": "idle"
         }
       },
       {
-        "id": "mlhk2u91ne4apxot14",
-        "timestamp": "2026-02-11T04:54:48.997Z",
+        "id": "mlhkzhqkt4otcy1ur4a",
+        "timestamp": "2026-02-11T05:20:12.428Z",
         "type": "ANALYSIS",
-        "message": "Observation: 6 marchés scannés.",
+        "message": "Observation: 1 marchés scannés.",
         "data": {
           "status": "idle"
         }
       },
       {
-        "id": "mlhk1j7sl8kappzlu6",
-        "timestamp": "2026-02-11T04:53:48.040Z",
+        "id": "mlhky6repddoax4wd0e",
+        "timestamp": "2026-02-11T05:19:11.546Z",
         "type": "ANALYSIS",
-        "message": "Observation: 6 marchés scannés.",
+        "message": "Observation: 1 marchés scannés.",
         "data": {
           "status": "idle"
         }
       },
       {
-        "id": "mlhk085xyfhrtk8g5yq",
-        "timestamp": "2026-02-11T04:52:47.061Z",
+        "id": "mlhkwvphbsi3i8v6g2",
+        "timestamp": "2026-02-11T05:18:10.565Z",
         "type": "ANALYSIS",
-        "message": "Observation: 6 marchés scannés.",
+        "message": "Observation: 1 marchés scannés.",
         "data": {
           "status": "idle"
         }
       },
       {
-        "id": "mlhjyx47sgwxbl6rwr",
-        "timestamp": "2026-02-11T04:51:46.087Z",
+        "id": "mlhkvkjuntsjqhtyke9",
+        "timestamp": "2026-02-11T05:17:09.450Z",
         "type": "ANALYSIS",
-        "message": "Observation: 6 marchés scannés.",
+        "message": "Observation: 1 marchés scannés.",
         "data": {
           "status": "idle"
         }
       },
       {
-        "id": "mlhjxm3tctq5yisksj",
-        "timestamp": "2026-02-11T04:50:45.161Z",
+        "id": "mlhku9l8i1ji11vka1o",
+        "timestamp": "2026-02-11T05:16:08.588Z",
         "type": "ANALYSIS",
-        "message": "Observation: 6 marchés scannés.",
+        "message": "Observation: 1 marchés scannés.",
         "data": {
           "status": "idle"
         }
@@ -5071,8 +5129,8 @@
     ],
     "tech": [
       {
-        "id": "mlhk9dbd1sb9zmur7ut",
-        "timestamp": "2026-02-11T04:59:53.641Z",
+        "id": "mlhl6133y8n6u8hacgb",
+        "timestamp": "2026-02-11T05:25:17.439Z",
         "type": "ANALYSIS",
         "message": "Observation: 2 marchés scannés.",
         "data": {
@@ -5080,8 +5138,8 @@
         }
       },
       {
-        "id": "mlhk829bu8ovf0ydfbi",
-        "timestamp": "2026-02-11T04:58:52.655Z",
+        "id": "mlhl4q37rhaajhw0nhq",
+        "timestamp": "2026-02-11T05:24:16.531Z",
         "type": "ANALYSIS",
         "message": "Observation: 2 marchés scannés.",
         "data": {
@@ -5089,8 +5147,8 @@
         }
       },
       {
-        "id": "mlhk6rb44ken9m95chg",
-        "timestamp": "2026-02-11T04:57:51.808Z",
+        "id": "mlhl3f17co1888g5ioa",
+        "timestamp": "2026-02-11T05:23:15.547Z",
         "type": "ANALYSIS",
         "message": "Observation: 2 marchés scannés.",
         "data": {
@@ -5098,8 +5156,8 @@
         }
       },
       {
-        "id": "mlhk5g6x4qjagdxoi12",
-        "timestamp": "2026-02-11T04:56:50.745Z",
+        "id": "mlhl23va14ifqkxdqvl",
+        "timestamp": "2026-02-11T05:22:14.422Z",
         "type": "ANALYSIS",
         "message": "Observation: 2 marchés scannés.",
         "data": {
@@ -5107,8 +5165,8 @@
         }
       },
       {
-        "id": "mlhk458e6y9joifxls8",
-        "timestamp": "2026-02-11T04:55:49.886Z",
+        "id": "mlhl0srfpev9zybbb6f",
+        "timestamp": "2026-02-11T05:21:13.371Z",
         "type": "ANALYSIS",
         "message": "Observation: 2 marchés scannés.",
         "data": {
@@ -5116,8 +5174,8 @@
         }
       },
       {
-        "id": "mlhk2u91i0biyrbcsn",
-        "timestamp": "2026-02-11T04:54:48.997Z",
+        "id": "mlhkzhqkqhf00ioc158",
+        "timestamp": "2026-02-11T05:20:12.428Z",
         "type": "ANALYSIS",
         "message": "Observation: 2 marchés scannés.",
         "data": {
@@ -5125,8 +5183,8 @@
         }
       },
       {
-        "id": "mlhk1j7sgx5tv6eghjp",
-        "timestamp": "2026-02-11T04:53:48.040Z",
+        "id": "mlhky6re8mip99qow4t",
+        "timestamp": "2026-02-11T05:19:11.546Z",
         "type": "ANALYSIS",
         "message": "Observation: 2 marchés scannés.",
         "data": {
@@ -5134,8 +5192,8 @@
         }
       },
       {
-        "id": "mlhk085xk6z8v572m6",
-        "timestamp": "2026-02-11T04:52:47.061Z",
+        "id": "mlhkwvph3hxqioxtabd",
+        "timestamp": "2026-02-11T05:18:10.565Z",
         "type": "ANALYSIS",
         "message": "Observation: 2 marchés scannés.",
         "data": {
@@ -5143,8 +5201,8 @@
         }
       },
       {
-        "id": "mlhjyx47bircs6r10oh",
-        "timestamp": "2026-02-11T04:51:46.087Z",
+        "id": "mlhkvkju7q6bjzv8zd",
+        "timestamp": "2026-02-11T05:17:09.450Z",
         "type": "ANALYSIS",
         "message": "Observation: 2 marchés scannés.",
         "data": {
@@ -5152,8 +5210,8 @@
         }
       },
       {
-        "id": "mlhjxm3tbgcm3n9q6ci",
-        "timestamp": "2026-02-11T04:50:45.161Z",
+        "id": "mlhku9l8nfg7n0fq9ir",
+        "timestamp": "2026-02-11T05:16:08.588Z",
         "type": "ANALYSIS",
         "message": "Observation: 2 marchés scannés.",
         "data": {
@@ -5163,17 +5221,17 @@
     ],
     "trending": [
       {
-        "id": "mlhk9dbdjlg4y3i6th",
-        "timestamp": "2026-02-11T04:59:53.641Z",
+        "id": "mlhl6133phwzfc9i6v",
+        "timestamp": "2026-02-11T05:25:17.439Z",
         "type": "ANALYSIS",
-        "message": "Observation: 3 marchés scannés.",
+        "message": "Observation: 7 marchés scannés.",
         "data": {
           "status": "idle"
         }
       },
       {
-        "id": "mlhk9d3m426yso9a69h",
-        "timestamp": "2026-02-11T04:59:53.362Z",
+        "id": "mlhl60xlmiddm17csl9",
+        "timestamp": "2026-02-11T05:25:17.241Z",
         "type": "SIGNAL",
         "message": "Top Signal Detected: 100/100",
         "data": {
@@ -5181,8 +5239,8 @@
         }
       },
       {
-        "id": "mlhk9d3mag1x6llme38",
-        "timestamp": "2026-02-11T04:59:53.362Z",
+        "id": "mlhl60xlhntquntzemc",
+        "timestamp": "2026-02-11T05:25:17.241Z",
         "type": "ANALYSIS",
         "message": "High Alpha: Knicks vs. 76ers...",
         "data": {
@@ -5190,17 +5248,17 @@
         }
       },
       {
-        "id": "mlhk829b1q6mwfn5qku",
-        "timestamp": "2026-02-11T04:58:52.655Z",
+        "id": "mlhl4q37yxjpmxtudi",
+        "timestamp": "2026-02-11T05:24:16.531Z",
         "type": "ANALYSIS",
-        "message": "Observation: 3 marchés scannés.",
+        "message": "Observation: 7 marchés scannés.",
         "data": {
           "status": "idle"
         }
       },
       {
-        "id": "mlhk822y09cluv8mg578",
-        "timestamp": "2026-02-11T04:58:52.426Z",
+        "id": "mlhl4puhlf9t40x3lm",
+        "timestamp": "2026-02-11T05:24:16.217Z",
         "type": "SIGNAL",
         "message": "Top Signal Detected: 100/100",
         "data": {
@@ -5208,8 +5266,8 @@
         }
       },
       {
-        "id": "mlhk822y53ip8t5a3n3",
-        "timestamp": "2026-02-11T04:58:52.426Z",
+        "id": "mlhl4puhcgp1jgbbhr",
+        "timestamp": "2026-02-11T05:24:16.217Z",
         "type": "ANALYSIS",
         "message": "High Alpha: Knicks vs. 76ers...",
         "data": {
@@ -5217,17 +5275,17 @@
         }
       },
       {
-        "id": "mlhk6rb4ergihxy7tjg",
-        "timestamp": "2026-02-11T04:57:51.808Z",
+        "id": "mlhl3f17dnflcqq6pd",
+        "timestamp": "2026-02-11T05:23:15.547Z",
         "type": "ANALYSIS",
-        "message": "Observation: 3 marchés scannés.",
+        "message": "Observation: 7 marchés scannés.",
         "data": {
           "status": "idle"
         }
       },
       {
-        "id": "mlhk6r4ofykkvi4dq2u",
-        "timestamp": "2026-02-11T04:57:51.576Z",
+        "id": "mlhl3etmfddkpmi2aiu",
+        "timestamp": "2026-02-11T05:23:15.274Z",
         "type": "SIGNAL",
         "message": "Top Signal Detected: 100/100",
         "data": {
@@ -5235,8 +5293,8 @@
         }
       },
       {
-        "id": "mlhk6r4oclsmhhhmaor",
-        "timestamp": "2026-02-11T04:57:51.576Z",
+        "id": "mlhl3etm0j5g0xhrxkw",
+        "timestamp": "2026-02-11T05:23:15.274Z",
         "type": "ANALYSIS",
         "message": "High Alpha: Knicks vs. 76ers...",
         "data": {
@@ -5244,10 +5302,10 @@
         }
       },
       {
-        "id": "mlhk5g6xgrib9tovifq",
-        "timestamp": "2026-02-11T04:56:50.745Z",
+        "id": "mlhl23vaepe9g7oqk0o",
+        "timestamp": "2026-02-11T05:22:14.422Z",
         "type": "ANALYSIS",
-        "message": "Observation: 3 marchés scannés.",
+        "message": "Observation: 7 marchés scannés.",
         "data": {
           "status": "idle"
         }
@@ -6108,7 +6166,7 @@
       "_alphaScore": 40
     }
   ],
-  "lastHeartbeat": "2026-02-11T04:58:52.656Z",
+  "lastHeartbeat": "2026-02-11T05:24:16.532Z",
   "lastBacktestRequest": 1770777870204,
   "confidenceAdjustments": {}
 }

@@ -11,6 +11,7 @@ import analyticsRoutes from './src/api/analyticsRoutes.js';
 import debugRoutes from './src/api/debugRoutes.js';
 import backtestRoutes from './src/api/backtestRoutes.js';
 import { startPriceUpdateLoop } from './src/services/priceUpdateService.js';
+import { startScheduler } from './src/cron/scheduler.js';
 
 // Logic & Signals
 import { simulateTrade, checkAndCloseTrades } from './src/logic/engine.js';
@@ -96,6 +97,9 @@ async function mainLoop() {
     // Start Real-Time Price Tracking Service
     console.log('🔄 Starting real-time price tracking service...');
     startPriceUpdateLoop(botState);
+
+    // Start AI Self-Training Scheduler
+    startScheduler();
 
     // State for Deep Scan
     let lastDeepScanTime = 0;

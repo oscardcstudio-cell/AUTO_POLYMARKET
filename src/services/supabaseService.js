@@ -1,6 +1,7 @@
 
 import { createClient } from '@supabase/supabase-js';
 import { CONFIG } from '../config.js';
+import { strategyAdapter } from '../logic/strategyAdapter.js';
 
 import dotenv from 'dotenv';
 dotenv.config();
@@ -248,6 +249,21 @@ export const supabaseService = {
 
             console.log(`✅ État reconstruit : Capital $${reconstructedCapital.toFixed(2)} | Actifs: ${activeTrades.length} | Fermés: ${closedTrades.length} | Logs: ${recoveredLogs.length}`);
 
+            // Recover AI Strategy from last simulation
+            let recoveredParams = null;
+            const { data: lastSim } = await supabase
+                .from('simulation_runs')
+                .select('metrics')
+                //.eq('run_type', 'AUTO') // Removed filter to allow manual runs to count too
+                .order('created_at', { ascending: false })
+                .limit(1)
+                .single();
+
+            if (lastSim && lastSim.metrics) {
+                recoveredParams = strategyAdapter.adapt(lastSim.metrics);
+                console.log(`🧠 AI Strategy Restored: ${recoveredParams.mode}`);
+            }
+
             return {
                 capital: reconstructedCapital,
                 totalTrades,
@@ -256,8 +272,10 @@ export const supabaseService = {
                 activeTrades,
                 closedTrades: closedTrades.slice(-50).reverse(), // Keep last 50, newest first
                 logs: recoveredLogs.slice(0, 1000), // Synthetic logs for dashboard display
-                recovered: true
+                recovered: true,
+                learningParams: recoveredParams
             };
+
 
         } catch (err) {
             console.error("❌ Erreur reconstruction via Supabase:", err.message);

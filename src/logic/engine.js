@@ -396,7 +396,23 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
         decisionReasons.push(`🤖 AI Feedback: ${aiAdj > 0 ? '+' : ''}${aiAdj.toFixed(2)} (${category})`);
     }
 
+    // --- SELF-IMPROVEMENT LOOP (Auto-Training) ---
+    if (botState.learningParams) {
+        // 1. Adjust Confidence
+        const oldConf = confidence;
+        confidence *= botState.learningParams.confidenceMultiplier;
+        if (confidence !== oldConf) {
+            decisionReasons.push(`🎓 AI Adaptation: Conf x${botState.learningParams.confidenceMultiplier.toFixed(2)} (${botState.learningParams.mode})`);
+        }
+    }
+
     let tradeSize = dependencies.testSize || calculateTradeSize(confidence, entryPrice);
+
+    // 2. Adjust Size
+    if (botState.learningParams && botState.learningParams.sizeMultiplier !== 1.0) {
+        tradeSize *= botState.learningParams.sizeMultiplier;
+        decisionReasons.push(`🎓 AI Adaptation: Size x${botState.learningParams.sizeMultiplier.toFixed(2)}`);
+    }
 
     if (tradeSize > botState.capital) tradeSize = botState.capital;
 

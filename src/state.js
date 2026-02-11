@@ -45,7 +45,13 @@ const INITIAL_STATE = {
         tech: [],
         trending: []
     },
-    backlog: [] // User notes, bugs, and ideas
+    backlog: [], // User notes, bugs, and ideas
+    learningParams: {
+        confidenceMultiplier: 1.0,
+        sizeMultiplier: 1.0,
+        mode: 'NEUTRAL',
+        reason: 'Baseline'
+    }
 };
 
 export class StateManager {
