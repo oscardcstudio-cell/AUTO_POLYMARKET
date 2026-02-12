@@ -1,13 +1,13 @@
 import { fetchWithRetry, addLog } from '../utils.js';
-import { botState } from '../state.js';
+import { botState, stateManager } from '../state.js';
 
 /**
  * Price Update Service
  * Fetches current prices from Polymarket API with rate limiting protection
  */
 
-const PRICE_UPDATE_INTERVAL = 5 * 60 * 1000; // 5 minutes
-const PRICE_CACHE_DURATION = 4 * 60 * 1000; // 4 minutes
+const PRICE_UPDATE_INTERVAL = 60 * 1000; // Reduced from 5m to 60s for dashboard reactivity
+const PRICE_CACHE_DURATION = 55 * 1000; // 55 seconds
 
 // Cache to avoid redundant API calls
 const priceCache = new Map();
@@ -113,6 +113,14 @@ export async function updateActiveTradePrices(activeTrades) {
             // Update timestamp
             trade.lastPriceUpdate = new Date().toISOString();
 
+            // RECALCULATE PNL FOR REAL-TIME DISPLAY
+            const invested = trade.amount || trade.size || 0;
+            if (invested > 0 && trade.shares) {
+                const pnlPercent = (trade.shares * currentPrice - invested) / invested;
+                trade.pnl = pnlPercent * 100; // Store as percentage
+                trade.maxReturn = Math.max(trade.maxReturn || 0, pnlPercent);
+            }
+
             updatedCount++;
         }
 
@@ -137,13 +145,14 @@ export function startPriceUpdateLoop(botStateArg) {
     const intervalId = setInterval(async () => {
         try {
             await updateActiveTradePrices(state.activeTrades);
+            await stateManager.save(); // PERSIST UPDATED PNL AND PRICES
         } catch (error) {
             addLog(state, `❌ Price update loop error: ${error.message}`, 'error');
         }
     }, PRICE_UPDATE_INTERVAL);
 
     // Initial update
-    updateActiveTradePrices(botState.activeTrades);
+    updateActiveTradePrices(state.activeTrades).then(() => stateManager.save());
 
     return intervalId;
 }

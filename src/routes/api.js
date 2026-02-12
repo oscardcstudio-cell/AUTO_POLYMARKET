@@ -503,4 +503,11 @@ router.get('/verify-clob-prices', async (req, res) => {
     }
 });
 
+// --- NEW: Pulse Animation Endpoint ---
+router.get('/pulses', (req, res) => {
+    const pulses = botState.pulses || [];
+    botState.pulses = []; // Clear queue after reading
+    res.json({ pulses });
+});
+
 export default router;

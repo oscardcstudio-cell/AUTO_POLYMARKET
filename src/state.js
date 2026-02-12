@@ -18,6 +18,7 @@ const INITIAL_STATE = {
     lastPizzaData: null,
     topSignal: null,
     lastUpdate: new Date().toISOString(),
+    riskProfile: 'MEDIUM',
     logs: [],
     whaleAlerts: [],
     arbitrageOpportunities: [],
@@ -68,6 +69,8 @@ export class StateManager {
         this.data = JSON.parse(JSON.stringify(INITIAL_STATE));
         this.data.startTime = new Date().toISOString();
         this.data.lastUpdate = new Date().toISOString();
+        // Force re-sync of internal risk manager if this is called
+        import('./logic/riskManagement.js').then(m => m.riskManager.setProfile('MEDIUM'));
         this.save();
     }
 

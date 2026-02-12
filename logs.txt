@@ -667,3 +667,1318 @@
 [2026-02-12T04:55:13.013Z] [INFO] ⚠️ Info: CLOB price returned null (could be rate-limited or unavailable).
 [2026-02-12T04:55:13.013Z] [INFO] 
 ✨ STABILITY VERIFICATION COMPLETE. No gross errors detected.
+[2026-02-12T05:43:41.112Z] [INFO] [32m%s[0m [SUCCESS] Chargement des données réussi ($990.00)
+[2026-02-12T05:43:41.109Z] [SUCCESS] Chargement des données réussi ($990.00)
+[2026-02-12T05:43:41.431Z] [INFO] [36m%s[0m [INFO] 🔄 Démarrage de la boucle de trading...
+[2026-02-12T05:43:41.430Z] [INFO] 🔄 Démarrage de la boucle de trading...
+[2026-02-12T05:43:41.432Z] [INFO] [36m%s[0m [INFO] ⚙️ Risk Profile restauré : MEDIUM
+[2026-02-12T05:43:41.432Z] [INFO] ⚙️ Risk Profile restauré : MEDIUM
+[2026-02-12T05:43:41.432Z] [INFO] 🔄 Starting real-time price tracking service...
+[2026-02-12T05:43:41.433Z] [INFO] [36m%s[0m [INFO] 🚀 Starting price update loop (every 1 minutes)
+[2026-02-12T05:43:41.433Z] [INFO] 🚀 Starting price update loop (every 1 minutes)
+[2026-02-12T05:43:41.435Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 2 active trades...
+[2026-02-12T05:43:41.434Z] [INFO] 🔄 Updating prices for 2 active trades...
+[2026-02-12T05:43:41.482Z] [INFO] 🕒 AI Self-Training Scheduler started (Every 6h)
+[2026-02-12T05:43:41.502Z] [INFO] 
+🚀 SERVER STARTED ON PORT 3000
+[2026-02-12T05:43:41.562Z] [INFO] 📅 12/02/2026 06:43:41
+[2026-02-12T05:43:41.563Z] [INFO] ✅ Version: 2.6.6 (Stable - Nuclear Disabled)
+[2026-02-12T05:43:41.563Z] [INFO] [32m%s[0m [SUCCESS] Serveur démarré sur le port 3000 (v2.6.6 Stable)
+[2026-02-12T05:43:41.563Z] [SUCCESS] Serveur démarré sur le port 3000 (v2.6.6 Stable)
+[2026-02-12T05:43:42.625Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:43:42.624Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:43:43.289Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:43:43.288Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:43:43.490Z] [INFO] [36m%s[0m [INFO] ✅ Updated 0/2 trade prices
+[2026-02-12T05:43:43.490Z] [INFO] ✅ Updated 0/2 trade prices
+[2026-02-12T05:43:43.627Z] [INFO] [36m%s[0m [INFO] 🌊 LANCEMENT DEEP SCAN (1000+ marchés)...
+[2026-02-12T05:43:43.626Z] [INFO] 🌊 LANCEMENT DEEP SCAN (1000+ marchés)...
+[2026-02-12T05:43:46.157Z] [INFO] 🔍 Checking 2 active trades...
+[2026-02-12T05:43:47.255Z] [INFO] 🧙 Wizards Detected: 3
+[2026-02-12T05:43:48.821Z] [INFO] 🧪 Starting Autonomous Backtest...
+[2026-02-12T05:43:48.822Z] [INFO] [36m%s[0m [INFO] 🧪 Lancement du Backtest Autonome (Vérification Stratégie)...
+[2026-02-12T05:43:48.822Z] [INFO] 🧪 Lancement du Backtest Autonome (Vérification Stratégie)...
+[2026-02-12T05:43:50.639Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Will Elon Musk post 40-59 twee..."
+[2026-02-12T05:43:50.639Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Will Elon Musk post 40-59 twee..."
+[2026-02-12T05:43:50.822Z] [INFO] [32m%s[0m [SUCCESS] Chargement des données réussi ($990.00)
+[2026-02-12T05:43:50.821Z] [SUCCESS] Chargement des données réussi ($990.00)
+[2026-02-12T05:43:50.825Z] [INFO] 🧪 ========================================
+[2026-02-12T05:43:50.826Z] [INFO]    ADVANCED POLYMARKET BACKTEST (2026)
+[2026-02-12T05:43:50.826Z] [INFO] ========================================
+
+[2026-02-12T05:43:50.828Z] [INFO] 📊 Analyzing 20 historical markets...
+
+[2026-02-12T05:43:50.829Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "U.S. Recession in 2024?..."
+[2026-02-12T05:43:50.829Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "U.S. Recession in 2024?..."
+[2026-02-12T05:43:50.879Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1362023
+[2026-02-12T05:43:51.860Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Will Bitcoin reach $150,000 in..."
+[2026-02-12T05:43:51.860Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Will Bitcoin reach $150,000 in..."
+[2026-02-12T05:43:52.081Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 500741
+[2026-02-12T05:43:52.083Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "BitBoy vs. Smic - Crypto Fight..."
+[2026-02-12T05:43:52.083Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "BitBoy vs. Smic - Crypto Fight..."
+[2026-02-12T05:43:52.376Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1303355
+[2026-02-12T05:43:52.755Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Will the US next strike Iran o..."
+[2026-02-12T05:43:52.755Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Will the US next strike Iran o..."
+[2026-02-12T05:43:52.790Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 501341
+[2026-02-12T05:43:53.287Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1273916
+[2026-02-12T05:43:53.676Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Will Japan win the most gold m..."
+[2026-02-12T05:43:53.675Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Will Japan win the most gold m..."
+[2026-02-12T05:43:53.905Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 896779
+[2026-02-12T05:43:54.300Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Mavericks vs. Lakers..."
+[2026-02-12T05:43:54.300Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Mavericks vs. Lakers..."
+[2026-02-12T05:43:54.717Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: YES sur "BitBoy vs. Smic - Crypto Fight..." @ $0.738 ($100.00)
+[2026-02-12T05:43:54.717Z] [TRADE] ✅ TRADE OPENED: YES sur "BitBoy vs. Smic - Crypto Fight..." @ $0.738 ($100.00)
+[2026-02-12T05:43:54.718Z] [INFO] ✅ WIN  | BitBoy vs. Smic - Crypto Fight Night... | YES @ 0.74 | +$33.27
+[2026-02-12T05:43:54.719Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Will Russia capture Chasiv Yar..."
+[2026-02-12T05:43:54.719Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Will Russia capture Chasiv Yar..."
+[2026-02-12T05:43:54.742Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1345279
+[2026-02-12T05:43:55.348Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 501667
+[2026-02-12T05:43:55.349Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Will England win the 2024 Euro..."
+[2026-02-12T05:43:55.348Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Will England win the 2024 Euro..."
+[2026-02-12T05:43:56.010Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 501986
+[2026-02-12T05:43:56.011Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Will Nicolas Maduro Win the 20..."
+[2026-02-12T05:43:56.011Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Will Nicolas Maduro Win the 20..."
+[2026-02-12T05:43:56.624Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 502002
+[2026-02-12T05:43:56.625Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Trump’s first TikTok >10M view..."
+[2026-02-12T05:43:56.625Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Trump’s first TikTok >10M view..."
+[2026-02-12T05:43:57.243Z] [INFO] ✅ Trade saved to Supabase: Mavericks vs. Lakers
+[2026-02-12T05:43:57.244Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: YES sur "Mavericks vs. Lakers..." @ $0.292 ($37.00)
+[2026-02-12T05:43:57.244Z] [TRADE] ✅ TRADE OPENED: YES sur "Mavericks vs. Lakers..." @ $0.292 ($37.00)
+[2026-02-12T05:43:57.245Z] [INFO] [32m%s[0m [SUCCESS] 🚀 [WIZARD] Trade: Mavericks vs. Lakers...
+[2026-02-12T05:43:57.245Z] [SUCCESS] 🚀 [WIZARD] Trade: Mavericks vs. Lakers...
+[2026-02-12T05:43:57.888Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 502008
+[2026-02-12T05:43:58.962Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: YES sur "Trump’s first TikTok >10M view..." @ $0.738 ($100.00)
+[2026-02-12T05:43:58.961Z] [TRADE] ✅ TRADE OPENED: YES sur "Trump’s first TikTok >10M view..." @ $0.738 ($100.00)
+[2026-02-12T05:43:58.964Z] [INFO] ✅ WIN  | Trump’s first TikTok >10M views by Sunda... | YES @ 0.74 | +$33.27
+[2026-02-12T05:43:58.964Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Trump’s first TikTok >50M view..."
+[2026-02-12T05:43:58.964Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Trump’s first TikTok >50M view..."
+[2026-02-12T05:43:59.763Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 502009
+[2026-02-12T05:44:00.805Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: YES sur "Trump’s first TikTok >50M view..." @ $0.738 ($100.00)
+[2026-02-12T05:44:00.804Z] [TRADE] ✅ TRADE OPENED: YES sur "Trump’s first TikTok >50M view..." @ $0.738 ($100.00)
+[2026-02-12T05:44:00.806Z] [INFO] ✅ WIN  | Trump’s first TikTok >50M views by Sunda... | YES @ 0.74 | +$33.27
+[2026-02-12T05:44:00.806Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Trump’s first TikTok >25M view..."
+[2026-02-12T05:44:00.806Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Trump’s first TikTok >25M view..."
+[2026-02-12T05:44:01.641Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 502010
+[2026-02-12T05:44:02.639Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: YES sur "Trump’s first TikTok >25M view..." @ $0.738 ($100.00)
+[2026-02-12T05:44:02.639Z] [TRADE] ✅ TRADE OPENED: YES sur "Trump’s first TikTok >25M view..." @ $0.738 ($100.00)
+[2026-02-12T05:44:02.640Z] [INFO] ✅ WIN  | Trump’s first TikTok >25M views by Sunda... | YES @ 0.74 | +$33.27
+[2026-02-12T05:44:02.640Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "$GME halted on Monday?..."
+[2026-02-12T05:44:02.640Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "$GME halted on Monday?..."
+[2026-02-12T05:44:03.354Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 502011
+[2026-02-12T05:44:04.332Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: YES sur "$GME halted on Monday?..." @ $0.738 ($100.00)
+[2026-02-12T05:44:04.332Z] [TRADE] ✅ TRADE OPENED: YES sur "$GME halted on Monday?..." @ $0.738 ($100.00)
+[2026-02-12T05:44:04.333Z] [INFO] ✅ WIN  | $GME halted on Monday?... | YES @ 0.74 | +$33.27
+[2026-02-12T05:44:04.334Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Roaring Kitty charged in 2024?..."
+[2026-02-12T05:44:04.334Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Roaring Kitty charged in 2024?..."
+[2026-02-12T05:44:04.934Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 502012
+[2026-02-12T05:44:04.935Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Will Roaring Kitty tweet on Mo..."
+[2026-02-12T05:44:04.935Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Will Roaring Kitty tweet on Mo..."
+[2026-02-12T05:44:05.396Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 502013
+[2026-02-12T05:44:05.397Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Was Roaring Kitty GME YOLO upd..."
+[2026-02-12T05:44:05.397Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Was Roaring Kitty GME YOLO upd..."
+[2026-02-12T05:44:06.070Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 502014
+[2026-02-12T05:44:06.071Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "New GME YOLO update by Friday?..."
+[2026-02-12T05:44:06.071Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "New GME YOLO update by Friday?..."
+[2026-02-12T05:44:06.527Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 502015
+[2026-02-12T05:44:07.492Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: YES sur "New GME YOLO update by Friday?..." @ $0.738 ($100.00)
+[2026-02-12T05:44:07.492Z] [TRADE] ✅ TRADE OPENED: YES sur "New GME YOLO update by Friday?..." @ $0.738 ($100.00)
+[2026-02-12T05:44:07.493Z] [INFO] ✅ WIN  | New GME YOLO update by Friday?... | YES @ 0.74 | +$33.27
+[2026-02-12T05:44:07.494Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "$GME market cap below $6 billi..."
+[2026-02-12T05:44:07.494Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "$GME market cap below $6 billi..."
+[2026-02-12T05:44:08.326Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 502016
+[2026-02-12T05:44:08.327Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "$GME market cap >$10b at Monda..."
+[2026-02-12T05:44:08.327Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "$GME market cap >$10b at Monda..."
+[2026-02-12T05:44:09.122Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 502023
+[2026-02-12T05:44:09.123Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Will Berkshire Hathaway resume..."
+[2026-02-12T05:44:09.123Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Will Berkshire Hathaway resume..."
+[2026-02-12T05:44:09.872Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 502024
+[2026-02-12T05:44:10.818Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: YES sur "Will Berkshire Hathaway resume..." @ $0.738 ($100.00)
+[2026-02-12T05:44:10.817Z] [TRADE] ✅ TRADE OPENED: YES sur "Will Berkshire Hathaway resume..." @ $0.738 ($100.00)
+[2026-02-12T05:44:10.824Z] [INFO] ✅ WIN  | Will Berkshire Hathaway resume public tr... | YES @ 0.74 | +$33.27
+[2026-02-12T05:44:10.826Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Berkshire Hathaway closes abov..."
+[2026-02-12T05:44:10.825Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Berkshire Hathaway closes abov..."
+[2026-02-12T05:44:11.484Z] [INFO] 🎓 Starting Automated Training Simulation...
+[2026-02-12T05:44:11.485Z] [INFO] [36m%s[0m [INFO] 🎓 Lancement de l'auto-entraînement IA...
+[2026-02-12T05:44:11.485Z] [INFO] 🎓 Lancement de l'auto-entraînement IA...
+[2026-02-12T05:44:11.486Z] [INFO] 🔬 Starting Backtest with Risk Profile: ⚖️ Balanced (MEDIUM)
+[2026-02-12T05:44:11.487Z] [INFO] 📡 Fetching resolved markets...
+[2026-02-12T05:44:11.586Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 502025
+[2026-02-12T05:44:12.572Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: YES sur "Berkshire Hathaway closes abov..." @ $0.738 ($100.00)
+[2026-02-12T05:44:12.572Z] [TRADE] ✅ TRADE OPENED: YES sur "Berkshire Hathaway closes abov..." @ $0.738 ($100.00)
+[2026-02-12T05:44:12.573Z] [INFO] ✅ WIN  | Berkshire Hathaway closes above $600k to... | YES @ 0.74 | +$33.27
+[2026-02-12T05:44:12.574Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Did Keith Gill (RoaringKitty) ..."
+[2026-02-12T05:44:12.573Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Did Keith Gill (RoaringKitty) ..."
+[2026-02-12T05:44:13.177Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 502026
+[2026-02-12T05:44:13.177Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Roaring Kitty dumps GME calls ..."
+[2026-02-12T05:44:13.177Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Roaring Kitty dumps GME calls ..."
+[2026-02-12T05:44:13.444Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Spread: South Florida Bulls (-..."
+[2026-02-12T05:44:13.444Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Spread: South Florida Bulls (-..."
+[2026-02-12T05:44:14.033Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1365406
+[2026-02-12T05:44:14.034Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Ethereum Up or Down - February..."
+[2026-02-12T05:44:14.034Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Ethereum Up or Down - February..."
+[2026-02-12T05:44:14.081Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 502027
+[2026-02-12T05:44:14.082Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Infowars shuttered by Friday?..."
+[2026-02-12T05:44:14.082Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Infowars shuttered by Friday?..."
+[2026-02-12T05:44:14.628Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1362132
+[2026-02-12T05:44:14.810Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 502028
+[2026-02-12T05:44:14.811Z] [INFO] 
+========================================
+[2026-02-12T05:44:14.811Z] [INFO] 🏆 BACKTEST RESULTS
+[2026-02-12T05:44:14.811Z] [INFO] ========================================
+
+[2026-02-12T05:44:14.811Z] [INFO] 📊 BASIC STATS:
+[2026-02-12T05:44:14.812Z] [INFO]    Markets Scanned: 20
+[2026-02-12T05:44:14.812Z] [INFO]    Trades Taken: 8
+[2026-02-12T05:44:14.812Z] [INFO]    Ignored: 12
+[2026-02-12T05:44:14.812Z] [INFO]    Arbitrage Opportunities: 0
+[2026-02-12T05:44:14.813Z] [INFO] 
+[2026-02-12T05:44:14.813Z] [INFO] 💰 PERFORMANCE:
+[2026-02-12T05:44:14.813Z] [INFO]    Wins: 8
+[2026-02-12T05:44:14.813Z] [INFO]    Losses: 0
+[2026-02-12T05:44:14.814Z] [INFO]    Winrate: 100.0%
+[2026-02-12T05:44:14.814Z] [INFO] 
+[2026-02-12T05:44:14.815Z] [INFO] 💵 CAPITAL:
+[2026-02-12T05:44:14.815Z] [INFO]    Initial: $1000.00
+[2026-02-12T05:44:14.815Z] [INFO]    Final: $1266.18
+[2026-02-12T05:44:14.815Z] [INFO]    Total PnL: +$266.18
+[2026-02-12T05:44:14.816Z] [INFO]    ROI: 26.62%
+[2026-02-12T05:44:14.816Z] [INFO] 
+[2026-02-12T05:44:14.816Z] [INFO] 📈 ADVANCED METRICS (Best Practice 2026):
+[2026-02-12T05:44:14.817Z] [INFO]    Sharpe Ratio: 0.00 ⚠️ POOR
+[2026-02-12T05:44:14.817Z] [INFO]    Max Drawdown: 0.00% ✅
+[2026-02-12T05:44:14.817Z] [INFO]    Avg Return/Trade: $33.27
+[2026-02-12T05:44:14.817Z] [INFO]    Std Deviation: $0.00
+[2026-02-12T05:44:14.818Z] [INFO] 
+[2026-02-12T05:44:14.818Z] [INFO] 💸 COSTS (Realistic):
+[2026-02-12T05:44:14.818Z] [INFO]    Slippage: 1.5%
+[2026-02-12T05:44:14.818Z] [INFO]    Polymarket Fees: 2% on profits
+[2026-02-12T05:44:14.818Z] [INFO] 
+[2026-02-12T05:44:14.819Z] [INFO] ========================================
+[2026-02-12T05:44:14.819Z] [INFO] ⚠️ Profitable but high risk (low Sharpe Ratio)
+[2026-02-12T05:44:14.819Z] [INFO] ========================================
+
+[2026-02-12T05:44:16.775Z] [INFO] ✅ Trade saved to Supabase: Ethereum Up or Down - February 11, 12:15AM-12:30AM ET
+[2026-02-12T05:44:16.776Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: YES sur "Ethereum Up or Down - February..." @ $0.788 ($50.00)
+[2026-02-12T05:44:16.775Z] [TRADE] ✅ TRADE OPENED: YES sur "Ethereum Up or Down - February..." @ $0.788 ($50.00)
+[2026-02-12T05:44:16.777Z] [INFO] ✅ WIN  | Ethereum Up or Down - February 11, 12:15AM-12... | YES @ 0.788 | +$12.46
+[2026-02-12T05:44:16.777Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Virginia Cavaliers vs. Florida..."
+[2026-02-12T05:44:16.777Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Virginia Cavaliers vs. Florida..."
+[2026-02-12T05:44:17.432Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1333651
+[2026-02-12T05:44:17.434Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Virginia Tech Hokies vs. Clems..."
+[2026-02-12T05:44:17.433Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Virginia Tech Hokies vs. Clems..."
+[2026-02-12T05:44:18.081Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1364834
+[2026-02-12T05:44:19.673Z] [INFO] ✅ Trade saved to Supabase: Virginia Tech Hokies vs. Clemson Tigers: O/U 138.5
+[2026-02-12T05:44:19.676Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: YES sur "Virginia Tech Hokies vs. Clems..." @ $0.712 ($37.00)
+[2026-02-12T05:44:19.675Z] [TRADE] ✅ TRADE OPENED: YES sur "Virginia Tech Hokies vs. Clems..." @ $0.712 ($37.00)
+[2026-02-12T05:44:19.678Z] [INFO] ✅ WIN  | Virginia Tech Hokies vs. Clemson Tigers: O/U ... | YES @ 0.712 | +$14.09
+[2026-02-12T05:44:19.678Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Spread: Clemson Tigers (-7.5)..."
+[2026-02-12T05:44:19.678Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Spread: Clemson Tigers (-7.5)..."
+[2026-02-12T05:44:20.277Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1367441
+[2026-02-12T05:44:20.278Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Will the US lose jobs in Janua..."
+[2026-02-12T05:44:20.278Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Will the US lose jobs in Janua..."
+[2026-02-12T05:44:20.886Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1144341
+[2026-02-12T05:44:20.887Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Will Celtic FC win on 2026-02-..."
+[2026-02-12T05:44:20.886Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Will Celtic FC win on 2026-02-..."
+[2026-02-12T05:44:21.641Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1291510
+[2026-02-12T05:44:23.308Z] [INFO] ✅ Results saved to Supabase successfully!
+[2026-02-12T05:44:23.325Z] [INFO] [32m%s[0m [SUCCESS] ✅ Auto-Backtest Terminé. ROI Actuel: 26.62%
+[2026-02-12T05:44:23.325Z] [SUCCESS] ✅ Auto-Backtest Terminé. ROI Actuel: 26.62%
+[2026-02-12T05:44:23.435Z] [INFO] ✅ Trade saved to Supabase: Will Celtic FC win on 2026-02-11?
+[2026-02-12T05:44:23.435Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: YES sur "Will Celtic FC win on 2026-02-..." @ $0.716 ($51.00)
+[2026-02-12T05:44:23.435Z] [TRADE] ✅ TRADE OPENED: YES sur "Will Celtic FC win on 2026-02-..." @ $0.716 ($51.00)
+[2026-02-12T05:44:23.436Z] [INFO] ✅ WIN  | Will Celtic FC win on 2026-02-11?... | YES @ 0.716 | +$19.03
+[2026-02-12T05:44:23.437Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Ethereum Up or Down - February..."
+[2026-02-12T05:44:23.437Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Ethereum Up or Down - February..."
+[2026-02-12T05:44:24.098Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1363448
+[2026-02-12T05:44:24.099Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Duke Blue Devils vs. Pittsburg..."
+[2026-02-12T05:44:24.098Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Duke Blue Devils vs. Pittsburg..."
+[2026-02-12T05:44:24.574Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1333647
+[2026-02-12T05:44:24.574Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "North Carolina Tar Heels vs. M..."
+[2026-02-12T05:44:24.574Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "North Carolina Tar Heels vs. M..."
+[2026-02-12T05:44:25.269Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1333657
+[2026-02-12T05:44:25.271Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Games Total: O/U 2.5..."
+[2026-02-12T05:44:25.270Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Games Total: O/U 2.5..."
+[2026-02-12T05:44:26.184Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1364086
+[2026-02-12T05:44:26.185Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Will SSC Bari vs. Spezia Calci..."
+[2026-02-12T05:44:26.185Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Will SSC Bari vs. Spezia Calci..."
+[2026-02-12T05:44:26.647Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1291243
+[2026-02-12T05:44:26.648Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Florida Gators vs. Georgia Bul..."
+[2026-02-12T05:44:26.648Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Florida Gators vs. Georgia Bul..."
+[2026-02-12T05:44:27.183Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1366171
+[2026-02-12T05:44:27.184Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Will the highest temperature i..."
+[2026-02-12T05:44:27.184Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Will the highest temperature i..."
+[2026-02-12T05:44:27.641Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1359148
+[2026-02-12T05:44:27.642Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Alabama Crimson Tide vs. Ole M..."
+[2026-02-12T05:44:27.642Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Alabama Crimson Tide vs. Ole M..."
+[2026-02-12T05:44:28.134Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1364826
+[2026-02-12T05:44:28.135Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Buffalo Bulls vs. Ball State C..."
+[2026-02-12T05:44:28.135Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Buffalo Bulls vs. Ball State C..."
+[2026-02-12T05:44:28.697Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1364875
+[2026-02-12T05:44:28.698Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Mirassol FC vs. Cruzeiro EC: O..."
+[2026-02-12T05:44:28.698Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Mirassol FC vs. Cruzeiro EC: O..."
+[2026-02-12T05:44:29.323Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1292452
+[2026-02-12T05:44:29.329Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Oklahoma State Cowboys vs. Ari..."
+[2026-02-12T05:44:29.325Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Oklahoma State Cowboys vs. Ari..."
+[2026-02-12T05:44:30.015Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1333668
+[2026-02-12T05:44:30.016Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Will the US add between 25k an..."
+[2026-02-12T05:44:30.016Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Will the US add between 25k an..."
+[2026-02-12T05:44:30.830Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1144343
+[2026-02-12T05:44:30.831Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Ethereum Up or Down - February..."
+[2026-02-12T05:44:30.830Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Ethereum Up or Down - February..."
+[2026-02-12T05:44:31.296Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1362376
+[2026-02-12T05:44:31.297Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Oklahoma State Cowboys vs. Ari..."
+[2026-02-12T05:44:31.297Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Oklahoma State Cowboys vs. Ari..."
+[2026-02-12T05:44:31.921Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1364392
+[2026-02-12T05:44:31.924Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Will the price of Solana be be..."
+[2026-02-12T05:44:31.923Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Will the price of Solana be be..."
+[2026-02-12T05:44:32.458Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1334265
+[2026-02-12T05:44:32.459Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Spread: Buffalo Bulls (-1.5)..."
+[2026-02-12T05:44:32.459Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Spread: Buffalo Bulls (-1.5)..."
+[2026-02-12T05:44:33.092Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1364870
+[2026-02-12T05:44:33.093Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "EC Vitória vs. CR Flamengo: O/..."
+[2026-02-12T05:44:33.093Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "EC Vitória vs. CR Flamengo: O/..."
+[2026-02-12T05:44:33.556Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1282287
+[2026-02-12T05:44:33.558Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Games Total: O/U 2.5..."
+[2026-02-12T05:44:33.557Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Games Total: O/U 2.5..."
+[2026-02-12T05:44:34.183Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1357154
+[2026-02-12T05:44:34.184Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "EC Vitória vs. CR Flamengo: O/..."
+[2026-02-12T05:44:34.184Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "EC Vitória vs. CR Flamengo: O/..."
+[2026-02-12T05:44:34.726Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1282290
+[2026-02-12T05:44:34.727Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Map Handicap: K27 (-1.5) vs Jo..."
+[2026-02-12T05:44:34.727Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Map Handicap: K27 (-1.5) vs Jo..."
+[2026-02-12T05:44:35.265Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1364662
+[2026-02-12T05:44:35.266Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Spread: Virginia Cavaliers (-7..."
+[2026-02-12T05:44:35.266Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Spread: Virginia Cavaliers (-7..."
+[2026-02-12T05:44:35.764Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1362988
+[2026-02-12T05:44:35.764Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Will the price of Solana be be..."
+[2026-02-12T05:44:35.764Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Will the price of Solana be be..."
+[2026-02-12T05:44:36.238Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1334256
+[2026-02-12T05:44:36.239Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Spread: North Carolina Tar Hee..."
+[2026-02-12T05:44:36.239Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Spread: North Carolina Tar Hee..."
+[2026-02-12T05:44:36.710Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1362990
+[2026-02-12T05:44:37.232Z] [INFO] AI Adaptation: Mode=NEUTRAL (ROI: 4.56%)
+[2026-02-12T05:44:37.233Z] [INFO] [32m%s[0m [SUCCESS] 🧠 AI Adaptation: Mode=NEUTRAL (ROI: 4.56%)
+[2026-02-12T05:44:37.233Z] [SUCCESS] 🧠 AI Adaptation: Mode=NEUTRAL (ROI: 4.56%)
+[2026-02-12T05:44:38.368Z] [ERROR] Failed to save AUTO backtest run: {"code":"PGRST204","details":null,"hint":null,"message":"Could not find the 'markets_tested' column of 'simulation_runs' in the schema cache"}
+[2026-02-12T05:44:41.435Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 3 active trades...
+[2026-02-12T05:44:41.434Z] [INFO] 🔄 Updating prices for 3 active trades...
+[2026-02-12T05:44:43.178Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:44:43.177Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:44:43.832Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:44:43.832Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:44:44.034Z] [INFO] [36m%s[0m [INFO] ✅ Updated 1/3 trade prices
+[2026-02-12T05:44:44.033Z] [INFO] ✅ Updated 1/3 trade prices
+[2026-02-12T05:45:03.023Z] [INFO] 🔍 Checking 3 active trades...
+[2026-02-12T05:45:04.726Z] [INFO] 🧙 Wizards Detected: 3
+[2026-02-12T05:45:08.802Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Will Elon cut the budget by at..."
+[2026-02-12T05:45:08.802Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Will Elon cut the budget by at..."
+[2026-02-12T05:45:09.215Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 521963
+[2026-02-12T05:45:09.595Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Rojas guilty in Texas illegal ..."
+[2026-02-12T05:45:09.595Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Rojas guilty in Texas illegal ..."
+[2026-02-12T05:45:10.016Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 528788
+[2026-02-12T05:45:10.425Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Bitcoin Up or Down - February ..."
+[2026-02-12T05:45:10.425Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Bitcoin Up or Down - February ..."
+[2026-02-12T05:45:10.876Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368423
+[2026-02-12T05:45:10.877Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Solana Up or Down - February 1..."
+[2026-02-12T05:45:10.876Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Solana Up or Down - February 1..."
+[2026-02-12T05:45:11.363Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368426
+[2026-02-12T05:45:11.364Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "XRP Up or Down - February 13, ..."
+[2026-02-12T05:45:11.364Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "XRP Up or Down - February 13, ..."
+[2026-02-12T05:45:11.744Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368425
+[2026-02-12T05:45:11.745Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Ethereum Up or Down - February..."
+[2026-02-12T05:45:11.745Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Ethereum Up or Down - February..."
+[2026-02-12T05:45:12.225Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368424
+[2026-02-12T05:45:12.226Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Bitcoin Up or Down - February ..."
+[2026-02-12T05:45:12.226Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Bitcoin Up or Down - February ..."
+[2026-02-12T05:45:12.735Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368422
+[2026-02-12T05:45:12.736Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Will Ethereum reach $5,000 in ..."
+[2026-02-12T05:45:12.736Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Will Ethereum reach $5,000 in ..."
+[2026-02-12T05:45:13.169Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1303353
+[2026-02-12T05:45:13.170Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Will Elon cut the budget by at..."
+[2026-02-12T05:45:13.170Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Will Elon cut the budget by at..."
+[2026-02-12T05:45:13.512Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 521964
+[2026-02-12T05:45:13.900Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Will GTA 6 cost $100+?..."
+[2026-02-12T05:45:13.899Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Will GTA 6 cost $100+?..."
+[2026-02-12T05:45:14.290Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 527079
+[2026-02-12T05:45:14.291Z] [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T05:45:14.292Z] [INFO] [36m%s[0m [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T05:45:14.291Z] [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T05:45:41.435Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 3 active trades...
+[2026-02-12T05:45:41.434Z] [INFO] 🔄 Updating prices for 3 active trades...
+[2026-02-12T05:45:43.118Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:45:43.117Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:45:43.761Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:45:43.760Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:45:43.963Z] [INFO] [36m%s[0m [INFO] ✅ Updated 1/3 trade prices
+[2026-02-12T05:45:43.962Z] [INFO] ✅ Updated 1/3 trade prices
+[2026-02-12T05:46:18.980Z] [INFO] 🔍 Checking 3 active trades...
+[2026-02-12T05:46:20.673Z] [INFO] 🧙 Wizards Detected: 3
+[2026-02-12T05:46:26.030Z] [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T05:46:26.032Z] [INFO] [36m%s[0m [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T05:46:26.031Z] [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T05:46:41.435Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 3 active trades...
+[2026-02-12T05:46:41.434Z] [INFO] 🔄 Updating prices for 3 active trades...
+[2026-02-12T05:46:42.950Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:46:42.950Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:46:43.612Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:46:43.612Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:46:43.814Z] [INFO] [36m%s[0m [INFO] ✅ Updated 1/3 trade prices
+[2026-02-12T05:46:43.814Z] [INFO] ✅ Updated 1/3 trade prices
+[2026-02-12T05:47:31.961Z] [INFO] 🔍 Checking 3 active trades...
+[2026-02-12T05:47:33.440Z] [INFO] 🧙 Wizards Detected: 3
+[2026-02-12T05:47:38.687Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Bitcoin Up or Down - February ..."
+[2026-02-12T05:47:38.687Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Bitcoin Up or Down - February ..."
+[2026-02-12T05:47:39.930Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368427
+[2026-02-12T05:47:40.330Z] [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T05:47:40.331Z] [INFO] [36m%s[0m [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T05:47:40.331Z] [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T05:47:41.434Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 3 active trades...
+[2026-02-12T05:47:41.434Z] [INFO] 🔄 Updating prices for 3 active trades...
+[2026-02-12T05:47:42.575Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:47:42.575Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:47:43.238Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:47:43.237Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:47:43.440Z] [INFO] [36m%s[0m [INFO] ✅ Updated 1/3 trade prices
+[2026-02-12T05:47:43.439Z] [INFO] ✅ Updated 1/3 trade prices
+[2026-02-12T05:48:41.434Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 3 active trades...
+[2026-02-12T05:48:41.434Z] [INFO] 🔄 Updating prices for 3 active trades...
+[2026-02-12T05:48:43.109Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:48:43.109Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:48:43.826Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:48:43.826Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:48:44.027Z] [INFO] [36m%s[0m [INFO] ✅ Updated 1/3 trade prices
+[2026-02-12T05:48:44.027Z] [INFO] ✅ Updated 1/3 trade prices
+[2026-02-12T05:48:45.959Z] [INFO] 🔍 Checking 3 active trades...
+[2026-02-12T05:48:47.075Z] [INFO] 🧙 Wizards Detected: 3
+[2026-02-12T05:48:52.819Z] [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T05:48:52.824Z] [INFO] [36m%s[0m [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T05:48:52.823Z] [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T05:49:41.435Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 3 active trades...
+[2026-02-12T05:49:41.435Z] [INFO] 🔄 Updating prices for 3 active trades...
+[2026-02-12T05:49:43.229Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:49:43.229Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:49:43.948Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:49:43.948Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:49:44.152Z] [INFO] [36m%s[0m [INFO] ✅ Updated 1/3 trade prices
+[2026-02-12T05:49:44.152Z] [INFO] ✅ Updated 1/3 trade prices
+[2026-02-12T05:49:58.225Z] [INFO] 🔍 Checking 3 active trades...
+[2026-02-12T05:49:59.921Z] [INFO] 🧙 Wizards Detected: 3
+[2026-02-12T05:50:05.645Z] [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T05:50:05.646Z] [INFO] [36m%s[0m [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T05:50:05.646Z] [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T05:50:41.436Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 3 active trades...
+[2026-02-12T05:50:41.435Z] [INFO] 🔄 Updating prices for 3 active trades...
+[2026-02-12T05:50:43.112Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:50:43.112Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:50:43.811Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:50:43.811Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:50:44.014Z] [INFO] [36m%s[0m [INFO] ✅ Updated 1/3 trade prices
+[2026-02-12T05:50:44.014Z] [INFO] ✅ Updated 1/3 trade prices
+[2026-02-12T05:51:11.711Z] [INFO] 🔍 Checking 3 active trades...
+[2026-02-12T05:51:13.329Z] [INFO] 🧙 Wizards Detected: 3
+[2026-02-12T05:51:18.447Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Bitcoin Up or Down - February ..."
+[2026-02-12T05:51:18.447Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Bitcoin Up or Down - February ..."
+[2026-02-12T05:51:19.634Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368428
+[2026-02-12T05:51:20.008Z] [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T05:51:20.013Z] [INFO] [36m%s[0m [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T05:51:20.012Z] [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T05:51:41.436Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 3 active trades...
+[2026-02-12T05:51:41.435Z] [INFO] 🔄 Updating prices for 3 active trades...
+[2026-02-12T05:51:43.098Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:51:43.097Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:51:43.757Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:51:43.756Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:51:43.960Z] [INFO] [36m%s[0m [INFO] ✅ Updated 1/3 trade prices
+[2026-02-12T05:51:43.959Z] [INFO] ✅ Updated 1/3 trade prices
+[2026-02-12T05:52:25.053Z] [INFO] 🔍 Checking 3 active trades...
+[2026-02-12T05:52:26.676Z] [INFO] 🧙 Wizards Detected: 3
+[2026-02-12T05:52:31.900Z] [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T05:52:31.901Z] [INFO] [36m%s[0m [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T05:52:31.901Z] [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T05:52:41.437Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 3 active trades...
+[2026-02-12T05:52:41.437Z] [INFO] 🔄 Updating prices for 3 active trades...
+[2026-02-12T05:52:43.598Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:52:43.598Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:52:44.275Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:52:44.275Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:52:44.477Z] [INFO] [36m%s[0m [INFO] ✅ Updated 1/3 trade prices
+[2026-02-12T05:52:44.477Z] [INFO] ✅ Updated 1/3 trade prices
+[2026-02-12T05:53:36.885Z] [INFO] 🔍 Checking 3 active trades...
+[2026-02-12T05:53:38.393Z] [INFO] 🧙 Wizards Detected: 3
+[2026-02-12T05:53:41.439Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 3 active trades...
+[2026-02-12T05:53:41.438Z] [INFO] 🔄 Updating prices for 3 active trades...
+[2026-02-12T05:53:42.478Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:53:42.478Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:53:43.143Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:53:43.143Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:53:43.345Z] [INFO] [36m%s[0m [INFO] ✅ Updated 1/3 trade prices
+[2026-02-12T05:53:43.345Z] [INFO] ✅ Updated 1/3 trade prices
+[2026-02-12T05:53:43.353Z] [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T05:53:43.354Z] [INFO] [36m%s[0m [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T05:53:43.354Z] [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T05:54:41.440Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 3 active trades...
+[2026-02-12T05:54:41.440Z] [INFO] 🔄 Updating prices for 3 active trades...
+[2026-02-12T05:54:43.313Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:54:43.313Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:54:43.961Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:54:43.960Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:54:44.162Z] [INFO] [36m%s[0m [INFO] ✅ Updated 1/3 trade prices
+[2026-02-12T05:54:44.162Z] [INFO] ✅ Updated 1/3 trade prices
+[2026-02-12T05:54:48.309Z] [INFO] 🔍 Checking 3 active trades...
+[2026-02-12T05:54:49.355Z] [INFO] 🧙 Wizards Detected: 3
+[2026-02-12T05:54:51.472Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1362023
+[2026-02-12T05:54:52.712Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1303355
+[2026-02-12T05:54:54.095Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1273916
+[2026-02-12T05:54:55.338Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 896779
+[2026-02-12T05:54:57.239Z] [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T05:54:57.240Z] [INFO] [36m%s[0m [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T05:54:57.240Z] [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T05:55:41.441Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 3 active trades...
+[2026-02-12T05:55:41.440Z] [INFO] 🔄 Updating prices for 3 active trades...
+[2026-02-12T05:55:43.213Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:55:43.213Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:55:43.883Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:55:43.882Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:55:44.085Z] [INFO] [36m%s[0m [INFO] ✅ Updated 1/3 trade prices
+[2026-02-12T05:55:44.085Z] [INFO] ✅ Updated 1/3 trade prices
+[2026-02-12T05:56:02.727Z] [INFO] 🔍 Checking 3 active trades...
+[2026-02-12T05:56:04.633Z] [INFO] 🧙 Wizards Detected: 3
+[2026-02-12T05:56:09.069Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 521963
+[2026-02-12T05:56:09.909Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 528788
+[2026-02-12T05:56:10.918Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368423
+[2026-02-12T05:56:11.407Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368426
+[2026-02-12T05:56:11.857Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368425
+[2026-02-12T05:56:12.067Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1303353
+[2026-02-12T05:56:12.476Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 521964
+[2026-02-12T05:56:13.107Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 527079
+[2026-02-12T05:56:13.108Z] [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T05:56:13.109Z] [INFO] [36m%s[0m [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T05:56:13.109Z] [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T05:56:41.441Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 3 active trades...
+[2026-02-12T05:56:41.441Z] [INFO] 🔄 Updating prices for 3 active trades...
+[2026-02-12T05:56:43.164Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:56:43.164Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:56:43.830Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:56:43.829Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:56:44.032Z] [INFO] [36m%s[0m [INFO] ✅ Updated 1/3 trade prices
+[2026-02-12T05:56:44.032Z] [INFO] ✅ Updated 1/3 trade prices
+[2026-02-12T05:57:18.241Z] [INFO] 🔍 Checking 3 active trades...
+[2026-02-12T05:57:19.738Z] [INFO] 🧙 Wizards Detected: 3
+[2026-02-12T05:57:24.899Z] [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T05:57:24.901Z] [INFO] [36m%s[0m [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T05:57:24.900Z] [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T05:57:41.443Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 3 active trades...
+[2026-02-12T05:57:41.442Z] [INFO] 🔄 Updating prices for 3 active trades...
+[2026-02-12T05:57:42.973Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:57:42.973Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:57:43.631Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:57:43.630Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:57:43.833Z] [INFO] [36m%s[0m [INFO] ✅ Updated 1/3 trade prices
+[2026-02-12T05:57:43.833Z] [INFO] ✅ Updated 1/3 trade prices
+[2026-02-12T05:58:30.747Z] [INFO] 🔍 Checking 3 active trades...
+[2026-02-12T05:58:32.187Z] [INFO] 🧙 Wizards Detected: 3
+[2026-02-12T05:58:37.452Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "XRP Up or Down - February 13, ..."
+[2026-02-12T05:58:37.452Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "XRP Up or Down - February 13, ..."
+[2026-02-12T05:58:38.507Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368436
+[2026-02-12T05:58:38.508Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Bitcoin Up or Down - February ..."
+[2026-02-12T05:58:38.508Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Bitcoin Up or Down - February ..."
+[2026-02-12T05:58:39.006Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368437
+[2026-02-12T05:58:39.007Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Solana Up or Down - February 1..."
+[2026-02-12T05:58:39.007Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Solana Up or Down - February 1..."
+[2026-02-12T05:58:39.419Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368435
+[2026-02-12T05:58:39.421Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Ethereum Up or Down - February..."
+[2026-02-12T05:58:39.420Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Ethereum Up or Down - February..."
+[2026-02-12T05:58:39.872Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368434
+[2026-02-12T05:58:39.873Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Bitcoin Up or Down - February ..."
+[2026-02-12T05:58:39.873Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Bitcoin Up or Down - February ..."
+[2026-02-12T05:58:40.553Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368433
+[2026-02-12T05:58:40.957Z] [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T05:58:40.958Z] [INFO] [36m%s[0m [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T05:58:40.958Z] [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T05:58:41.444Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 3 active trades...
+[2026-02-12T05:58:41.444Z] [INFO] 🔄 Updating prices for 3 active trades...
+[2026-02-12T05:58:42.513Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:58:42.513Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:58:43.181Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:58:43.180Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:58:43.384Z] [INFO] [36m%s[0m [INFO] ✅ Updated 1/3 trade prices
+[2026-02-12T05:58:43.384Z] [INFO] ✅ Updated 1/3 trade prices
+[2026-02-12T05:59:41.446Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 3 active trades...
+[2026-02-12T05:59:41.445Z] [INFO] 🔄 Updating prices for 3 active trades...
+[2026-02-12T05:59:43.359Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:59:43.359Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:59:44.022Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:59:44.022Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T05:59:44.225Z] [INFO] [36m%s[0m [INFO] ✅ Updated 1/3 trade prices
+[2026-02-12T05:59:44.224Z] [INFO] ✅ Updated 1/3 trade prices
+[2026-02-12T05:59:46.865Z] [INFO] 🔍 Checking 3 active trades...
+[2026-02-12T05:59:47.929Z] [INFO] 🧙 Wizards Detected: 3
+[2026-02-12T05:59:54.236Z] [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T05:59:54.238Z] [INFO] [36m%s[0m [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T05:59:54.238Z] [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:00:41.446Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 3 active trades...
+[2026-02-12T06:00:41.446Z] [INFO] 🔄 Updating prices for 3 active trades...
+[2026-02-12T06:00:43.170Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:00:43.169Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:00:43.846Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:00:43.846Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:00:44.048Z] [INFO] [36m%s[0m [INFO] ✅ Updated 1/3 trade prices
+[2026-02-12T06:00:44.048Z] [INFO] ✅ Updated 1/3 trade prices
+[2026-02-12T06:01:03.859Z] [INFO] 🔍 Checking 3 active trades...
+[2026-02-12T06:01:05.972Z] [INFO] 🧙 Wizards Detected: 3
+[2026-02-12T06:01:12.063Z] [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:01:12.064Z] [INFO] [36m%s[0m [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:01:12.064Z] [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:01:41.447Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 3 active trades...
+[2026-02-12T06:01:41.446Z] [INFO] 🔄 Updating prices for 3 active trades...
+[2026-02-12T06:01:42.918Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:01:42.918Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:01:44.032Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:01:44.032Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:01:44.234Z] [INFO] [36m%s[0m [INFO] ✅ Updated 1/3 trade prices
+[2026-02-12T06:01:44.234Z] [INFO] ✅ Updated 1/3 trade prices
+[2026-02-12T06:02:17.895Z] [INFO] 🔍 Checking 3 active trades...
+[2026-02-12T06:02:19.968Z] [INFO] 🧙 Wizards Detected: 3
+[2026-02-12T06:02:25.477Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Bitcoin Up or Down - February ..."
+[2026-02-12T06:02:25.477Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Bitcoin Up or Down - February ..."
+[2026-02-12T06:02:26.808Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368438
+[2026-02-12T06:02:27.257Z] [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:02:27.258Z] [INFO] [36m%s[0m [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:02:27.258Z] [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:02:41.448Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 3 active trades...
+[2026-02-12T06:02:41.448Z] [INFO] 🔄 Updating prices for 3 active trades...
+[2026-02-12T06:02:43.342Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:02:43.341Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:02:44.041Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:02:44.041Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:02:44.244Z] [INFO] [36m%s[0m [INFO] ✅ Updated 1/3 trade prices
+[2026-02-12T06:02:44.243Z] [INFO] ✅ Updated 1/3 trade prices
+[2026-02-12T06:03:32.386Z] [INFO] 🔍 Checking 3 active trades...
+[2026-02-12T06:03:34.239Z] [INFO] 🧙 Wizards Detected: 3
+[2026-02-12T06:03:39.422Z] [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:03:39.423Z] [INFO] [36m%s[0m [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:03:39.423Z] [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:03:41.450Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 3 active trades...
+[2026-02-12T06:03:41.449Z] [INFO] 🔄 Updating prices for 3 active trades...
+[2026-02-12T06:03:42.987Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:03:42.987Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:03:43.648Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:03:43.648Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:03:43.852Z] [INFO] [36m%s[0m [INFO] ✅ Updated 1/3 trade prices
+[2026-02-12T06:03:43.851Z] [INFO] ✅ Updated 1/3 trade prices
+[2026-02-12T06:04:41.450Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 3 active trades...
+[2026-02-12T06:04:41.450Z] [INFO] 🔄 Updating prices for 3 active trades...
+[2026-02-12T06:04:43.577Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:04:43.577Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:04:44.242Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:04:44.242Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:04:44.444Z] [INFO] [36m%s[0m [INFO] ✅ Updated 1/3 trade prices
+[2026-02-12T06:04:44.444Z] [INFO] ✅ Updated 1/3 trade prices
+[2026-02-12T06:04:44.497Z] [INFO] 🔍 Checking 3 active trades...
+[2026-02-12T06:04:46.004Z] [INFO] 🧙 Wizards Detected: 3
+[2026-02-12T06:04:51.641Z] [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:04:51.642Z] [INFO] [36m%s[0m [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:04:51.642Z] [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:05:41.450Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 3 active trades...
+[2026-02-12T06:05:41.450Z] [INFO] 🔄 Updating prices for 3 active trades...
+[2026-02-12T06:05:43.336Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:05:43.335Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:05:44.027Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:05:44.027Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:05:44.229Z] [INFO] [36m%s[0m [INFO] ✅ Updated 1/3 trade prices
+[2026-02-12T06:05:44.229Z] [INFO] ✅ Updated 1/3 trade prices
+[2026-02-12T06:05:56.940Z] [INFO] 🔍 Checking 3 active trades...
+[2026-02-12T06:05:58.477Z] [INFO] 🧙 Wizards Detected: 3
+[2026-02-12T06:06:00.998Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1362023
+[2026-02-12T06:06:02.338Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1303355
+[2026-02-12T06:06:03.563Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1273916
+[2026-02-12T06:06:04.600Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 896779
+[2026-02-12T06:06:06.207Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Bitcoin Up or Down - February ..."
+[2026-02-12T06:06:06.207Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Bitcoin Up or Down - February ..."
+[2026-02-12T06:06:06.950Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368498
+[2026-02-12T06:06:06.950Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "XRP Up or Down - February 14, ..."
+[2026-02-12T06:06:06.950Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "XRP Up or Down - February 14, ..."
+[2026-02-12T06:06:07.366Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368474
+[2026-02-12T06:06:07.367Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Solana Up or Down - February 1..."
+[2026-02-12T06:06:07.367Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Solana Up or Down - February 1..."
+[2026-02-12T06:06:07.770Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368465
+[2026-02-12T06:06:07.771Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "UC Davis Aggies vs. California..."
+[2026-02-12T06:06:07.771Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "UC Davis Aggies vs. California..."
+[2026-02-12T06:06:08.716Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368496
+[2026-02-12T06:06:08.717Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Spread: Southern Miss Golden E..."
+[2026-02-12T06:06:08.717Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Spread: Southern Miss Golden E..."
+[2026-02-12T06:06:09.405Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368497
+[2026-02-12T06:06:09.819Z] [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:06:09.820Z] [INFO] [36m%s[0m [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:06:09.820Z] [INFO] 🔍 Scanned 15 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:06:41.451Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 3 active trades...
+[2026-02-12T06:06:41.451Z] [INFO] 🔄 Updating prices for 3 active trades...
+[2026-02-12T06:06:42.911Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:06:42.910Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:06:43.555Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:06:43.555Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:06:43.759Z] [INFO] [36m%s[0m [INFO] ✅ Updated 1/3 trade prices
+[2026-02-12T06:06:43.759Z] [INFO] ✅ Updated 1/3 trade prices
+[2026-02-12T06:07:14.399Z] [INFO] 🔍 Checking 3 active trades...
+[2026-02-12T06:07:15.816Z] [INFO] 🧙 Wizards Detected: 5
+[2026-02-12T06:07:20.072Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Another US government shutdown..."
+[2026-02-12T06:07:20.072Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Another US government shutdown..."
+[2026-02-12T06:07:20.496Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1308327
+[2026-02-12T06:07:22.509Z] [INFO] ✅ Trade saved to Supabase: Another US government shutdown by February 14?
+[2026-02-12T06:07:22.510Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: YES sur "Another US government shutdown..." @ $0.841 ($47.00)
+[2026-02-12T06:07:22.510Z] [TRADE] ✅ TRADE OPENED: YES sur "Another US government shutdown..." @ $0.841 ($47.00)
+[2026-02-12T06:07:22.510Z] [INFO] [32m%s[0m [SUCCESS] 🚀 [WIZARD] Trade: Another US government shutdown...
+[2026-02-12T06:07:22.510Z] [SUCCESS] 🚀 [WIZARD] Trade: Another US government shutdown...
+[2026-02-12T06:07:41.452Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 4 active trades...
+[2026-02-12T06:07:41.451Z] [INFO] 🔄 Updating prices for 4 active trades...
+[2026-02-12T06:07:43.825Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:07:43.825Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:07:44.574Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:07:44.573Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:07:44.776Z] [INFO] [36m%s[0m [INFO] ✅ Updated 2/4 trade prices
+[2026-02-12T06:07:44.776Z] [INFO] ✅ Updated 2/4 trade prices
+[2026-02-12T06:08:28.476Z] [INFO] 🔍 Checking 4 active trades...
+[2026-02-12T06:08:29.743Z] [INFO] 🧙 Wizards Detected: 5
+[2026-02-12T06:08:33.611Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Trail Blazers vs. Jazz..."
+[2026-02-12T06:08:33.611Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Trail Blazers vs. Jazz..."
+[2026-02-12T06:08:33.840Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1345276
+[2026-02-12T06:08:35.558Z] [INFO] ✅ Trade saved to Supabase: Trail Blazers vs. Jazz
+[2026-02-12T06:08:35.559Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: YES sur "Trail Blazers vs. Jazz..." @ $0.723 ($45.00)
+[2026-02-12T06:08:35.559Z] [TRADE] ✅ TRADE OPENED: YES sur "Trail Blazers vs. Jazz..." @ $0.723 ($45.00)
+[2026-02-12T06:08:35.559Z] [INFO] [32m%s[0m [SUCCESS] 🚀 [WIZARD] Trade: Trail Blazers vs. Jazz...
+[2026-02-12T06:08:35.559Z] [SUCCESS] 🚀 [WIZARD] Trade: Trail Blazers vs. Jazz...
+[2026-02-12T06:08:41.451Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:08:41.451Z] [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:08:44.314Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:08:44.314Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:08:44.959Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:08:44.959Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:08:45.162Z] [INFO] [36m%s[0m [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:08:45.161Z] [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:09:41.350Z] [INFO] 🔍 Checking 5 active trades...
+[2026-02-12T06:09:41.451Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:09:41.451Z] [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:09:42.895Z] [INFO] 🧙 Wizards Detected: 5
+[2026-02-12T06:09:43.805Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:09:43.805Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:09:44.564Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:09:44.564Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:09:44.765Z] [INFO] [36m%s[0m [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:09:44.765Z] [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:09:47.286Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 521963
+[2026-02-12T06:09:48.188Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 528788
+[2026-02-12T06:09:49.094Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1303353
+[2026-02-12T06:09:49.616Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 521964
+[2026-02-12T06:09:50.182Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:09:50.183Z] [INFO] [36m%s[0m [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:09:50.182Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:10:41.453Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:10:41.453Z] [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:10:44.598Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:10:44.597Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:10:45.272Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:10:45.271Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:10:45.475Z] [INFO] [36m%s[0m [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:10:45.474Z] [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:10:56.987Z] [INFO] 🔍 Checking 5 active trades...
+[2026-02-12T06:10:58.738Z] [INFO] 🧙 Wizards Detected: 5
+[2026-02-12T06:11:04.422Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:11:04.425Z] [INFO] [36m%s[0m [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:11:04.424Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:11:41.453Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:11:41.453Z] [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:11:44.515Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:11:44.515Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:11:45.286Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:11:45.285Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:11:45.490Z] [INFO] [36m%s[0m [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:11:45.489Z] [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:12:09.360Z] [INFO] 🔍 Checking 5 active trades...
+[2026-02-12T06:12:11.036Z] [INFO] 🧙 Wizards Detected: 5
+[2026-02-12T06:12:16.119Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:12:16.120Z] [INFO] [36m%s[0m [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:12:16.120Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:12:41.454Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:12:41.454Z] [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:12:44.767Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:12:44.767Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:12:45.426Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:12:45.426Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:12:45.629Z] [INFO] [36m%s[0m [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:12:45.629Z] [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:13:21.959Z] [INFO] 🔍 Checking 5 active trades...
+[2026-02-12T06:13:23.447Z] [INFO] 🧙 Wizards Detected: 5
+[2026-02-12T06:13:28.586Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Solana Up or Down - February 1..."
+[2026-02-12T06:13:28.586Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Solana Up or Down - February 1..."
+[2026-02-12T06:13:29.658Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368502
+[2026-02-12T06:13:29.659Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Bitcoin Up or Down - February ..."
+[2026-02-12T06:13:29.659Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Bitcoin Up or Down - February ..."
+[2026-02-12T06:13:29.878Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "XRP Up or Down - February 13, ..."
+[2026-02-12T06:13:29.878Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "XRP Up or Down - February 13, ..."
+[2026-02-12T06:13:30.673Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368503
+[2026-02-12T06:13:30.673Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Ethereum Up or Down - February..."
+[2026-02-12T06:13:30.673Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Ethereum Up or Down - February..."
+[2026-02-12T06:13:30.885Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Bitcoin Up or Down - February ..."
+[2026-02-12T06:13:30.885Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Bitcoin Up or Down - February ..."
+[2026-02-12T06:13:31.387Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368501
+[2026-02-12T06:13:31.388Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Will Canada win the Men's Ice ..."
+[2026-02-12T06:13:31.387Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Will Canada win the Men's Ice ..."
+[2026-02-12T06:13:31.788Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 897776
+[2026-02-12T06:13:31.789Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:13:31.789Z] [INFO] [36m%s[0m [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:13:31.789Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:13:41.453Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:13:41.453Z] [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:13:44.057Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:13:44.056Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:13:44.789Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:13:44.789Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:13:44.992Z] [INFO] [36m%s[0m [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:13:44.992Z] [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:14:35.140Z] [INFO] [36m%s[0m [INFO] 🌊 LANCEMENT DEEP SCAN (1000+ marchés)...
+[2026-02-12T06:14:35.140Z] [INFO] 🌊 LANCEMENT DEEP SCAN (1000+ marchés)...
+[2026-02-12T06:14:36.978Z] [INFO] 🔍 Checking 5 active trades...
+[2026-02-12T06:14:38.651Z] [INFO] 🧙 Wizards Detected: 5
+[2026-02-12T06:14:41.454Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:14:41.453Z] [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:14:43.704Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:14:43.704Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:14:44.246Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:14:44.247Z] [INFO] [36m%s[0m [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:14:44.247Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:14:44.524Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:14:44.524Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:14:44.725Z] [INFO] [36m%s[0m [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:14:44.725Z] [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:15:41.453Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:15:41.453Z] [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:15:44.292Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:15:44.291Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:15:44.994Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:15:44.994Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:15:45.196Z] [INFO] [36m%s[0m [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:15:45.196Z] [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:15:48.725Z] [INFO] 🔍 Checking 5 active trades...
+[2026-02-12T06:15:49.669Z] [INFO] 🧙 Wizards Detected: 5
+[2026-02-12T06:15:54.013Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:15:54.014Z] [INFO] [36m%s[0m [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:15:54.014Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:16:41.454Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:16:41.453Z] [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:16:45.023Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:16:45.023Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:16:46.082Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:16:46.082Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:16:46.283Z] [INFO] [36m%s[0m [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:16:46.283Z] [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:16:59.600Z] [INFO] 🔍 Checking 5 active trades...
+[2026-02-12T06:17:01.318Z] [INFO] 🧙 Wizards Detected: 5
+[2026-02-12T06:17:03.943Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1362023
+[2026-02-12T06:17:05.306Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1303355
+[2026-02-12T06:17:06.145Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1273916
+[2026-02-12T06:17:06.754Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 896779
+[2026-02-12T06:17:08.237Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Bitcoin Up or Down - February ..."
+[2026-02-12T06:17:08.236Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Bitcoin Up or Down - February ..."
+[2026-02-12T06:17:08.648Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368556
+[2026-02-12T06:17:08.649Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Cason Wallace: Points O/U 12.5..."
+[2026-02-12T06:17:08.649Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Cason Wallace: Points O/U 12.5..."
+[2026-02-12T06:17:09.254Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368509
+[2026-02-12T06:17:09.255Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Naji Marshall: Rebounds O/U 5...."
+[2026-02-12T06:17:09.254Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Naji Marshall: Rebounds O/U 5...."
+[2026-02-12T06:17:09.837Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368550
+[2026-02-12T06:17:09.838Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Max Christie: Points O/U 15.5..."
+[2026-02-12T06:17:09.838Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Max Christie: Points O/U 15.5..."
+[2026-02-12T06:17:10.462Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368544
+[2026-02-12T06:17:10.463Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Isaiah Hartenstein: Assists O/..."
+[2026-02-12T06:17:10.463Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Isaiah Hartenstein: Assists O/..."
+[2026-02-12T06:17:10.914Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368521
+[2026-02-12T06:17:10.915Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:17:10.915Z] [INFO] [36m%s[0m [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:17:10.915Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:17:41.454Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:17:41.453Z] [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:17:44.292Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:17:44.292Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:17:44.942Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:17:44.941Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:17:45.144Z] [INFO] [36m%s[0m [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:17:45.143Z] [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:18:15.367Z] [INFO] 🔍 Checking 5 active trades...
+[2026-02-12T06:18:16.902Z] [INFO] 🧙 Wizards Detected: 5
+[2026-02-12T06:18:21.457Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:18:21.458Z] [INFO] [36m%s[0m [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:18:21.457Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:18:41.454Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:18:41.453Z] [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:18:44.502Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:18:44.502Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:18:45.153Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:18:45.153Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:18:45.355Z] [INFO] [36m%s[0m [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:18:45.354Z] [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:19:27.056Z] [INFO] 🔍 Checking 5 active trades...
+[2026-02-12T06:19:28.562Z] [INFO] 🧙 Wizards Detected: 5
+[2026-02-12T06:19:33.427Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:19:33.428Z] [INFO] [36m%s[0m [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:19:33.427Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:19:41.454Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:19:41.453Z] [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:19:44.389Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:19:44.389Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:19:45.051Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:19:45.050Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:19:45.252Z] [INFO] [36m%s[0m [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:19:45.251Z] [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:20:39.195Z] [INFO] 🔍 Checking 5 active trades...
+[2026-02-12T06:20:40.709Z] [INFO] 🧙 Wizards Detected: 5
+[2026-02-12T06:20:41.454Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:20:41.454Z] [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:20:43.841Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:20:43.841Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:20:44.709Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:20:44.709Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:20:44.912Z] [INFO] [36m%s[0m [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:20:44.911Z] [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:20:45.124Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 521963
+[2026-02-12T06:20:46.146Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 528788
+[2026-02-12T06:20:46.580Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Bitcoin Up or Down - February ..."
+[2026-02-12T06:20:46.580Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Bitcoin Up or Down - February ..."
+[2026-02-12T06:20:47.167Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368557
+[2026-02-12T06:20:48.903Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1303353
+[2026-02-12T06:20:48.904Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:20:48.904Z] [INFO] [36m%s[0m [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:20:48.904Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:21:41.454Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:21:41.453Z] [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:21:44.412Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:21:44.412Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:21:45.071Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:21:45.070Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:21:45.272Z] [INFO] [36m%s[0m [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:21:45.272Z] [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:21:54.450Z] [INFO] 🔍 Checking 5 active trades...
+[2026-02-12T06:21:57.174Z] [INFO] 🧙 Wizards Detected: 5
+[2026-02-12T06:22:05.226Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:22:05.227Z] [INFO] [36m%s[0m [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:22:05.226Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:22:41.454Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:22:41.453Z] [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:22:44.083Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:22:44.083Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:22:44.723Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:22:44.722Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:22:44.924Z] [INFO] [36m%s[0m [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:22:44.923Z] [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:23:10.093Z] [INFO] 🔍 Checking 5 active trades...
+[2026-02-12T06:23:11.834Z] [INFO] 🧙 Wizards Detected: 5
+[2026-02-12T06:23:17.314Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:23:17.316Z] [INFO] [36m%s[0m [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:23:17.315Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:23:41.453Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:23:41.453Z] [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:23:44.580Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:23:44.580Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:23:45.251Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:23:45.251Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:23:45.453Z] [INFO] [36m%s[0m [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:23:45.453Z] [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:24:23.190Z] [INFO] 🔍 Checking 5 active trades...
+[2026-02-12T06:24:24.940Z] [INFO] 🧙 Wizards Detected: 5
+[2026-02-12T06:24:32.195Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 897776
+[2026-02-12T06:24:32.195Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:24:32.196Z] [INFO] [36m%s[0m [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:24:32.196Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:24:41.472Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:24:41.456Z] [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:24:45.107Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:24:45.106Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:24:45.782Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:24:45.781Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:24:45.988Z] [INFO] [36m%s[0m [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:24:45.987Z] [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:25:37.594Z] [INFO] 🔍 Checking 5 active trades...
+[2026-02-12T06:25:39.384Z] [INFO] 🧙 Wizards Detected: 5
+[2026-02-12T06:25:41.454Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:25:41.454Z] [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:25:43.680Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:25:43.680Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:25:44.360Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:25:44.360Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:25:44.561Z] [INFO] [36m%s[0m [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:25:44.561Z] [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:25:45.367Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:25:45.368Z] [INFO] [36m%s[0m [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:25:45.368Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:26:41.455Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:26:41.454Z] [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:26:44.432Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:26:44.431Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:26:45.089Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:26:45.089Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:26:45.292Z] [INFO] [36m%s[0m [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:26:45.292Z] [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:26:50.331Z] [INFO] 🔍 Checking 5 active trades...
+[2026-02-12T06:26:52.075Z] [INFO] 🧙 Wizards Detected: 5
+[2026-02-12T06:26:58.190Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:26:58.191Z] [INFO] [36m%s[0m [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:26:58.190Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:27:41.456Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:27:41.455Z] [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:27:44.690Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:27:44.690Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:27:45.355Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:27:45.354Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:27:45.556Z] [INFO] [36m%s[0m [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:27:45.556Z] [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:28:04.861Z] [INFO] 🔍 Checking 5 active trades...
+[2026-02-12T06:28:06.371Z] [INFO] 🧙 Wizards Detected: 5
+[2026-02-12T06:28:08.738Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1362023
+[2026-02-12T06:28:10.043Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1303355
+[2026-02-12T06:28:10.912Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1273916
+[2026-02-12T06:28:11.816Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 896779
+[2026-02-12T06:28:13.364Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Bitcoin Up or Down - February ..."
+[2026-02-12T06:28:13.363Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Bitcoin Up or Down - February ..."
+[2026-02-12T06:28:13.776Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368561
+[2026-02-12T06:28:13.777Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Ethereum Up or Down - February..."
+[2026-02-12T06:28:13.777Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Ethereum Up or Down - February..."
+[2026-02-12T06:28:14.058Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368562
+[2026-02-12T06:28:14.058Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "XRP Up or Down - February 13, ..."
+[2026-02-12T06:28:14.058Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "XRP Up or Down - February 13, ..."
+[2026-02-12T06:28:14.422Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368559
+[2026-02-12T06:28:14.423Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Bitcoin Up or Down - February ..."
+[2026-02-12T06:28:14.422Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Bitcoin Up or Down - February ..."
+[2026-02-12T06:28:14.738Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368560
+[2026-02-12T06:28:14.739Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Solana Up or Down - February 1..."
+[2026-02-12T06:28:14.738Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Solana Up or Down - February 1..."
+[2026-02-12T06:28:15.095Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368558
+[2026-02-12T06:28:15.095Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:28:15.096Z] [INFO] [36m%s[0m [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:28:15.096Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:28:41.455Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:28:41.455Z] [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:28:44.496Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:28:44.495Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:28:45.166Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:28:45.165Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:28:45.367Z] [INFO] [36m%s[0m [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:28:45.367Z] [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:29:20.218Z] [INFO] 🔍 Checking 5 active trades...
+[2026-02-12T06:29:22.002Z] [INFO] 🧙 Wizards Detected: 5
+[2026-02-12T06:29:27.323Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:29:27.324Z] [INFO] [36m%s[0m [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:29:27.324Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:29:41.456Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:29:41.456Z] [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:29:44.266Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:29:44.265Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:29:44.927Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:29:44.927Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:29:45.128Z] [INFO] [36m%s[0m [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:29:45.128Z] [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:30:32.813Z] [INFO] 🔍 Checking 5 active trades...
+[2026-02-12T06:30:34.674Z] [INFO] 🧙 Wizards Detected: 5
+[2026-02-12T06:30:39.580Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:30:39.581Z] [INFO] [36m%s[0m [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:30:39.581Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:30:41.455Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:30:41.455Z] [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:30:44.218Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:30:44.217Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:30:44.920Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:30:44.920Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:30:45.122Z] [INFO] [36m%s[0m [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:30:45.122Z] [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:31:41.456Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:31:41.455Z] [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:31:44.362Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:31:44.362Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:31:45.071Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:31:45.071Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:31:45.272Z] [INFO] [36m%s[0m [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:31:45.272Z] [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:31:45.824Z] [INFO] 🔍 Checking 5 active trades...
+[2026-02-12T06:31:46.728Z] [INFO] 🧙 Wizards Detected: 5
+[2026-02-12T06:31:51.424Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 521963
+[2026-02-12T06:31:52.020Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 528788
+[2026-02-12T06:31:52.393Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Bitcoin Up or Down - February ..."
+[2026-02-12T06:31:52.393Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Bitcoin Up or Down - February ..."
+[2026-02-12T06:31:52.822Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368563
+[2026-02-12T06:31:53.288Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1303353
+[2026-02-12T06:31:53.289Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:31:53.289Z] [INFO] [36m%s[0m [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:31:53.289Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:32:41.456Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:32:41.455Z] [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:32:44.553Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:32:44.552Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:32:45.377Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:32:45.377Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:32:45.579Z] [INFO] [36m%s[0m [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:32:45.579Z] [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:32:58.894Z] [INFO] 🔍 Checking 5 active trades...
+[2026-02-12T06:33:00.717Z] [INFO] 🧙 Wizards Detected: 5
+[2026-02-12T06:33:05.491Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:33:05.491Z] [INFO] [36m%s[0m [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:33:05.491Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:33:41.455Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:33:41.455Z] [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:33:44.675Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:33:44.674Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:33:45.356Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:33:45.356Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:33:45.557Z] [INFO] [36m%s[0m [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:33:45.557Z] [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:34:11.111Z] [INFO] 🔍 Checking 5 active trades...
+[2026-02-12T06:34:12.632Z] [INFO] 🧙 Wizards Detected: 5
+[2026-02-12T06:34:17.213Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:34:17.214Z] [INFO] [36m%s[0m [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:34:17.214Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:34:41.457Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:34:41.457Z] [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:34:44.210Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:34:44.210Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:34:44.880Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:34:44.879Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:34:45.081Z] [INFO] [36m%s[0m [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:34:45.081Z] [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:35:23.384Z] [INFO] 🔍 Checking 5 active trades...
+[2026-02-12T06:35:25.164Z] [INFO] 🧙 Wizards Detected: 5
+[2026-02-12T06:35:31.447Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 897776
+[2026-02-12T06:35:31.448Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:35:31.448Z] [INFO] [36m%s[0m [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:35:31.448Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:35:41.456Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:35:41.455Z] [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:35:44.391Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:35:44.391Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:35:45.059Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:35:45.058Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:35:45.259Z] [INFO] [36m%s[0m [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:35:45.259Z] [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:36:37.001Z] [INFO] 🔍 Checking 5 active trades...
+[2026-02-12T06:36:38.518Z] [INFO] 🧙 Wizards Detected: 5
+[2026-02-12T06:36:41.456Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:36:41.456Z] [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:36:43.349Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:36:43.350Z] [INFO] [36m%s[0m [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:36:43.350Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:36:43.533Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:36:43.533Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:36:44.182Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:36:44.182Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:36:44.383Z] [INFO] [36m%s[0m [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:36:44.383Z] [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:39:57.466Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:39:57.425Z] [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:40:00.909Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:40:00.909Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:40:01.617Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:40:01.617Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:40:01.818Z] [INFO] [36m%s[0m [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:40:01.818Z] [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:40:02.362Z] [INFO] 🔍 Checking 5 active trades...
+[2026-02-12T06:40:03.383Z] [INFO] 🧙 Wizards Detected: 5
+[2026-02-12T06:40:05.813Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1362023
+[2026-02-12T06:50:03.560Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:50:03.516Z] [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:50:03.868Z] [INFO] ⚠️ Network error: fetch failed. Retrying in 1000ms... (Attempt 1/3)
+[2026-02-12T06:50:06.119Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1303355
+[2026-02-12T06:50:07.270Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:50:07.269Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:50:07.715Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1273916
+[2026-02-12T06:50:07.979Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:50:07.978Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:50:08.180Z] [INFO] [36m%s[0m [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:50:08.180Z] [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:50:08.993Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 896779
+[2026-02-12T06:50:09.799Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 521963
+[2026-02-12T06:50:10.582Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 528788
+[2026-02-12T06:50:10.971Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Solana Up or Down - February 1..."
+[2026-02-12T06:50:10.971Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Solana Up or Down - February 1..."
+[2026-02-12T06:50:11.369Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368571
+[2026-02-12T06:50:11.370Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Ethereum Up or Down - February..."
+[2026-02-12T06:50:11.370Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Ethereum Up or Down - February..."
+[2026-02-12T06:50:11.684Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368574
+[2026-02-12T06:50:11.685Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Bitcoin Up or Down - February ..."
+[2026-02-12T06:50:11.685Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Bitcoin Up or Down - February ..."
+[2026-02-12T06:50:12.063Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368573
+[2026-02-12T06:50:12.064Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Bitcoin Up or Down - February ..."
+[2026-02-12T06:50:12.064Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Bitcoin Up or Down - February ..."
+[2026-02-12T06:50:12.446Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368570
+[2026-02-12T06:50:12.447Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "XRP Up or Down - February 13, ..."
+[2026-02-12T06:50:12.446Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "XRP Up or Down - February 13, ..."
+[2026-02-12T06:50:12.978Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368572
+[2026-02-12T06:50:13.298Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1303353
+[2026-02-12T06:50:13.574Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 897776
+[2026-02-12T06:50:13.575Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:50:13.575Z] [INFO] [36m%s[0m [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:50:13.575Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:51:03.517Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:51:03.517Z] [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:51:06.373Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:51:06.373Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:51:07.089Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:51:07.088Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:51:07.290Z] [INFO] [36m%s[0m [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:51:07.290Z] [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:51:16.859Z] [INFO] [36m%s[0m [INFO] 🌊 LANCEMENT DEEP SCAN (1000+ marchés)...
+[2026-02-12T06:51:16.859Z] [INFO] 🌊 LANCEMENT DEEP SCAN (1000+ marchés)...
+[2026-02-12T06:51:19.601Z] [INFO] 🔍 Checking 5 active trades...
+[2026-02-12T06:51:20.906Z] [INFO] 🧙 Wizards Detected: 5
+[2026-02-12T06:51:23.306Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1362023
+[2026-02-12T06:51:26.750Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Bitcoin Up or Down - February ..."
+[2026-02-12T06:51:26.749Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Bitcoin Up or Down - February ..."
+[2026-02-12T06:51:27.632Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368577
+[2026-02-12T06:51:27.633Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Bitcoin Up or Down - February ..."
+[2026-02-12T06:51:27.633Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Bitcoin Up or Down - February ..."
+[2026-02-12T06:51:28.025Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368576
+[2026-02-12T06:51:28.027Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:51:28.027Z] [INFO] [36m%s[0m [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:51:28.027Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:52:03.518Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:52:03.518Z] [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:52:06.552Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:52:06.551Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:52:07.270Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:52:07.269Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:52:07.472Z] [INFO] [36m%s[0m [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:52:07.472Z] [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:52:33.545Z] [INFO] 🔍 Checking 5 active trades...
+[2026-02-12T06:52:35.210Z] [INFO] 🧙 Wizards Detected: 5
+[2026-02-12T06:52:39.865Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:52:39.866Z] [INFO] [36m%s[0m [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:52:39.866Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:53:03.519Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:53:03.519Z] [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:53:06.282Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:53:06.282Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:53:06.927Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:53:06.927Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:53:07.129Z] [INFO] [36m%s[0m [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:53:07.129Z] [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:53:45.006Z] [INFO] 🔍 Checking 5 active trades...
+[2026-02-12T06:53:46.740Z] [INFO] 🧙 Wizards Detected: 5
+[2026-02-12T06:53:51.755Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:53:51.756Z] [INFO] [36m%s[0m [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:53:51.756Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:54:03.518Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:54:03.518Z] [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:54:06.330Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:54:06.330Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:54:06.983Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:54:06.982Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:54:07.183Z] [INFO] [36m%s[0m [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:54:07.183Z] [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:54:58.172Z] [INFO] 🔍 Checking 5 active trades...
+[2026-02-12T06:54:59.749Z] [INFO] 🧙 Wizards Detected: 5
+[2026-02-12T06:55:03.521Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:55:03.520Z] [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:55:04.594Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "XRP Up or Down - February 13, ..."
+[2026-02-12T06:55:04.594Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "XRP Up or Down - February 13, ..."
+[2026-02-12T06:55:05.924Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368579
+[2026-02-12T06:55:05.925Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Ethereum Up or Down - February..."
+[2026-02-12T06:55:05.925Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Ethereum Up or Down - February..."
+[2026-02-12T06:55:06.356Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:55:06.356Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:55:06.591Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368582
+[2026-02-12T06:55:06.592Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Bitcoin Up or Down - February ..."
+[2026-02-12T06:55:06.592Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Bitcoin Up or Down - February ..."
+[2026-02-12T06:55:07.056Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:55:07.056Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:55:07.259Z] [INFO] [36m%s[0m [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:55:07.259Z] [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:55:07.326Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368580
+[2026-02-12T06:55:07.327Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Bitcoin Up or Down - February ..."
+[2026-02-12T06:55:07.327Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Bitcoin Up or Down - February ..."
+[2026-02-12T06:55:07.897Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368581
+[2026-02-12T06:55:07.898Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Solana Up or Down - February 1..."
+[2026-02-12T06:55:07.898Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Solana Up or Down - February 1..."
+[2026-02-12T06:55:08.483Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368578
+[2026-02-12T06:55:08.490Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:55:08.505Z] [INFO] [36m%s[0m [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:55:08.496Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:56:03.521Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:56:03.520Z] [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:56:06.219Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:56:06.218Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:56:06.871Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:56:06.871Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:56:07.073Z] [INFO] [36m%s[0m [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:56:07.072Z] [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:56:12.654Z] [INFO] 🔍 Checking 5 active trades...
+[2026-02-12T06:56:14.925Z] [INFO] 🧙 Wizards Detected: 5
+[2026-02-12T06:56:20.000Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:56:20.001Z] [INFO] [36m%s[0m [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:56:20.001Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:57:03.521Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:57:03.521Z] [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:57:06.178Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:57:06.178Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:57:06.888Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:57:06.888Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:57:07.091Z] [INFO] [36m%s[0m [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:57:07.090Z] [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:57:25.035Z] [INFO] 🔍 Checking 5 active trades...
+[2026-02-12T06:57:26.711Z] [INFO] 🧙 Wizards Detected: 5
+[2026-02-12T06:57:31.831Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:57:31.831Z] [INFO] [36m%s[0m [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:57:31.831Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T06:58:03.520Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:58:03.520Z] [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T06:58:06.389Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:58:06.389Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:58:07.052Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:58:07.052Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T06:58:07.253Z] [INFO] [36m%s[0m [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T06:58:07.253Z] [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T07:09:56.118Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T07:09:56.093Z] [INFO] 🔄 Updating prices for 5 active trades...
+[2026-02-12T07:10:04.560Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T07:10:04.560Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T07:10:05.132Z] [INFO] 🔍 Checking 5 active trades...
+[2026-02-12T07:10:05.264Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T07:10:05.264Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T07:10:05.468Z] [INFO] [36m%s[0m [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T07:10:05.468Z] [INFO] ✅ Updated 3/5 trade prices
+[2026-02-12T07:10:06.321Z] [INFO] 🧙 Wizards Detected: 5
+[2026-02-12T07:10:08.477Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1362023
+[2026-02-12T07:10:09.882Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1303355
+[2026-02-12T07:10:10.941Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1273916
+[2026-02-12T07:10:12.077Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 896779
+[2026-02-12T07:10:12.931Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 521963
+[2026-02-12T07:10:15.845Z] [INFO] ✅ Trade saved to Supabase: Will Elon cut the budget by at least 10% in 2025?
+[2026-02-12T07:10:15.847Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: YES sur "Will Elon cut the budget by at..." @ $0.062 ($32.00)
+[2026-02-12T07:10:15.846Z] [TRADE] ✅ TRADE OPENED: YES sur "Will Elon cut the budget by at..." @ $0.062 ($32.00)
+[2026-02-12T07:10:15.847Z] [INFO] [32m%s[0m [SUCCESS] 🚀 [WIZARD] Trade: Will Elon cut the budget by at...
+[2026-02-12T07:10:15.847Z] [SUCCESS] 🚀 [WIZARD] Trade: Will Elon cut the budget by at...
+[2026-02-12T07:10:56.094Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 6 active trades...
+[2026-02-12T07:10:56.093Z] [INFO] 🔄 Updating prices for 6 active trades...
+[2026-02-12T07:10:58.533Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T07:10:58.533Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T07:10:59.252Z] [INFO] [33m%s[0m [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T07:10:59.252Z] [WARNING] ⚠️ Failed to fetch price for market test-fallback-market: 422
+[2026-02-12T07:10:59.455Z] [INFO] [36m%s[0m [INFO] ✅ Updated 4/6 trade prices
+[2026-02-12T07:10:59.454Z] [INFO] ✅ Updated 4/6 trade prices
+[2026-02-12T07:11:22.139Z] [INFO] 🔍 Checking 6 active trades...
+[2026-02-12T07:11:23.805Z] [INFO] 🧙 Wizards Detected: 5
+[2026-02-12T07:11:29.489Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 528788
+[2026-02-12T07:11:29.875Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Ethereum Up or Down - February..."
+[2026-02-12T07:11:29.875Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Ethereum Up or Down - February..."
+[2026-02-12T07:11:30.315Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368609
+[2026-02-12T07:11:30.315Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Bitcoin Up or Down - February ..."
+[2026-02-12T07:11:30.315Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Bitcoin Up or Down - February ..."
+[2026-02-12T07:11:31.083Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368607
+[2026-02-12T07:11:31.085Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Solana Up or Down - February 1..."
+[2026-02-12T07:11:31.084Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Solana Up or Down - February 1..."
+[2026-02-12T07:11:31.532Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368606
+[2026-02-12T07:11:31.534Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "XRP Up or Down - February 13, ..."
+[2026-02-12T07:11:31.534Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "XRP Up or Down - February 13, ..."
+[2026-02-12T07:11:32.031Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368608
+[2026-02-12T07:11:32.038Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Bitcoin Up or Down - February ..."
+[2026-02-12T07:11:32.035Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Bitcoin Up or Down - February ..."
+[2026-02-12T07:11:32.585Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1368605
+[2026-02-12T07:11:32.896Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 1303353
+[2026-02-12T07:11:33.383Z] [INFO] [RECOVERY-SILENT] Still no valid IDs for: 897776
+[2026-02-12T07:11:33.384Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T07:11:33.384Z] [INFO] [36m%s[0m [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile
+[2026-02-12T07:11:33.384Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Penny stocks not allowed in this profile

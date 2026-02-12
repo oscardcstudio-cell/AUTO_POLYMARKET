@@ -391,6 +391,17 @@
                 justify-content: center;
             }
         }
+
+        .market-link {
+            color: #60a5fa;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .market-link:hover {
+            color: #93c5fd;
+            text-decoration: underline;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
@@ -736,8 +747,11 @@
             <!-- Stats Grid -->
             <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-label">Total Portfolio</div>
-                    <div class="stat-value" id="totalCapital">$0.00</div>
+                    <div class="stat-label">Total Profit (Equity)</div>
+                    <div class="stat-value" id="totalProfit">$0.00</div>
+                    <div style="font-size: 0.8em; color: #94a3b8; margin-top: 5px;">
+                        Incl. Trades Ouverts: <span id="unrealizedPnL">$0.00</span>
+                    </div>
                     <div style="font-size: 0.8em; color: #64748b; margin-top: 10px; font-weight: 600;">
                         ROI: <span id="profitPercent" class="positive">0</span>%
                     </div>
@@ -1124,7 +1138,26 @@
             let mainChart = null;
             let miniCharts = {};
 
-            // --- MARKETPLACE LOGIC ---
+            // --- UTILS ---
+            function getPolymarketUrl(t) {
+                if (!t) return '#';
+
+                // If it's a marketplace item, it has .id and .slug
+                // If it's a trade item, it has .marketId, .slug, .eventSlug
+
+                const slug = t.eventSlug || t.slug;
+                const marketId = t.marketId || t.id;
+
+                if (slug) {
+                    return `https://polymarket.com/event/${slug}`;
+                } else if (marketId) {
+                    return `https://polymarket.com/market/${marketId}`;
+                }
+
+                return '#';
+            }
+
+            // --- DATA FETCHING & UI ---
             let viewMode = 'dashboard';
             let marketCache = [];
 
@@ -1300,14 +1333,37 @@
                             | OPEN: $${activeValue.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                         </div>`;
 
-                        // Update Profit based on EQUITY, not just realized Cash
                         const startingCap = botData.startingCapital || 1000;
                         const totalProfit = totalEquity - startingCap;
                         const profitPercent = (totalProfit / startingCap) * 100;
 
-                        document.getElementById('profit').textContent = `${totalProfit >= 0 ? '+' : ''}$${totalProfit.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
-                        document.getElementById('profit').className = 'stat-value ' + (totalProfit >= 0 ? 'positive' : 'negative');
-                        document.getElementById('profitPercent').textContent = (profitPercent || 0).toFixed(2) + '%';
+                        // Calculate Realized PnL (Cash - Starting)
+                        const realizedPnL = botData.capital - startingCap;
+
+                        // Update Equity-based Profit Card
+                        const totalProfitEl = document.getElementById('totalProfit');
+                        if (totalProfitEl) {
+                            totalProfitEl.textContent = `${totalProfit >= 0 ? '+' : ''}$${totalProfit.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+                            totalProfitEl.className = 'stat-value ' + (totalProfit >= 0 ? 'positive' : 'negative');
+                        }
+
+                        // Calculate Unrealized
+                        const moneySpent = (botData.activeTrades || []).reduce((sum, t) => sum + (t.amount || 0), 0);
+                        const unrealized = activeValue - moneySpent;
+                        const unrealizedEl = document.getElementById('unrealizedPnL');
+                        if (unrealizedEl) {
+                            unrealizedEl.textContent = `${unrealized >= 0 ? '+' : ''}$${unrealized.toFixed(2)}`;
+                            unrealizedEl.style.color = unrealized >= 0 ? '#4ade80' : '#f87171';
+                        }
+
+                        document.getElementById('profitPercent').textContent = (profitPercent || 0).toFixed(2);
+
+                        // Update Net Realized PnL Card
+                        const realizedEl = document.getElementById('profit'); // Matches the ID for Net Realized
+                        if (realizedEl) {
+                            realizedEl.textContent = `${realizedPnL >= 0 ? '+' : ''}$${realizedPnL.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+                            realizedEl.className = realizedEl.className.split(' ')[0] + ' ' + (realizedPnL >= 0 ? 'positive' : 'negative');
+                        }
 
                         const winRate = ((botData.winningTrades / (botData.winningTrades + botData.losingTrades)) * 100) || 0;
                         document.getElementById('winRate').textContent = `${winRate.toFixed(1)}%`;
@@ -1315,9 +1371,7 @@
                         document.getElementById('losingTrades').textContent = botData.losingTrades || 0;
 
                         // Calculate Open Risk (money invested in active trades, not current value)
-                        const moneySpent = (botData.activeTrades || []).reduce((sum, t) => {
-                            return sum + (t.amount || 0);
-                        }, 0);
+                        // moneySpent is already calculated above
                         document.getElementById('moneySpent').textContent = `$${moneySpent.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
 
                         // Open Risk (active trades amount)
@@ -1416,14 +1470,7 @@
                                 const color = diff >= 0 ? '#4ade80' : '#f87171';
                                 const currentValue = shares * current;
 
-                                // Build Polymarket URL
-                                const polymarketUrl = t.slug
-                                    ? `https://polymarket.com/event/${t.slug}`
-                                    : t.eventSlug
-                                        ? `https://polymarket.com/event/${t.eventSlug}`
-                                        : t.marketId
-                                            ? `https://polymarket.com/market/${t.marketId}`
-                                            : '#';
+                                const polymarketUrl = getPolymarketUrl(t);
 
                                 // Price Source Badge logic
                                 let sourceBadge = '';
@@ -1438,7 +1485,7 @@
                         <div class="trade-card">
                             <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:10px">
                                 <div style="font-weight:700; max-width:65%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${t.question}">
-                                    ${t.question}
+                                    <a href="${polymarketUrl}" target="_blank" class="market-link">${t.question}</a>
                                 </div>
                                 <div style="display:flex; gap:5px; align-items:center;">
                                     ${sourceBadge}
@@ -1630,7 +1677,14 @@
                         }
                     } catch (e) { console.error("Logs Error:", e); }
 
-                    document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
+                    // Update Last System Update
+                    const updates = (botData.activeTrades || []).map(t => t.lastPriceUpdate).filter(u => !!u);
+                    if (updates.length > 0) {
+                        const mostRecent = new Date(Math.max(...updates.map(u => new Date(u).getTime())));
+                        document.getElementById('lastUpdate').textContent = `Prices: ${mostRecent.toLocaleTimeString()}`;
+                    } else {
+                        document.getElementById('lastUpdate').textContent = `System: ${new Date().toLocaleTimeString()}`;
+                    }
                 } catch (e) { console.error(e); }
             }
 
@@ -1845,7 +1899,11 @@
                         return `
                             <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
                                 <td style="padding: 12px; max-width: 400px;">
-                                    <div style="font-weight: 600; color: #e2e8f0; margin-bottom: 3px;">${m.question.substring(0, 100)}${m.question.length > 100 ? '...' : ''}</div>
+                                    <div style="font-weight: 600; color: #e2e8f0; margin-bottom: 3px;">
+                                        <a href="${getPolymarketUrl(m)}" target="_blank" class="market-link">
+                                            ${m.question.substring(0, 100)}${m.question.length > 100 ? '...' : ''}
+                                        </a>
+                                    </div>
                                     <div style="font-size: 0.75em; color: #64748b;">${m.slug || 'N/A'}</div>
                                 </td>
                                 <td style="padding: 12px; text-align: center;">
@@ -2035,7 +2093,12 @@
                     const archiveBadge = t.archivedAt ? '<span style="font-size: 0.65em; background: rgba(139,92,246,0.2); color: #c4b5fd; padding: 2px 6px; border-radius: 4px; margin-left: 6px;">Archivé</span>' : '';
                     return `<div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 8px;">
                         <div style="flex: 1; min-width: 0;">
-                            <div style="font-weight: 700; color: #e2e8f0; font-size: 0.85em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${emoji} ${t.question || 'Trade'}${archiveBadge}</div>
+                            <div style="font-weight: 700; color: #e2e8f0; font-size: 0.85em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                <a href="${getPolymarketUrl(t)}" target="_blank" class="market-link">
+                                    ${emoji} ${t.question || 'Trade'}
+                                </a>
+                                ${archiveBadge}
+                            </div>
                             <div style="font-size: 0.75em; color: #94a3b8; margin-top: 4px;">📅 ${date} | ${t.side || '?'} @ ${(t.entryPrice || 0).toFixed(4)}</div>
                             <div style="font-size: 0.7em; color: #64748b; margin-top: 2px;">${t.closeReason || ''}</div>
                         </div>

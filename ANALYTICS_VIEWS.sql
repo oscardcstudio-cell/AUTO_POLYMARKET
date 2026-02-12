@@ -9,7 +9,8 @@ SELECT
     COUNT(CASE WHEN pnl < 0 THEN 1 END) as losing_trades,
     SUM(pnl) as total_pnl,
     AVG(pnl) as avg_pnl_per_trade,
-    (COUNT(CASE WHEN pnl > 0 THEN 1 END)::numeric / NULLIF(COUNT(*), 0)) * 100 as win_rate_percent,
+    (COUNT(CASE WHEN pnl > 0 THEN 1 END)::numeric / NULLIF(COUNT(*), 0)) * 100 as win_rate,
+    (SUM(pnl)::numeric / NULLIF(SUM(amount), 0)) * 100 as roi_percent,
     SUM(amount) as total_volume
 FROM trades
 WHERE status = 'CLOSED';
@@ -34,6 +35,8 @@ SELECT
     COUNT(*) as trade_count,
     SUM(pnl) as total_pnl,
     AVG(pnl) as avg_pnl,
+    AVG(pnl_percent) * 100 as avg_roi_percent,
+    (COUNT(CASE WHEN pnl > 0 THEN 1 END)::numeric / NULLIF(COUNT(*), 0)) * 100 as win_rate_percent,
     MAX(pnl) as max_win,
     MIN(pnl) as max_loss
 FROM trades
@@ -46,7 +49,7 @@ CREATE OR REPLACE VIEW view_monthly_pnl AS
 SELECT 
     DATE_TRUNC('month', created_at) as month,
     COUNT(*) as trade_count,
-    SUM(pnl) as total_pnl
+    SUM(pnl) as monthly_pnl
 FROM trades
 WHERE status = 'CLOSED'
 GROUP BY DATE_TRUNC('month', created_at)

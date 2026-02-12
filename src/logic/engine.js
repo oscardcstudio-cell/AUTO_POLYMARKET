@@ -133,7 +133,7 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
         return null;
     }
 
-    let side, entryPrice, confidence;
+    let side, entryPrice, confidence, strategyName;
     const category = categorizeMarket(market.question);
     const decisionReasons = [];
 
@@ -177,6 +177,7 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
                 confidence: 1.0,
                 reasons: [`⚖️ Arbitrage: Sum=${(yesPrice + noPrice).toFixed(3)}`],
                 category: category,
+                strategy: 'Arbitrage',
                 clobTokenIds: market.clobTokenIds || []
             };
 
@@ -193,6 +194,7 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
                 confidence: 1.0,
                 reasons: [`⚖️ Arbitrage: Sum=${(yesPrice + noPrice).toFixed(3)}`],
                 category: category,
+                strategy: 'Arbitrage',
                 clobTokenIds: market.clobTokenIds || []
             };
 
@@ -212,6 +214,7 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
             side = 'YES';
             entryPrice = yesPrice;
             confidence = 0.65;
+            strategyName = 'DEFCON Spike';
             decisionReasons.push(`DEFCON ${pizzaData.defcon} critique + ${category}`);
         } else if (category === 'sports') {
             decisionReasons.push(`Rejeté: Sports pendant DEFCON ${pizzaData.defcon}`);
@@ -222,6 +225,7 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
             side = 'YES';
             entryPrice = yesPrice;
             confidence = 0.45;
+            strategyName = 'DEFCON Spike';
             decisionReasons.push(`DEFCON ${pizzaData.defcon} + autre catégorie`);
         }
     }
@@ -231,10 +235,10 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
         const trend = await calculateIntradayTrendFn(market.id);
         if (trend === 'UP') {
             const depthOK = await checkLiquidityDepthFn(market, 'YES', yesPrice, 50);
-            if (depthOK) { side = 'YES'; entryPrice = yesPrice; confidence = 0.75; decisionReasons.push(`🐳 Whale Follow: UP Trend Verified`); }
+            if (depthOK) { side = 'YES'; entryPrice = yesPrice; confidence = 0.75; strategyName = 'Whale Follow'; decisionReasons.push(`🐳 Whale Follow: UP Trend Verified`); }
         } else if (trend === 'DOWN') {
             const depthOK = await checkLiquidityDepthFn(market, 'NO', noPrice, 50);
-            if (depthOK) { side = 'NO'; entryPrice = noPrice; confidence = 0.75; decisionReasons.push(`🐳 Whale Follow: DOWN Trend Verified`); }
+            if (depthOK) { side = 'NO'; entryPrice = noPrice; confidence = 0.75; strategyName = 'Whale Follow'; decisionReasons.push(`🐳 Whale Follow: DOWN Trend Verified`); }
         } else {
             decisionReasons.push(`⚠️ Whale Alert Ignored: Trend is FLAT`);
         }
@@ -247,6 +251,7 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
             side = 'YES';
             entryPrice = yesPrice;
             confidence = 0.60;
+            strategyName = 'Wizard Follow';
             decisionReasons.push(`🧙 Wizard Follow: High Alpha (${wizardSignal.alpha}%)`);
         }
     }
@@ -260,6 +265,7 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
                 side = 'YES';
                 entryPrice = yesPrice;
                 confidence = 0.65;
+                strategyName = 'Trend Following';
                 decisionReasons.push(`🚀 Trend Following Verified (Vol: ${parseInt(market.volume24hr)} | Intraday: UP)`);
             }
         }
@@ -271,6 +277,7 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
             side = 'NO';
             entryPrice = noPrice;
             confidence = 0.50;
+            strategyName = 'Hype Fader';
             decisionReasons.push(`📉 Hype Fader: Shorting Overbought YES`);
         }
     } else if (noPrice > 0.92 && noPrice < 0.98) {
@@ -279,6 +286,7 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
             side = 'YES';
             entryPrice = yesPrice;
             confidence = 0.50;
+            strategyName = 'Hype Fader';
             decisionReasons.push(`📈 Hype Fader: Shorting Overbought NO`);
         }
     }
@@ -286,11 +294,11 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
     else if (market.volume24hr && parseFloat(market.volume24hr) > 1000) {
         if (yesPrice >= 0.55 && yesPrice <= 0.85) {
             const depthOK = await checkLiquidityDepthFn(market, 'YES', yesPrice, 50);
-            if (depthOK) { side = 'YES'; entryPrice = yesPrice; confidence = 0.45; decisionReasons.push(`🔥 Smart Momentum: Following YES Favorite`); }
+            if (depthOK) { side = 'YES'; entryPrice = yesPrice; confidence = 0.45; strategyName = 'Smart Momentum'; decisionReasons.push(`🔥 Smart Momentum: Following YES Favorite`); }
         }
         else if (noPrice >= 0.55 && noPrice <= 0.85) {
             const depthOK = await checkLiquidityDepthFn(market, 'NO', noPrice, 50);
-            if (depthOK) { side = 'NO'; entryPrice = noPrice; confidence = 0.45; decisionReasons.push(`🔥 Smart Momentum: Following NO Favorite`); }
+            if (depthOK) { side = 'NO'; entryPrice = noPrice; confidence = 0.45; strategyName = 'Smart Momentum'; decisionReasons.push(`🔥 Smart Momentum: Following NO Favorite`); }
         }
     }
     // Prix très bas (long shots)
@@ -300,6 +308,7 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
             side = 'YES';
             entryPrice = yesPrice;
             confidence = 0.35;
+            strategyName = 'Contrarian (Low Price)';
             decisionReasons.push(`Prix bas YES: ${yesPrice.toFixed(3)}`);
         }
     } else if (noPrice < 0.20 && noPrice >= 0.01) {
@@ -308,16 +317,17 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
             side = 'NO';
             entryPrice = noPrice;
             confidence = 0.35;
+            strategyName = 'Contrarian (Low Price)';
             decisionReasons.push(`Prix bas NO: ${noPrice.toFixed(3)}`);
         }
     }
     // NOUVEAU: Prix moyens
     else if (yesPrice >= 0.20 && yesPrice <= 0.40) {
         const depthOK = await checkLiquidityDepthFn(market, 'YES', yesPrice, 50);
-        if (depthOK) { side = 'YES'; entryPrice = yesPrice; confidence = 0.40; decisionReasons.push(`Prix moyen YES: ${yesPrice.toFixed(3)}`); }
+        if (depthOK) { side = 'YES'; entryPrice = yesPrice; confidence = 0.40; strategyName = 'Mean Reversion (Med)'; decisionReasons.push(`Prix moyen YES: ${yesPrice.toFixed(3)}`); }
     } else if (noPrice >= 0.20 && noPrice <= 0.40) {
         const depthOK = await checkLiquidityDepthFn(market, 'NO', noPrice, 50);
-        if (depthOK) { side = 'NO'; entryPrice = noPrice; confidence = 0.40; decisionReasons.push(`Prix moyen NO: ${noPrice.toFixed(3)}`); }
+        if (depthOK) { side = 'NO'; entryPrice = noPrice; confidence = 0.40; strategyName = 'Mean Reversion (Med)'; decisionReasons.push(`Prix moyen NO: ${noPrice.toFixed(3)}`); }
     }
 
     if (!side || !entryPrice) {
@@ -492,6 +502,7 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
         confidence: confidence,
         reasons: decisionReasons,
         category: category,
+        strategy: strategyName || 'Default',
         isFresh: isFreshMarket,
         clobTokenIds: market.clobTokenIds || []
     };
@@ -563,6 +574,7 @@ export async function checkAndCloseTrades(getRealMarketPriceFn) {
 
         const pnlPercent = invested > 0 ? (trade.shares * currentPrice - invested) / invested : 0;
         trade.maxReturn = Math.max(trade.maxReturn || 0, pnlPercent);
+        trade.pnl = pnlPercent * 100; // Store as percentage for UI display
 
         // --- 2. DYNAMIC STOP LOSS CHECK ---
         const dynamicStopInfo = calculateDynamicStopLoss(trade, pnlPercent, trade.maxReturn);

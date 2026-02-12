@@ -56,6 +56,11 @@ app.get('/analytics', (req, res) => {
     res.sendFile(path.join(__dirname, 'analytics.html'));
 });
 
+// Architecture Mind Map Route
+app.get('/architecture', (req, res) => {
+    res.sendFile(path.join(__dirname, 'architecture.html'));
+});
+
 // Legacy Dashboard Redirect (Fixing "old page not updating" issue)
 app.get('/dashboard.html', (req, res) => {
     res.redirect('/analytics');
@@ -122,6 +127,11 @@ async function mainLoop() {
     // 0. Disaster Recovery (Cloud Restore)
     try {
         await stateManager.tryRecovery();
+        // Restore Risk Profile from persisted state
+        if (botState.riskProfile) {
+            riskManager.setProfile(botState.riskProfile);
+            addLog(botState, `⚙️ Risk Profile restauré : ${botState.riskProfile}`, 'info');
+        }
     } catch (e) {
         console.error("Recovery failed:", e);
     }

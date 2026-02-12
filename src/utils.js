@@ -33,8 +33,27 @@ export function addLog(botState, message, type = 'info') {
         const logLine = `[${timestamp}] [${type.toUpperCase()}] ${message}\n`;
         const logFile = path.join(process.cwd(), 'logs.txt');
         fs.appendFileSync(logFile, logLine);
+
+        // --- REAL-TIME ARCHITECTURE PULSES ---
+        if (!botState.pulses) botState.pulses = [];
+
+        const msg = message.toUpperCase();
+        let pulse = null;
+
+        if (msg.includes('FETCH') || msg.includes('SCAN') || msg.includes('DATA')) {
+            pulse = { from: 'data', to: 'agent', type: 'DATA_STREAM' };
+        } else if (msg.includes('SIGNAL') || msg.includes('WIZARD') || msg.includes('WHALE') || msg.includes('SENTIMENT')) {
+            pulse = { from: 'agent', to: 'brain', type: 'SIGNAL' };
+        } else if (msg.includes('TRADE') || msg.includes('ORDER') || msg.includes('POSITION') || msg.includes('DECISION')) {
+            pulse = { from: 'brain', to: 'monitor', type: 'DECISION' };
+        }
+
+        if (pulse) {
+            botState.pulses.push({ ...pulse, timestamp });
+            if (botState.pulses.length > 50) botState.pulses.shift();
+        }
     } catch (e) {
-        console.error("Failed to write to logs.txt:", e);
+        console.error("Failed to write to logs.txt or push pulse:", e);
     }
 }
 
