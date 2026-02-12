@@ -1,11 +1,52 @@
 {
   "startTime": "2026-02-07T12:55:54.888Z",
-  "capital": 1000,
+  "capital": 990,
   "startingCapital": 1000,
-  "totalTrades": 0,
+  "totalTrades": 2,
   "winningTrades": 0,
   "losingTrades": 0,
-  "activeTrades": [],
+  "activeTrades": [
+    {
+      "id": "mlimflv3iv6q1yt0eke",
+      "marketId": "test-fallback-market",
+      "question": "Israel Military Strike Lebanon?",
+      "side": "YES",
+      "amount": 10,
+      "entryPrice": 0.512575,
+      "priceSource": "GAMMA_FALLBACK",
+      "startTime": "2026-02-11T22:48:30.063Z",
+      "shares": 19.509340096571233,
+      "status": "OPEN",
+      "confidence": 0.65,
+      "reasons": [
+        "DEFCON 1 critique + geopolitical",
+        "⚠️ [GAMMA-FALLBACK] No CLOB IDs. Using Gamma price + 1.5% slippage penalty ($0.500 -> $0.507)"
+      ],
+      "category": "geopolitical",
+      "isFresh": false,
+      "clobTokenIds": []
+    },
+    {
+      "id": "mlim5nrart4nwd1n94",
+      "marketId": "test-fallback-market",
+      "question": "Israel Military Strike Lebanon?",
+      "side": "YES",
+      "amount": 10,
+      "entryPrice": 0.512575,
+      "priceSource": "GAMMA_FALLBACK",
+      "startTime": "2026-02-11T22:40:45.958Z",
+      "shares": 19.509340096571233,
+      "status": "OPEN",
+      "confidence": 0.65,
+      "reasons": [
+        "DEFCON 1 critique + geopolitical",
+        "⚠️ [GAMMA-FALLBACK] No CLOB IDs. Using Gamma price + 1.5% slippage penalty ($0.500 -> $0.507)"
+      ],
+      "category": "geopolitical",
+      "isFresh": false,
+      "clobTokenIds": []
+    }
+  ],
   "closedTrades": [],
   "capitalHistory": [
     {
@@ -422,8 +463,43 @@
     "timestamp": "2026-02-11T06:48:46.565Z",
     "slug": "nba-nyk-phi-2026-02-11"
   },
-  "lastUpdate": "2026-02-11T06:48:47.373Z",
+  "lastUpdate": "2026-02-11T22:48:30.063Z",
   "logs": [
+    {
+      "timestamp": "2026-02-11T22:48:29.840Z",
+      "message": "🩹 Self-Healing: Attempting ID recovery for \"Israel Military Strike Lebanon...\"",
+      "type": "warning"
+    },
+    {
+      "timestamp": "2026-02-11T22:48:29.834Z",
+      "message": "Chargement des données réussi ($990.00)",
+      "type": "success"
+    },
+    {
+      "timestamp": "2026-02-11T22:40:45.956Z",
+      "message": "❌ Recovery failed: API Error 422",
+      "type": "error"
+    },
+    {
+      "timestamp": "2026-02-11T22:40:45.899Z",
+      "message": "🩹 Attempting to recover CLOB IDs for: Israel Military Stri...",
+      "type": "warning"
+    },
+    {
+      "timestamp": "2026-02-11T22:40:45.896Z",
+      "message": "❌ Recovery failed: API Error 422",
+      "type": "error"
+    },
+    {
+      "timestamp": "2026-02-11T22:40:45.792Z",
+      "message": "🩹 Attempting to recover CLOB IDs for: Israel Military Stri...",
+      "type": "warning"
+    },
+    {
+      "timestamp": "2026-02-11T22:40:45.789Z",
+      "message": "Chargement des données réussi ($1000.00)",
+      "type": "success"
+    },
     {
       "timestamp": "2026-02-11T06:19:31.083Z",
       "message": "🧠 AI Adaptation: Mode=NEUTRAL (ROI: 0.00%)",
@@ -2885,7 +2961,7 @@
   "momentumData": {},
   "apiStatus": {
     "gamma": "ONLINE",
-    "clob": "DEGRADED",
+    "clob": "ONLINE",
     "pizzint": "ONLINE",
     "alpha": "ONLINE"
   },
@@ -3013,20 +3089,20 @@
   ],
   "sectorStats": {
     "politics": {
-      "count": 10,
-      "lastActivity": "2026-02-11T06:48:47.373Z"
+      "count": 12,
+      "lastActivity": "2026-02-11T22:48:30.063Z"
     },
     "economics": {
       "count": 10,
-      "lastActivity": "2026-02-11T06:48:47.373Z"
+      "lastActivity": "2026-02-11T22:48:30.063Z"
     },
     "tech": {
       "count": 10,
-      "lastActivity": "2026-02-11T06:48:47.373Z"
+      "lastActivity": "2026-02-11T22:48:30.063Z"
     },
     "trending": {
       "count": 10,
-      "lastActivity": "2026-02-11T06:48:47.373Z"
+      "lastActivity": "2026-02-11T22:48:30.063Z"
     }
   },
   "sectorActivity": {
@@ -3406,8 +3482,8 @@
     "mode": "NEUTRAL",
     "reason": "Stable performance (0.00%)"
   },
-  "profit": 0,
-  "profitPercent": "0.00",
+  "profit": -10,
+  "profitPercent": "-1.00",
   "marketCache": [
     {
       "id": "1303355",

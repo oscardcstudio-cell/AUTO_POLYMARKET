@@ -3,6 +3,7 @@ import { botState, stateManager } from '../state.js';
 import { addLog } from '../utils.js';
 import { CONFIG } from '../config.js';
 import { getTrendingMarkets, getContextualMarkets, fetchAvailableTags } from '../api/market_discovery.js';
+import { riskManager } from './riskManagement.js';
 
 // Helper for inline fetches in getRelevantMarkets
 async function fetchWithRetry(url, options = {}, retries = 3) {
@@ -61,7 +62,7 @@ export async function getRelevantMarkets(useDeepScan = false) {
 
         // Filter
         const dateNow = new Date();
-        const currentProfile = botState.riskProfile; // "YOLO", "SAFE", etc.
+        const currentProfile = riskManager.getProfile(); // Uses the central RiskManager
 
         const filtered = mergedMarkets.filter(m => {
             const text = (m.question + ' ' + (m.description || '')).toLowerCase();
@@ -71,7 +72,7 @@ export async function getRelevantMarkets(useDeepScan = false) {
             // Liquidity Check: Relaxed for YOLO
             const liquidity = parseFloat(m.liquidityNum || 0);
             let hasLiquidity = liquidity > 100;
-            if (currentProfile === 'YOLO') {
+            if (currentProfile.id === 'YOLO') {
                 hasLiquidity = liquidity > 10; // Much lower threshold for degen plays
             }
 
@@ -91,9 +92,14 @@ export async function getRelevantMarkets(useDeepScan = false) {
             const isWhaleCandidate = vol24h > 10000;
 
             // FIX: Always include potential Penny Stocks/Long Shots in YOLO mode
-            const prices = m.outcomePrices ? JSON.parse(m.outcomePrices) : [0.5, 0.5];
-            const isPennyStock = (parseFloat(prices[0]) < 0.10 || parseFloat(prices[1]) < 0.10);
-            const isYoloCandidate = (currentProfile === 'YOLO' && isPennyStock);
+            let isPennyStock = false;
+            if (m.outcomePrices) {
+                try {
+                    const prices = typeof m.outcomePrices === 'string' ? JSON.parse(m.outcomePrices) : m.outcomePrices;
+                    isPennyStock = (parseFloat(prices[0]) < 0.10 || parseFloat(prices[1]) < 0.10);
+                } catch (e) { /* fallback to false */ }
+            }
+            const isYoloCandidate = (currentProfile.id === 'YOLO' && isPennyStock);
 
             return (hasKeyword || hasLiquidity || isWhaleCandidate || isYoloCandidate) && isRelevantTerm;
         });

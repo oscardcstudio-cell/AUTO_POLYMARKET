@@ -197,7 +197,18 @@ async function mainLoop() {
                     }
 
                     // b) Fallback to Gamma (from our fresh fetch)
-                    const market = relevantMarkets.find(m => m.id === trade.marketId);
+                    let market = relevantMarkets.find(m => m.id === trade.marketId);
+
+                    // c) Deep Fallback: Fetch directly from Gamma if not in current scan
+                    if (!market && trade.marketId) {
+                        try {
+                            const gRes = await fetchWithRetry(`https://gamma-api.polymarket.com/markets/${trade.marketId}`);
+                            if (gRes && gRes.ok) {
+                                market = await gRes.json();
+                            }
+                        } catch (e) { /* ignore */ }
+                    }
+
                     if (market && market.outcomePrices) {
                         let prices = market.outcomePrices;
                         if (typeof prices === 'string') {
@@ -232,9 +243,7 @@ async function mainLoop() {
             const isFull = botState.activeTrades.length >= maxTrades;
 
             if (isFull) {
-                if (isFull) {
-                    console.log(`📊 Portefeuille plein (${botState.activeTrades.length}/${maxTrades}). Mode observation.`);
-                }
+                console.log(`📊 Portefeuille plein (${botState.activeTrades.length}/${maxTrades}). Mode observation.`);
             }
 
             // Collect potential candidates ALWAYS (for logging)

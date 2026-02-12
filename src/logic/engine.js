@@ -627,7 +627,10 @@ async function resolveTradeWithRealOutcome(trade, index) {
         if (!response.ok) throw new Error('Failed to fetch market data');
         const market = await response.json();
 
-        if (!market.closed && !market.enableOrderBook) {
+        // A market is resolved if it's closed OR if orders are no longer accepted and outcome prices are set
+        const isResolved = market.closed || (market.acceptingOrders === false && market.outcomePrices);
+
+        if (!isResolved) {
             // Not resolved yet
             return null;
         }
@@ -776,9 +779,11 @@ function calculateDynamicStopLoss(trade, currentReturn, maxReturn) {
     else if (ageHours > CONFIG.DYNAMIC_SL.TIME_DECAY_HOURS) reason = "TIME DECAY STOP";
 
     // Safety cap
-    if (stopPrice > trade.entryPrice * 1.5) return { stopPrice: trade.entryPrice * 1.5, reason }; // sanity check
+    if (stopPrice > trade.entryPrice * 1.5) {
+        return { stopPrice: trade.entryPrice * 1.5, requiredStopPercent: 0.50, reason: reason + " (SAFETY CAP)" };
+    }
 
-    return { stopPrice, reason };
+    return { stopPrice, requiredStopPercent, reason };
 }
 
 async function checkLiquidityDepth(market, side, targetPrice, minimumUsdAmount) {

@@ -58,6 +58,7 @@ export class StateManager {
     constructor(filePath = CONFIG.DATA_FILE) {
         this.filePath = filePath;
         this.data = { ...INITIAL_STATE };
+        this.saveQueue = Promise.resolve(); // Concurrency Lock (Mutex)
         this.load();
     }
 
@@ -110,53 +111,56 @@ export class StateManager {
     }
 
     async save() {
-        try {
-            // Update derived stats before saving
-            this.data.lastUpdate = new Date().toISOString();
-            this.data.profit = this.data.capital - this.data.startingCapital;
-            this.data.profitPercent = ((this.data.profit) / this.data.startingCapital * 100).toFixed(2);
+        // Queue the save operation to prevent race conditions
+        return this.saveQueue = this.saveQueue.then(async () => {
+            try {
+                // Update derived stats before saving
+                this.data.lastUpdate = new Date().toISOString();
+                this.data.profit = this.data.capital - this.data.startingCapital;
+                this.data.profitPercent = ((this.data.profit) / this.data.startingCapital * 100).toFixed(2);
 
-            // --- RECALCULATE SECTOR STATS (Fix for BUG-002) ---
-            if (!this.data.sectorStats) this.data.sectorStats = { politics: { count: 0 }, economics: { count: 0 }, tech: { count: 0 }, trending: { count: 0 } };
+                // --- RECALCULATE SECTOR STATS (Fix for BUG-002) ---
+                if (!this.data.sectorStats) this.data.sectorStats = { politics: { count: 0 }, economics: { count: 0 }, tech: { count: 0 }, trending: { count: 0 } };
 
-            const sectors = ['politics', 'economics', 'tech', 'trending'];
-            sectors.forEach(s => {
-                const tradeCount = this.data.activeTrades.filter(t => {
-                    const cat = (t.category || '').toLowerCase();
-                    if (s === 'politics' && cat.includes('politi')) return true;
-                    if (s === 'economics' && cat.includes('eco')) return true;
-                    if (s === 'tech' && (cat.includes('tech') || cat.includes('ai'))) return true;
-                    if (s === 'trending' && !cat.includes('politi') && !cat.includes('eco') && !cat.includes('tech')) return true;
-                    return false;
-                }).length;
+                const sectors = ['politics', 'economics', 'tech', 'trending'];
+                sectors.forEach(s => {
+                    const tradeCount = this.data.activeTrades.filter(t => {
+                        const cat = (t.category || '').toLowerCase();
+                        if (s === 'politics' && cat.includes('politi')) return true;
+                        if (s === 'economics' && cat.includes('eco')) return true;
+                        if (s === 'tech' && (cat.includes('tech') || cat.includes('ai'))) return true;
+                        if (s === 'trending' && !cat.includes('politi') && !cat.includes('eco') && !cat.includes('tech')) return true;
+                        return false;
+                    }).length;
 
-                const activityCount = (this.data.sectorActivity && this.data.sectorActivity[s]) ? this.data.sectorActivity[s].length : 0;
+                    const activityCount = (this.data.sectorActivity && this.data.sectorActivity[s]) ? this.data.sectorActivity[s].length : 0;
 
-                this.data.sectorStats[s] = {
-                    count: tradeCount + activityCount,
-                    lastActivity: new Date().toISOString()
-                };
-            });
+                    this.data.sectorStats[s] = {
+                        count: tradeCount + activityCount,
+                        lastActivity: new Date().toISOString()
+                    };
+                });
 
-            // Local File Save (Blocking/Sync is fine here for local file, but the method is now async)
-            fs.writeFileSync(this.filePath, JSON.stringify(this.data, null, 2));
+                // Local File Save (Blocking/Sync is fine here for local file, but the method is now async)
+                fs.writeFileSync(this.filePath, JSON.stringify(this.data, null, 2));
 
-            // Sync to GitHub (Optional)
-            if (CONFIG.ENABLE_GITHUB_SYNC) {
-                saveToGithub("Update bot state & backlog").catch(e => console.error("Git sync failed:", e));
-            }
-
-            // --- SYNC TO SUPABASE (Sequential Fix) ---
-            if (supabaseService) {
-                try {
-                    await supabaseService.saveState(this.data);
-                } catch (err) {
-                    console.error("Supabase Save Error:", err);
+                // Sync to GitHub (Optional)
+                if (CONFIG.ENABLE_GITHUB_SYNC) {
+                    saveToGithub("Update bot state & backlog").catch(e => console.error("Git sync failed:", e));
                 }
+
+                // --- SYNC TO SUPABASE (Sequential Fix) ---
+                if (supabaseService) {
+                    try {
+                        await supabaseService.saveState(this.data);
+                    } catch (err) {
+                        console.error("Supabase Save Error:", err);
+                    }
+                }
+            } catch (error) {
+                console.error('❌ Erreur sauvegarde:', error.message);
             }
-        } catch (error) {
-            console.error('❌ Erreur sauvegarde:', error.message);
-        }
+        });
     }
 
     // Helper to log sector events

@@ -9,6 +9,7 @@ import { CONFIG } from '../config.js';
 import { simulateTrade } from '../logic/engine.js';
 import { getRelevantMarkets } from '../logic/signals.js';
 import { supabase } from '../services/supabaseService.js';
+import { getCLOBMidpoint, getCLOBPrice } from '../api/clob_api.js';
 
 const router = express.Router();
 
@@ -405,6 +406,100 @@ router.get('/trade-archive', async (req, res) => {
     } catch (error) {
         console.error('Trade archive error:', error);
         res.json({ trades: [] });
+    }
+});
+
+// --- NEW: CLOB Price Verification Endpoint ---
+router.get('/verify-clob-prices', async (req, res) => {
+    try {
+        const localTrades = botState.activeTrades || [];
+        let remoteTrades = [];
+
+        // 1. Fetch from Supabase
+        if (supabase) {
+            const { data, error } = await supabase
+                .from('trades')
+                .select('*')
+                .eq('status', 'OPEN')
+                .limit(50);
+            if (!error) remoteTrades = data || [];
+        }
+
+        // 2. Merge and Deduplicate
+        const allTrades = [...localTrades];
+        remoteTrades.forEach(rt => {
+            const marketId = rt.market_id;
+            if (!allTrades.find(lt => lt.marketId === marketId || lt.id === marketId)) {
+                allTrades.push({
+                    marketId: rt.market_id,
+                    question: rt.question,
+                    entryPrice: rt.entry_price,
+                    clobTokenIds: rt.metadata?.clobTokenIds || [],
+                    slug: rt.metadata?.slug,
+                    side: rt.side,
+                    source: 'SUPABASE'
+                });
+            }
+        });
+
+        const results = [];
+        const marketCache = botState.marketCache || [];
+
+        for (const trade of allTrades) {
+            const entry = trade.entryPrice || 0;
+            const side = trade.side || 'YES';
+            let livePrice = null;
+            let source = 'N/A';
+            let tokenIds = trade.clobTokenIds;
+
+            // Recovery 1: Market Cache
+            if (!tokenIds || tokenIds.length === 0) {
+                const cached = marketCache.find(m => m.id === trade.marketId || m.question === trade.question || m.slug === trade.slug);
+                if (cached && cached.clobTokenIds) {
+                    tokenIds = cached.clobTokenIds;
+                    if (typeof tokenIds === 'string') {
+                        try { tokenIds = JSON.parse(tokenIds); } catch (e) { tokenIds = []; }
+                    }
+                }
+            }
+
+            // Fetch Live
+            if (tokenIds && tokenIds.length === 2) {
+                const tokenId = side === 'YES' ? tokenIds[0] : tokenIds[1];
+                try {
+                    livePrice = await getCLOBMidpoint(tokenId);
+                    if (!livePrice) livePrice = await getCLOBPrice(tokenId);
+                    if (livePrice) source = 'CLOB';
+                } catch (e) { }
+            }
+
+            // Fallback: Gamma
+            if (!livePrice && trade.marketId) {
+                try {
+                    const gRes = await fetch(`https://gamma-api.polymarket.com/markets/${trade.marketId}`);
+                    if (gRes.ok) {
+                        const gData = await gRes.json();
+                        const prices = JSON.parse(gData.outcomePrices || '[0,0]');
+                        livePrice = side === 'YES' ? parseFloat(prices[0]) : parseFloat(prices[1]);
+                        source = 'GAMMA';
+                    }
+                } catch (e) { }
+            }
+
+            results.push({
+                question: trade.question,
+                side: side,
+                entryPrice: entry,
+                livePrice: livePrice,
+                source: source,
+                diffPercent: (livePrice && entry > 0) ? ((livePrice - entry) / entry * 100) : null
+            });
+        }
+
+        res.json({ success: true, results });
+    } catch (error) {
+        console.error('Verification API error:', error);
+        res.status(500).json({ error: error.message });
     }
 });
 

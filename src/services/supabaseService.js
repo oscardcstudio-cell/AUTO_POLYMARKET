@@ -78,7 +78,8 @@ export const supabaseService = {
                     reasons: trade.decisionReasons || [],
                     marketData: trade.marketData || {},
                     slug: trade.slug,
-                    eventSlug: trade.eventSlug
+                    eventSlug: trade.eventSlug,
+                    clobTokenIds: trade.clobTokenIds || []
                 }
             };
 

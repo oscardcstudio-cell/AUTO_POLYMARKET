@@ -648,6 +648,59 @@
                 style="display:none; margin-top: 20px; background: #0f172a; padding: 15px; border-radius: 8px; font-family: monospace; font-size: 0.8em; color: #cbd5e1; max-height: 400px; overflow-y: auto; border: 1px solid var(--border);">
             </div>
         </div>
+
+        <!-- NEW: CLOB Price Verification Section -->
+        <div class="chart-section"
+            style="margin-top: 30px; border-color: rgba(96, 165, 250, 0.3); background: rgba(30, 41, 59, 0.4);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div>
+                    <div class="stat-label" style="margin-bottom: 5px; color: #60a5fa; letter-spacing: 1px;">🔍 Audit de
+                        Précision CLOB</div>
+                    <div style="font-size: 0.75em; color: #94a3b8;">Compare les prix d'entrée du bot avec les prix réels
+                        du carnet d'ordres (CLOB) en direct.</div>
+                </div>
+                <button onclick="runClobVerification()" id="verify-clob-btn"
+                    style="background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; border: none; padding: 10px 20px; font-weight: 700; border-radius: 12px; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);">
+                    ⚡ Lancer l'Audit
+                </button>
+            </div>
+            <div id="clob-verification-wrapper" style="display:none;">
+                <div id="clob-verification-console"
+                    style="background: #0f172a; padding: 0; border-radius: 16px; border: 1px solid var(--border); overflow: hidden; box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);">
+                    <table
+                        style="width: 100%; border-collapse: collapse; font-family: 'JetBrains Mono', monospace; font-size: 0.8em; color: #cbd5e1;">
+                        <thead style="background: rgba(255,255,255,0.05);">
+                            <tr>
+                                <th
+                                    style="padding: 12px; text-align: left; border-bottom: 1px solid var(--border); color: #94a3b8;">
+                                    MARCHÉ</th>
+                                <th
+                                    style="padding: 12px; text-align: center; border-bottom: 1px solid var(--border); color: #94a3b8;">
+                                    SIDE</th>
+                                <th
+                                    style="padding: 12px; text-align: right; border-bottom: 1px solid var(--border); color: #94a3b8;">
+                                    ENTRÉE</th>
+                                <th
+                                    style="padding: 12px; text-align: right; border-bottom: 1px solid var(--border); color: #94a3b8;">
+                                    LIVE</th>
+                                <th
+                                    style="padding: 12px; text-align: center; border-bottom: 1px solid var(--border); color: #94a3b8;">
+                                    SRC</th>
+                                <th
+                                    style="padding: 12px; text-align: right; border-bottom: 1px solid var(--border); color: #94a3b8;">
+                                    DIFF%</th>
+                            </tr>
+                        </thead>
+                        <tbody id="clob-verification-tbody">
+                            <!-- Populated via JS -->
+                        </tbody>
+                    </table>
+                </div>
+                <div id="clob-verification-summary"
+                    style="margin-top: 15px; font-size: 0.85em; color: #94a3b8; text-align: right; font-weight: 600;">
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- VIEW: DASHBOARD -->
@@ -2170,6 +2223,59 @@
                     } catch (e) {
                         alert("❌ Erreur réseau: " + e.message);
                     }
+                }
+            }
+
+            // --- CLOB PRICE VERIFICATION ---
+            async function runClobVerification() {
+                const btn = document.getElementById('verify-clob-btn');
+                const wrapper = document.getElementById('clob-verification-wrapper');
+                const tbody = document.getElementById('clob-verification-tbody');
+                const summary = document.getElementById('clob-verification-summary');
+
+                try {
+                    btn.disabled = true;
+                    btn.textContent = '⏳ Audit en cours...';
+                    wrapper.style.display = 'block';
+                    tbody.innerHTML = '<tr><td colspan="6" style="padding:40px; text-align:center;"><div class="pulse-dot" style="margin:0 auto;"></div></td></tr>';
+                    summary.textContent = '';
+
+                    const res = await fetch('/api/verify-clob-prices');
+                    const data = await res.json();
+
+                    if (!data.success || !data.results || data.results.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="6" style="padding:40px; text-align:center; color:#94a3b8;">Aucun trade actif trouvé pour audit.</td></tr>';
+                        btn.disabled = false;
+                        btn.textContent = '⚡ Relancer l\'Audit';
+                        return;
+                    }
+
+                    tbody.innerHTML = data.results.map(r => {
+                        const diff = r.diffPercent;
+                        const diffColor = diff > 0 ? '#4ade80' : (diff < 0 ? '#f87171' : '#94a3b8');
+                        const diffText = diff !== null ? (diff > 0 ? '+' : '') + diff.toFixed(2) + '%' : 'N/A';
+                        const liveText = r.livePrice !== null ? r.livePrice.toFixed(4) : 'N/A';
+
+                        return `
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
+                                <td style="padding: 12px; font-weight: 600; font-size: 0.9em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 300px;">${r.question}</td>
+                                <td style="padding: 12px; text-align: center;"><span style="font-size: 0.7em; padding: 2px 6px; border-radius: 4px; background: ${r.side === 'YES' ? 'rgba(74,222,128,0.1)' : 'rgba(248,113,113,0.1)'}; color: ${r.side === 'YES' ? '#4ade80' : '#f87171'}; border: 1px solid ${r.side === 'YES' ? 'rgba(74,222,128,0.2)' : 'rgba(248,113,113,0.2)'};">${r.side}</span></td>
+                                <td style="padding: 12px; text-align: right; font-weight: 700;">${(r.entryPrice || 0).toFixed(4)}</td>
+                                <td style="padding: 12px; text-align: right; font-weight: 700; color: #fff;">${liveText}</td>
+                                <td style="padding: 12px; text-align: center;"><span style="font-size: 0.7em; color: ${r.source === 'CLOB' ? '#60a5fa' : '#94a3b8'};">${r.source}</span></td>
+                                <td style="padding: 12px; text-align: right; font-weight: 800; color: ${diffColor};">${diffText}</td>
+                            </tr>
+                        `;
+                    }).join('');
+
+                    summary.textContent = `✓ ${data.results.length} positions auditées | ${new Date().toLocaleTimeString()}`;
+
+                } catch (e) {
+                    console.error('Audit failed:', e);
+                    tbody.innerHTML = `<tr><td colspan="6" style="padding:40px; text-align:center; color:#ef4444;">Erreur: ${e.message}</td></tr>`;
+                } finally {
+                    btn.disabled = false;
+                    btn.textContent = '⚡ Relancer l\'Audit';
                 }
             }
 

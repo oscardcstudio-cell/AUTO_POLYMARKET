@@ -136,6 +136,9 @@ export async function getCLOBOrderBook(tokenId) {
  * @returns {number|null} Current price
  */
 export async function getCLOBPrice(tokenId) {
+    // Check Cooldown
+    if (Date.now() < clobBlockedUntil) return null;
+
     const cacheKey = `price_${tokenId}`;
     const cached = getCached(cacheKey, CACHE_TTL_ORDER_BOOK);
     if (cached) return cached;
@@ -170,6 +173,9 @@ export async function getCLOBPrice(tokenId) {
  * @returns {number|null} Midpoint price
  */
 export async function getCLOBMidpoint(tokenId) {
+    // Check Cooldown
+    if (Date.now() < clobBlockedUntil) return null;
+
     const cacheKey = `midpoint_${tokenId}`;
     const cached = getCached(cacheKey, CACHE_TTL_ORDER_BOOK);
     if (cached) return cached;

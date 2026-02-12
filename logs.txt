@@ -526,3 +526,144 @@
 [2026-02-11T19:59:28.343Z] [INFO] ⚠️ Network error: fetch failed. Retrying in 1000ms... (Attempt 1/2)
 [2026-02-11T19:59:29.348Z] [INFO] ✅ Caught expected error after 1023ms: fetch failed
 [2026-02-11T19:59:29.349Z] [INFO]    (Duration suggests retries occurred)
+[2026-02-11T20:38:15.992Z] [INFO] [32m%s[0m [SUCCESS] Chargement des données réussi ($1000.00)
+[2026-02-11T20:38:15.992Z] [SUCCESS] Chargement des données réussi ($1000.00)
+[2026-02-11T20:38:15.994Z] [INFO] 🧪 TESTING ENGINE LOGIC FOR PENNY STOCKS...
+
+[2026-02-11T20:38:15.995Z] [INFO] 🔒 CASE 1: SAFE MODE
+[2026-02-11T20:38:15.995Z] [INFO]    Profile: 🛡️ Safe
+[2026-02-11T20:38:15.996Z] [INFO]    ❌ FAILED: Penny Stock should have been rejected.
+[2026-02-11T20:38:15.997Z] [INFO]    Result: Null
+[2026-02-11T20:38:15.997Z] [INFO]    Reasons: ["Aucune condition de trade remplie"]
+[2026-02-11T20:38:15.998Z] [INFO] 
+[2026-02-11T20:38:15.998Z] [INFO] 🔥 CASE 2: YOLO MODE
+[2026-02-11T20:38:15.999Z] [INFO]    Profile: 🔥 YOLO DEGEN
+[2026-02-11T20:38:16.000Z] [INFO]    ✅ SUCCESS: Penny Stock filter PASSED (Not Triggered).
+[2026-02-11T20:38:16.000Z] [INFO]    (Trade proceeded to next checks, e.g. CLOB)
+[2026-02-11T22:09:04.354Z] [INFO] [32m%s[0m [SUCCESS] Chargement des données réussi ($1000.00)
+[2026-02-11T22:09:04.354Z] [SUCCESS] Chargement des données réussi ($1000.00)
+[2026-02-11T22:09:04.357Z] [INFO] 🧪 Testing Self-Healing using engine.js...
+[2026-02-11T22:09:04.357Z] [INFO]    Input Market has empty clobTokenIds.
+[2026-02-11T22:09:04.358Z] [INFO] 
+🔍 Post-Simulation Check:
+[2026-02-11T22:09:04.359Z] [INFO]    Market clobTokenIds: []
+[2026-02-11T22:09:04.359Z] [INFO]    ❌ SELF-HEALING FAILED: Still missing IDs.
+[2026-02-11T22:09:29.457Z] [INFO] [32m%s[0m [SUCCESS] Chargement des données réussi ($1000.00)
+[2026-02-11T22:09:29.456Z] [SUCCESS] Chargement des données réussi ($1000.00)
+[2026-02-11T22:09:29.458Z] [INFO] 🧪 Testing Self-Healing using engine.js...
+[2026-02-11T22:09:29.459Z] [INFO]    Input Market has empty clobTokenIds.
+[2026-02-11T22:09:29.460Z] [INFO] 
+🔍 Post-Simulation Check:
+[2026-02-11T22:09:29.460Z] [INFO]    Market clobTokenIds: []
+[2026-02-11T22:09:29.461Z] [INFO]    ❌ SELF-HEALING FAILED: Still missing IDs.
+[2026-02-11T22:09:46.651Z] [INFO] [32m%s[0m [SUCCESS] Chargement des données réussi ($1000.00)
+[2026-02-11T22:09:46.650Z] [SUCCESS] Chargement des données réussi ($1000.00)
+[2026-02-11T22:09:46.653Z] [INFO] 🧪 Testing Self-Healing using engine.js...
+[2026-02-11T22:09:46.653Z] [INFO]    Input Market has empty clobTokenIds.
+[2026-02-11T22:09:46.654Z] [INFO] [DEBUG] Entering simulateTrade for 572473. CLOB IDs: []
+[2026-02-11T22:09:46.655Z] [INFO] 
+🔍 Post-Simulation Check:
+[2026-02-11T22:09:46.655Z] [INFO]    Market clobTokenIds: []
+[2026-02-11T22:09:46.656Z] [INFO]    ❌ SELF-HEALING FAILED: Still missing IDs.
+[2026-02-11T22:11:16.225Z] [INFO] [32m%s[0m [SUCCESS] Chargement des données réussi ($1000.00)
+[2026-02-11T22:11:16.225Z] [SUCCESS] Chargement des données réussi ($1000.00)
+[2026-02-11T22:11:16.227Z] [INFO] 🧪 Testing Self-Healing using engine.js...
+[2026-02-11T22:11:16.227Z] [INFO]    Input Market has empty clobTokenIds.
+[2026-02-11T22:11:16.228Z] [INFO] [DEBUG] Entering simulateTrade for 572473. CLOB IDs: inside
+[2026-02-11T22:11:16.229Z] [INFO] [DEBUG] Detected missing IDs for 572473. Entering self-healing...
+[2026-02-11T22:11:16.229Z] [INFO] [33m%s[0m [WARNING] 🩹 Attempting to recover CLOB IDs for: Will Trump nominate ...
+[2026-02-11T22:11:16.229Z] [WARNING] 🩹 Attempting to recover CLOB IDs for: Will Trump nominate ...
+[2026-02-11T22:11:16.354Z] [INFO] [32m%s[0m [SUCCESS] ✅ Recovered CLOB IDs successfully.
+[2026-02-11T22:11:16.353Z] [SUCCESS] ✅ Recovered CLOB IDs successfully.
+[2026-02-11T22:11:16.356Z] [INFO] 
+🔍 Post-Simulation Check:
+[2026-02-11T22:11:16.356Z] [INFO]    Market clobTokenIds: ["5031084282167950494806674428243037744881029417420880897305642929037077494331", "20939351535690701474621316837957321939118947084394902825750156021315806001424"]
+[2026-02-11T22:11:16.357Z] [INFO]    ❌ SELF-HEALING FAILED: Still missing IDs.
+[2026-02-11T22:40:16.200Z] [INFO] [32m%s[0m [SUCCESS] Chargement des données réussi ($1000.00)
+[2026-02-11T22:40:16.199Z] [SUCCESS] Chargement des données réussi ($1000.00)
+[2026-02-11T22:40:16.204Z] [INFO] 🧪 TESTING ENGINE LOGIC FOR PENNY STOCKS...
+
+[2026-02-11T22:40:16.206Z] [INFO] 🔒 CASE 1: SAFE MODE
+[2026-02-11T22:40:16.206Z] [INFO]    Profile: 🛡️ Safe
+[2026-02-11T22:40:16.207Z] [INFO]    ❌ FAILED: Penny Stock should have been rejected.
+[2026-02-11T22:40:16.208Z] [INFO]    Result: Null
+[2026-02-11T22:40:16.209Z] [INFO]    Reasons: ["Aucune condition de trade remplie"]
+[2026-02-11T22:40:16.209Z] [INFO] 
+[2026-02-11T22:40:16.209Z] [INFO] 🔥 CASE 2: YOLO MODE
+[2026-02-11T22:40:16.210Z] [INFO]    Profile: 🔥 YOLO DEGEN
+[2026-02-11T22:40:16.210Z] [INFO]    ✅ SUCCESS: Penny Stock filter PASSED (Not Triggered).
+[2026-02-11T22:40:16.211Z] [INFO]    (Trade proceeded to next checks, e.g. CLOB)
+[2026-02-11T22:40:29.524Z] [INFO] [32m%s[0m [SUCCESS] Chargement des données réussi ($1000.00)
+[2026-02-11T22:40:29.523Z] [SUCCESS] Chargement des données réussi ($1000.00)
+[2026-02-11T22:40:29.527Z] [INFO] 🧪 TESTING GAMMA FALLBACK & AUDIT...
+
+[2026-02-11T22:40:29.527Z] [INFO] 🔒 CASE 1: SAFE MODE (No Fallback)
+[2026-02-11T22:40:29.529Z] [INFO] [33m%s[0m [WARNING] 🩹 Attempting to recover CLOB IDs for: Will this trigger ga...
+[2026-02-11T22:40:29.529Z] [WARNING] 🩹 Attempting to recover CLOB IDs for: Will this trigger ga...
+[2026-02-11T22:40:29.715Z] [INFO] [31m%s[0m [ERROR] ❌ Recovery failed: API Error 422
+[2026-02-11T22:40:29.714Z] [ERROR] ❌ Recovery failed: API Error 422
+[2026-02-11T22:40:29.720Z] [INFO]    ❌ FAILED: Should have skipped with explicit message.
+[2026-02-11T22:40:29.722Z] [INFO]    Reasons: ["Aucune condition de trade remplie"]
+[2026-02-11T22:40:29.724Z] [INFO] 
+🔥 CASE 2: YOLO MODE (Fallback with Penalty)
+[2026-02-11T22:40:29.726Z] [INFO] [33m%s[0m [WARNING] 🩹 Attempting to recover CLOB IDs for: Will this trigger ga...
+[2026-02-11T22:40:29.726Z] [WARNING] 🩹 Attempting to recover CLOB IDs for: Will this trigger ga...
+[2026-02-11T22:40:29.830Z] [INFO] [31m%s[0m [ERROR] ❌ Recovery failed: API Error 422
+[2026-02-11T22:40:29.830Z] [ERROR] ❌ Recovery failed: API Error 422
+[2026-02-11T22:40:29.832Z] [INFO]    ❌ FAILED: Trade should have been allowed in YOLO mode.
+[2026-02-11T22:40:29.833Z] [INFO]    Reasons: ["Aucune condition de trade remplie"]
+[2026-02-11T22:40:45.789Z] [INFO] [32m%s[0m [SUCCESS] Chargement des données réussi ($1000.00)
+[2026-02-11T22:40:45.789Z] [SUCCESS] Chargement des données réussi ($1000.00)
+[2026-02-11T22:40:45.791Z] [INFO] 🧪 TESTING GAMMA FALLBACK & AUDIT...
+
+[2026-02-11T22:40:45.791Z] [INFO] 🔒 CASE 1: SAFE MODE (No Fallback)
+[2026-02-11T22:40:45.792Z] [INFO] [33m%s[0m [WARNING] 🩹 Attempting to recover CLOB IDs for: Israel Military Stri...
+[2026-02-11T22:40:45.792Z] [WARNING] 🩹 Attempting to recover CLOB IDs for: Israel Military Stri...
+[2026-02-11T22:40:45.896Z] [INFO] [31m%s[0m [ERROR] ❌ Recovery failed: API Error 422
+[2026-02-11T22:40:45.896Z] [ERROR] ❌ Recovery failed: API Error 422
+[2026-02-11T22:40:45.898Z] [INFO]    ❌ FAILED: Should have skipped with explicit message.
+[2026-02-11T22:40:45.898Z] [INFO]    Reasons: ["Confidence too low (0.65 < 0.75)"]
+[2026-02-11T22:40:45.899Z] [INFO] 
+🔥 CASE 2: YOLO MODE (Fallback with Penalty)
+[2026-02-11T22:40:45.899Z] [INFO] [33m%s[0m [WARNING] 🩹 Attempting to recover CLOB IDs for: Israel Military Stri...
+[2026-02-11T22:40:45.899Z] [WARNING] 🩹 Attempting to recover CLOB IDs for: Israel Military Stri...
+[2026-02-11T22:40:45.956Z] [INFO] [31m%s[0m [ERROR] ❌ Recovery failed: API Error 422
+[2026-02-11T22:40:45.956Z] [ERROR] ❌ Recovery failed: API Error 422
+[2026-02-11T22:40:45.963Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: YES sur "Israel Military Strike Lebanon..." @ $0.513 ($10.00)
+[2026-02-11T22:40:45.963Z] [TRADE] ✅ TRADE OPENED: YES sur "Israel Military Strike Lebanon..." @ $0.513 ($10.00)
+[2026-02-11T22:40:45.965Z] [INFO]    Entry Price (with 1.5% penalty): 0.5126 (Original: 0.50)
+[2026-02-11T22:40:45.965Z] [INFO] 
+📊 CASE 3: AUDIT DRIFT CHECK
+[2026-02-11T22:40:45.966Z] [INFO]    Trade object contains CLOB IDs now.
+[2026-02-11T22:40:45.966Z] [INFO]    The engine will audit this drift on the next checkAndCloseTrades run.
+[2026-02-11T22:40:46.089Z] [INFO] ✅ Trade saved to Supabase: Israel Military Strike Lebanon?
+[2026-02-11T22:48:29.835Z] [INFO] [32m%s[0m [SUCCESS] Chargement des données réussi ($990.00)
+[2026-02-11T22:48:29.834Z] [SUCCESS] Chargement des données réussi ($990.00)
+[2026-02-11T22:48:29.838Z] [INFO] 🧪 TESTING GAMMA FALLBACK & AUDIT...
+
+[2026-02-11T22:48:29.839Z] [INFO] 🔒 CASE 1: SAFE MODE (No Fallback)
+[2026-02-11T22:48:29.840Z] [INFO] [33m%s[0m [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Israel Military Strike Lebanon..."
+[2026-02-11T22:48:29.840Z] [WARNING] 🩹 Self-Healing: Attempting ID recovery for "Israel Military Strike Lebanon..."
+[2026-02-11T22:48:30.061Z] [INFO]    ❌ FAILED: Should have skipped with explicit message.
+[2026-02-11T22:48:30.062Z] [INFO]    Reasons: ["Confidence too low (0.65 < 0.75)"]
+[2026-02-11T22:48:30.063Z] [INFO] 
+🔥 CASE 2: YOLO MODE (Fallback with Penalty)
+[2026-02-11T22:48:30.067Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: YES sur "Israel Military Strike Lebanon..." @ $0.513 ($10.00)
+[2026-02-11T22:48:30.066Z] [TRADE] ✅ TRADE OPENED: YES sur "Israel Military Strike Lebanon..." @ $0.513 ($10.00)
+[2026-02-11T22:48:30.068Z] [INFO]    Entry Price (with 1.5% penalty): 0.5126 (Original: 0.50)
+[2026-02-11T22:48:30.068Z] [INFO] 
+📊 CASE 3: AUDIT DRIFT CHECK
+[2026-02-11T22:48:30.069Z] [INFO]    Trade object contains CLOB IDs now.
+[2026-02-11T22:48:30.069Z] [INFO]    The engine will audit this drift on the next checkAndCloseTrades run.
+[2026-02-12T04:55:10.052Z] [INFO] [32m%s[0m [SUCCESS] Chargement des données réussi ($990.00)
+[2026-02-12T04:55:10.051Z] [SUCCESS] Chargement des données réussi ($990.00)
+[2026-02-12T04:55:10.054Z] [INFO] 🚀 STARTING VERIFICATION SCAN...
+[2026-02-12T04:55:10.055Z] [INFO] Current Risk Profile: ⚖️ Balanced
+[2026-02-12T04:55:10.055Z] [INFO] 🔍 Fetching relevant markets...
+[2026-02-12T04:55:11.857Z] [INFO] ✅ Success: Found 9 relevant markets.
+[2026-02-12T04:55:11.858Z] [INFO]    Sample Market: "Will Bitcoin reach $150,000 in February?..."
+[2026-02-12T04:55:11.858Z] [INFO] 🔍 Fetching CLOB price for token [...
+[2026-02-12T04:55:13.012Z] [ERROR] ❌ CLOB Price Error ([): CLOB /price returned 400
+[2026-02-12T04:55:13.013Z] [INFO] ⚠️ Info: CLOB price returned null (could be rate-limited or unavailable).
+[2026-02-12T04:55:13.013Z] [INFO] 
+✨ STABILITY VERIFICATION COMPLETE. No gross errors detected.
