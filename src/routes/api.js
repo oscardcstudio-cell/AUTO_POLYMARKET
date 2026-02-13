@@ -61,50 +61,39 @@ router.get('/bot-data', (req, res) => {
     }
 });
 
-// Endpoint pour réinitialiser la simulation
+// Endpoint pour réinitialiser la TOTALITÉ du système (Supabase + Local)
 router.post('/reset', async (req, res) => {
+    console.log("💣 TOTAL RESET TRIGGERED via API");
     res.setHeader('Access-Control-Allow-Origin', '*');
 
-    // ARCHIVE trades to Supabase before clearing
-    const allTrades = [
-        ...botState.closedTrades,
-        ...botState.activeTrades.map(t => ({ ...t, status: 'FORCE_CLOSED', closeReason: 'RESET' }))
-    ];
-
-    if (allTrades.length > 0 && supabase) {
+    // 1. CLEAR SUPABASE (Using internal client which has full permissions)
+    if (supabase) {
         try {
-            const archiveRows = allTrades.map(t => ({
-                id: t.id,
-                market_id: t.marketId,
-                question: t.question,
-                side: t.side,
-                amount: t.amount || 0,
-                entry_price: t.entryPrice || 0,
-                exit_price: t.exitPrice || 0,
-                profit: t.profit || t.pnl || 0,
-                shares: t.shares || 0,
-                confidence: t.confidence || 0,
-                category: t.category || 'unknown',
-                status: t.status || 'CLOSED',
-                close_reason: t.closeReason || t.resolvedOutcome || 'RESET',
-                start_time: t.startTime || null,
-                end_time: t.endTime || t.closedAt || new Date().toISOString(),
-                archived_at: new Date().toISOString(),
-                raw_data: t
-            }));
+            console.log("🧹 Wiping Supabase tables...");
 
-            const { error } = await supabase.from('trade_archive').upsert(archiveRows, { onConflict: 'id' });
-            if (error) console.error('Archive error:', error.message);
-            else console.log(`✅ Archived ${archiveRows.length} trades before reset`);
+            // Delete all from trades
+            const { error: e1 } = await supabase.from('trades').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+            if (e1) console.error("❌ Trades wipe error:", e1.message);
+
+            // Delete all from bot_state
+            const { error: e2 } = await supabase.from('bot_state').delete().neq('id', 'placeholder');
+            if (e2) console.error("❌ Bot state wipe error:", e2.message);
+
+            // Delete all from simulation_runs
+            const { error: e3 } = await supabase.from('simulation_runs').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+            if (e3) console.error("❌ Sim runs wipe error:", e3.message);
+
+            console.log("✅ Supabase tables cleared.");
         } catch (e) {
-            console.error('Archive failed:', e.message);
+            console.error("❌ Deep DB Wipe failed:", e.message);
         }
     }
 
-    // Resetting State
+    // 2. Resetting State in Memory
     Object.assign(botState, {
         startTime: new Date().toISOString(),
-        capital: (CONFIG && CONFIG.STARTING_CAPITAL) ? CONFIG.STARTING_CAPITAL : 1000,
+        capital: 1000,
+        startingCapital: 1000,
         totalTrades: 0,
         winningTrades: 0,
         losingTrades: 0,
@@ -114,7 +103,7 @@ router.post('/reset', async (req, res) => {
         lastPizzaData: null,
         topSignal: null,
         lastUpdate: new Date().toISOString(),
-        logs: [],
+        logs: [{ timestamp: new Date().toISOString(), message: "🚀 Système réinitialisé à $1000.", type: "success" }],
         whaleAlerts: [],
         arbitrageOpportunities: [],
         newsSentiment: [],
@@ -130,36 +119,17 @@ router.post('/reset', async (req, res) => {
         marketCache: []
     });
 
-    addLog(botState, '♻️ SIMULATION RESET: Portefeuille réinitialisé à $1000', 'warning');
-
-    // PERSISTENCE FIX
+    // 3. PERSISTENCE FIX (Updates bot_data.json and saves the now-empty bot_state table)
     stateManager.save();
 
-    res.json({ success: true, message: 'Simulation reset. Trades archived to Supabase.' });
-
-
-    // Delete trade history file if exists
+    // 4. Delete log files
     const historyFile = path.join(process.cwd(), 'trade_decisions.jsonl');
     if (fs.existsSync(historyFile)) {
-        try {
-            fs.unlinkSync(historyFile);
-            addLog(botState, '📂 Historique des trades effacé', 'warning');
-        } catch (e) {
-            console.error("Failed to delete history file, trying to truncate:", e);
-            try {
-                fs.writeFileSync(historyFile, '');
-                addLog(botState, '📂 Historique des trades vidé (truncate)', 'warning');
-            } catch (e2) {
-                console.error("Failed to truncate history file:", e2);
-                addLog(botState, '❌ Erreur suppression historique: ' + e2.message, 'error');
-            }
-        }
+        try { fs.unlinkSync(historyFile); } catch (e) { console.error("History file delete failed"); }
     }
 
-    stateManager.save();
-
-    console.log(`✅ RESET COMPLETE. Capital: $${botState.capital}`);
-    res.json({ success: true, message: "Simulation reset successful", capital: botState.capital });
+    console.log(`✨ RESET COMPLETE. Capital: $${botState.capital}`);
+    res.json({ success: true, message: "Système totalement réinitialisé (DB + Local)", capital: botState.capital });
 });
 
 // Health check endpoint pour Railway
