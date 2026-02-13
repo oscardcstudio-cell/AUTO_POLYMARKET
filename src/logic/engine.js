@@ -448,7 +448,6 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
                     const reason = `⛔ REALISM CHECK FAILED: No Liquidity in Order Book for ${side}`;
                     if (reasonsCollector) reasonsCollector.push(reason);
                     addLog(botState, `⛔ ${reason} pour "${market.question.substring(0, 30)}..."`, 'warning');
-                    // logTradeDecision(market, null, [...decisionReasons, reason], pizzaData); 
                     return null; // ABORT
                 }
 
@@ -461,7 +460,6 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
                 }
 
                 // FORCE UPDATE Entry Price to Real Ask
-                // If Gamma said 0.01 but Order Book Ask is 0.05, we MUST use 0.05
                 if (Math.abs(entryPrice - executionData.price) > 0.001) {
                     decisionReasons.push(`⚡ Price Adjusted: ${entryPrice.toFixed(3)} -> ${executionData.price.toFixed(3)} (Real Order Book)`);
                     entryPrice = executionData.price;
@@ -472,16 +470,20 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
             } catch (e) {
                 console.warn(`CLOB Check Failed for ${market.question}:`, e.message);
                 addLog(botState, `❌ CLOB Check Failed for "${market.question.substring(0, 30)}...": ${e.message}`, 'error');
-                // If CLOB fails, better to skip than trade on fake data if user wants certainty
                 return null;
             }
         }
     } else {
-        // If we can't verify with CLOB, we skip (User demanded certainty)
-        const reason = `⚠️ No CLOB IDs - Cannot verify real price. Skipped.`;
+        // --- AMM FALLBACK ---
+        // If no CLOB IDs, we trust Gamma API but add an extra "Safety Sliver" for slippage
+        const ammSlippage = 0.03; // Extra 3% buffer for AMM trades
+        const originalPrice = entryPrice;
+        entryPrice = side === 'YES' ? entryPrice * (1 + ammSlippage) : entryPrice * (1 - ammSlippage);
+
+        const reason = `ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer)`;
+        decisionReasons.push(`⚡ ${reason}: ${originalPrice.toFixed(3)} -> ${entryPrice.toFixed(3)}`);
         if (reasonsCollector) reasonsCollector.push(reason);
-        addLog(botState, `${reason} (${market.question.substring(0, 30)}...)`, 'warning');
-        return null;
+        addLog(botState, `⚠️ ${reason} pour "${market.question.substring(0, 30)}..."`, 'info');
     }
 
     // Simulation de slippage et frais
