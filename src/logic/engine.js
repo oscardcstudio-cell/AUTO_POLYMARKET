@@ -365,6 +365,12 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
     if (!side || !entryPrice) {
         decisionReasons.push('Aucune condition de trade remplie');
         if (reasonsCollector) reasonsCollector.push(...decisionReasons);
+
+        // Log rejection only for high-alpha or interesting markets to avoid spam
+        if (market._alphaScore > 40 || isFreshMarket) {
+            addLog(botState, `🔍 Rejeté: "${market.question.substring(0, 30)}..." - ${decisionReasons[decisionReasons.length - 1]}`, 'info');
+        }
+
         logTradeDecision(market, null, decisionReasons, pizzaData);
         return null;
     }
@@ -424,7 +430,7 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
         const lowCapMsg = `Skipped trade: Insufficient capital ($${botState.capital.toFixed(2)}) or trade size too small ($${tradeSize.toFixed(2)})`;
         decisionReasons.push(lowCapMsg);
         if (reasonsCollector) reasonsCollector.push(lowCapMsg);
-        addLog(botState, `⚠️ ${lowCapMsg}`, 'warning');
+        addLog(botState, `⚠️ ${lowCapMsg} pour "${market.question.substring(0, 30)}..."`, 'warning');
         logTradeDecision(market, null, decisionReasons, pizzaData);
         return null;
     }
@@ -441,6 +447,7 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
                 if (!executionData || !executionData.price || executionData.price <= 0) {
                     const reason = `⛔ REALISM CHECK FAILED: No Liquidity in Order Book for ${side}`;
                     if (reasonsCollector) reasonsCollector.push(reason);
+                    addLog(botState, `⛔ ${reason} pour "${market.question.substring(0, 30)}..."`, 'warning');
                     // logTradeDecision(market, null, [...decisionReasons, reason], pizzaData); 
                     return null; // ABORT
                 }
@@ -449,6 +456,7 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
                 if (executionData.spreadPercent > 50) {
                     const reason = `⛔ Spread too wide (${executionData.spreadPercent}%) - Unsafe execution`;
                     if (reasonsCollector) reasonsCollector.push(reason);
+                    addLog(botState, `⛔ ${reason} pour "${market.question.substring(0, 30)}..."`, 'warning');
                     return null;
                 }
 
@@ -459,15 +467,11 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
                     entryPrice = executionData.price;
                 }
 
-                // Re-check Min Price Threshold with Real Price
-                if (entryPrice < (CONFIG.MIN_PRICE_THRESHOLD || 0.05)) {
-                    const reason = `⛔ Real Price too low (<${CONFIG.MIN_PRICE_THRESHOLD}) - Penny Stock Filter`;
-                    if (reasonsCollector) reasonsCollector.push(reason);
-                    return null;
-                }
+                addLog(botState, `📊 Price Fetch [CLOB]: $${entryPrice.toFixed(3)} for ${market.question.substring(0, 30)}...`, 'info');
 
             } catch (e) {
                 console.warn(`CLOB Check Failed for ${market.question}:`, e.message);
+                addLog(botState, `❌ CLOB Check Failed for "${market.question.substring(0, 30)}...": ${e.message}`, 'error');
                 // If CLOB fails, better to skip than trade on fake data if user wants certainty
                 return null;
             }
@@ -476,6 +480,7 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
         // If we can't verify with CLOB, we skip (User demanded certainty)
         const reason = `⚠️ No CLOB IDs - Cannot verify real price. Skipped.`;
         if (reasonsCollector) reasonsCollector.push(reason);
+        addLog(botState, `${reason} (${market.question.substring(0, 30)}...)`, 'warning');
         return null;
     }
 
