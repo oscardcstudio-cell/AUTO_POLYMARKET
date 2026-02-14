@@ -650,7 +650,7 @@ export async function getAdvancedSignals(market, pizzaData, convictionPoints) {
     allSignals.push(...memSignal.signals);
 
     // 2. Cross-Market Intelligence (uses cached correlation map)
-    if (botState._correlationMap) {
+    if (botState._correlationMap && botState._correlationMap instanceof Map) {
         const crossSignal = getCrossMarketSignal(market.id, botState._correlationMap);
         totalBonus += crossSignal.bonus;
         allSignals.push(...crossSignal.signals);
