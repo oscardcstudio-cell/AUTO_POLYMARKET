@@ -418,7 +418,7 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
     let tradeSize = dependencies.testSize || calculateTradeSize(confidence, entryPrice);
 
     // 2. Adjust Size
-    if (botState.learningParams && botState.learningParams.sizeMultiplier !== 1.0) {
+    if (botState.learningParams?.sizeMultiplier && botState.learningParams.sizeMultiplier !== 1.0) {
         tradeSize *= botState.learningParams.sizeMultiplier;
         decisionReasons.push(`🎓 AI Adaptation: Size x${botState.learningParams.sizeMultiplier.toFixed(2)}`);
     }
