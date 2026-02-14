@@ -53,5 +53,26 @@ export const CONFIG = {
         TRAILING_DISTANCE: 0.05,   // Trail by 5%
         TIME_DECAY_HOURS: 24,      // Tighten after 24h
         TIME_DECAY_PENALTY: 0.05   // Tighten by 5%
+    },
+    // Portfolio Hedging Limits
+    PORTFOLIO_LIMITS: {
+        MAX_SAME_CATEGORY: 3,      // Max trades in same category (e.g., 3 political)
+        MAX_SAME_DIRECTION: 6,     // Max trades in same direction (e.g., 6 YES)
+        CORRELATION_PENALTY: 0.10, // Confidence reduction for concentrated trades
+        DIVERSITY_BONUS: 0.05      // Confidence boost for under-represented categories
+    },
+    // Smart Exit (Adaptive Take-Profit + Partial Exits)
+    SMART_EXIT: {
+        VOLATILITY_THRESHOLDS: {
+            LOW: 0.02,     // stddev < 2% = low volatility
+            HIGH: 0.05     // stddev > 5% = high volatility
+        },
+        TP_MAP: {
+            LOW: 0.08,     // 8% TP for low volatility markets
+            MEDIUM: 0.12,  // 12% TP for medium volatility
+            HIGH: 0.20     // 20% TP for high volatility
+        },
+        PARTIAL_EXIT_RATIO: 0.5,     // Sell 50% on first TP hit
+        EXTENDED_TP_MULTIPLIER: 2.0  // Remainder gets 2x TP target
     }
 };

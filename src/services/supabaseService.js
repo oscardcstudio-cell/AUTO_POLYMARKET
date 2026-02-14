@@ -78,7 +78,10 @@ export const supabaseService = {
                     reasons: trade.reasons || [],
                     marketData: trade.marketData || {},
                     slug: trade.slug,
-                    eventSlug: trade.eventSlug
+                    eventSlug: trade.eventSlug,
+                    partialExit: trade.partialExit || false,
+                    originalTP: trade.originalTP || null,
+                    convictionScore: trade.convictionScore || null
                 }
             };
 

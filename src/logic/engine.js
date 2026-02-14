@@ -39,6 +39,165 @@ function calculateTradeSize(confidence, price) {
     return Math.max(CONFIG.MIN_TRADE_SIZE, Math.min(calculatedSize, capital * 0.15));
 }
 
+// --- CONVICTION SCORING: Evaluate ALL signals for composite confidence ---
+async function calculateConviction(market, pizzaData, dependencies) {
+    const { calculateIntradayTrendFn } = dependencies;
+    let convictionPoints = 0;
+    const signals = [];
+    const yesPrice = parseFloat(market.outcomePrices?.[0] || '0');
+    const noPrice = parseFloat(market.outcomePrices?.[1] || '0');
+    const category = categorizeMarket(market.question);
+    const volume24h = parseFloat(market.volume24hr || 0);
+
+    // 1. Arbitrage signal (+40)
+    const hasArbitrage = botState.arbitrageOpportunities?.some(a => a.id === market.id);
+    if (hasArbitrage && yesPrice + noPrice < 0.995) {
+        convictionPoints += 40;
+        signals.push('Arbitrage (+40)');
+    }
+
+    // 2. Whale signal + trend (+30 if trending, +10 if flat)
+    const isWhaleMarket = botState.whaleAlerts?.some(w => w.id === market.id);
+    if (isWhaleMarket) {
+        try {
+            const trend = await calculateIntradayTrendFn(market.id);
+            if (trend === 'UP' || trend === 'DOWN') {
+                convictionPoints += 30;
+                signals.push(`Whale+${trend} (+30)`);
+            } else {
+                convictionPoints += 10;
+                signals.push('Whale(flat) (+10)');
+            }
+        } catch {
+            convictionPoints += 10;
+            signals.push('Whale(no trend) (+10)');
+        }
+    }
+
+    // 3. Fresh market with volume (+20)
+    const isFresh = botState.freshMarkets?.some(f => f.id === market.id);
+    if (isFresh && volume24h > 2000) {
+        convictionPoints += 20;
+        signals.push('Fresh+Volume (+20)');
+    }
+
+    // 4. Alpha score (+20 if >75, +10 if >50)
+    const alphaScore = market._alphaScore || 0;
+    if (alphaScore > 75) {
+        convictionPoints += 20;
+        signals.push(`HighAlpha ${alphaScore} (+20)`);
+    } else if (alphaScore > 50) {
+        convictionPoints += 10;
+        signals.push(`MedAlpha ${alphaScore} (+10)`);
+    }
+
+    // 5. Wizard signal (+15)
+    const isWizard = botState.wizards?.some(w => w.id === market.id);
+    if (isWizard) {
+        convictionPoints += 15;
+        signals.push('Wizard (+15)');
+    }
+
+    // 6. Trend confirmation via CLOB (+15)
+    if (!isWhaleMarket && volume24h > 1000 && yesPrice > 0.55 && yesPrice < 0.90) {
+        try {
+            const trend = await calculateIntradayTrendFn(market.id);
+            if (trend === 'UP' || trend === 'DOWN') {
+                convictionPoints += 15;
+                signals.push(`Trend ${trend} (+15)`);
+            }
+        } catch { /* skip */ }
+    }
+
+    // 7. Hype fader territory (+10)
+    if ((yesPrice > 0.92 && yesPrice < 0.98) || (noPrice > 0.92 && noPrice < 0.98)) {
+        convictionPoints += 10;
+        signals.push('HypeFader (+10)');
+    }
+
+    // 8. DEFCON crisis + geo/eco (+25)
+    if (pizzaData && pizzaData.defcon <= 2) {
+        if (category === 'geopolitical' || category === 'economic') {
+            convictionPoints += 25;
+            signals.push(`DEFCON${pizzaData.defcon}+${category} (+25)`);
+        }
+    }
+
+    // 9. High momentum (+10)
+    if (volume24h > 10000 && yesPrice > 0.60) {
+        convictionPoints += 10;
+        signals.push('HighMomentum (+10)');
+    }
+
+    // 10. News sentiment match (+5)
+    const keywords = (market.question || '').split(' ').filter(w => w.length > 4);
+    const newsMatch = botState.newsSentiment?.some(n =>
+        keywords.some(k => n.title?.toLowerCase().includes(k.toLowerCase()))
+    );
+    if (newsMatch) {
+        convictionPoints += 5;
+        signals.push('NewsMatch (+5)');
+    }
+
+    // Map conviction points to confidence
+    let convictionConfidence;
+    if (convictionPoints >= 80) convictionConfidence = 0.90;
+    else if (convictionPoints >= 60) convictionConfidence = 0.80;
+    else if (convictionPoints >= 40) convictionConfidence = 0.65;
+    else if (convictionPoints >= 20) convictionConfidence = 0.50;
+    else convictionConfidence = 0.35;
+
+    return { points: convictionPoints, confidence: convictionConfidence, signals };
+}
+
+// --- PORTFOLIO HEDGING: Check exposure before entering a trade ---
+function checkPortfolioExposure(activeTrades, newCategory, newSide) {
+    const limits = CONFIG.PORTFOLIO_LIMITS;
+    if (!limits) return { allowed: true, adjustment: 0, reason: null };
+
+    // Count trades by category
+    const sameCategoryCount = activeTrades.filter(t => t.category === newCategory).length;
+    if (sameCategoryCount >= limits.MAX_SAME_CATEGORY) {
+        return {
+            allowed: false,
+            adjustment: 0,
+            reason: `Portfolio limit: ${sameCategoryCount}/${limits.MAX_SAME_CATEGORY} ${newCategory} trades`
+        };
+    }
+
+    // Count trades by direction
+    const sameDirectionCount = activeTrades.filter(t => t.side === newSide).length;
+    if (sameDirectionCount >= limits.MAX_SAME_DIRECTION) {
+        return {
+            allowed: false,
+            adjustment: 0,
+            reason: `Direction limit: ${sameDirectionCount}/${limits.MAX_SAME_DIRECTION} ${newSide} trades`
+        };
+    }
+
+    // Calculate adjustment
+    let adjustment = 0;
+    let reason = null;
+
+    // Correlation penalty: same category AND same direction
+    const correlatedCount = activeTrades.filter(
+        t => t.category === newCategory && t.side === newSide
+    ).length;
+    if (correlatedCount > 0) {
+        adjustment -= limits.CORRELATION_PENALTY;
+        reason = `Correlation penalty: ${correlatedCount} similar ${newCategory}/${newSide} trades (-${limits.CORRELATION_PENALTY})`;
+    }
+
+    // Diversity bonus: category with 0 active trades
+    const categoriesInPortfolio = new Set(activeTrades.map(t => t.category));
+    if (!categoriesInPortfolio.has(newCategory) && activeTrades.length > 0) {
+        adjustment += limits.DIVERSITY_BONUS;
+        reason = `Diversity bonus: new category ${newCategory} (+${limits.DIVERSITY_BONUS})`;
+    }
+
+    return { allowed: true, adjustment, reason };
+}
+
 // Logging détaillé des décisions de trade pour analyse
 function logTradeDecision(market, trade, reasons, pizzaData) {
     const logEntry = {
@@ -413,6 +572,34 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
     // Safety check if side was set but no entryPrice (shouldn't happen with above logic but safe)
     if (!side || !entryPrice) return null; // Added safety return
 
+    // --- CONVICTION SCORING (Signal Stacking) ---
+    // Evaluate ALL applicable signals and combine into composite confidence
+    let convictionResult = null;
+    if (side && entryPrice) {
+        convictionResult = await calculateConviction(market, pizzaData, {
+            calculateIntradayTrendFn
+        });
+        if (convictionResult.points > 0) {
+            confidence = convictionResult.confidence;
+            decisionReasons.push(`🎯 Conviction: ${convictionResult.points}pts → ${convictionResult.confidence.toFixed(2)}`);
+            convictionResult.signals.forEach(s => decisionReasons.push(s));
+        }
+    }
+
+    // --- PORTFOLIO HEDGING CHECK ---
+    if (!skipPersistence) {
+        const exposure = checkPortfolioExposure(botState.activeTrades, category, side);
+        if (!exposure.allowed) {
+            if (reasonsCollector) reasonsCollector.push(exposure.reason);
+            decisionReasons.push(exposure.reason);
+            logTradeDecision(market, null, decisionReasons, pizzaData);
+            return null;
+        }
+        if (exposure.adjustment !== 0 && exposure.reason) {
+            confidence += exposure.adjustment;
+            decisionReasons.push(`🛡️ ${exposure.reason}`);
+        }
+    }
 
     if (entryPrice < (CONFIG.MIN_PRICE_THRESHOLD || 0.05)) {
         const reason = `Price too low (<${CONFIG.MIN_PRICE_THRESHOLD || 0.05}) - Penny Stock Filter`;
@@ -552,7 +739,8 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
         category: category,
         isFresh: isFreshMarket,
         clobTokenIds: market.clobTokenIds || [],
-        endDate: market.endDate || market.end_date_iso || null
+        endDate: market.endDate || market.end_date_iso || null,
+        convictionScore: convictionResult?.points || 0
     };
 
     saveNewTrade(trade, skipPersistence);
@@ -617,11 +805,46 @@ export async function checkAndCloseTrades(getRealMarketPriceFn) {
             continue;
         }
 
-        // --- 3. TAKE PROFIT CHECK ---
-        const tpPercent = CONFIG.TAKE_PROFIT_PERCENT || 0.20;
+        // --- 3. ADAPTIVE TAKE PROFIT CHECK (Smart Exit) ---
+        let tpPercent;
+        const smartExit = CONFIG.SMART_EXIT;
+
+        if (trade.partialExit) {
+            // Already took partial profit — use extended target for remainder
+            tpPercent = (trade.originalTP || CONFIG.TAKE_PROFIT_PERCENT || 0.10) * (smartExit?.EXTENDED_TP_MULTIPLIER || 2.0);
+        } else {
+            tpPercent = await calculateAdaptiveTP(trade);
+        }
+
         if (pnlPercent >= tpPercent) {
-            await closeTrade(i, currentPrice, `TAKE PROFIT: ${(pnlPercent * 100).toFixed(1)}% reached`);
-            continue;
+            if (!trade.partialExit && smartExit && smartExit.PARTIAL_EXIT_RATIO < 1.0) {
+                // PARTIAL EXIT: Sell portion, keep remainder with extended target
+                const exitRatio = smartExit.PARTIAL_EXIT_RATIO;
+                const partialShares = trade.shares * exitRatio;
+                const partialValue = partialShares * currentPrice;
+                const partialInvested = trade.amount * exitRatio;
+                const partialPnl = partialValue - partialInvested;
+
+                // Credit partial profit to capital
+                botState.capital += partialValue;
+                if (partialPnl > 0) botState.winningTrades++;
+
+                // Update trade in-place for remainder
+                trade.shares -= partialShares;
+                trade.amount -= partialInvested;
+                trade.partialExit = true;
+                trade.originalTP = tpPercent;
+                trade.breakEvenStop = true; // Move stop-loss to break-even
+
+                addLog(botState, `✂️ PARTIAL EXIT: ${(exitRatio * 100)}% sold at +${(pnlPercent * 100).toFixed(1)}% | Remainder targets +${(tpPercent * (smartExit.EXTENDED_TP_MULTIPLIER || 2.0) * 100).toFixed(0)}%`, 'trade');
+                stateManager.save();
+                await supabaseService.saveTrade(trade).catch(e => console.error('Supabase partial exit save:', e));
+                continue;
+            } else {
+                // Full exit (no smart exit, or second TP hit on remainder)
+                await closeTrade(i, currentPrice, `TAKE PROFIT: ${(pnlPercent * 100).toFixed(1)}% reached${trade.partialExit ? ' (remainder)' : ''}`);
+                continue;
+            }
         }
 
         // --- 4. TIMEOUT CHECK (Research-backed: 48h for prediction markets) ---
@@ -808,12 +1031,51 @@ async function closeTrade(index, exitPrice, reason) {
     await supabaseService.saveTrade(trade);
 }
 
+// --- SMART EXIT: Adaptive Take-Profit based on market volatility ---
+async function calculateAdaptiveTP(trade) {
+    const smartExit = CONFIG.SMART_EXIT;
+    if (!smartExit) return CONFIG.TAKE_PROFIT_PERCENT || 0.10;
+
+    try {
+        const trades = await getCLOBTradeHistory(trade.marketId);
+        if (!trades || trades.length < 5) {
+            return smartExit.TP_MAP.MEDIUM;
+        }
+
+        // Calculate price volatility (stddev of % changes)
+        const prices = trades.slice(0, 25).map(t => parseFloat(t.price)).filter(p => !isNaN(p) && p > 0);
+        if (prices.length < 3) return smartExit.TP_MAP.MEDIUM;
+
+        const changes = [];
+        for (let i = 1; i < prices.length; i++) {
+            changes.push((prices[i] - prices[i - 1]) / prices[i - 1]);
+        }
+
+        const mean = changes.reduce((a, b) => a + b, 0) / changes.length;
+        const variance = changes.reduce((sum, c) => sum + Math.pow(c - mean, 2), 0) / changes.length;
+        const stddev = Math.sqrt(variance);
+
+        if (stddev < smartExit.VOLATILITY_THRESHOLDS.LOW) return smartExit.TP_MAP.LOW;
+        if (stddev > smartExit.VOLATILITY_THRESHOLDS.HIGH) return smartExit.TP_MAP.HIGH;
+        return smartExit.TP_MAP.MEDIUM;
+
+    } catch (e) {
+        console.warn(`Adaptive TP failed for ${trade.marketId}: ${e.message}`);
+        return CONFIG.TAKE_PROFIT_PERCENT || 0.10;
+    }
+}
+
 function calculateDynamicStopLoss(trade, currentReturn, maxReturn) {
     const volatilityMap = CONFIG.DYNAMIC_SL.VOLATILITY_MAP;
     const baseStopPercent = volatilityMap[trade.category] || volatilityMap.other;
 
     // 1. Base Stop: Volatility Adjusted
     let requiredStopPercent = -baseStopPercent;
+
+    // If partial exit taken, floor stop at break-even (never go below 0%)
+    if (trade.breakEvenStop) {
+        requiredStopPercent = Math.max(requiredStopPercent, 0.0);
+    }
 
     // 2. Trailing Stop Logic
     const activation = CONFIG.DYNAMIC_SL.TRAILING_ACTIVATION || 0.15;
