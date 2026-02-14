@@ -226,7 +226,7 @@
                     pnlEl.style.color = getColor(globalData.total_pnl);
 
                     document.getElementById('roi-percent').textContent = `ROI: ${formatPct(globalData.roi_percent)}`;
-                    document.getElementById('win-rate').textContent = formatPct(globalData.win_rate);
+                    document.getElementById('win-rate').textContent = formatPct(globalData.win_rate || globalData.win_rate_percent);
                     document.getElementById('trade-count').textContent = `Total Trades: ${globalData.total_trades}`;
                 }
 
