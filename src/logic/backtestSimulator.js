@@ -173,6 +173,7 @@ export async function runBacktestSimulation() {
         },
         testSize: null,
         isTest: false,
+        skipPersistence: true,
         reasonsCollector: []
     };
 

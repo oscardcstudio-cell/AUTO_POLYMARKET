@@ -20,6 +20,7 @@ const mockDependencies = {
     calculateIntradayTrendFn: async () => 'UP',
     testSize: 100,
     isTest: true,
+    skipPersistence: true,
     reasonsCollector: []
 };
 

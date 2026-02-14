@@ -76,8 +76,22 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
         calculateIntradayTrendFn = calculateIntradayTrend,
         testSize = null,
         isTest = false,
+        skipPersistence = false,
         reasonsCollector = null
     } = dependencies;
+
+    // === HARD GUARDS (never bypassed) ===
+    // Portfolio limit: absolute cap
+    const maxTrades = CONFIG.BASE_MAX_TRADES || 10;
+    if (!skipPersistence && botState.activeTrades.length >= maxTrades) {
+        if (reasonsCollector) reasonsCollector.push(`Portfolio full (${botState.activeTrades.length}/${maxTrades})`);
+        return null;
+    }
+    // Minimum capital check
+    if (!skipPersistence && botState.capital < CONFIG.MIN_TRADE_SIZE) {
+        if (reasonsCollector) reasonsCollector.push(`Insufficient capital ($${botState.capital.toFixed(2)})`);
+        return null;
+    }
 
     if (!market.outcomePrices) {
         if (reasonsCollector) reasonsCollector.push("Missing prices");
@@ -174,11 +188,8 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
             // Let's handle it manually here for both.
 
             [tradeYes, tradeNo].forEach(t => {
-                botState.capital -= t.amount;
-                botState.activeTrades.unshift(t);
-                botState.totalTrades += 1;
+                saveNewTrade(t, skipPersistence);
             });
-            stateManager.save();
 
             return [tradeYes, tradeNo];
         }
@@ -509,25 +520,27 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
         clobTokenIds: market.clobTokenIds || []
     };
 
-    saveNewTrade(trade);
+    saveNewTrade(trade, skipPersistence);
     logTradeDecision(market, trade, decisionReasons, pizzaData);
 
-    const icon = category === 'geopolitical' ? '🌍' : (category === 'economic' ? '📉' : '🎰');
-    stateManager.addSectorEvent(category, 'TRADE', `${icon} Trade Opened: $${tradeSize.toFixed(0)} on ${side}`, {
-        market: market.question,
-        price: executionPrice.toFixed(2)
-    });
+    if (!skipPersistence) {
+        const icon = category === 'geopolitical' ? '🌍' : (category === 'economic' ? '📉' : '🎰');
+        stateManager.addSectorEvent(category, 'TRADE', `${icon} Trade Opened: $${tradeSize.toFixed(0)} on ${side}`, {
+            market: market.question,
+            price: executionPrice.toFixed(2)
+        });
+    }
 
     return trade;
 }
 
-function saveNewTrade(trade) {
+function saveNewTrade(trade, skipPersistence = false) {
     botState.capital -= trade.amount;
     botState.activeTrades.unshift(trade);
     botState.totalTrades += 1;
 
-    // Limiter l'historique des trades actifs pour éviter le bloat
-    // (Note: La limite de trades autorisés est gérée dynamiquement dans server.js)
+    // In backtest mode, skip all persistence (Supabase + disk)
+    if (skipPersistence) return;
 
     stateManager.save();
     supabaseService.saveTrade(trade).catch(err => console.error('Supabase Save Error:', err));

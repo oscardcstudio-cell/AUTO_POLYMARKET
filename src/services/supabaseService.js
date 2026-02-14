@@ -90,7 +90,7 @@ export const supabaseService = {
             let result;
 
             if (trade.supabase_id) {
-                // Update existing trade
+                // Update existing trade (e.g. when closing)
                 result = await supabase
                     .from('trades')
                     .update(dbTrade)
@@ -98,29 +98,34 @@ export const supabaseService = {
                     .select()
                     .single();
             } else {
-                // ANTI-DUPLICATE: Check if similar trade already exists
+                // ANTI-DUPLICATE: Check if trade already exists (by market_id + entry_price + amount)
+                // Don't filter by status so we can find OPEN trades when closing them
                 const { data: existing } = await supabase
                     .from('trades')
-                    .select('id')
+                    .select('id, status')
                     .eq('market_id', dbTrade.market_id)
                     .eq('amount', dbTrade.amount)
                     .eq('entry_price', dbTrade.entry_price)
-                    .eq('status', dbTrade.status)
                     .order('created_at', { ascending: false })
                     .limit(1);
 
                 if (existing && existing.length > 0) {
-                    // Attach the existing ID to avoid future duplicates
+                    // Found existing trade - update it (handles OPEN -> CLOSED transitions)
                     trade.supabase_id = existing[0].id;
-                    return existing[0];
+                    result = await supabase
+                        .from('trades')
+                        .update(dbTrade)
+                        .eq('id', existing[0].id)
+                        .select()
+                        .single();
+                } else {
+                    // Insert new trade
+                    result = await supabase
+                        .from('trades')
+                        .insert(dbTrade)
+                        .select()
+                        .single();
                 }
-
-                // Insert new trade
-                result = await supabase
-                    .from('trades')
-                    .insert(dbTrade)
-                    .select()
-                    .single();
             }
 
             if (result.error) throw result.error;
