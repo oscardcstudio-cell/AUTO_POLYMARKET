@@ -32,7 +32,7 @@ export async function getRelevantMarkets(useDeepScan = false) {
             return relevantMarketsCache;
         }
 
-        const defconLevel = botState.lastPizzaData?.defcon || 5;
+        const defconLevel = botState.lastPizzaData?.defcon || 3;
 
         // Crisis Mode
         if (defconLevel <= 2) {
@@ -483,28 +483,3 @@ export async function updateTopSignal(pizzaData) {
     }
 }
 
-export async function getPriceHistory(marketId, interval = '1h') {
-    try {
-        // Gamma API endpoint for history
-        // interval: '1m', '1h', '1d'
-        const response = await fetchWithRetry(`https://gamma-api.polymarket.com/events/${marketId}/history?interval=${interval}`); // Note: Endpoint might be /markets/{id}/history or events.
-        // Let's try standard likely endpoint: https://clob.polymarket.com/prices-history is complex.
-        // Gamma usually provides history array in market details or separate endpoint.
-        // A reliable public history endpoint is often: https://gamma-api.polymarket.com/markets/{id} (contains history?)
-        // Actually, let's use the one that works for the frontend charts usually: 
-        // https://gamma-api.polymarket.com/history?market={id}&fidelity=...
-        // Falling back to a safe "Get History" simulator if unsure, BUT user wants REAL API.
-        // Let's use:
-        const url = `https://gamma-api.polymarket.com/markets/${marketId}`;
-        // The market details often contain 'history' or 'outcomePrices' over time if we pass params?
-        // Let's try a dedicated history generic fetch if we can't find specific documentation.
-        // Actually, for now, let's look at `clob_api.js` -> `getCLOBTradeHistory`.
-        // We can reconstruct trend from recent trades!
-
-        // BETTER APPROACH: Use `getCLOBTradeHistory` from `clob_api.js`! 
-        // It returns recent trades. We can check if the last 10 trades are ascending.
-        return null; // Implemented in engine using getCLOBTradeHistory instead
-    } catch (e) {
-        return null;
-    }
-}

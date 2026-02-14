@@ -75,7 +75,7 @@ export const supabaseService = {
                 strategy: trade.strategy || 'standard',
                 category: trade.category || 'General',
                 metadata: {
-                    reasons: trade.decisionReasons || [],
+                    reasons: trade.reasons || [],
                     marketData: trade.marketData || {},
                     slug: trade.slug,
                     eventSlug: trade.eventSlug

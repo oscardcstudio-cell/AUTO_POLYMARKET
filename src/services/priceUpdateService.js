@@ -87,36 +87,36 @@ export async function updateActiveTradePrices(activeTrades) {
     addLog(botState, `🔄 Updating prices for ${activeTrades.length} active trades...`);
     let updatedCount = 0;
 
-    // Process trades sequentially with small delay to avoid rate limiting
-    for (const trade of activeTrades) {
-        if (!trade.marketId) {
-            continue;
-        }
+    // Process trades in parallel batches of 5 to avoid rate limiting
+    const BATCH_SIZE = 5;
+    const tradesToUpdate = activeTrades.filter(t => t.marketId);
 
-        const currentPrice = await fetchMarketPrice(trade.marketId);
+    for (let i = 0; i < tradesToUpdate.length; i += BATCH_SIZE) {
+        const batch = tradesToUpdate.slice(i, i + BATCH_SIZE);
 
-        if (currentPrice !== null) {
-            // Initialize priceHistory if it doesn't exist
-            if (!trade.priceHistory) {
-                trade.priceHistory = [trade.entryPrice || currentPrice];
+        const results = await Promise.all(batch.map(async (trade) => {
+            const currentPrice = await fetchMarketPrice(trade.marketId);
+
+            if (currentPrice !== null) {
+                if (!trade.priceHistory) {
+                    trade.priceHistory = [trade.entryPrice || currentPrice];
+                }
+                trade.priceHistory.push(currentPrice);
+                if (trade.priceHistory.length > 50) {
+                    trade.priceHistory = trade.priceHistory.slice(-50);
+                }
+                trade.lastPriceUpdate = new Date().toISOString();
+                return true;
             }
+            return false;
+        }));
 
-            // Add new price to history
-            trade.priceHistory.push(currentPrice);
+        updatedCount += results.filter(Boolean).length;
 
-            // Limit history to last 50 points to save memory
-            if (trade.priceHistory.length > 50) {
-                trade.priceHistory = trade.priceHistory.slice(-50);
-            }
-
-            // Update timestamp
-            trade.lastPriceUpdate = new Date().toISOString();
-
-            updatedCount++;
+        // Small delay between batches to respect rate limits
+        if (i + BATCH_SIZE < tradesToUpdate.length) {
+            await new Promise(resolve => setTimeout(resolve, 300));
         }
-
-        // Small delay between requests (200ms = max 5 req/sec = 300 req/min, well under limit)
-        await new Promise(resolve => setTimeout(resolve, 200));
     }
 
     addLog(botState, `✅ Updated ${updatedCount}/${activeTrades.length} trade prices`);

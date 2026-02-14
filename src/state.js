@@ -51,7 +51,10 @@ const INITIAL_STATE = {
         sizeMultiplier: 1.0,
         mode: 'NEUTRAL',
         reason: 'Baseline'
-    }
+    },
+    dailyPnL: 0,
+    dailyPnLResetDate: new Date().toISOString().split('T')[0],
+    cooldowns: {}
 };
 
 export class StateManager {

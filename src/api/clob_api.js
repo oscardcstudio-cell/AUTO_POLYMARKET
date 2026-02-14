@@ -140,7 +140,7 @@ export async function getCLOBPrice(tokenId) {
         const data = await response.json();
         const price = parseFloat(data.price);
 
-        if (price > 0 && price < 1) {
+        if (price >= 0 && price <= 1) {
             setCache(cacheKey, price);
             return price;
         }
@@ -174,7 +174,7 @@ export async function getCLOBMidpoint(tokenId) {
         const data = await response.json();
         const midpoint = parseFloat(data.mid);
 
-        if (midpoint > 0 && midpoint < 1) {
+        if (midpoint >= 0 && midpoint <= 1) {
             setCache(cacheKey, midpoint);
             return midpoint;
         }
