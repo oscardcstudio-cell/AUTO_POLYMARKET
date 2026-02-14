@@ -30,6 +30,8 @@ import { getPizzaData } from './src/api/pizzint.js';
 import { getEventSlug } from './src/api/market_discovery.js';
 import { getMidPrice } from './src/api/clob_api.js';
 import { feedbackLoop } from './src/logic/feedbackLoop.js';
+import { supabaseService } from './src/services/supabaseService.js';
+import { recordMarketBatch, buildCorrelationMap, detectCatalysts, evaluateDCA, executeDCA } from './src/logic/advancedStrategies.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -192,6 +194,18 @@ async function mainLoop() {
             await detectWhales(relevantMarkets);
             await detectFreshMarkets();
 
+            // 4b. Advanced Strategies: Market Memory + Catalysts + Correlations
+            try {
+                recordMarketBatch(relevantMarkets);
+                detectCatalysts(pizzaData, relevantMarkets);
+                // Rebuild correlation map every deep scan
+                if (isDeepScan) {
+                    botState._correlationMap = buildCorrelationMap(relevantMarkets);
+                }
+            } catch (e) {
+                console.warn('Advanced strategies update error:', e.message);
+            }
+
             // 5. Signal Update (Periodic)
             if (botState.capitalHistory.length % 5 === 0) {
                 await updateTopSignal(pizzaData);
@@ -282,6 +296,30 @@ async function mainLoop() {
                                 rejectionReasons.push(`${candidate.priority}: ${marketReasons[marketReasons.length - 1]}`);
                             }
                         }
+                    }
+                }
+
+                // 6b. DCA: Check if any active trades deserve an add-on
+                if (!tradeExecutedThisLoop && botState.capital >= CONFIG.MIN_TRADE_SIZE) {
+                    try {
+                        for (const trade of botState.activeTrades) {
+                            const dca = evaluateDCA(trade.marketId);
+                            if (dca.shouldDCA && dca.existingTrade) {
+                                const currentPrice = dca.existingTrade.priceHistory?.length > 0
+                                    ? dca.existingTrade.priceHistory[dca.existingTrade.priceHistory.length - 1]
+                                    : null;
+                                if (currentPrice) {
+                                    const result = executeDCA(dca.existingTrade, currentPrice);
+                                    if (result) {
+                                        tradeExecutedThisLoop = true;
+                                        await supabaseService.saveTrade(dca.existingTrade).catch(e => console.error('DCA Supabase:', e));
+                                        break; // 1 DCA per loop
+                                    }
+                                }
+                            }
+                        }
+                    } catch (e) {
+                        console.warn('DCA check error:', e.message);
                     }
                 }
 

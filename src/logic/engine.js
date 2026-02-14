@@ -6,6 +6,7 @@ import { categorizeMarket } from './signals.js';
 import { getBestExecutionPrice, getCLOBOrderBook, getCLOBTradeHistory } from '../api/clob_api.js';
 import { supabaseService } from '../services/supabaseService.js';
 import { sportsService } from '../services/sportsService.js';
+import { getAdvancedSignals, evaluateDCA, executeDCA } from './advancedStrategies.js';
 
 function calculateTradeSize(confidence, price) {
     const capital = botState.capital || CONFIG.STARTING_CAPITAL;
@@ -139,6 +140,23 @@ async function calculateConviction(market, pizzaData, dependencies) {
         signals.push('NewsMatch (+5)');
     }
 
+    // 11. ADVANCED STRATEGIES (Memory, Cross-Market, Timing, Events, Calendar, Anti-Fragility)
+    let advancedSizeMultiplier = 1.0;
+    try {
+        const advanced = await getAdvancedSignals(market, pizzaData, convictionPoints);
+        convictionPoints += advanced.bonus;
+        signals.push(...advanced.signals);
+        advancedSizeMultiplier = advanced.sizeMultiplier;
+
+        if (advanced.shouldReject) {
+            signals.push(`⛔ ${advanced.rejectReason}`);
+            return { points: convictionPoints, confidence: 0, signals, rejected: true, rejectReason: advanced.rejectReason, sizeMultiplier: advancedSizeMultiplier };
+        }
+    } catch (e) {
+        // Advanced strategies are optional — fail gracefully
+        console.warn('Advanced signals error:', e.message);
+    }
+
     // Map conviction points to confidence
     let convictionConfidence;
     if (convictionPoints >= 80) convictionConfidence = 0.90;
@@ -147,7 +165,7 @@ async function calculateConviction(market, pizzaData, dependencies) {
     else if (convictionPoints >= 20) convictionConfidence = 0.50;
     else convictionConfidence = 0.35;
 
-    return { points: convictionPoints, confidence: convictionConfidence, signals };
+    return { points: convictionPoints, confidence: convictionConfidence, signals, rejected: false, sizeMultiplier: advancedSizeMultiplier };
 }
 
 // --- PORTFOLIO HEDGING: Check exposure before entering a trade ---
@@ -572,18 +590,32 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
     // Safety check if side was set but no entryPrice (shouldn't happen with above logic but safe)
     if (!side || !entryPrice) return null; // Added safety return
 
-    // --- CONVICTION SCORING (Signal Stacking) ---
+    // --- CONVICTION SCORING (Signal Stacking + Advanced Strategies) ---
     // Evaluate ALL applicable signals and combine into composite confidence
     let convictionResult = null;
+    let advancedSizeMultiplier = 1.0;
     if (side && entryPrice) {
         convictionResult = await calculateConviction(market, pizzaData, {
             calculateIntradayTrendFn
         });
+
+        // Anti-Fragility can reject trades during drawdown recovery
+        if (convictionResult.rejected) {
+            const reason = `🛡️ Anti-Fragility: ${convictionResult.rejectReason}`;
+            if (reasonsCollector) reasonsCollector.push(reason);
+            decisionReasons.push(reason);
+            logTradeDecision(market, null, decisionReasons, pizzaData);
+            return null;
+        }
+
         if (convictionResult.points > 0) {
             confidence = convictionResult.confidence;
             decisionReasons.push(`🎯 Conviction: ${convictionResult.points}pts → ${convictionResult.confidence.toFixed(2)}`);
             convictionResult.signals.forEach(s => decisionReasons.push(s));
         }
+
+        // Store size multiplier from advanced strategies (Calendar, Anti-Fragility)
+        advancedSizeMultiplier = convictionResult.sizeMultiplier || 1.0;
     }
 
     // --- PORTFOLIO HEDGING CHECK ---
@@ -641,6 +673,12 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
     confidence = Math.max(0.01, Math.min(0.99, confidence));
 
     let tradeSize = dependencies.testSize || calculateTradeSize(confidence, entryPrice);
+
+    // 2a. Apply Advanced Strategy Size Multiplier (Calendar, Anti-Fragility)
+    if (advancedSizeMultiplier !== 1.0) {
+        tradeSize *= advancedSizeMultiplier;
+        decisionReasons.push(`📅 Advanced Size: x${advancedSizeMultiplier.toFixed(2)}`);
+    }
 
     // 2. Adjust Size with Learning Params
     if (botState.learningParams?.sizeMultiplier && botState.learningParams.sizeMultiplier !== 1.0) {
