@@ -751,7 +751,9 @@ async function resolveTradeWithRealOutcome(trade) {
             ...trade,
             status: 'CLOSED',
             exitPrice: exitPrice,
-            profit: profit,
+            pnl: profit,
+            profit: profit, // Alias for backward compatibility
+            pnlPercent: (trade.amount > 0) ? (profit / trade.amount * 100) : 0,
             closedAt: new Date().toISOString(),
             resolvedOutcome: wonTrade ? 'WON' : 'LOST',
             resolutionMethod: 'REAL_MARKET_OUTCOME'
