@@ -526,3 +526,911 @@
 [2026-02-11T19:59:28.343Z] [INFO] ⚠️ Network error: fetch failed. Retrying in 1000ms... (Attempt 1/2)
 [2026-02-11T19:59:29.348Z] [INFO] ✅ Caught expected error after 1023ms: fetch failed
 [2026-02-11T19:59:29.349Z] [INFO]    (Duration suggests retries occurred)
+[2026-02-14T12:05:17.582Z] [INFO] [32m%s[0m [SUCCESS] Chargement des données réussi ($1000.00)
+[2026-02-14T12:05:17.581Z] [SUCCESS] Chargement des données réussi ($1000.00)
+[2026-02-14T12:05:17.775Z] [INFO] [36m%s[0m [INFO] 🔄 Démarrage de la boucle de trading...
+[2026-02-14T12:05:17.774Z] [INFO] 🔄 Démarrage de la boucle de trading...
+[2026-02-14T12:05:17.776Z] [INFO] [33m%s[0m [WARNING] ⚠️ État local vide/par défaut. Tentative de récupération Cloud...
+[2026-02-14T12:05:17.776Z] [WARNING] ⚠️ État local vide/par défaut. Tentative de récupération Cloud...
+[2026-02-14T12:05:17.777Z] [INFO] 🔄 Tentative de reconstruction de l'état depuis Supabase...
+[2026-02-14T12:05:17.813Z] [INFO] 
+🚀 SERVER STARTED ON PORT 3000
+[2026-02-14T12:05:17.871Z] [INFO] 📅 14/02/2026 13:05:17
+[2026-02-14T12:05:17.871Z] [INFO] ✅ Version: 2.6.6 (Stable - Nuclear Disabled)
+[2026-02-14T12:05:17.872Z] [INFO] [32m%s[0m [SUCCESS] Serveur démarré sur le port 3000 (v2.6.6 Stable)
+[2026-02-14T12:05:17.872Z] [SUCCESS] Serveur démarré sur le port 3000 (v2.6.6 Stable)
+[2026-02-14T12:05:17.973Z] [ERROR] ❌ Erreur reconstruction via Supabase: Invalid API key
+[2026-02-14T12:05:17.975Z] [INFO] [36m%s[0m [INFO] ℹ️ Aucune donnée trouvée sur Supabase ou échec récupération.
+[2026-02-14T12:05:17.975Z] [INFO] ℹ️ Aucune donnée trouvée sur Supabase ou échec récupération.
+[2026-02-14T12:05:17.976Z] [INFO] 🔄 Starting real-time price tracking service...
+[2026-02-14T12:05:17.977Z] [INFO] [36m%s[0m [INFO] 🚀 Starting price update loop (every 5 minutes)
+[2026-02-14T12:05:17.977Z] [INFO] 🚀 Starting price update loop (every 5 minutes)
+[2026-02-14T12:05:17.978Z] [INFO] 🕒 AI Self-Training Scheduler started (Every 6h)
+[2026-02-14T12:05:18.114Z] [INFO] [36m%s[0m [INFO] 🌊 LANCEMENT DEEP SCAN (1000+ marchés)...
+[2026-02-14T12:05:18.114Z] [INFO] 🌊 LANCEMENT DEEP SCAN (1000+ marchés)...
+[2026-02-14T12:05:18.469Z] [INFO] 🧙 Wizards Detected: 5
+[2026-02-14T12:05:18.548Z] [ERROR] Error in feedbackLoop: Invalid API key
+[2026-02-14T12:05:18.549Z] [INFO] 🧪 Starting Autonomous Backtest...
+[2026-02-14T12:05:18.549Z] [INFO] [36m%s[0m [INFO] 🧪 Lancement du Backtest Autonome (Vérification Stratégie)...
+[2026-02-14T12:05:18.549Z] [INFO] 🧪 Lancement du Backtest Autonome (Vérification Stratégie)...
+[2026-02-14T12:05:18.590Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Will FC Bayern München win on ..." - Aucune condition de trade remplie
+[2026-02-14T12:05:18.590Z] [INFO] 🔍 Rejeté: "Will FC Bayern München win on ..." - Aucune condition de trade remplie
+[2026-02-14T12:05:18.610Z] [ERROR] ❌ Supabase State Save Error: Invalid API key
+[2026-02-14T12:05:18.655Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Will Ethereum reach $4,400 in ..." - Aucune condition de trade remplie
+[2026-02-14T12:05:18.655Z] [INFO] 🔍 Rejeté: "Will Ethereum reach $4,400 in ..." - Aucune condition de trade remplie
+[2026-02-14T12:05:18.686Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Will Bitcoin reach $150,000 in..." - Aucune condition de trade remplie
+[2026-02-14T12:05:18.685Z] [INFO] 🔍 Rejeté: "Will Bitcoin reach $150,000 in..." - Aucune condition de trade remplie
+[2026-02-14T12:05:18.713Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Will France win the Men's Ice ..." - Aucune condition de trade remplie
+[2026-02-14T12:05:18.713Z] [INFO] 🔍 Rejeté: "Will France win the Men's Ice ..." - Aucune condition de trade remplie
+[2026-02-14T12:05:18.771Z] [ERROR] ❌ Main Loop Error: {}
+[2026-02-14T12:05:18.771Z] [INFO] [31m%s[0m [ERROR] Main Loop Error: Cannot read properties of undefined (reading 'toFixed')
+[2026-02-14T12:05:18.771Z] [ERROR] Main Loop Error: Cannot read properties of undefined (reading 'toFixed')
+[2026-02-14T12:05:18.824Z] [INFO] [32m%s[0m [SUCCESS] Chargement des données réussi ($1000.00)
+[2026-02-14T12:05:18.823Z] [SUCCESS] Chargement des données réussi ($1000.00)
+[2026-02-14T12:05:18.826Z] [INFO] 🧪 ========================================
+[2026-02-14T12:05:18.826Z] [INFO]    ADVANCED POLYMARKET BACKTEST (2026)
+[2026-02-14T12:05:18.826Z] [INFO] ========================================
+
+[2026-02-14T12:05:18.827Z] [INFO] 📊 Analyzing 20 historical markets...
+
+[2026-02-14T12:05:18.872Z] [ERROR] Auto-Backtest Error: Command failed: node C:\Users\oscar\Auto_Polymarket\.claude\worktrees\tender-booth\scripts\backtest_public.js
+file:///C:/Users/oscar/Auto_Polymarket/.claude/worktrees/tender-booth/src/logic/engine.js:423
+        decisionReasons.push(`🎓 AI Adaptation: Size x${botState.learningParams.sizeMultiplier.toFixed(2)}`);
+                                                                                               ^
+
+TypeError: Cannot read properties of undefined (reading 'toFixed')
+    at simulateTrade (file:///C:/Users/oscar/Auto_Polymarket/.claude/worktrees/tender-booth/src/logic/engine.js:423:96)
+    at async runBacktest (file:///C:/Users/oscar/Auto_Polymarket/.claude/worktrees/tender-booth/scripts/backtest_public.js:136:26)
+
+Node.js v24.13.0
+
+[2026-02-14T12:05:18.873Z] [INFO] [31m%s[0m [ERROR] ❌ Auto-Backtest Failed: Command failed: node C:\Users\oscar\Auto_Polymarket\.claude\worktrees\tender-booth\scripts\backtest_public.js
+file:///C:/Users/oscar/Auto_Polymarket/.claude/worktrees/tender-booth/src/logic/engine.js:423
+        decisionReasons.push(`🎓 AI Adaptation: Size x${botState.learningParams.sizeMultiplier.toFixed(2)}`);
+                                                                                               ^
+
+TypeError: Cannot read properties of undefined (reading 'toFixed')
+    at simulateTrade (file:///C:/Users/oscar/Auto_Polymarket/.claude/worktrees/tender-booth/src/logic/engine.js:423:96)
+    at async runBacktest (file:///C:/Users/oscar/Auto_Polymarket/.claude/worktrees/tender-booth/scripts/backtest_public.js:136:26)
+
+Node.js v24.13.0
+
+[2026-02-14T12:05:18.873Z] [ERROR] ❌ Auto-Backtest Failed: Command failed: node C:\Users\oscar\Auto_Polymarket\.claude\worktrees\tender-booth\scripts\backtest_public.js
+file:///C:/Users/oscar/Auto_Polymarket/.claude/worktrees/tender-booth/src/logic/engine.js:423
+        decisionReasons.push(`🎓 AI Adaptation: Size x${botState.learningParams.sizeMultiplier.toFixed(2)}`);
+                                                                                               ^
+
+TypeError: Cannot read properties of undefined (reading 'toFixed')
+    at simulateTrade (file:///C:/Users/oscar/Auto_Polymarket/.claude/worktrees/tender-booth/src/logic/engine.js:423:96)
+    at async runBacktest (file:///C:/Users/oscar/Auto_Polymarket/.claude/worktrees/tender-booth/scripts/backtest_public.js:136:26)
+
+Node.js v24.13.0
+
+[2026-02-14T12:05:47.979Z] [INFO] 🎓 Starting Automated Training Simulation...
+[2026-02-14T12:05:47.980Z] [INFO] [36m%s[0m [INFO] 🎓 Lancement de l'auto-entraînement IA...
+[2026-02-14T12:05:47.980Z] [INFO] 🎓 Lancement de l'auto-entraînement IA...
+[2026-02-14T12:05:47.983Z] [INFO] 📡 Fetching resolved markets...
+[2026-02-14T12:05:48.270Z] [INFO] AI Adaptation: Mode=NEUTRAL (ROI: 0.00%)
+[2026-02-14T12:05:48.271Z] [INFO] [32m%s[0m [SUCCESS] 🧠 AI Adaptation: Mode=NEUTRAL (ROI: 0.00%)
+[2026-02-14T12:05:48.271Z] [SUCCESS] 🧠 AI Adaptation: Mode=NEUTRAL (ROI: 0.00%)
+[2026-02-14T12:05:48.296Z] [ERROR] Failed to save AUTO backtest run: {"message":"Invalid API key","hint":"Double check your Supabase `anon` or `service_role` API key."}
+[2026-02-14T12:05:48.314Z] [ERROR] ❌ Supabase State Save Error: Invalid API key
+[2026-02-14T12:06:03.454Z] [INFO] [32m%s[0m [SUCCESS] Chargement des données réussi ($1000.00)
+[2026-02-14T12:06:03.454Z] [SUCCESS] Chargement des données réussi ($1000.00)
+[2026-02-14T12:06:03.536Z] [INFO] [36m%s[0m [INFO] 🔄 Démarrage de la boucle de trading...
+[2026-02-14T12:06:03.535Z] [INFO] 🔄 Démarrage de la boucle de trading...
+[2026-02-14T12:06:03.537Z] [INFO] [33m%s[0m [WARNING] ⚠️ État local vide/par défaut. Tentative de récupération Cloud...
+[2026-02-14T12:06:03.537Z] [WARNING] ⚠️ État local vide/par défaut. Tentative de récupération Cloud...
+[2026-02-14T12:06:03.537Z] [INFO] 🔄 Tentative de reconstruction de l'état depuis Supabase...
+[2026-02-14T12:06:03.570Z] [INFO] 
+🚀 SERVER STARTED ON PORT 3000
+[2026-02-14T12:06:03.586Z] [INFO] 📅 14/02/2026 13:06:03
+[2026-02-14T12:06:03.586Z] [INFO] ✅ Version: 2.6.6 (Stable - Nuclear Disabled)
+[2026-02-14T12:06:03.587Z] [INFO] [32m%s[0m [SUCCESS] Serveur démarré sur le port 3000 (v2.6.6 Stable)
+[2026-02-14T12:06:03.587Z] [SUCCESS] Serveur démarré sur le port 3000 (v2.6.6 Stable)
+[2026-02-14T12:06:03.651Z] [ERROR] ❌ Erreur reconstruction via Supabase: Invalid API key
+[2026-02-14T12:06:03.653Z] [INFO] [36m%s[0m [INFO] ℹ️ Aucune donnée trouvée sur Supabase ou échec récupération.
+[2026-02-14T12:06:03.653Z] [INFO] ℹ️ Aucune donnée trouvée sur Supabase ou échec récupération.
+[2026-02-14T12:06:03.654Z] [INFO] 🔄 Starting real-time price tracking service...
+[2026-02-14T12:06:03.655Z] [INFO] [36m%s[0m [INFO] 🚀 Starting price update loop (every 5 minutes)
+[2026-02-14T12:06:03.655Z] [INFO] 🚀 Starting price update loop (every 5 minutes)
+[2026-02-14T12:06:03.655Z] [INFO] 🕒 AI Self-Training Scheduler started (Every 6h)
+[2026-02-14T12:06:03.769Z] [INFO] [36m%s[0m [INFO] 🌊 LANCEMENT DEEP SCAN (1000+ marchés)...
+[2026-02-14T12:06:03.769Z] [INFO] 🌊 LANCEMENT DEEP SCAN (1000+ marchés)...
+[2026-02-14T12:06:03.871Z] [INFO] 🧙 Wizards Detected: 5
+[2026-02-14T12:06:03.914Z] [ERROR] Error in feedbackLoop: Invalid API key
+[2026-02-14T12:06:03.945Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Will FC Bayern München win on ..." - Aucune condition de trade remplie
+[2026-02-14T12:06:03.945Z] [INFO] 🔍 Rejeté: "Will FC Bayern München win on ..." - Aucune condition de trade remplie
+[2026-02-14T12:06:03.989Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Will Ethereum reach $4,400 in ..." - Aucune condition de trade remplie
+[2026-02-14T12:06:03.988Z] [INFO] 🔍 Rejeté: "Will Ethereum reach $4,400 in ..." - Aucune condition de trade remplie
+[2026-02-14T12:06:04.016Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Will Bitcoin reach $150,000 in..." - Aucune condition de trade remplie
+[2026-02-14T12:06:04.016Z] [INFO] 🔍 Rejeté: "Will Bitcoin reach $150,000 in..." - Aucune condition de trade remplie
+[2026-02-14T12:06:04.047Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Will France win the Men's Ice ..." - Aucune condition de trade remplie
+[2026-02-14T12:06:04.046Z] [INFO] 🔍 Rejeté: "Will France win the Men's Ice ..." - Aucune condition de trade remplie
+[2026-02-14T12:06:04.098Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Ethereum Up or Down on Februar..."
+[2026-02-14T12:06:04.098Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Ethereum Up or Down on Februar..."
+[2026-02-14T12:06:04.101Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: YES sur "Ethereum Up or Down on Februar..." @ $0.993 ($10.00)
+[2026-02-14T12:06:04.101Z] [TRADE] ✅ TRADE OPENED: YES sur "Ethereum Up or Down on Februar..." @ $0.993 ($10.00)
+[2026-02-14T12:06:04.103Z] [INFO] [32m%s[0m [SUCCESS] 🚀 [WIZARD] Trade: Ethereum Up or Down on Februar...
+[2026-02-14T12:06:04.103Z] [SUCCESS] 🚀 [WIZARD] Trade: Ethereum Up or Down on Februar...
+[2026-02-14T12:06:04.143Z] [ERROR] ❌ Supabase State Save Error: Invalid API key
+[2026-02-14T12:06:04.147Z] [ERROR] ❌ Supabase State Save Error: Invalid API key
+[2026-02-14T12:06:04.153Z] [ERROR] ❌ Supabase Save Error: Invalid API key
+[2026-02-14T12:06:04.179Z] [ERROR] ❌ Supabase State Save Error: Invalid API key
+[2026-02-14T12:06:33.659Z] [INFO] 🎓 Starting Automated Training Simulation...
+[2026-02-14T12:06:33.665Z] [INFO] [36m%s[0m [INFO] 🎓 Lancement de l'auto-entraînement IA...
+[2026-02-14T12:06:33.665Z] [INFO] 🎓 Lancement de l'auto-entraînement IA...
+[2026-02-14T12:06:33.668Z] [INFO] 📡 Fetching resolved markets...
+[2026-02-14T12:06:33.899Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Bitcoin Up or Down - February ..."
+[2026-02-14T12:06:33.899Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Bitcoin Up or Down - February ..."
+[2026-02-14T12:06:33.901Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: NO sur "Bitcoin Up or Down - February ..." @ $0.636 ($10.00)
+[2026-02-14T12:06:33.901Z] [TRADE] ✅ TRADE OPENED: NO sur "Bitcoin Up or Down - February ..." @ $0.636 ($10.00)
+[2026-02-14T12:06:33.902Z] [INFO] ✅ WIN  | Bitcoin Up or Down - February 13, 8:45PM-9:00... | NO @ 0.636 | +$5.46
+[2026-02-14T12:06:33.903Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will the highest temperature i..."
+[2026-02-14T12:06:33.903Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will the highest temperature i..."
+[2026-02-14T12:06:33.905Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: NO sur "Will the highest temperature i..." @ $0.637 ($10.05)
+[2026-02-14T12:06:33.905Z] [TRADE] ✅ TRADE OPENED: NO sur "Will the highest temperature i..." @ $0.637 ($10.05)
+[2026-02-14T12:06:33.906Z] [INFO] ✅ WIN  | Will the highest temperature in New York City... | NO @ 0.637 | +$5.45
+[2026-02-14T12:06:33.906Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will the price of XRP be betwe..."
+[2026-02-14T12:06:33.906Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will the price of XRP be betwe..."
+[2026-02-14T12:06:33.908Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: NO sur "Will the price of XRP be betwe..." @ $0.591 ($10.11)
+[2026-02-14T12:06:33.908Z] [TRADE] ✅ TRADE OPENED: NO sur "Will the price of XRP be betwe..." @ $0.591 ($10.11)
+[2026-02-14T12:06:33.909Z] [INFO] ✅ WIN  | Will the price of XRP be between $1.00 and $1... | NO @ 0.591 | +$6.71
+[2026-02-14T12:06:33.910Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will the price of XRP be betwe..."
+[2026-02-14T12:06:33.910Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will the price of XRP be betwe..."
+[2026-02-14T12:06:33.912Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: NO sur "Will the price of XRP be betwe..." @ $0.455 ($10.18)
+[2026-02-14T12:06:33.911Z] [TRADE] ✅ TRADE OPENED: NO sur "Will the price of XRP be betwe..." @ $0.455 ($10.18)
+[2026-02-14T12:06:33.914Z] [INFO] ✅ WIN  | Will the price of XRP be between $1.80 and $1... | NO @ 0.455 | +$11.82
+[2026-02-14T12:06:33.914Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will the price of XRP be betwe..."
+[2026-02-14T12:06:33.914Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will the price of XRP be betwe..."
+[2026-02-14T12:06:33.916Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: NO sur "Will the price of XRP be betwe..." @ $0.646 ($10.29)
+[2026-02-14T12:06:33.916Z] [TRADE] ✅ TRADE OPENED: NO sur "Will the price of XRP be betwe..." @ $0.646 ($10.29)
+[2026-02-14T12:06:33.917Z] [INFO] ✅ WIN  | Will the price of XRP be between $1.60 and $1... | NO @ 0.646 | +$5.37
+[2026-02-14T12:06:33.917Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will the highest temperature i..."
+[2026-02-14T12:06:33.917Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will the highest temperature i..."
+[2026-02-14T12:06:33.919Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: NO sur "Will the highest temperature i..." @ $0.565 ($10.35)
+[2026-02-14T12:06:33.919Z] [TRADE] ✅ TRADE OPENED: NO sur "Will the highest temperature i..." @ $0.565 ($10.35)
+[2026-02-14T12:06:33.920Z] [INFO] ❌ LOSS | Will the highest temperature in New York City... | NO @ 0.565 | -$10.50
+[2026-02-14T12:06:33.921Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will the highest temperature i..."
+[2026-02-14T12:06:33.921Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will the highest temperature i..."
+[2026-02-14T12:06:33.923Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: NO sur "Will the highest temperature i..." @ $0.650 ($10.24)
+[2026-02-14T12:06:33.923Z] [TRADE] ✅ TRADE OPENED: NO sur "Will the highest temperature i..." @ $0.650 ($10.24)
+[2026-02-14T12:06:33.924Z] [INFO] ✅ WIN  | Will the highest temperature in New York City... | NO @ 0.650 | +$5.26
+[2026-02-14T12:06:33.925Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will the highest temperature i..."
+[2026-02-14T12:06:33.925Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will the highest temperature i..."
+[2026-02-14T12:06:33.928Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: YES sur "Will the highest temperature i..." @ $0.510 ($10.30)
+[2026-02-14T12:06:33.928Z] [TRADE] ✅ TRADE OPENED: YES sur "Will the highest temperature i..." @ $0.510 ($10.30)
+[2026-02-14T12:06:33.930Z] [INFO] ❌ LOSS | Will the highest temperature in New York City... | YES @ 0.510 | -$10.45
+[2026-02-14T12:06:33.931Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "AS Monaco FC vs. FC Nantes: O/..."
+[2026-02-14T12:06:33.931Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "AS Monaco FC vs. FC Nantes: O/..."
+[2026-02-14T12:06:33.933Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: NO sur "AS Monaco FC vs. FC Nantes: O/..." @ $0.594 ($10.19)
+[2026-02-14T12:06:33.933Z] [TRADE] ✅ TRADE OPENED: NO sur "AS Monaco FC vs. FC Nantes: O/..." @ $0.594 ($10.19)
+[2026-02-14T12:06:33.934Z] [INFO] ✅ WIN  | AS Monaco FC vs. FC Nantes: O/U 4.5... | NO @ 0.594 | +$6.69
+[2026-02-14T12:06:33.935Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will Opendoor (OPEN) finish we..."
+[2026-02-14T12:06:33.935Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will Opendoor (OPEN) finish we..."
+[2026-02-14T12:06:33.937Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: YES sur "Will Opendoor (OPEN) finish we..." @ $0.487 ($10.26)
+[2026-02-14T12:06:33.937Z] [TRADE] ✅ TRADE OPENED: YES sur "Will Opendoor (OPEN) finish we..." @ $0.487 ($10.26)
+[2026-02-14T12:06:33.938Z] [INFO] ✅ WIN  | Will Opendoor (OPEN) finish week of February ... | YES @ 0.487 | +$10.42
+[2026-02-14T12:06:33.938Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Bitcoin Up or Down - February ..."
+[2026-02-14T12:06:33.938Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Bitcoin Up or Down - February ..."
+[2026-02-14T12:06:33.940Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: NO sur "Bitcoin Up or Down - February ..." @ $0.568 ($10.36)
+[2026-02-14T12:06:33.940Z] [TRADE] ✅ TRADE OPENED: NO sur "Bitcoin Up or Down - February ..." @ $0.568 ($10.36)
+[2026-02-14T12:06:33.942Z] [INFO] ✅ WIN  | Bitcoin Up or Down - February 13, 9:10AM-9:15... | NO @ 0.568 | +$7.58
+[2026-02-14T12:06:33.943Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will Meta (META) finish week o..."
+[2026-02-14T12:06:33.943Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will Meta (META) finish week o..."
+[2026-02-14T12:06:33.944Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: NO sur "Will Meta (META) finish week o..." @ $0.625 ($10.44)
+[2026-02-14T12:06:33.944Z] [TRADE] ✅ TRADE OPENED: NO sur "Will Meta (META) finish week o..." @ $0.625 ($10.44)
+[2026-02-14T12:06:33.946Z] [INFO] ✅ WIN  | Will Meta (META) finish week of February 9 ab... | NO @ 0.625 | +$5.97
+[2026-02-14T12:06:33.947Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Bitcoin Up or Down - February ..."
+[2026-02-14T12:06:33.947Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Bitcoin Up or Down - February ..."
+[2026-02-14T12:06:33.949Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: NO sur "Bitcoin Up or Down - February ..." @ $0.618 ($10.50)
+[2026-02-14T12:06:33.949Z] [TRADE] ✅ TRADE OPENED: NO sur "Bitcoin Up or Down - February ..." @ $0.618 ($10.50)
+[2026-02-14T12:06:33.950Z] [INFO] ✅ WIN  | Bitcoin Up or Down - February 13, 1:45PM-1:50... | NO @ 0.618 | +$6.20
+[2026-02-14T12:06:33.950Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will Meta (META) finish week o..."
+[2026-02-14T12:06:33.950Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will Meta (META) finish week o..."
+[2026-02-14T12:06:33.952Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: NO sur "Will Meta (META) finish week o..." @ $0.449 ($10.56)
+[2026-02-14T12:06:33.952Z] [TRADE] ✅ TRADE OPENED: NO sur "Will Meta (META) finish week o..." @ $0.449 ($10.56)
+[2026-02-14T12:06:33.953Z] [INFO] ✅ WIN  | Will Meta (META) finish week of February 9 ab... | NO @ 0.449 | +$12.54
+[2026-02-14T12:06:33.955Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Bitcoin Up or Down - February ..."
+[2026-02-14T12:06:33.955Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Bitcoin Up or Down - February ..."
+[2026-02-14T12:06:33.958Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: YES sur "Bitcoin Up or Down - February ..." @ $0.592 ($40.20)
+[2026-02-14T12:06:33.958Z] [TRADE] ✅ TRADE OPENED: YES sur "Bitcoin Up or Down - February ..." @ $0.592 ($40.20)
+[2026-02-14T12:06:33.960Z] [INFO] ✅ WIN  | Bitcoin Up or Down - February 13, 1:40PM-1:45... | YES @ 0.592 | +$26.57
+[2026-02-14T12:06:33.960Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Bitcoin Up or Down - February ..."
+[2026-02-14T12:06:33.960Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Bitcoin Up or Down - February ..."
+[2026-02-14T12:06:33.962Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: NO sur "Bitcoin Up or Down - February ..." @ $0.562 ($10.95)
+[2026-02-14T12:06:33.962Z] [TRADE] ✅ TRADE OPENED: NO sur "Bitcoin Up or Down - February ..." @ $0.562 ($10.95)
+[2026-02-14T12:06:33.964Z] [INFO] ✅ WIN  | Bitcoin Up or Down - February 13, 3:30PM-3:35... | NO @ 0.562 | +$8.20
+[2026-02-14T12:06:33.965Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Bitcoin Up or Down - February ..."
+[2026-02-14T12:06:33.965Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Bitcoin Up or Down - February ..."
+[2026-02-14T12:06:33.966Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: NO sur "Bitcoin Up or Down - February ..." @ $0.564 ($11.03)
+[2026-02-14T12:06:33.966Z] [TRADE] ✅ TRADE OPENED: NO sur "Bitcoin Up or Down - February ..." @ $0.564 ($11.03)
+[2026-02-14T12:06:33.967Z] [INFO] ✅ WIN  | Bitcoin Up or Down - February 13, 4:10AM-4:15... | NO @ 0.564 | +$8.21
+[2026-02-14T12:06:33.968Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Bitcoin Up or Down - February ..."
+[2026-02-14T12:06:33.968Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Bitcoin Up or Down - February ..."
+[2026-02-14T12:06:33.969Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: NO sur "Bitcoin Up or Down - February ..." @ $0.680 ($11.11)
+[2026-02-14T12:06:33.969Z] [TRADE] ✅ TRADE OPENED: NO sur "Bitcoin Up or Down - February ..." @ $0.680 ($11.11)
+[2026-02-14T12:06:33.970Z] [INFO] ✅ WIN  | Bitcoin Up or Down - February 13, 9PM ET... | NO @ 0.680 | +$4.95
+[2026-02-14T12:06:33.971Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will the price of XRP be betwe..."
+[2026-02-14T12:06:33.971Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will the price of XRP be betwe..."
+[2026-02-14T12:06:33.973Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: YES sur "Will the price of XRP be betwe..." @ $0.472 ($11.16)
+[2026-02-14T12:06:33.973Z] [TRADE] ✅ TRADE OPENED: YES sur "Will the price of XRP be betwe..." @ $0.472 ($11.16)
+[2026-02-14T12:06:33.975Z] [INFO] ❌ LOSS | Will the price of XRP be between $1.70 and $1... | YES @ 0.472 | -$11.33
+[2026-02-14T12:06:33.977Z] [INFO] AI Adaptation: Mode=AGGRESSIVE (ROI: 10.51%)
+[2026-02-14T12:06:33.977Z] [INFO] [32m%s[0m [SUCCESS] 🧠 AI Adaptation: Mode=AGGRESSIVE (ROI: 10.51%)
+[2026-02-14T12:06:33.977Z] [SUCCESS] 🧠 AI Adaptation: Mode=AGGRESSIVE (ROI: 10.51%)
+[2026-02-14T12:06:34.054Z] [ERROR] ❌ Supabase State Save Error: Invalid API key
+[2026-02-14T12:06:34.144Z] [ERROR] ❌ Supabase State Save Error: Invalid API key
+[2026-02-14T12:06:34.146Z] [ERROR] ❌ Supabase Save Error: Invalid API key
+[2026-02-14T12:06:34.151Z] [ERROR] ❌ Supabase Save Error: Invalid API key
+[2026-02-14T12:06:34.166Z] [ERROR] ❌ Supabase State Save Error: Invalid API key
+[2026-02-14T12:06:34.175Z] [ERROR] ❌ Supabase Save Error: Invalid API key
+[2026-02-14T12:06:34.394Z] [ERROR] ❌ Supabase State Save Error: Invalid API key
+[2026-02-14T12:06:34.401Z] [ERROR] ❌ Supabase State Save Error: Invalid API key
+[2026-02-14T12:06:34.404Z] [ERROR] ❌ Supabase Save Error: Invalid API key
+[2026-02-14T12:06:34.461Z] [ERROR] ❌ Supabase Save Error: Invalid API key
+[2026-02-14T12:06:34.493Z] [ERROR] ❌ Supabase State Save Error: Invalid API key
+[2026-02-14T12:06:34.501Z] [ERROR] ❌ Supabase Save Error: Invalid API key
+[2026-02-14T12:06:34.517Z] [ERROR] ❌ Supabase Save Error: Invalid API key
+[2026-02-14T12:06:34.518Z] [ERROR] ❌ Supabase Save Error: Invalid API key
+[2026-02-14T12:06:34.532Z] [ERROR] ❌ Supabase State Save Error: Invalid API key
+[2026-02-14T12:06:34.555Z] [ERROR] ❌ Supabase State Save Error: Invalid API key
+[2026-02-14T12:06:34.586Z] [ERROR] ❌ Supabase State Save Error: Invalid API key
+[2026-02-14T12:06:34.728Z] [ERROR] ❌ Supabase Save Error: Invalid API key
+[2026-02-14T12:06:34.754Z] [ERROR] ❌ Supabase State Save Error: Invalid API key
+[2026-02-14T12:06:34.755Z] [ERROR] ❌ Supabase Save Error: Invalid API key
+[2026-02-14T12:06:34.789Z] [ERROR] ❌ Supabase State Save Error: Invalid API key
+[2026-02-14T12:06:35.396Z] [ERROR] ❌ Supabase Save Error: Invalid API key
+[2026-02-14T12:06:35.412Z] [ERROR] ❌ Supabase State Save Error: Invalid API key
+[2026-02-14T12:06:35.414Z] [ERROR] ❌ Supabase State Save Error: Invalid API key
+[2026-02-14T12:06:35.416Z] [ERROR] ❌ Supabase State Save Error: Invalid API key
+[2026-02-14T12:06:35.418Z] [ERROR] ❌ Supabase Save Error: Invalid API key
+[2026-02-14T12:06:36.404Z] [ERROR] Failed to save AUTO backtest run: {"message":"Invalid API key","hint":"Double check your Supabase `anon` or `service_role` API key."}
+[2026-02-14T12:06:36.432Z] [ERROR] ❌ Supabase State Save Error: Invalid API key
+[2026-02-14T12:06:36.447Z] [ERROR] ❌ Supabase Save Error: Invalid API key
+[2026-02-14T12:06:41.523Z] [ERROR] ❌ Supabase Save Error: Invalid API key
+[2026-02-14T12:06:41.530Z] [ERROR] ❌ Supabase Save Error: Invalid API key
+[2026-02-14T12:06:41.533Z] [ERROR] ❌ Supabase Save Error: Invalid API key
+[2026-02-14T12:06:41.539Z] [ERROR] ❌ Supabase Save Error: Invalid API key
+[2026-02-14T12:06:41.545Z] [ERROR] ❌ Supabase Save Error: Invalid API key
+[2026-02-14T12:06:41.557Z] [ERROR] ❌ Supabase Save Error: Invalid API key
+[2026-02-14T12:06:41.565Z] [ERROR] ❌ Supabase State Save Error: Invalid API key
+[2026-02-14T12:06:41.570Z] [ERROR] ❌ Supabase State Save Error: Invalid API key
+[2026-02-14T12:06:41.580Z] [ERROR] ❌ Supabase State Save Error: Invalid API key
+[2026-02-14T12:06:41.583Z] [ERROR] ❌ Supabase State Save Error: Invalid API key
+[2026-02-14T12:06:41.613Z] [ERROR] ❌ Supabase State Save Error: Invalid API key
+[2026-02-14T12:06:52.877Z] [INFO] [32m%s[0m [SUCCESS] Chargement des données réussi ($990.00)
+[2026-02-14T12:06:52.877Z] [SUCCESS] Chargement des données réussi ($990.00)
+[2026-02-14T12:06:52.943Z] [INFO] [36m%s[0m [INFO] 🔄 Démarrage de la boucle de trading...
+[2026-02-14T12:06:52.943Z] [INFO] 🔄 Démarrage de la boucle de trading...
+[2026-02-14T12:06:52.945Z] [INFO] 🔄 Starting real-time price tracking service...
+[2026-02-14T12:06:52.945Z] [INFO] [36m%s[0m [INFO] 🚀 Starting price update loop (every 5 minutes)
+[2026-02-14T12:06:52.945Z] [INFO] 🚀 Starting price update loop (every 5 minutes)
+[2026-02-14T12:06:52.946Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 1 active trades...
+[2026-02-14T12:06:52.946Z] [INFO] 🔄 Updating prices for 1 active trades...
+[2026-02-14T12:06:52.972Z] [INFO] 🕒 AI Self-Training Scheduler started (Every 6h)
+[2026-02-14T12:06:52.981Z] [INFO] 
+🚀 SERVER STARTED ON PORT 3000
+[2026-02-14T12:06:52.996Z] [INFO] 📅 14/02/2026 13:06:52
+[2026-02-14T12:06:52.997Z] [INFO] ✅ Version: 2.6.6 (Stable - Nuclear Disabled)
+[2026-02-14T12:06:52.998Z] [INFO] [32m%s[0m [SUCCESS] Serveur démarré sur le port 3000 (v2.6.6 Stable)
+[2026-02-14T12:06:52.998Z] [SUCCESS] Serveur démarré sur le port 3000 (v2.6.6 Stable)
+[2026-02-14T12:06:53.113Z] [INFO] [36m%s[0m [INFO] 🌊 LANCEMENT DEEP SCAN (1000+ marchés)...
+[2026-02-14T12:06:53.113Z] [INFO] 🌊 LANCEMENT DEEP SCAN (1000+ marchés)...
+[2026-02-14T12:06:53.207Z] [INFO] 🔍 Checking 1 active trades...
+[2026-02-14T12:06:53.212Z] [INFO] 🧙 Wizards Detected: 5
+[2026-02-14T12:06:53.270Z] [INFO] [36m%s[0m [INFO] ✅ Updated 1/1 trade prices
+[2026-02-14T12:06:53.270Z] [INFO] ✅ Updated 1/1 trade prices
+[2026-02-14T12:06:53.415Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will Elon Musk post <40 tweets..."
+[2026-02-14T12:06:53.415Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will Elon Musk post <40 tweets..."
+[2026-02-14T12:06:53.418Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: YES sur "Will Elon Musk post <40 tweets..." @ $0.191 ($61.88)
+[2026-02-14T12:06:53.418Z] [TRADE] ✅ TRADE OPENED: YES sur "Will Elon Musk post <40 tweets..." @ $0.191 ($61.88)
+[2026-02-14T12:06:53.420Z] [INFO] [32m%s[0m [SUCCESS] 🚀 [WIZARD] Trade: Will Elon Musk post <40 tweets...
+[2026-02-14T12:06:53.420Z] [SUCCESS] 🚀 [WIZARD] Trade: Will Elon Musk post <40 tweets...
+[2026-02-14T12:06:53.562Z] [INFO] ✅ Trade saved to Supabase: Will Elon Musk post <40 tweets from February 12 to February 14, 2026?
+[2026-02-14T12:07:22.973Z] [INFO] 🎓 Starting Automated Training Simulation...
+[2026-02-14T12:07:22.974Z] [INFO] [36m%s[0m [INFO] 🎓 Lancement de l'auto-entraînement IA...
+[2026-02-14T12:07:22.974Z] [INFO] 🎓 Lancement de l'auto-entraînement IA...
+[2026-02-14T12:07:22.975Z] [INFO] 📡 Fetching resolved markets...
+[2026-02-14T12:07:23.248Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will the price of Solana be ab..."
+[2026-02-14T12:07:23.248Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will the price of Solana be ab..."
+[2026-02-14T12:07:23.251Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: YES sur "Will the price of Solana be ab..." @ $0.789 ($30.48)
+[2026-02-14T12:07:23.251Z] [TRADE] ✅ TRADE OPENED: YES sur "Will the price of Solana be ab..." @ $0.789 ($30.48)
+[2026-02-14T12:07:23.253Z] [INFO] ✅ WIN  | Will the price of Solana be above $80 on Febr... | YES @ 0.789 | +$7.55
+[2026-02-14T12:07:23.253Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Stearns vs. Zvonareva: Set 1 G..."
+[2026-02-14T12:07:23.253Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Stearns vs. Zvonareva: Set 1 G..."
+[2026-02-14T12:07:23.255Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: YES sur "Stearns vs. Zvonareva: Set 1 G..." @ $0.312 ($43.30)
+[2026-02-14T12:07:23.255Z] [TRADE] ✅ TRADE OPENED: YES sur "Stearns vs. Zvonareva: Set 1 G..." @ $0.312 ($43.30)
+[2026-02-14T12:07:23.256Z] [INFO] ❌ LOSS | Stearns vs. Zvonareva: Set 1 Games O/U 10.5... | YES @ 0.312 | -$43.95
+[2026-02-14T12:07:23.256Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Bitcoin Up or Down - February ..."
+[2026-02-14T12:07:23.256Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Bitcoin Up or Down - February ..."
+[2026-02-14T12:07:23.258Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: NO sur "Bitcoin Up or Down - February ..." @ $0.672 ($12.50)
+[2026-02-14T12:07:23.258Z] [TRADE] ✅ TRADE OPENED: NO sur "Bitcoin Up or Down - February ..." @ $0.672 ($12.50)
+[2026-02-14T12:07:23.260Z] [INFO] ✅ WIN  | Bitcoin Up or Down - February 13, 8:45PM-9:00... | NO @ 0.672 | +$5.80
+[2026-02-14T12:07:23.261Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "AS Monaco FC vs. FC Nantes: O/..."
+[2026-02-14T12:07:23.261Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "AS Monaco FC vs. FC Nantes: O/..."
+[2026-02-14T12:07:23.265Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: NO sur "AS Monaco FC vs. FC Nantes: O/..." @ $0.536 ($12.50)
+[2026-02-14T12:07:23.265Z] [TRADE] ✅ TRADE OPENED: NO sur "AS Monaco FC vs. FC Nantes: O/..." @ $0.536 ($12.50)
+[2026-02-14T12:07:23.267Z] [INFO] ❌ LOSS | AS Monaco FC vs. FC Nantes: O/U 3.5... | NO @ 0.536 | -$12.69
+[2026-02-14T12:07:23.268Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will Al Ittihad Saudi Club vs...."
+[2026-02-14T12:07:23.268Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will Al Ittihad Saudi Club vs...."
+[2026-02-14T12:07:23.270Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: NO sur "Will Al Ittihad Saudi Club vs...." @ $0.709 ($12.50)
+[2026-02-14T12:07:23.269Z] [TRADE] ✅ TRADE OPENED: NO sur "Will Al Ittihad Saudi Club vs...." @ $0.709 ($12.50)
+[2026-02-14T12:07:23.271Z] [INFO] ✅ WIN  | Will Al Ittihad Saudi Club vs. Al Fayha Saudi... | NO @ 0.709 | +$4.85
+[2026-02-14T12:07:23.272Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will the price of XRP be betwe..."
+[2026-02-14T12:07:23.271Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will the price of XRP be betwe..."
+[2026-02-14T12:07:23.274Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: NO sur "Will the price of XRP be betwe..." @ $0.728 ($12.50)
+[2026-02-14T12:07:23.274Z] [TRADE] ✅ TRADE OPENED: NO sur "Will the price of XRP be betwe..." @ $0.728 ($12.50)
+[2026-02-14T12:07:23.275Z] [INFO] ✅ WIN  | Will the price of XRP be between $1.70 and $1... | NO @ 0.728 | +$4.39
+[2026-02-14T12:07:23.277Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Bitcoin Up or Down - February ..."
+[2026-02-14T12:07:23.276Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Bitcoin Up or Down - February ..."
+[2026-02-14T12:07:23.279Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: NO sur "Bitcoin Up or Down - February ..." @ $0.681 ($12.50)
+[2026-02-14T12:07:23.279Z] [TRADE] ✅ TRADE OPENED: NO sur "Bitcoin Up or Down - February ..." @ $0.681 ($12.50)
+[2026-02-14T12:07:23.283Z] [INFO] ✅ WIN  | Bitcoin Up or Down - February 13, 3:00PM-3:05... | NO @ 0.681 | +$5.56
+[2026-02-14T12:07:23.283Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Bitcoin Up or Down - February ..."
+[2026-02-14T12:07:23.283Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Bitcoin Up or Down - February ..."
+[2026-02-14T12:07:23.286Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: YES sur "Bitcoin Up or Down - February ..." @ $0.481 ($12.50)
+[2026-02-14T12:07:23.286Z] [TRADE] ✅ TRADE OPENED: YES sur "Bitcoin Up or Down - February ..." @ $0.481 ($12.50)
+[2026-02-14T12:07:23.288Z] [INFO] ✅ WIN  | Bitcoin Up or Down - February 13, 10:30PM-10:... | YES @ 0.481 | +$13.01
+[2026-02-14T12:07:23.289Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Bitcoin Up or Down - February ..."
+[2026-02-14T12:07:23.289Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Bitcoin Up or Down - February ..."
+[2026-02-14T12:07:23.292Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: NO sur "Bitcoin Up or Down - February ..." @ $0.469 ($12.50)
+[2026-02-14T12:07:23.292Z] [TRADE] ✅ TRADE OPENED: NO sur "Bitcoin Up or Down - February ..." @ $0.469 ($12.50)
+[2026-02-14T12:07:23.293Z] [INFO] ❌ LOSS | Bitcoin Up or Down - February 13, 4AM ET... | NO @ 0.469 | -$12.69
+[2026-02-14T12:07:23.293Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will Antalyaspor vs. Samsunspo..."
+[2026-02-14T12:07:23.293Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will Antalyaspor vs. Samsunspo..."
+[2026-02-14T12:07:23.295Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: NO sur "Will Antalyaspor vs. Samsunspo..." @ $0.587 ($12.50)
+[2026-02-14T12:07:23.295Z] [TRADE] ✅ TRADE OPENED: NO sur "Will Antalyaspor vs. Samsunspo..." @ $0.587 ($12.50)
+[2026-02-14T12:07:23.297Z] [INFO] ✅ WIN  | Will Antalyaspor vs. Samsunspor end in a draw... | NO @ 0.587 | +$8.44
+[2026-02-14T12:07:23.299Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will the highest temperature i..."
+[2026-02-14T12:07:23.299Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will the highest temperature i..."
+[2026-02-14T12:07:23.301Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: YES sur "Will the highest temperature i..." @ $0.605 ($58.97)
+[2026-02-14T12:07:23.301Z] [TRADE] ✅ TRADE OPENED: YES sur "Will the highest temperature i..." @ $0.605 ($58.97)
+[2026-02-14T12:07:23.303Z] [INFO] ❌ LOSS | Will the highest temperature in New York City... | YES @ 0.605 | -$59.85
+[2026-02-14T12:07:23.304Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will Wrexham AFC vs. Ipswich T..."
+[2026-02-14T12:07:23.304Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will Wrexham AFC vs. Ipswich T..."
+[2026-02-14T12:07:23.307Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: NO sur "Will Wrexham AFC vs. Ipswich T..." @ $0.445 ($12.50)
+[2026-02-14T12:07:23.307Z] [TRADE] ✅ TRADE OPENED: NO sur "Will Wrexham AFC vs. Ipswich T..." @ $0.445 ($12.50)
+[2026-02-14T12:07:23.309Z] [INFO] ✅ WIN  | Will Wrexham AFC vs. Ipswich Town FC end in a... | NO @ 0.445 | +$15.08
+[2026-02-14T12:07:23.312Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will Al Ittihad Saudi Club win..."
+[2026-02-14T12:07:23.311Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will Al Ittihad Saudi Club win..."
+[2026-02-14T12:07:23.315Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: YES sur "Will Al Ittihad Saudi Club win..." @ $0.735 ($58.47)
+[2026-02-14T12:07:23.315Z] [TRADE] ✅ TRADE OPENED: YES sur "Will Al Ittihad Saudi Club win..." @ $0.735 ($58.47)
+[2026-02-14T12:07:23.316Z] [INFO] ✅ WIN  | Will Al Ittihad Saudi Club win on 2026-02-13?... | YES @ 0.735 | +$19.74
+[2026-02-14T12:07:23.317Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Dubai Duty Free Tennis Champio..."
+[2026-02-14T12:07:23.317Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Dubai Duty Free Tennis Champio..."
+[2026-02-14T12:07:23.320Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: YES sur "Dubai Duty Free Tennis Champio..." @ $0.816 ($12.50)
+[2026-02-14T12:07:23.319Z] [TRADE] ✅ TRADE OPENED: YES sur "Dubai Duty Free Tennis Champio..." @ $0.816 ($12.50)
+[2026-02-14T12:07:23.323Z] [INFO] ✅ WIN  | Dubai Duty Free Tennis Championships, Qualifi... | YES @ 0.816 | +$2.58
+[2026-02-14T12:07:23.324Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will the highest temperature i..."
+[2026-02-14T12:07:23.324Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will the highest temperature i..."
+[2026-02-14T12:07:23.326Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: NO sur "Will the highest temperature i..." @ $0.466 ($12.50)
+[2026-02-14T12:07:23.326Z] [TRADE] ✅ TRADE OPENED: NO sur "Will the highest temperature i..." @ $0.466 ($12.50)
+[2026-02-14T12:07:23.327Z] [INFO] ❌ LOSS | Will the highest temperature in London be 8°C... | NO @ 0.466 | -$12.69
+[2026-02-14T12:07:23.329Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will Bernie's appearance at th..."
+[2026-02-14T12:07:23.329Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will Bernie's appearance at th..."
+[2026-02-14T12:07:23.331Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: NO sur "Will Bernie's appearance at th..." @ $0.572 ($12.50)
+[2026-02-14T12:07:23.331Z] [TRADE] ✅ TRADE OPENED: NO sur "Will Bernie's appearance at th..." @ $0.572 ($12.50)
+[2026-02-14T12:07:23.332Z] [INFO] ✅ WIN  | Will Bernie's appearance at the Fighting Olig... | NO @ 0.572 | +$8.98
+[2026-02-14T12:07:23.333Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Bitcoin Up or Down - February ..."
+[2026-02-14T12:07:23.333Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Bitcoin Up or Down - February ..."
+[2026-02-14T12:07:23.335Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: NO sur "Bitcoin Up or Down - February ..." @ $0.605 ($12.50)
+[2026-02-14T12:07:23.335Z] [TRADE] ✅ TRADE OPENED: NO sur "Bitcoin Up or Down - February ..." @ $0.605 ($12.50)
+[2026-02-14T12:07:23.336Z] [INFO] ✅ WIN  | Bitcoin Up or Down - February 13, 9:10AM-9:15... | NO @ 0.605 | +$7.80
+[2026-02-14T12:07:23.339Z] [INFO] AI Adaptation: Mode=DEFENSIVE (ROI: -3.81%)
+[2026-02-14T12:07:23.339Z] [INFO] [32m%s[0m [SUCCESS] 🧠 AI Adaptation: Mode=DEFENSIVE (ROI: -3.81%)
+[2026-02-14T12:07:23.339Z] [SUCCESS] 🧠 AI Adaptation: Mode=DEFENSIVE (ROI: -3.81%)
+[2026-02-14T12:07:23.560Z] [ERROR] Failed to save AUTO backtest run: {"code":"PGRST204","details":null,"hint":null,"message":"Could not find the 'markets_tested' column of 'simulation_runs' in the schema cache"}
+[2026-02-14T12:07:23.565Z] [INFO] ✅ Trade saved to Supabase: Bitcoin Up or Down - February 13, 8:45PM-9:00PM ET
+[2026-02-14T12:07:23.608Z] [INFO] ✅ Trade saved to Supabase: AS Monaco FC vs. FC Nantes: O/U 3.5
+[2026-02-14T12:07:23.834Z] [INFO] ✅ Trade saved to Supabase: Will Antalyaspor vs. Samsunspor end in a draw?
+[2026-02-14T12:07:23.837Z] [INFO] ✅ Trade saved to Supabase: Will Al Ittihad Saudi Club vs. Al Fayha Saudi Club end in a draw?
+[2026-02-14T12:07:23.931Z] [INFO] ✅ Trade saved to Supabase: Will the price of XRP be between $1.70 and $1.80 on February 13?
+[2026-02-14T12:07:23.938Z] [INFO] ✅ Trade saved to Supabase: Stearns vs. Zvonareva: Set 1 Games O/U 10.5
+[2026-02-14T12:07:24.119Z] [INFO] ✅ Trade saved to Supabase: Bitcoin Up or Down - February 13, 3:00PM-3:05PM ET
+[2026-02-14T12:07:24.159Z] [INFO] ✅ Trade saved to Supabase: Bitcoin Up or Down - February 13, 10:30PM-10:45PM ET
+[2026-02-14T12:07:24.173Z] [INFO] ✅ Trade saved to Supabase: Bitcoin Up or Down - February 13, 4AM ET
+[2026-02-14T12:07:24.805Z] [INFO] ✅ Trade saved to Supabase: Will the highest temperature in New York City be 33°F or below on February 13?
+[2026-02-14T12:07:24.820Z] [INFO] ✅ Trade saved to Supabase: Will Wrexham AFC vs. Ipswich Town FC end in a draw?
+[2026-02-14T12:07:24.836Z] [INFO] ✅ Trade saved to Supabase: Will the highest temperature in London be 8°C on February 13?
+[2026-02-14T12:07:24.845Z] [INFO] ✅ Trade saved to Supabase: Will Bernie's appearance at the Fighting Oligarchy rally not air?
+[2026-02-14T12:07:25.816Z] [INFO] ✅ Trade saved to Supabase: Will the price of Solana be above $80 on February 13?
+[2026-02-14T12:07:25.859Z] [INFO] ✅ Trade saved to Supabase: Bitcoin Up or Down - February 13, 9:10AM-9:15AM ET
+[2026-02-14T12:07:30.957Z] [INFO] ✅ Trade saved to Supabase: Will Al Ittihad Saudi Club win on 2026-02-13?
+[2026-02-14T12:07:30.961Z] [INFO] ✅ Trade saved to Supabase: Dubai Duty Free Tennis Championships, Qualification: Rebecca Sramkova vs Antonia Ruzic
+[2026-02-14T12:07:53.613Z] [INFO] 🔍 Checking 2 active trades...
+[2026-02-14T12:07:53.615Z] [INFO] 🧙 Wizards Detected: 5
+[2026-02-14T12:07:53.932Z] [INFO] [33m%s[0m [WARNING] ⚠️ Skipped trade: Insufficient capital ($928.13) or trade size too small ($7.00) pour "Bitcoin Up or Down on February..."
+[2026-02-14T12:07:53.931Z] [WARNING] ⚠️ Skipped trade: Insufficient capital ($928.13) or trade size too small ($7.00) pour "Bitcoin Up or Down on February..."
+[2026-02-14T12:07:53.932Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Price too low (<0.05) - Penny Stock Filter
+[2026-02-14T12:08:54.124Z] [INFO] 🔍 Checking 2 active trades...
+[2026-02-14T12:08:54.127Z] [INFO] 🧙 Wizards Detected: 5
+[2026-02-14T12:08:54.377Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "XRP Up or Down - February 16, ..." - Aucune condition de trade remplie
+[2026-02-14T12:08:54.376Z] [INFO] 🔍 Rejeté: "XRP Up or Down - February 16, ..." - Aucune condition de trade remplie
+[2026-02-14T12:08:54.377Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Ethereum Up or Down - February..." - Aucune condition de trade remplie
+[2026-02-14T12:08:54.377Z] [INFO] 🔍 Rejeté: "Ethereum Up or Down - February..." - Aucune condition de trade remplie
+[2026-02-14T12:08:54.378Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Solana Up or Down - February 1..." - Aucune condition de trade remplie
+[2026-02-14T12:08:54.378Z] [INFO] 🔍 Rejeté: "Solana Up or Down - February 1..." - Aucune condition de trade remplie
+[2026-02-14T12:08:54.378Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Bitcoin Up or Down - February ..." - Aucune condition de trade remplie
+[2026-02-14T12:08:54.378Z] [INFO] 🔍 Rejeté: "Bitcoin Up or Down - February ..." - Aucune condition de trade remplie
+[2026-02-14T12:08:54.472Z] [INFO] [33m%s[0m [WARNING] ⚠️ Skipped trade: Insufficient capital ($928.13) or trade size too small ($7.00) pour "Bitcoin Up or Down on February..."
+[2026-02-14T12:08:54.472Z] [WARNING] ⚠️ Skipped trade: Insufficient capital ($928.13) or trade size too small ($7.00) pour "Bitcoin Up or Down on February..."
+[2026-02-14T12:08:54.473Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Price too low (<0.05) - Penny Stock Filter
+[2026-02-14T12:09:54.676Z] [INFO] 🔍 Checking 2 active trades...
+[2026-02-14T12:09:54.679Z] [INFO] 🧙 Wizards Detected: 5
+[2026-02-14T12:09:54.917Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "XRP Up or Down - February 16, ..." - Aucune condition de trade remplie
+[2026-02-14T12:09:54.917Z] [INFO] 🔍 Rejeté: "XRP Up or Down - February 16, ..." - Aucune condition de trade remplie
+[2026-02-14T12:09:54.918Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Ethereum Up or Down - February..." - Aucune condition de trade remplie
+[2026-02-14T12:09:54.918Z] [INFO] 🔍 Rejeté: "Ethereum Up or Down - February..." - Aucune condition de trade remplie
+[2026-02-14T12:09:54.919Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Solana Up or Down - February 1..." - Aucune condition de trade remplie
+[2026-02-14T12:09:54.919Z] [INFO] 🔍 Rejeté: "Solana Up or Down - February 1..." - Aucune condition de trade remplie
+[2026-02-14T12:09:54.919Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Bitcoin Up or Down - February ..." - Aucune condition de trade remplie
+[2026-02-14T12:09:54.919Z] [INFO] 🔍 Rejeté: "Bitcoin Up or Down - February ..." - Aucune condition de trade remplie
+[2026-02-14T12:09:55.120Z] [INFO] [33m%s[0m [WARNING] ⚠️ Skipped trade: Insufficient capital ($928.13) or trade size too small ($7.00) pour "Bitcoin Up or Down on February..."
+[2026-02-14T12:09:55.120Z] [WARNING] ⚠️ Skipped trade: Insufficient capital ($928.13) or trade size too small ($7.00) pour "Bitcoin Up or Down on February..."
+[2026-02-14T12:09:55.122Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Price too low (<0.05) - Penny Stock Filter
+[2026-02-14T12:10:55.388Z] [INFO] 🔍 Checking 2 active trades...
+[2026-02-14T12:10:55.394Z] [INFO] 🧙 Wizards Detected: 5
+[2026-02-14T12:10:55.449Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Will FC Bayern München win on ..." - Aucune condition de trade remplie
+[2026-02-14T12:10:55.448Z] [INFO] 🔍 Rejeté: "Will FC Bayern München win on ..." - Aucune condition de trade remplie
+[2026-02-14T12:10:55.502Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Will Ethereum reach $4,400 in ..." - Aucune condition de trade remplie
+[2026-02-14T12:10:55.502Z] [INFO] 🔍 Rejeté: "Will Ethereum reach $4,400 in ..." - Aucune condition de trade remplie
+[2026-02-14T12:10:55.527Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Will Bitcoin reach $150,000 in..." - Aucune condition de trade remplie
+[2026-02-14T12:10:55.526Z] [INFO] 🔍 Rejeté: "Will Bitcoin reach $150,000 in..." - Aucune condition de trade remplie
+[2026-02-14T12:10:55.565Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Will France win the Men's Ice ..." - Aucune condition de trade remplie
+[2026-02-14T12:10:55.565Z] [INFO] 🔍 Rejeté: "Will France win the Men's Ice ..." - Aucune condition de trade remplie
+[2026-02-14T12:10:55.627Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "XRP Up or Down - February 16, ..." - Aucune condition de trade remplie
+[2026-02-14T12:10:55.627Z] [INFO] 🔍 Rejeté: "XRP Up or Down - February 16, ..." - Aucune condition de trade remplie
+[2026-02-14T12:10:55.629Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Ethereum Up or Down - February..." - Aucune condition de trade remplie
+[2026-02-14T12:10:55.629Z] [INFO] 🔍 Rejeté: "Ethereum Up or Down - February..." - Aucune condition de trade remplie
+[2026-02-14T12:10:55.630Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Solana Up or Down - February 1..." - Aucune condition de trade remplie
+[2026-02-14T12:10:55.630Z] [INFO] 🔍 Rejeté: "Solana Up or Down - February 1..." - Aucune condition de trade remplie
+[2026-02-14T12:10:55.631Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Bitcoin Up or Down - February ..." - Aucune condition de trade remplie
+[2026-02-14T12:10:55.630Z] [INFO] 🔍 Rejeté: "Bitcoin Up or Down - February ..." - Aucune condition de trade remplie
+[2026-02-14T12:10:55.727Z] [INFO] [33m%s[0m [WARNING] ⚠️ Skipped trade: Insufficient capital ($928.13) or trade size too small ($7.00) pour "Bitcoin Up or Down on February..."
+[2026-02-14T12:10:55.727Z] [WARNING] ⚠️ Skipped trade: Insufficient capital ($928.13) or trade size too small ($7.00) pour "Bitcoin Up or Down on February..."
+[2026-02-14T12:10:55.728Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Price too low (<0.05) - Penny Stock Filter
+[2026-02-14T12:11:53.031Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 2 active trades...
+[2026-02-14T12:11:52.987Z] [INFO] 🔄 Updating prices for 2 active trades...
+[2026-02-14T12:11:53.675Z] [INFO] [36m%s[0m [INFO] ✅ Updated 2/2 trade prices
+[2026-02-14T12:11:53.675Z] [INFO] ✅ Updated 2/2 trade prices
+[2026-02-14T12:11:55.954Z] [INFO] 🔍 Checking 2 active trades...
+[2026-02-14T12:11:55.962Z] [INFO] 🧙 Wizards Detected: 5
+[2026-02-14T12:11:56.227Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Bitcoin Up or Down - February ..." - Aucune condition de trade remplie
+[2026-02-14T12:11:56.227Z] [INFO] 🔍 Rejeté: "Bitcoin Up or Down - February ..." - Aucune condition de trade remplie
+[2026-02-14T12:11:56.229Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Solana Up or Down - February 1..." - Aucune condition de trade remplie
+[2026-02-14T12:11:56.228Z] [INFO] 🔍 Rejeté: "Solana Up or Down - February 1..." - Aucune condition de trade remplie
+[2026-02-14T12:11:56.229Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Ethereum Up or Down - February..." - Aucune condition de trade remplie
+[2026-02-14T12:11:56.229Z] [INFO] 🔍 Rejeté: "Ethereum Up or Down - February..." - Aucune condition de trade remplie
+[2026-02-14T12:11:56.230Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "XRP Up or Down - February 15, ..." - Aucune condition de trade remplie
+[2026-02-14T12:11:56.230Z] [INFO] 🔍 Rejeté: "XRP Up or Down - February 15, ..." - Aucune condition de trade remplie
+[2026-02-14T12:11:56.231Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Bitcoin Up or Down - February ..." - Aucune condition de trade remplie
+[2026-02-14T12:11:56.231Z] [INFO] 🔍 Rejeté: "Bitcoin Up or Down - February ..." - Aucune condition de trade remplie
+[2026-02-14T12:11:56.353Z] [INFO] [33m%s[0m [WARNING] ⚠️ Skipped trade: Insufficient capital ($928.13) or trade size too small ($7.00) pour "Bitcoin Up or Down on February..."
+[2026-02-14T12:11:56.353Z] [WARNING] ⚠️ Skipped trade: Insufficient capital ($928.13) or trade size too small ($7.00) pour "Bitcoin Up or Down on February..."
+[2026-02-14T12:11:56.354Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Price too low (<0.05) - Penny Stock Filter
+[2026-02-14T12:12:56.649Z] [INFO] 🔍 Checking 2 active trades...
+[2026-02-14T12:12:56.655Z] [INFO] 🧙 Wizards Detected: 5
+[2026-02-14T12:12:56.899Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Bitcoin Up or Down - February ..." - Aucune condition de trade remplie
+[2026-02-14T12:12:56.899Z] [INFO] 🔍 Rejeté: "Bitcoin Up or Down - February ..." - Aucune condition de trade remplie
+[2026-02-14T12:12:56.900Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Solana Up or Down - February 1..." - Aucune condition de trade remplie
+[2026-02-14T12:12:56.900Z] [INFO] 🔍 Rejeté: "Solana Up or Down - February 1..." - Aucune condition de trade remplie
+[2026-02-14T12:12:56.901Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Ethereum Up or Down - February..." - Aucune condition de trade remplie
+[2026-02-14T12:12:56.901Z] [INFO] 🔍 Rejeté: "Ethereum Up or Down - February..." - Aucune condition de trade remplie
+[2026-02-14T12:12:56.902Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "XRP Up or Down - February 15, ..." - Aucune condition de trade remplie
+[2026-02-14T12:12:56.902Z] [INFO] 🔍 Rejeté: "XRP Up or Down - February 15, ..." - Aucune condition de trade remplie
+[2026-02-14T12:12:56.902Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Bitcoin Up or Down - February ..." - Aucune condition de trade remplie
+[2026-02-14T12:12:56.902Z] [INFO] 🔍 Rejeté: "Bitcoin Up or Down - February ..." - Aucune condition de trade remplie
+[2026-02-14T12:12:57.026Z] [INFO] [33m%s[0m [WARNING] ⚠️ Skipped trade: Insufficient capital ($928.13) or trade size too small ($7.00) pour "Bitcoin Up or Down on February..."
+[2026-02-14T12:12:57.026Z] [WARNING] ⚠️ Skipped trade: Insufficient capital ($928.13) or trade size too small ($7.00) pour "Bitcoin Up or Down on February..."
+[2026-02-14T12:12:57.028Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Price too low (<0.05) - Penny Stock Filter
+[2026-02-14T12:13:57.327Z] [INFO] 🔍 Checking 2 active trades...
+[2026-02-14T12:13:57.335Z] [INFO] 🧙 Wizards Detected: 5
+[2026-02-14T12:13:57.565Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Bitcoin Up or Down - February ..." - Aucune condition de trade remplie
+[2026-02-14T12:13:57.564Z] [INFO] 🔍 Rejeté: "Bitcoin Up or Down - February ..." - Aucune condition de trade remplie
+[2026-02-14T12:13:57.566Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Solana Up or Down - February 1..." - Aucune condition de trade remplie
+[2026-02-14T12:13:57.566Z] [INFO] 🔍 Rejeté: "Solana Up or Down - February 1..." - Aucune condition de trade remplie
+[2026-02-14T12:13:57.566Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Ethereum Up or Down - February..." - Aucune condition de trade remplie
+[2026-02-14T12:13:57.566Z] [INFO] 🔍 Rejeté: "Ethereum Up or Down - February..." - Aucune condition de trade remplie
+[2026-02-14T12:13:57.569Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "XRP Up or Down - February 15, ..." - Aucune condition de trade remplie
+[2026-02-14T12:13:57.569Z] [INFO] 🔍 Rejeté: "XRP Up or Down - February 15, ..." - Aucune condition de trade remplie
+[2026-02-14T12:13:57.570Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Bitcoin Up or Down - February ..." - Aucune condition de trade remplie
+[2026-02-14T12:13:57.570Z] [INFO] 🔍 Rejeté: "Bitcoin Up or Down - February ..." - Aucune condition de trade remplie
+[2026-02-14T12:13:57.675Z] [INFO] [33m%s[0m [WARNING] ⚠️ Skipped trade: Insufficient capital ($928.13) or trade size too small ($7.00) pour "Bitcoin Up or Down on February..."
+[2026-02-14T12:13:57.674Z] [WARNING] ⚠️ Skipped trade: Insufficient capital ($928.13) or trade size too small ($7.00) pour "Bitcoin Up or Down on February..."
+[2026-02-14T12:13:57.676Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Price too low (<0.05) - Penny Stock Filter
+[2026-02-14T12:20:00.560Z] [INFO] [32m%s[0m [SUCCESS] Chargement des données réussi ($1000.00)
+[2026-02-14T12:20:00.560Z] [SUCCESS] Chargement des données réussi ($1000.00)
+[2026-02-14T12:20:00.681Z] [INFO] [36m%s[0m [INFO] 🔄 Démarrage de la boucle de trading...
+[2026-02-14T12:20:00.681Z] [INFO] 🔄 Démarrage de la boucle de trading...
+[2026-02-14T12:20:00.683Z] [INFO] [33m%s[0m [WARNING] ⚠️ État local vide/par défaut. Tentative de récupération Cloud...
+[2026-02-14T12:20:00.683Z] [WARNING] ⚠️ État local vide/par défaut. Tentative de récupération Cloud...
+[2026-02-14T12:20:00.684Z] [INFO] 🔄 Tentative de reconstruction de l'état depuis Supabase...
+[2026-02-14T12:20:00.718Z] [INFO] 
+🚀 SERVER STARTED ON PORT 3000
+[2026-02-14T12:20:00.793Z] [INFO] 📅 14/02/2026 13:20:00
+[2026-02-14T12:20:00.793Z] [INFO] ✅ Version: 2.6.6 (Stable - Nuclear Disabled)
+[2026-02-14T12:20:00.794Z] [INFO] [32m%s[0m [SUCCESS] Serveur démarré sur le port 3000 (v2.6.6 Stable)
+[2026-02-14T12:20:00.794Z] [SUCCESS] Serveur démarré sur le port 3000 (v2.6.6 Stable)
+[2026-02-14T12:20:00.912Z] [INFO] ✅ État reconstruit : Capital $1106.48 | Actifs: 0 | Fermés: 147 | Logs: 147
+[2026-02-14T12:20:00.973Z] [INFO] [32m%s[0m [SUCCESS] ✅ ÉTAT RESTAURÉ DEPUIS SUPABASE !
+[2026-02-14T12:20:00.973Z] [SUCCESS] ✅ ÉTAT RESTAURÉ DEPUIS SUPABASE !
+[2026-02-14T12:20:00.973Z] [INFO] 🔄 Starting real-time price tracking service...
+[2026-02-14T12:20:00.974Z] [INFO] [36m%s[0m [INFO] 🚀 Starting price update loop (every 5 minutes)
+[2026-02-14T12:20:00.974Z] [INFO] 🚀 Starting price update loop (every 5 minutes)
+[2026-02-14T12:20:00.975Z] [INFO] 🕒 AI Self-Training Scheduler started (Every 6h)
+[2026-02-14T12:20:01.111Z] [INFO] [36m%s[0m [INFO] 🌊 LANCEMENT DEEP SCAN (1000+ marchés)...
+[2026-02-14T12:20:01.111Z] [INFO] 🌊 LANCEMENT DEEP SCAN (1000+ marchés)...
+[2026-02-14T12:20:01.245Z] [INFO] 🧙 Wizards Detected: 5
+[2026-02-14T12:20:01.350Z] [INFO] 🧪 Starting Autonomous Backtest...
+[2026-02-14T12:20:01.350Z] [INFO] [36m%s[0m [INFO] 🧪 Lancement du Backtest Autonome (Vérification Stratégie)...
+[2026-02-14T12:20:01.350Z] [INFO] 🧪 Lancement du Backtest Autonome (Vérification Stratégie)...
+[2026-02-14T12:20:01.397Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Will FC Bayern München win on ..." - Aucune condition de trade remplie
+[2026-02-14T12:20:01.397Z] [INFO] 🔍 Rejeté: "Will FC Bayern München win on ..." - Aucune condition de trade remplie
+[2026-02-14T12:20:01.449Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Will Ethereum reach $4,400 in ..." - Aucune condition de trade remplie
+[2026-02-14T12:20:01.449Z] [INFO] 🔍 Rejeté: "Will Ethereum reach $4,400 in ..." - Aucune condition de trade remplie
+[2026-02-14T12:20:01.474Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Will Bitcoin reach $150,000 in..." - Aucune condition de trade remplie
+[2026-02-14T12:20:01.474Z] [INFO] 🔍 Rejeté: "Will Bitcoin reach $150,000 in..." - Aucune condition de trade remplie
+[2026-02-14T12:20:01.504Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Will France win the Men's Ice ..." - Aucune condition de trade remplie
+[2026-02-14T12:20:01.504Z] [INFO] 🔍 Rejeté: "Will France win the Men's Ice ..." - Aucune condition de trade remplie
+[2026-02-14T12:20:01.528Z] [INFO] [32m%s[0m [SUCCESS] Chargement des données réussi ($1106.48)
+[2026-02-14T12:20:01.528Z] [SUCCESS] Chargement des données réussi ($1106.48)
+[2026-02-14T12:20:01.531Z] [INFO] 🧪 ========================================
+[2026-02-14T12:20:01.531Z] [INFO]    ADVANCED POLYMARKET BACKTEST (2026)
+[2026-02-14T12:20:01.532Z] [INFO] ========================================
+
+[2026-02-14T12:20:01.533Z] [INFO] 📊 Analyzing 20 historical markets...
+
+[2026-02-14T12:20:01.534Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "U.S. Recession in 2024?..."
+[2026-02-14T12:20:01.534Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "U.S. Recession in 2024?..."
+[2026-02-14T12:20:01.535Z] [INFO] ✅ WIN  | U.S. Recession in 2024?... | NO @ 0.69 | +$42.24
+[2026-02-14T12:20:01.536Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "BitBoy vs. Smic - Crypto Fight..."
+[2026-02-14T12:20:01.536Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "BitBoy vs. Smic - Crypto Fight..."
+[2026-02-14T12:20:01.537Z] [INFO] ✅ WIN  | BitBoy vs. Smic - Crypto Fight Night... | YES @ 0.75 | +$31.34
+[2026-02-14T12:20:01.537Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will Russia capture Chasiv Yar..."
+[2026-02-14T12:20:01.537Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will Russia capture Chasiv Yar..."
+[2026-02-14T12:20:01.538Z] [INFO] ✅ WIN  | Will Russia capture Chasiv Yar before Oc... | NO @ 0.69 | +$42.24
+[2026-02-14T12:20:01.538Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will England win the 2024 Euro..."
+[2026-02-14T12:20:01.538Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will England win the 2024 Euro..."
+[2026-02-14T12:20:01.539Z] [INFO] ✅ WIN  | Will England win the 2024 Euros?... | NO @ 0.69 | +$42.24
+[2026-02-14T12:20:01.540Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will Nicolas Maduro Win the 20..."
+[2026-02-14T12:20:01.540Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will Nicolas Maduro Win the 20..."
+[2026-02-14T12:20:01.541Z] [INFO] ✅ WIN  | Will Nicolas Maduro Win the 2024 Venezue... | NO @ 0.69 | +$42.24
+[2026-02-14T12:20:01.541Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Trump’s first TikTok >10M view..."
+[2026-02-14T12:20:01.541Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Trump’s first TikTok >10M view..."
+[2026-02-14T12:20:01.542Z] [INFO] ✅ WIN  | Trump’s first TikTok >10M views by Sunda... | YES @ 0.75 | +$31.34
+[2026-02-14T12:20:01.542Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Trump’s first TikTok >50M view..."
+[2026-02-14T12:20:01.542Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Trump’s first TikTok >50M view..."
+[2026-02-14T12:20:01.542Z] [INFO] ✅ WIN  | Trump’s first TikTok >50M views by Sunda... | YES @ 0.75 | +$31.34
+[2026-02-14T12:20:01.553Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Ethereum Up or Down on Februar..."
+[2026-02-14T12:20:01.553Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Ethereum Up or Down on Februar..."
+[2026-02-14T12:20:01.556Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: YES sur "Ethereum Up or Down on Februar..." @ $0.993 ($11.06)
+[2026-02-14T12:20:01.556Z] [TRADE] ✅ TRADE OPENED: YES sur "Ethereum Up or Down on Februar..." @ $0.993 ($11.06)
+[2026-02-14T12:20:01.558Z] [INFO] [32m%s[0m [SUCCESS] 🚀 [WIZARD] Trade: Ethereum Up or Down on Februar...
+[2026-02-14T12:20:01.558Z] [SUCCESS] 🚀 [WIZARD] Trade: Ethereum Up or Down on Februar...
+[2026-02-14T12:20:01.570Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Trump’s first TikTok >25M view..."
+[2026-02-14T12:20:01.570Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Trump’s first TikTok >25M view..."
+[2026-02-14T12:20:01.571Z] [INFO] ✅ WIN  | Trump’s first TikTok >25M views by Sunda... | YES @ 0.75 | +$31.34
+[2026-02-14T12:20:01.571Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "$GME halted on Monday?..."
+[2026-02-14T12:20:01.571Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "$GME halted on Monday?..."
+[2026-02-14T12:20:01.572Z] [INFO] ✅ WIN  | $GME halted on Monday?... | YES @ 0.75 | +$31.34
+[2026-02-14T12:20:01.574Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Roaring Kitty charged in 2024?..."
+[2026-02-14T12:20:01.573Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Roaring Kitty charged in 2024?..."
+[2026-02-14T12:20:01.574Z] [INFO] ✅ WIN  | Roaring Kitty charged in 2024?... | NO @ 0.69 | +$42.24
+[2026-02-14T12:20:01.574Z] [INFO] [33m%s[0m [WARNING] ⚠️ Skipped trade: Insufficient capital ($0.00) or trade size too small ($0.00) pour "Will Roaring Kitty tweet on Mo..."
+[2026-02-14T12:20:01.574Z] [WARNING] ⚠️ Skipped trade: Insufficient capital ($0.00) or trade size too small ($0.00) pour "Will Roaring Kitty tweet on Mo..."
+[2026-02-14T12:20:01.575Z] [INFO] [33m%s[0m [WARNING] ⚠️ Skipped trade: Insufficient capital ($0.00) or trade size too small ($0.00) pour "Was Roaring Kitty GME YOLO upd..."
+[2026-02-14T12:20:01.575Z] [WARNING] ⚠️ Skipped trade: Insufficient capital ($0.00) or trade size too small ($0.00) pour "Was Roaring Kitty GME YOLO upd..."
+[2026-02-14T12:20:01.577Z] [INFO] [33m%s[0m [WARNING] ⚠️ Skipped trade: Insufficient capital ($0.00) or trade size too small ($0.00) pour "New GME YOLO update by Friday?..."
+[2026-02-14T12:20:01.577Z] [WARNING] ⚠️ Skipped trade: Insufficient capital ($0.00) or trade size too small ($0.00) pour "New GME YOLO update by Friday?..."
+[2026-02-14T12:20:01.578Z] [INFO] [33m%s[0m [WARNING] ⚠️ Skipped trade: Insufficient capital ($0.00) or trade size too small ($0.00) pour "$GME market cap below $6 billi..."
+[2026-02-14T12:20:01.578Z] [WARNING] ⚠️ Skipped trade: Insufficient capital ($0.00) or trade size too small ($0.00) pour "$GME market cap below $6 billi..."
+[2026-02-14T12:20:01.580Z] [INFO] [33m%s[0m [WARNING] ⚠️ Skipped trade: Insufficient capital ($0.00) or trade size too small ($0.00) pour "$GME market cap >$10b at Monda..."
+[2026-02-14T12:20:01.580Z] [WARNING] ⚠️ Skipped trade: Insufficient capital ($0.00) or trade size too small ($0.00) pour "$GME market cap >$10b at Monda..."
+[2026-02-14T12:20:01.580Z] [INFO] [33m%s[0m [WARNING] ⚠️ Skipped trade: Insufficient capital ($0.00) or trade size too small ($0.00) pour "Will Berkshire Hathaway resume..."
+[2026-02-14T12:20:01.580Z] [WARNING] ⚠️ Skipped trade: Insufficient capital ($0.00) or trade size too small ($0.00) pour "Will Berkshire Hathaway resume..."
+[2026-02-14T12:20:01.582Z] [INFO] [33m%s[0m [WARNING] ⚠️ Skipped trade: Insufficient capital ($0.00) or trade size too small ($0.00) pour "Berkshire Hathaway closes abov..."
+[2026-02-14T12:20:01.582Z] [WARNING] ⚠️ Skipped trade: Insufficient capital ($0.00) or trade size too small ($0.00) pour "Berkshire Hathaway closes abov..."
+[2026-02-14T12:20:01.583Z] [INFO] [33m%s[0m [WARNING] ⚠️ Skipped trade: Insufficient capital ($0.00) or trade size too small ($0.00) pour "Did Keith Gill (RoaringKitty) ..."
+[2026-02-14T12:20:01.583Z] [WARNING] ⚠️ Skipped trade: Insufficient capital ($0.00) or trade size too small ($0.00) pour "Did Keith Gill (RoaringKitty) ..."
+[2026-02-14T12:20:01.583Z] [INFO] [33m%s[0m [WARNING] ⚠️ Skipped trade: Insufficient capital ($0.00) or trade size too small ($0.00) pour "Roaring Kitty dumps GME calls ..."
+[2026-02-14T12:20:01.583Z] [WARNING] ⚠️ Skipped trade: Insufficient capital ($0.00) or trade size too small ($0.00) pour "Roaring Kitty dumps GME calls ..."
+[2026-02-14T12:20:01.585Z] [INFO] [33m%s[0m [WARNING] ⚠️ Skipped trade: Insufficient capital ($0.00) or trade size too small ($0.00) pour "Infowars shuttered by Friday?..."
+[2026-02-14T12:20:01.584Z] [WARNING] ⚠️ Skipped trade: Insufficient capital ($0.00) or trade size too small ($0.00) pour "Infowars shuttered by Friday?..."
+[2026-02-14T12:20:01.585Z] [INFO] 
+========================================
+[2026-02-14T12:20:01.586Z] [INFO] 🏆 BACKTEST RESULTS
+[2026-02-14T12:20:01.586Z] [INFO] ========================================
+
+[2026-02-14T12:20:01.586Z] [INFO] 📊 BASIC STATS:
+[2026-02-14T12:20:01.587Z] [INFO]    Markets Scanned: 20
+[2026-02-14T12:20:01.587Z] [INFO]    Trades Taken: 10
+[2026-02-14T12:20:01.587Z] [INFO]    Ignored: 10
+[2026-02-14T12:20:01.587Z] [INFO]    Arbitrage Opportunities: 0
+[2026-02-14T12:20:01.587Z] [INFO] 
+[2026-02-14T12:20:01.587Z] [INFO] 💰 PERFORMANCE:
+[2026-02-14T12:20:01.588Z] [INFO]    Wins: 10
+[2026-02-14T12:20:01.588Z] [INFO]    Losses: 0
+[2026-02-14T12:20:01.588Z] [INFO]    Winrate: 100.0%
+[2026-02-14T12:20:01.588Z] [INFO] 
+[2026-02-14T12:20:01.588Z] [INFO] 💵 CAPITAL:
+[2026-02-14T12:20:01.589Z] [INFO]    Initial: $1000.00
+[2026-02-14T12:20:01.589Z] [INFO]    Final: $1367.88
+[2026-02-14T12:20:01.589Z] [INFO]    Total PnL: +$367.88
+[2026-02-14T12:20:01.589Z] [INFO]    ROI: 36.79%
+[2026-02-14T12:20:01.589Z] [INFO] 
+[2026-02-14T12:20:01.590Z] [INFO] 📈 ADVANCED METRICS (Best Practice 2026):
+[2026-02-14T12:20:01.590Z] [INFO]    Sharpe Ratio: 6.75 🌟 EXCELLENT
+[2026-02-14T12:20:01.590Z] [INFO]    Max Drawdown: 0.00% ✅
+[2026-02-14T12:20:01.590Z] [INFO]    Avg Return/Trade: $36.79
+[2026-02-14T12:20:01.590Z] [INFO]    Std Deviation: $5.45
+[2026-02-14T12:20:01.591Z] [INFO] 
+[2026-02-14T12:20:01.591Z] [INFO] 💸 COSTS (Realistic):
+[2026-02-14T12:20:01.591Z] [INFO]    Slippage: 1.5%
+[2026-02-14T12:20:01.591Z] [INFO]    Polymarket Fees: 2% on profits
+[2026-02-14T12:20:01.591Z] [INFO] 
+[2026-02-14T12:20:01.592Z] [INFO] ========================================
+[2026-02-14T12:20:01.592Z] [INFO] 🌟 STRATEGY IS PROFITABLE! 🌟
+[2026-02-14T12:20:01.592Z] [INFO] ========================================
+
+[2026-02-14T12:20:01.673Z] [INFO] ✅ Trade saved to Supabase: Ethereum Up or Down on February 14?
+[2026-02-14T12:20:02.027Z] [INFO] ✅ Results saved to Supabase successfully!
+[2026-02-14T12:20:02.048Z] [INFO] [32m%s[0m [SUCCESS] ✅ Auto-Backtest Terminé. ROI Actuel: 36.79%
+[2026-02-14T12:20:02.048Z] [SUCCESS] ✅ Auto-Backtest Terminé. ROI Actuel: 36.79%
+[2026-02-14T12:20:30.977Z] [INFO] 🎓 Starting Automated Training Simulation...
+[2026-02-14T12:20:30.978Z] [INFO] [36m%s[0m [INFO] 🎓 Lancement de l'auto-entraînement IA...
+[2026-02-14T12:20:30.978Z] [INFO] 🎓 Lancement de l'auto-entraînement IA...
+[2026-02-14T12:20:30.979Z] [INFO] 📡 Fetching resolved markets...
+[2026-02-14T12:20:31.261Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will the highest temperature i..."
+[2026-02-14T12:20:31.261Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will the highest temperature i..."
+[2026-02-14T12:20:31.262Z] [INFO] ✅ WIN  | Will the highest temperature in Seoul be 6°C ... | NO @ 0.759 | +$2.96
+[2026-02-14T12:20:31.262Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Al Shabab Saudi Club vs. Al Ah..."
+[2026-02-14T12:20:31.262Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Al Shabab Saudi Club vs. Al Ah..."
+[2026-02-14T12:20:31.263Z] [INFO] ❌ LOSS | Al Shabab Saudi Club vs. Al Ahli Saudi Club: ... | NO @ 0.477 | -$10.18
+[2026-02-14T12:20:31.263Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Michigan State Spartans vs. Wi..."
+[2026-02-14T12:20:31.263Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Michigan State Spartans vs. Wi..."
+[2026-02-14T12:20:31.264Z] [INFO] ✅ WIN  | Michigan State Spartans vs. Wisconsin Badgers... | NO @ 0.449 | +$11.89
+[2026-02-14T12:20:31.265Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Manhattan Jaspers vs. Niagara ..."
+[2026-02-14T12:20:31.265Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Manhattan Jaspers vs. Niagara ..."
+[2026-02-14T12:20:31.266Z] [INFO] ❌ LOSS | Manhattan Jaspers vs. Niagara Purple Eagles: ... | NO @ 0.366 | -$10.15
+[2026-02-14T12:20:31.266Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Spread: Saint Peter's Peacocks..."
+[2026-02-14T12:20:31.266Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Spread: Saint Peter's Peacocks..."
+[2026-02-14T12:20:31.267Z] [INFO] ❌ LOSS | Spread: Saint Peter's Peacocks (-1.5)... | YES @ 0.517 | -$10.15
+[2026-02-14T12:20:31.268Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will MrBeast's next video get ..."
+[2026-02-14T12:20:31.268Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will MrBeast's next video get ..."
+[2026-02-14T12:20:31.269Z] [INFO] ✅ WIN  | Will MrBeast's next video get between 49.5 an... | NO @ 0.739 | +$3.32
+[2026-02-14T12:20:31.270Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Aztec FDV above $1B one day af..."
+[2026-02-14T12:20:31.270Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Aztec FDV above $1B one day af..."
+[2026-02-14T12:20:31.270Z] [INFO] ✅ WIN  | Aztec FDV above $1B one day after launch?... | NO @ 0.464 | +$11.16
+[2026-02-14T12:20:31.270Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "LoL: Fukuoka SoftBank Hawks Ga..."
+[2026-02-14T12:20:31.270Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "LoL: Fukuoka SoftBank Hawks Ga..."
+[2026-02-14T12:20:31.271Z] [INFO] ❌ LOSS | LoL: Fukuoka SoftBank Hawks Gaming vs Team Se... | YES @ 0.609 | -$31.47
+[2026-02-14T12:20:31.273Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "First Blood in Game 4?..."
+[2026-02-14T12:20:31.273Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "First Blood in Game 4?..."
+[2026-02-14T12:20:31.273Z] [INFO] ✅ WIN  | First Blood in Game 4?... | NO @ 0.623 | +$5.79
+[2026-02-14T12:20:31.275Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "LoL: Ground Zero Gaming vs CTB..."
+[2026-02-14T12:20:31.275Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "LoL: Ground Zero Gaming vs CTB..."
+[2026-02-14T12:20:31.275Z] [INFO] ❌ LOSS | LoL: Ground Zero Gaming vs CTBC Flying Oyster... | NO @ 0.564 | -$10.15
+[2026-02-14T12:20:31.277Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "LoL: Ground Zero Gaming vs CTB..."
+[2026-02-14T12:20:31.277Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "LoL: Ground Zero Gaming vs CTB..."
+[2026-02-14T12:20:31.277Z] [INFO] ✅ WIN  | LoL: Ground Zero Gaming vs CTBC Flying Oyster... | YES @ 0.596 | +$22.47
+[2026-02-14T12:20:31.278Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Valorant: MIBR vs FURIA Esport..."
+[2026-02-14T12:20:31.278Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Valorant: MIBR vs FURIA Esport..."
+[2026-02-14T12:20:31.278Z] [INFO] ✅ WIN  | Valorant: MIBR vs FURIA Esports - Map 2 Winne... | NO @ 0.530 | +$8.53
+[2026-02-14T12:20:31.280Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Bitcoin Up or Down - February ..."
+[2026-02-14T12:20:31.280Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Bitcoin Up or Down - February ..."
+[2026-02-14T12:20:31.281Z] [INFO] ✅ WIN  | Bitcoin Up or Down - February 13, 8:30AM-8:45... | NO @ 0.754 | +$3.05
+[2026-02-14T12:20:31.282Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Map Handicap: MIBR (-2.5) vs F..."
+[2026-02-14T12:20:31.282Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Map Handicap: MIBR (-2.5) vs F..."
+[2026-02-14T12:20:31.283Z] [INFO] ❌ LOSS | Map Handicap: MIBR (-2.5) vs FURIA Esports (+... | YES @ 0.221 | -$48.17
+[2026-02-14T12:20:31.285Z] [INFO] AI Adaptation: Mode=DEFENSIVE (ROI: -5.11%)
+[2026-02-14T12:20:31.286Z] [INFO] [32m%s[0m [SUCCESS] 🧠 AI Adaptation: Mode=DEFENSIVE (ROI: -5.11%)
+[2026-02-14T12:20:31.286Z] [SUCCESS] 🧠 AI Adaptation: Mode=DEFENSIVE (ROI: -5.11%)
+[2026-02-14T12:20:31.736Z] [ERROR] Failed to save AUTO backtest run: {"code":"PGRST204","details":null,"hint":null,"message":"Could not find the 'markets_tested' column of 'simulation_runs' in the schema cache"}
+[2026-02-14T12:21:01.762Z] [INFO] 🔍 Checking 1 active trades...
+[2026-02-14T12:21:01.767Z] [INFO] 🧙 Wizards Detected: 5
+[2026-02-14T12:21:02.086Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will Elon Musk post <40 tweets..."
+[2026-02-14T12:21:02.086Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer) pour "Will Elon Musk post <40 tweets..."
+[2026-02-14T12:21:02.089Z] [INFO] [35m%s[0m [TRADE] ✅ TRADE OPENED: YES sur "Will Elon Musk post <40 tweets..." @ $0.197 ($38.34)
+[2026-02-14T12:21:02.089Z] [TRADE] ✅ TRADE OPENED: YES sur "Will Elon Musk post <40 tweets..." @ $0.197 ($38.34)
+[2026-02-14T12:21:02.091Z] [INFO] [32m%s[0m [SUCCESS] 🚀 [WIZARD] Trade: Will Elon Musk post <40 tweets...
+[2026-02-14T12:21:02.091Z] [SUCCESS] 🚀 [WIZARD] Trade: Will Elon Musk post <40 tweets...
+[2026-02-14T12:21:02.226Z] [INFO] ✅ Trade saved to Supabase: Will Elon Musk post <40 tweets from February 12 to February 14, 2026?
+[2026-02-14T12:22:02.268Z] [INFO] 🔍 Checking 2 active trades...
+[2026-02-14T12:22:02.272Z] [INFO] 🧙 Wizards Detected: 5
+[2026-02-14T12:22:02.633Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Bitcoin Up or Down - February ..." - Aucune condition de trade remplie
+[2026-02-14T12:22:02.633Z] [INFO] 🔍 Rejeté: "Bitcoin Up or Down - February ..." - Aucune condition de trade remplie
+[2026-02-14T12:22:02.634Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Bitcoin Up or Down - February ..." - Aucune condition de trade remplie
+[2026-02-14T12:22:02.634Z] [INFO] 🔍 Rejeté: "Bitcoin Up or Down - February ..." - Aucune condition de trade remplie
+[2026-02-14T12:22:02.635Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Solana Up or Down - February 1..." - Aucune condition de trade remplie
+[2026-02-14T12:22:02.635Z] [INFO] 🔍 Rejeté: "Solana Up or Down - February 1..." - Aucune condition de trade remplie
+[2026-02-14T12:22:02.636Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Ethereum Up or Down - February..." - Aucune condition de trade remplie
+[2026-02-14T12:22:02.636Z] [INFO] 🔍 Rejeté: "Ethereum Up or Down - February..." - Aucune condition de trade remplie
+[2026-02-14T12:22:02.718Z] [INFO] [33m%s[0m [WARNING] ⚠️ Skipped trade: Insufficient capital ($1057.08) or trade size too small ($7.40) pour "Bitcoin Up or Down on February..."
+[2026-02-14T12:22:02.718Z] [WARNING] ⚠️ Skipped trade: Insufficient capital ($1057.08) or trade size too small ($7.40) pour "Bitcoin Up or Down on February..."
+[2026-02-14T12:22:02.719Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Price too low (<0.05) - Penny Stock Filter
+[2026-02-14T12:23:02.958Z] [INFO] 🔍 Checking 2 active trades...
+[2026-02-14T12:23:02.963Z] [INFO] 🧙 Wizards Detected: 5
+[2026-02-14T12:23:03.215Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Bitcoin Up or Down - February ..." - Aucune condition de trade remplie
+[2026-02-14T12:23:03.215Z] [INFO] 🔍 Rejeté: "Bitcoin Up or Down - February ..." - Aucune condition de trade remplie
+[2026-02-14T12:23:03.216Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Bitcoin Up or Down - February ..." - Aucune condition de trade remplie
+[2026-02-14T12:23:03.216Z] [INFO] 🔍 Rejeté: "Bitcoin Up or Down - February ..." - Aucune condition de trade remplie
+[2026-02-14T12:23:03.217Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Bitcoin Up or Down - February ..." - Aucune condition de trade remplie
+[2026-02-14T12:23:03.217Z] [INFO] 🔍 Rejeté: "Bitcoin Up or Down - February ..." - Aucune condition de trade remplie
+[2026-02-14T12:23:03.217Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Solana Up or Down - February 1..." - Aucune condition de trade remplie
+[2026-02-14T12:23:03.217Z] [INFO] 🔍 Rejeté: "Solana Up or Down - February 1..." - Aucune condition de trade remplie
+[2026-02-14T12:23:03.217Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Ethereum Up or Down - February..." - Aucune condition de trade remplie
+[2026-02-14T12:23:03.217Z] [INFO] 🔍 Rejeté: "Ethereum Up or Down - February..." - Aucune condition de trade remplie
+[2026-02-14T12:23:03.300Z] [INFO] [33m%s[0m [WARNING] ⚠️ Skipped trade: Insufficient capital ($1057.08) or trade size too small ($7.40) pour "Bitcoin Up or Down on February..."
+[2026-02-14T12:23:03.300Z] [WARNING] ⚠️ Skipped trade: Insufficient capital ($1057.08) or trade size too small ($7.40) pour "Bitcoin Up or Down on February..."
+[2026-02-14T12:23:03.301Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Price too low (<0.05) - Penny Stock Filter
+[2026-02-14T12:24:03.480Z] [INFO] 🔍 Checking 2 active trades...
+[2026-02-14T12:24:03.485Z] [INFO] 🧙 Wizards Detected: 5
+[2026-02-14T12:24:03.687Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Bitcoin Up or Down - February ..." - Aucune condition de trade remplie
+[2026-02-14T12:24:03.687Z] [INFO] 🔍 Rejeté: "Bitcoin Up or Down - February ..." - Aucune condition de trade remplie
+[2026-02-14T12:24:03.689Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Bitcoin Up or Down - February ..." - Aucune condition de trade remplie
+[2026-02-14T12:24:03.688Z] [INFO] 🔍 Rejeté: "Bitcoin Up or Down - February ..." - Aucune condition de trade remplie
+[2026-02-14T12:24:03.689Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Bitcoin Up or Down - February ..." - Aucune condition de trade remplie
+[2026-02-14T12:24:03.689Z] [INFO] 🔍 Rejeté: "Bitcoin Up or Down - February ..." - Aucune condition de trade remplie
+[2026-02-14T12:24:03.690Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Solana Up or Down - February 1..." - Aucune condition de trade remplie
+[2026-02-14T12:24:03.690Z] [INFO] 🔍 Rejeté: "Solana Up or Down - February 1..." - Aucune condition de trade remplie
+[2026-02-14T12:24:03.690Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Ethereum Up or Down - February..." - Aucune condition de trade remplie
+[2026-02-14T12:24:03.690Z] [INFO] 🔍 Rejeté: "Ethereum Up or Down - February..." - Aucune condition de trade remplie
+[2026-02-14T12:24:03.774Z] [INFO] [33m%s[0m [WARNING] ⚠️ Skipped trade: Insufficient capital ($1057.08) or trade size too small ($7.40) pour "Bitcoin Up or Down on February..."
+[2026-02-14T12:24:03.774Z] [WARNING] ⚠️ Skipped trade: Insufficient capital ($1057.08) or trade size too small ($7.40) pour "Bitcoin Up or Down on February..."
+[2026-02-14T12:24:03.775Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Price too low (<0.05) - Penny Stock Filter
+[2026-02-14T12:25:00.976Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 2 active trades...
+[2026-02-14T12:25:00.975Z] [INFO] 🔄 Updating prices for 2 active trades...
+[2026-02-14T12:25:01.491Z] [INFO] [36m%s[0m [INFO] ✅ Updated 2/2 trade prices
+[2026-02-14T12:25:01.491Z] [INFO] ✅ Updated 2/2 trade prices
+[2026-02-14T12:25:03.952Z] [INFO] 🔍 Checking 2 active trades...
+[2026-02-14T12:25:03.956Z] [INFO] 🧙 Wizards Detected: 5
+[2026-02-14T12:25:04.007Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Will FC Bayern München win on ..." - Aucune condition de trade remplie
+[2026-02-14T12:25:04.007Z] [INFO] 🔍 Rejeté: "Will FC Bayern München win on ..." - Aucune condition de trade remplie
+[2026-02-14T12:25:04.051Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Will Ethereum reach $4,400 in ..." - Aucune condition de trade remplie
+[2026-02-14T12:25:04.051Z] [INFO] 🔍 Rejeté: "Will Ethereum reach $4,400 in ..." - Aucune condition de trade remplie
+[2026-02-14T12:25:04.079Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Will Bitcoin reach $150,000 in..." - Aucune condition de trade remplie
+[2026-02-14T12:25:04.079Z] [INFO] 🔍 Rejeté: "Will Bitcoin reach $150,000 in..." - Aucune condition de trade remplie
+[2026-02-14T12:25:04.105Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Will France win the Men's Ice ..." - Aucune condition de trade remplie
+[2026-02-14T12:25:04.105Z] [INFO] 🔍 Rejeté: "Will France win the Men's Ice ..." - Aucune condition de trade remplie
+[2026-02-14T12:25:04.163Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Bitcoin Up or Down - February ..." - Aucune condition de trade remplie
+[2026-02-14T12:25:04.162Z] [INFO] 🔍 Rejeté: "Bitcoin Up or Down - February ..." - Aucune condition de trade remplie
+[2026-02-14T12:25:04.163Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Bitcoin Up or Down - February ..." - Aucune condition de trade remplie
+[2026-02-14T12:25:04.163Z] [INFO] 🔍 Rejeté: "Bitcoin Up or Down - February ..." - Aucune condition de trade remplie
+[2026-02-14T12:25:04.164Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Bitcoin Up or Down - February ..." - Aucune condition de trade remplie
+[2026-02-14T12:25:04.164Z] [INFO] 🔍 Rejeté: "Bitcoin Up or Down - February ..." - Aucune condition de trade remplie
+[2026-02-14T12:25:04.164Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Solana Up or Down - February 1..." - Aucune condition de trade remplie
+[2026-02-14T12:25:04.164Z] [INFO] 🔍 Rejeté: "Solana Up or Down - February 1..." - Aucune condition de trade remplie
+[2026-02-14T12:25:04.165Z] [INFO] [36m%s[0m [INFO] 🔍 Rejeté: "Ethereum Up or Down - February..." - Aucune condition de trade remplie
+[2026-02-14T12:25:04.165Z] [INFO] 🔍 Rejeté: "Ethereum Up or Down - February..." - Aucune condition de trade remplie
+[2026-02-14T12:25:04.255Z] [INFO] [33m%s[0m [WARNING] ⚠️ Skipped trade: Insufficient capital ($1057.08) or trade size too small ($7.40) pour "Bitcoin Up or Down on February..."
+[2026-02-14T12:25:04.255Z] [WARNING] ⚠️ Skipped trade: Insufficient capital ($1057.08) or trade size too small ($7.40) pour "Bitcoin Up or Down on February..."
+[2026-02-14T12:25:04.256Z] [INFO] 🔍 Scanned 16 markets. No entry found | TOP: Aucune condition de trade remplie, WHALE: Aucune condition de trade remplie, WIZARD: Price too low (<0.05) - Penny Stock Filter
+[2026-02-14T14:48:03.012Z] [INFO] [32m%s[0m [SUCCESS] Chargement des données réussi ($1000.00)
+[2026-02-14T14:48:03.012Z] [SUCCESS] Chargement des données réussi ($1000.00)
+[2026-02-14T14:48:03.146Z] [INFO] [36m%s[0m [INFO] 🔄 Démarrage de la boucle de trading...
+[2026-02-14T14:48:03.146Z] [INFO] 🔄 Démarrage de la boucle de trading...
+[2026-02-14T14:48:03.148Z] [INFO] [33m%s[0m [WARNING] ⚠️ État local vide/par défaut. Tentative de récupération Cloud...
+[2026-02-14T14:48:03.148Z] [WARNING] ⚠️ État local vide/par défaut. Tentative de récupération Cloud...
+[2026-02-14T14:48:03.149Z] [INFO] 🔄 Tentative de reconstruction de l'état depuis Supabase...
+[2026-02-14T14:48:03.191Z] [INFO] 
+🚀 SERVER STARTED ON PORT 3000
+[2026-02-14T14:48:03.213Z] [INFO] 📅 14/02/2026 15:48:03
+[2026-02-14T14:48:03.214Z] [INFO] ✅ Version: 2.6.6 (Stable - Nuclear Disabled)
+[2026-02-14T14:48:03.215Z] [INFO] [32m%s[0m [SUCCESS] Serveur démarré sur le port 3000 (v2.6.6 Stable)
+[2026-02-14T14:48:03.214Z] [SUCCESS] Serveur démarré sur le port 3000 (v2.6.6 Stable)
+[2026-02-14T14:48:03.489Z] [INFO] ✅ État reconstruit : Capital $90.00 | Actifs: 13 | Fermés: 0 | Logs: 13
+[2026-02-14T14:48:03.557Z] [INFO] [32m%s[0m [SUCCESS] ✅ ÉTAT RESTAURÉ DEPUIS SUPABASE !
+[2026-02-14T14:48:03.557Z] [SUCCESS] ✅ ÉTAT RESTAURÉ DEPUIS SUPABASE !
+[2026-02-14T14:48:03.558Z] [INFO] 🔄 Starting real-time price tracking service...
+[2026-02-14T14:48:03.559Z] [INFO] [36m%s[0m [INFO] 🚀 Starting price update loop (every 5 minutes)
+[2026-02-14T14:48:03.559Z] [INFO] 🚀 Starting price update loop (every 5 minutes)
+[2026-02-14T14:48:03.560Z] [INFO] [36m%s[0m [INFO] 🔄 Updating prices for 13 active trades...
+[2026-02-14T14:48:03.560Z] [INFO] 🔄 Updating prices for 13 active trades...
+[2026-02-14T14:48:03.562Z] [INFO] 🕒 AI Self-Training Scheduler started (Every 6h)
+[2026-02-14T14:48:03.701Z] [INFO] [36m%s[0m [INFO] 🌊 LANCEMENT DEEP SCAN (1000+ marchés)...
+[2026-02-14T14:48:03.701Z] [INFO] 🌊 LANCEMENT DEEP SCAN (1000+ marchés)...
+[2026-02-14T14:48:04.031Z] [INFO] 🔍 Checking 13 active trades...
+[2026-02-14T14:48:04.035Z] [INFO] 🧙 Wizards Detected: 4
+[2026-02-14T14:48:04.131Z] [INFO] 🧪 Starting Autonomous Backtest...
+[2026-02-14T14:48:04.133Z] [INFO] [36m%s[0m [INFO] 🧪 Lancement du Backtest Autonome (Vérification Stratégie)...
+[2026-02-14T14:48:04.133Z] [INFO] 🧪 Lancement du Backtest Autonome (Vérification Stratégie)...
+[2026-02-14T14:48:04.178Z] [INFO] 📊 Portefeuille plein (13/10). Mode observation.
+[2026-02-14T14:48:04.180Z] [INFO] 👁️ OBS: Scanned 16 markets. No entry found
+[2026-02-14T14:48:04.451Z] [INFO] [32m%s[0m [SUCCESS] Chargement des données réussi ($90.00)
+[2026-02-14T14:48:04.449Z] [SUCCESS] Chargement des données réussi ($90.00)
+[2026-02-14T14:48:04.453Z] [INFO] 🧪 ========================================
+[2026-02-14T14:48:04.453Z] [INFO]    ADVANCED POLYMARKET BACKTEST (2026)
+[2026-02-14T14:48:04.454Z] [INFO] ========================================
+
+[2026-02-14T14:48:04.455Z] [INFO] 📊 Analyzing 20 historical markets...
+
+[2026-02-14T14:48:04.456Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 1% Buffer) pour "U.S. Recession in 2024?..."
+[2026-02-14T14:48:04.456Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 1% Buffer) pour "U.S. Recession in 2024?..."
+[2026-02-14T14:48:04.458Z] [INFO] ✅ WIN  | U.S. Recession in 2024?... | NO @ 0.71 | +$38.40
+[2026-02-14T14:48:04.459Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 1% Buffer) pour "BitBoy vs. Smic - Crypto Fight..."
+[2026-02-14T14:48:04.459Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 1% Buffer) pour "BitBoy vs. Smic - Crypto Fight..."
+[2026-02-14T14:48:04.460Z] [INFO] ✅ WIN  | BitBoy vs. Smic - Crypto Fight Night... | YES @ 0.73 | +$34.86
+[2026-02-14T14:48:04.461Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 1% Buffer) pour "Will Russia capture Chasiv Yar..."
+[2026-02-14T14:48:04.461Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 1% Buffer) pour "Will Russia capture Chasiv Yar..."
+[2026-02-14T14:48:04.462Z] [INFO] ✅ WIN  | Will Russia capture Chasiv Yar before Oc... | NO @ 0.71 | +$38.40
+[2026-02-14T14:48:04.462Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 1% Buffer) pour "Will England win the 2024 Euro..."
+[2026-02-14T14:48:04.462Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 1% Buffer) pour "Will England win the 2024 Euro..."
+[2026-02-14T14:48:04.463Z] [INFO] ✅ WIN  | Will England win the 2024 Euros?... | NO @ 0.71 | +$38.40
+[2026-02-14T14:48:04.464Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 1% Buffer) pour "Will Nicolas Maduro Win the 20..."
+[2026-02-14T14:48:04.463Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 1% Buffer) pour "Will Nicolas Maduro Win the 20..."
+[2026-02-14T14:48:04.464Z] [INFO] ✅ WIN  | Will Nicolas Maduro Win the 2024 Venezue... | NO @ 0.71 | +$38.40
+[2026-02-14T14:48:04.465Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 1% Buffer) pour "Trump’s first TikTok >10M view..."
+[2026-02-14T14:48:04.465Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 1% Buffer) pour "Trump’s first TikTok >10M view..."
+[2026-02-14T14:48:04.466Z] [INFO] ✅ WIN  | Trump’s first TikTok >10M views by Sunda... | YES @ 0.73 | +$34.86
+[2026-02-14T14:48:04.467Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 1% Buffer) pour "Trump’s first TikTok >50M view..."
+[2026-02-14T14:48:04.466Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 1% Buffer) pour "Trump’s first TikTok >50M view..."
+[2026-02-14T14:48:04.467Z] [INFO] ✅ WIN  | Trump’s first TikTok >50M views by Sunda... | YES @ 0.73 | +$34.86
+[2026-02-14T14:48:04.498Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 1% Buffer) pour "Trump’s first TikTok >25M view..."
+[2026-02-14T14:48:04.498Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 1% Buffer) pour "Trump’s first TikTok >25M view..."
+[2026-02-14T14:48:04.499Z] [INFO] ✅ WIN  | Trump’s first TikTok >25M views by Sunda... | YES @ 0.73 | +$34.86
+[2026-02-14T14:48:04.499Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 1% Buffer) pour "$GME halted on Monday?..."
+[2026-02-14T14:48:04.499Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 1% Buffer) pour "$GME halted on Monday?..."
+[2026-02-14T14:48:04.500Z] [INFO] ✅ WIN  | $GME halted on Monday?... | YES @ 0.73 | +$34.86
+[2026-02-14T14:48:04.502Z] [INFO] [36m%s[0m [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 1% Buffer) pour "Roaring Kitty charged in 2024?..."
+[2026-02-14T14:48:04.502Z] [INFO] ⚠️ ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 1% Buffer) pour "Roaring Kitty charged in 2024?..."
+[2026-02-14T14:48:04.503Z] [INFO] ✅ WIN  | Roaring Kitty charged in 2024?... | NO @ 0.71 | +$38.40
+[2026-02-14T14:48:04.504Z] [INFO] [33m%s[0m [WARNING] ⚠️ Skipped trade: Insufficient capital ($0.00) or trade size too small ($0.00) pour "Will Roaring Kitty tweet on Mo..."
+[2026-02-14T14:48:04.504Z] [WARNING] ⚠️ Skipped trade: Insufficient capital ($0.00) or trade size too small ($0.00) pour "Will Roaring Kitty tweet on Mo..."
+[2026-02-14T14:48:04.504Z] [INFO] [33m%s[0m [WARNING] ⚠️ Skipped trade: Insufficient capital ($0.00) or trade size too small ($0.00) pour "Was Roaring Kitty GME YOLO upd..."
+[2026-02-14T14:48:04.504Z] [WARNING] ⚠️ Skipped trade: Insufficient capital ($0.00) or trade size too small ($0.00) pour "Was Roaring Kitty GME YOLO upd..."
+[2026-02-14T14:48:04.507Z] [INFO] [33m%s[0m [WARNING] ⚠️ Skipped trade: Insufficient capital ($0.00) or trade size too small ($0.00) pour "New GME YOLO update by Friday?..."
+[2026-02-14T14:48:04.507Z] [WARNING] ⚠️ Skipped trade: Insufficient capital ($0.00) or trade size too small ($0.00) pour "New GME YOLO update by Friday?..."
+[2026-02-14T14:48:04.508Z] [INFO] [33m%s[0m [WARNING] ⚠️ Skipped trade: Insufficient capital ($0.00) or trade size too small ($0.00) pour "$GME market cap below $6 billi..."
+[2026-02-14T14:48:04.508Z] [WARNING] ⚠️ Skipped trade: Insufficient capital ($0.00) or trade size too small ($0.00) pour "$GME market cap below $6 billi..."
+[2026-02-14T14:48:04.513Z] [INFO] [33m%s[0m [WARNING] ⚠️ Skipped trade: Insufficient capital ($0.00) or trade size too small ($0.00) pour "$GME market cap >$10b at Monda..."
+[2026-02-14T14:48:04.513Z] [WARNING] ⚠️ Skipped trade: Insufficient capital ($0.00) or trade size too small ($0.00) pour "$GME market cap >$10b at Monda..."
+[2026-02-14T14:48:04.516Z] [INFO] [33m%s[0m [WARNING] ⚠️ Skipped trade: Insufficient capital ($0.00) or trade size too small ($0.00) pour "Will Berkshire Hathaway resume..."
+[2026-02-14T14:48:04.516Z] [WARNING] ⚠️ Skipped trade: Insufficient capital ($0.00) or trade size too small ($0.00) pour "Will Berkshire Hathaway resume..."
+[2026-02-14T14:48:04.519Z] [INFO] [33m%s[0m [WARNING] ⚠️ Skipped trade: Insufficient capital ($0.00) or trade size too small ($0.00) pour "Berkshire Hathaway closes abov..."
+[2026-02-14T14:48:04.519Z] [WARNING] ⚠️ Skipped trade: Insufficient capital ($0.00) or trade size too small ($0.00) pour "Berkshire Hathaway closes abov..."
+[2026-02-14T14:48:04.523Z] [INFO] [33m%s[0m [WARNING] ⚠️ Skipped trade: Insufficient capital ($0.00) or trade size too small ($0.00) pour "Did Keith Gill (RoaringKitty) ..."
+[2026-02-14T14:48:04.522Z] [WARNING] ⚠️ Skipped trade: Insufficient capital ($0.00) or trade size too small ($0.00) pour "Did Keith Gill (RoaringKitty) ..."
+[2026-02-14T14:48:04.525Z] [INFO] [33m%s[0m [WARNING] ⚠️ Skipped trade: Insufficient capital ($0.00) or trade size too small ($0.00) pour "Roaring Kitty dumps GME calls ..."
+[2026-02-14T14:48:04.524Z] [WARNING] ⚠️ Skipped trade: Insufficient capital ($0.00) or trade size too small ($0.00) pour "Roaring Kitty dumps GME calls ..."
+[2026-02-14T14:48:04.529Z] [INFO] [33m%s[0m [WARNING] ⚠️ Skipped trade: Insufficient capital ($0.00) or trade size too small ($0.00) pour "Infowars shuttered by Friday?..."
+[2026-02-14T14:48:04.529Z] [WARNING] ⚠️ Skipped trade: Insufficient capital ($0.00) or trade size too small ($0.00) pour "Infowars shuttered by Friday?..."
+[2026-02-14T14:48:04.532Z] [INFO] 
+========================================
+[2026-02-14T14:48:04.532Z] [INFO] 🏆 BACKTEST RESULTS
+[2026-02-14T14:48:04.533Z] [INFO] ========================================
+
+[2026-02-14T14:48:04.533Z] [INFO] 📊 BASIC STATS:
+[2026-02-14T14:48:04.533Z] [INFO]    Markets Scanned: 20
+[2026-02-14T14:48:04.534Z] [INFO]    Trades Taken: 10
+[2026-02-14T14:48:04.534Z] [INFO]    Ignored: 10
+[2026-02-14T14:48:04.534Z] [INFO]    Arbitrage Opportunities: 0
+[2026-02-14T14:48:04.535Z] [INFO] 
+[2026-02-14T14:48:04.535Z] [INFO] 💰 PERFORMANCE:
+[2026-02-14T14:48:04.535Z] [INFO]    Wins: 10
+[2026-02-14T14:48:04.535Z] [INFO]    Losses: 0
+[2026-02-14T14:48:04.535Z] [INFO]    Winrate: 100.0%
+[2026-02-14T14:48:04.536Z] [INFO] 
+[2026-02-14T14:48:04.536Z] [INFO] 💵 CAPITAL:
+[2026-02-14T14:48:04.536Z] [INFO]    Initial: $1000.00
+[2026-02-14T14:48:04.536Z] [INFO]    Final: $1366.30
+[2026-02-14T14:48:04.537Z] [INFO]    Total PnL: +$366.30
+[2026-02-14T14:48:04.537Z] [INFO]    ROI: 36.63%
+[2026-02-14T14:48:04.537Z] [INFO] 
+[2026-02-14T14:48:04.537Z] [INFO] 📈 ADVANCED METRICS (Best Practice 2026):
+[2026-02-14T14:48:04.538Z] [INFO]    Sharpe Ratio: 20.70 🌟 EXCELLENT
+[2026-02-14T14:48:04.538Z] [INFO]    Max Drawdown: 0.00% ✅
+[2026-02-14T14:48:04.538Z] [INFO]    Avg Return/Trade: $36.63
+[2026-02-14T14:48:04.539Z] [INFO]    Std Deviation: $1.77
+[2026-02-14T14:48:04.539Z] [INFO] 
+[2026-02-14T14:48:04.540Z] [INFO] 💸 COSTS (Realistic):
+[2026-02-14T14:48:04.540Z] [INFO]    Slippage: 1.5%
+[2026-02-14T14:48:04.541Z] [INFO]    Polymarket Fees: 2% on profits
+[2026-02-14T14:48:04.541Z] [INFO] 
+[2026-02-14T14:48:04.541Z] [INFO] ========================================
+[2026-02-14T14:48:04.542Z] [INFO] 🌟 STRATEGY IS PROFITABLE! 🌟
+[2026-02-14T14:48:04.544Z] [INFO] ========================================
+
+[2026-02-14T14:48:05.340Z] [INFO] ✅ Results saved to Supabase successfully!
+[2026-02-14T14:48:05.360Z] [INFO] [32m%s[0m [SUCCESS] ✅ Auto-Backtest Terminé. ROI Actuel: 36.63%
+[2026-02-14T14:48:05.359Z] [SUCCESS] ✅ Auto-Backtest Terminé. ROI Actuel: 36.63%
