@@ -483,7 +483,7 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
                     entryPrice = executionData.price;
                 }
 
-                addLog(botState, `📊 Price Fetch [CLOB]: $${entryPrice.toFixed(3)} for ${market.question.substring(0, 30)}...`, 'info');
+                // Price fetch successful - tracked in trade.reasons, no need to spam dashboard
 
             } catch (e) {
                 console.warn(`CLOB Check Failed for ${market.question}:`, e.message);
@@ -498,10 +498,10 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
         const originalPrice = entryPrice;
         entryPrice = side === 'YES' ? entryPrice * (1 + ammSlippage) : entryPrice * (1 - ammSlippage);
 
-        const reason = `ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 1% Buffer)`;
+        const reason = `AMM Fallback (Gamma +1%)`;
         decisionReasons.push(`⚡ ${reason}: ${originalPrice.toFixed(3)} -> ${entryPrice.toFixed(3)}`);
         if (reasonsCollector) reasonsCollector.push(reason);
-        addLog(botState, `⚠️ ${reason} pour "${market.question.substring(0, 30)}..."`, 'info');
+        // Removed addLog to prevent dashboard spam - info tracked in trade.reasons
     }
 
     // FIX: Remove double slippage - CLOB price is already the ask price we pay
