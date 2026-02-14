@@ -46,6 +46,11 @@ app.use('/api', backtestRoutes);
 app.use('/api', apiRoutes);
 app.use('/api/analytics', analyticsRoutes);
 
+// Bot data API (used by analytics page and dashboard)
+app.get('/api/bot-data', (req, res) => {
+    res.json(botState);
+});
+
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'bot_dashboard.html'));
 });
