@@ -92,6 +92,31 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
         if (reasonsCollector) reasonsCollector.push(`Insufficient capital ($${botState.capital.toFixed(2)})`);
         return null;
     }
+    // Daily loss limit check
+    if (!skipPersistence && CONFIG.DAILY_LOSS_LIMIT) {
+        const today = new Date().toISOString().split('T')[0];
+        if (botState.dailyPnLResetDate !== today) {
+            botState.dailyPnL = 0;
+            botState.dailyPnLResetDate = today;
+        }
+        const dailyLossThreshold = -(CONFIG.DAILY_LOSS_LIMIT * botState.startingCapital);
+        if (botState.dailyPnL <= dailyLossThreshold) {
+            if (reasonsCollector) reasonsCollector.push(`Daily loss limit hit ($${botState.dailyPnL.toFixed(2)} / ${dailyLossThreshold.toFixed(2)})`);
+            addLog(botState, `🛑 DAILY LOSS LIMIT: Trading halted ($${botState.dailyPnL.toFixed(2)} today)`, 'warning');
+            return null;
+        }
+    }
+
+    // Market re-entry cooldown (30 min after closing a trade on same market)
+    if (!skipPersistence && botState.cooldowns && botState.cooldowns[market.id]) {
+        const cooldownEnd = botState.cooldowns[market.id] + (30 * 60 * 1000);
+        if (Date.now() < cooldownEnd) {
+            const minsLeft = Math.ceil((cooldownEnd - Date.now()) / 60000);
+            if (reasonsCollector) reasonsCollector.push(`Cooldown: ${minsLeft}min left on this market`);
+            return null;
+        }
+        delete botState.cooldowns[market.id];
+    }
 
     if (!market.outcomePrices) {
         if (reasonsCollector) reasonsCollector.push("Missing prices");
@@ -142,8 +167,8 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
     // NOUVEAU: STRATÉGIE ARBITRAGE (Risk-Free)
     const arbSignal = botState.arbitrageOpportunities && botState.arbitrageOpportunities.find(a => a.id === market.id);
     if (arbSignal && yesPrice + noPrice < 0.995) { // 0.5% margin for safety
-        const depthYesOK = await checkLiquidityDepthFn(market, 'YES', yesPrice, 25);
-        const depthNoOK = await checkLiquidityDepthFn(market, 'NO', noPrice, 25);
+        const depthYesOK = await checkLiquidityDepthFn(market, 'YES', yesPrice, 100);
+        const depthNoOK = await checkLiquidityDepthFn(market, 'NO', noPrice, 100);
 
         if (depthYesOK && depthNoOK) {
             const tradeSize = calculateTradeSize(1.0, (yesPrice + noPrice) / 2) / 2; // Risk-free confidence = 1.0, price = avg
@@ -162,7 +187,8 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
                 confidence: 1.0, // Risk free
                 reasons: [`⚖️ Arbitrage: Sum=${(yesPrice + noPrice).toFixed(3)}`],
                 category: category,
-                clobTokenIds: market.clobTokenIds || []
+                clobTokenIds: market.clobTokenIds || [],
+                endDate: market.endDate || market.end_date_iso || null
             };
 
             const tradeNo = {
@@ -178,7 +204,8 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
                 confidence: 1.0,
                 reasons: [`⚖️ Arbitrage: Sum=${(yesPrice + noPrice).toFixed(3)}`],
                 category: category,
-                clobTokenIds: market.clobTokenIds || []
+                clobTokenIds: market.clobTokenIds || [],
+                endDate: market.endDate || market.end_date_iso || null
             };
 
             // Note: We don't call saveNewTrade here because we return an array 
@@ -426,6 +453,9 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
         }
     }
 
+    // Clamp confidence to valid probability range (required for Kelly criterion)
+    confidence = Math.max(0.01, Math.min(0.99, confidence));
+
     let tradeSize = dependencies.testSize || calculateTradeSize(confidence, entryPrice);
 
     // 2. Adjust Size with Learning Params
@@ -524,7 +554,8 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
         reasons: decisionReasons,
         category: category,
         isFresh: isFreshMarket,
-        clobTokenIds: market.clobTokenIds || []
+        clobTokenIds: market.clobTokenIds || [],
+        endDate: market.endDate || market.end_date_iso || null
     };
 
     saveNewTrade(trade, skipPersistence);
@@ -724,6 +755,18 @@ async function closeTrade(index, exitPrice, reason) {
     botState.closedTrades.unshift(trade);
     if (botState.closedTrades.length > 50) botState.closedTrades.pop();
 
+    // Register cooldown to prevent immediate re-entry on same market
+    if (!botState.cooldowns) botState.cooldowns = {};
+    botState.cooldowns[trade.marketId] = Date.now();
+
+    // Track daily P&L for loss limit enforcement
+    const today = new Date().toISOString().split('T')[0];
+    if (botState.dailyPnLResetDate !== today) {
+        botState.dailyPnL = 0;
+        botState.dailyPnLResetDate = today;
+    }
+    botState.dailyPnL += pnl;
+
     stateManager.addSectorEvent(trade.category, 'TRADE', `💰 Trade Closed: ${reason}`, { pnl: pnl.toFixed(2) });
     addLog(botState, `🏁 TRADE CLOSED: ${trade.question.substring(0, 20)}... | PnL: $${pnl.toFixed(2)} (${reason})`, pnl > 0 ? 'success' : 'warning');
 
@@ -763,14 +806,9 @@ function calculateDynamicStopLoss(trade, currentReturn, maxReturn) {
     const startTime = new Date(trade.startTime);
     const ageHours = (now - startTime) / (1000 * 60 * 60);
 
-    // Tighten stop for old trades
+    // Tighten stop for old trades: raise stop closer to entry (less negative = tighter)
+    // e.g. -0.15 + 0.05 = -0.10 (less risk tolerated as trade ages)
     if (ageHours > CONFIG.DYNAMIC_SL.TIME_DECAY_HOURS) {
-        requiredStopPercent -= CONFIG.DYNAMIC_SL.TIME_DECAY_PENALTY; // e.g. -0.15 - 0.05 = -0.20 (Wait, tightened means LESS negative or MORE negative? Needs to be closer to 0? No, tighter stop means closer to entry. If entry is 100, Stop -15% is 85. Tighten means 90 (-10%). So we ADD to the negative number.)
-        // Correction: Tighten means risking LESS. So -0.15 becomes -0.10.
-        // Wait, Time Decay usually means "Get out, I'm losing patience". In my plan I said "Tighten SL".
-        // If I have -15% risk, tightening means -10% risk? Or does it mean "Force Exit" so I should raise the stop?
-        // Let's say we want to exit faster if it does nothing. So yes, raise the stop (make it less negative).
-        // -0.15 + 0.05 = -0.10. Correct.
         requiredStopPercent += CONFIG.DYNAMIC_SL.TIME_DECAY_PENALTY;
     }
 
@@ -781,9 +819,9 @@ function calculateDynamicStopLoss(trade, currentReturn, maxReturn) {
     else if (ageHours > CONFIG.DYNAMIC_SL.TIME_DECAY_HOURS) reason = "TIME DECAY STOP";
 
     // Safety cap
-    if (stopPrice > trade.entryPrice * 1.5) return { stopPrice: trade.entryPrice * 1.5, reason }; // sanity check
+    if (stopPrice > trade.entryPrice * 1.5) return { stopPrice: trade.entryPrice * 1.5, reason, requiredStopPercent }; // sanity check
 
-    return { stopPrice, reason };
+    return { stopPrice, reason, requiredStopPercent };
 }
 
 async function checkLiquidityDepth(market, side, targetPrice, minimumUsdAmount) {
@@ -818,11 +856,11 @@ async function checkLiquidityDepth(market, side, targetPrice, minimumUsdAmount) 
 async function calculateIntradayTrend(marketId) {
     // Uses recent trades from CLOB to determine slope
     const trades = await getCLOBTradeHistory(marketId); // [{price: "0.55", timestamp: ...}, ...]
-    if (!trades || trades.length < 5) return null;
+    if (!trades || trades.length < 10) return null;
 
     // Sort by time ascending
     // CLOB usually returns newest first.
-    const recent = trades.slice(0, 10).reverse(); // Oldest to Newest
+    const recent = trades.slice(0, 25).reverse(); // Oldest to Newest
 
     if (recent.length < 2) return 'FLAT';
 

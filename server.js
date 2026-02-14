@@ -202,9 +202,7 @@ async function mainLoop() {
             const isFull = botState.activeTrades.length >= maxTrades;
 
             if (isFull) {
-                if (isFull) {
-                    console.log(`📊 Portefeuille plein (${botState.activeTrades.length}/${maxTrades}). Mode observation.`);
-                }
+                console.log(`📊 Portefeuille plein (${botState.activeTrades.length}/${maxTrades}). Mode observation.`);
             }
 
             // Collect potential candidates ALWAYS (for logging)
