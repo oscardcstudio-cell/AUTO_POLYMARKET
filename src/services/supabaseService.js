@@ -229,7 +229,27 @@ export const supabaseService = {
                     if (pnl > 0) winningTrades++;
                     else losingTrades++;
 
-                    closedTrades.push(trade);
+                    // Map Supabase row to bot format with both pnl and profit fields
+                    closedTrades.push({
+                        id: trade.market_id,
+                        marketId: trade.market_id,
+                        question: trade.question,
+                        side: trade.side,
+                        amount: amount,
+                        entryPrice: trade.entry_price,
+                        exitPrice: trade.exit_price,
+                        pnl: pnl,
+                        profit: pnl, // Alias for analytics compatibility
+                        pnlPercent: trade.pnl_percent || (amount > 0 ? (pnl / amount * 100) : 0),
+                        status: trade.status,
+                        confidence: trade.confidence,
+                        strategy: trade.strategy,
+                        category: trade.category,
+                        reasons: trade.metadata?.reasons || [],
+                        closedAt: trade.updated_at || trade.created_at,
+                        startTime: trade.created_at,
+                        supabase_id: trade.id
+                    });
                 }
             });
 
