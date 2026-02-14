@@ -31,7 +31,7 @@ import { getEventSlug } from './src/api/market_discovery.js';
 import { getMidPrice } from './src/api/clob_api.js';
 import { feedbackLoop } from './src/logic/feedbackLoop.js';
 import { supabaseService } from './src/services/supabaseService.js';
-import { recordMarketBatch, buildCorrelationMap, detectCatalysts, evaluateDCA, executeDCA } from './src/logic/advancedStrategies.js';
+import { recordMarketBatch, buildCorrelationMap, detectCatalysts, evaluateDCA, executeDCA, getDrawdownRecoveryState, getCalendarSignal } from './src/logic/advancedStrategies.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -204,6 +204,35 @@ async function mainLoop() {
                 }
             } catch (e) {
                 console.warn('Advanced strategies update error:', e.message);
+            }
+
+            // 4c. Strategy Status Log (every deep scan = every 30 min)
+            if (isDeepScan) {
+                try {
+                    const recovery = getDrawdownRecoveryState();
+                    const calendar = getCalendarSignal();
+                    const activeCategories = [...new Set(botState.activeTrades.map(t => t.category))];
+                    const yesCount = botState.activeTrades.filter(t => t.side === 'YES').length;
+                    const noCount = botState.activeTrades.filter(t => t.side === 'NO').length;
+
+                    let statusParts = [];
+                    // Anti-Fragility tier
+                    if (recovery.tier > 0) {
+                        statusParts.push(`🛡️ Anti-Fragility Tier ${recovery.tier} (size x${recovery.sizeMultiplier})`);
+                    } else {
+                        statusParts.push('🟢 Normal mode');
+                    }
+                    // Calendar
+                    if (calendar.signals.length > 0) {
+                        statusParts.push(calendar.signals[0]);
+                    }
+                    // Portfolio balance
+                    statusParts.push(`Portfolio: ${yesCount}Y/${noCount}N across ${activeCategories.length} categories`);
+
+                    addLog(botState, `📊 Strategy Status: ${statusParts.join(' | ')}`, 'info');
+                } catch (e) {
+                    // Non-critical — don't crash the loop
+                }
             }
 
             // 5. Signal Update (Periodic)

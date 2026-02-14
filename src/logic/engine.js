@@ -697,10 +697,10 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
 
     // CRITICAL: Prevent Ghost Trades ($0 or near-zero amounts)
     if (tradeSize < CONFIG.MIN_TRADE_SIZE || botState.capital < CONFIG.MIN_TRADE_SIZE) {
-        const lowCapMsg = `Skipped trade: Insufficient capital ($${botState.capital.toFixed(2)}) or trade size too small ($${tradeSize.toFixed(2)})`;
+        const lowCapMsg = `Insufficient capital ($${botState.capital.toFixed(2)}) or size too small ($${tradeSize.toFixed(2)})`;
         decisionReasons.push(lowCapMsg);
         if (reasonsCollector) reasonsCollector.push(lowCapMsg);
-        addLog(botState, `⚠️ ${lowCapMsg} pour "${market.question.substring(0, 30)}..."`, 'warning');
+        // Batched in server.js scan summary — no individual log spam
         logTradeDecision(market, null, decisionReasons, pizzaData);
         return null;
     }
@@ -715,18 +715,16 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
                 const executionData = await getBestExecutionPrice(tokenId, 'buy');
 
                 if (!executionData || !executionData.price || executionData.price <= 0) {
-                    const reason = `⛔ REALISM CHECK FAILED: No Liquidity in Order Book for ${side}`;
+                    const reason = `No Liquidity in Order Book for ${side}`;
                     if (reasonsCollector) reasonsCollector.push(reason);
-                    addLog(botState, `⛔ ${reason} pour "${market.question.substring(0, 30)}..."`, 'warning');
-                    return null; // ABORT
+                    return null; // ABORT — batched in scan summary
                 }
 
                 // Filter out extreme spreads (e.g. Bid 0.10 / Ask 0.90)
                 if (executionData.spreadPercent > 50) {
-                    const reason = `⛔ Spread too wide (${executionData.spreadPercent}%) - Unsafe execution`;
+                    const reason = `Spread too wide (${executionData.spreadPercent}%)`;
                     if (reasonsCollector) reasonsCollector.push(reason);
-                    addLog(botState, `⛔ ${reason} pour "${market.question.substring(0, 30)}..."`, 'warning');
-                    return null;
+                    return null; // batched in scan summary
                 }
 
                 // FORCE UPDATE Entry Price to Real Ask
@@ -805,7 +803,23 @@ function saveNewTrade(trade, skipPersistence = false) {
 
     stateManager.save();
     supabaseService.saveTrade(trade).catch(err => console.error('Supabase Save Error:', err));
-    addLog(botState, `✅ TRADE OPENED: ${trade.side} sur "${trade.question.substring(0, 30)}..." @ $${trade.entryPrice.toFixed(3)} ($${trade.amount.toFixed(2)})`, 'trade');
+    // --- STRATEGY VISIBILITY LOGS ---
+    const convPts = trade.convictionScore || 0;
+    const convLabel = convPts >= 80 ? 'VERY STRONG' : convPts >= 60 ? 'STRONG' : convPts >= 40 ? 'GOOD' : convPts >= 20 ? 'MEDIUM' : 'LOW';
+
+    // Main trade log with conviction
+    addLog(botState, `✅ TRADE OPENED: ${trade.side} sur "${trade.question.substring(0, 30)}..." @ $${trade.entryPrice.toFixed(3)} ($${trade.amount.toFixed(2)}) | Conviction: ${convPts}pts (${convLabel})`, 'trade');
+
+    // Strategy signals breakdown (what triggered the trade)
+    const strategySignals = (trade.reasons || []).filter(r =>
+        r.includes('🎯') || r.includes('🐋') || r.includes('📊') || r.includes('🆕') ||
+        r.includes('🔮') || r.includes('🧙') || r.includes('📡') || r.includes('🛡️') ||
+        r.includes('📅') || r.includes('🧠') || r.includes('📈') || r.includes('⚡') ||
+        r.includes('🔥') || r.includes('DEFCON') || r.includes('Arbitrage')
+    );
+    if (strategySignals.length > 0) {
+        addLog(botState, `📋 Signals: ${strategySignals.slice(0, 5).join(' | ')}`, 'info');
+    }
 }
 
 export async function checkAndCloseTrades(getRealMarketPriceFn) {
