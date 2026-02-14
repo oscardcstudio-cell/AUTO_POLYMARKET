@@ -404,10 +404,7 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
         decisionReasons.push('Aucune condition de trade remplie');
         if (reasonsCollector) reasonsCollector.push(...decisionReasons);
 
-        // Log rejection only for high-alpha or interesting markets to avoid spam
-        if (market._alphaScore > 40 || isFreshMarket) {
-            addLog(botState, `🔍 Rejeté: "${market.question.substring(0, 30)}..." - ${decisionReasons[decisionReasons.length - 1]}`, 'info');
-        }
+        // Rejections are now batched in server.js loop summary (no individual log spam)
 
         logTradeDecision(market, null, decisionReasons, pizzaData);
         return null;
