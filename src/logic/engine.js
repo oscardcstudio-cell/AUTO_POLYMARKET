@@ -428,13 +428,20 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
 
     let tradeSize = dependencies.testSize || calculateTradeSize(confidence, entryPrice);
 
-    // 2. Adjust Size
+    // 2. Adjust Size with Learning Params
     if (botState.learningParams?.sizeMultiplier && botState.learningParams.sizeMultiplier !== 1.0) {
         tradeSize *= botState.learningParams.sizeMultiplier;
         decisionReasons.push(`🎓 AI Adaptation: Size x${botState.learningParams.sizeMultiplier.toFixed(2)}`);
-    }
 
-    if (tradeSize > botState.capital) tradeSize = botState.capital;
+        // CRITICAL: Re-check capital limit after multiplier
+        if (tradeSize > botState.capital) {
+            tradeSize = botState.capital;
+            decisionReasons.push(`⚠️ Size capped to available capital ($${botState.capital.toFixed(2)})`);
+        }
+    } else {
+        // Standard capital check
+        if (tradeSize > botState.capital) tradeSize = botState.capital;
+    }
 
     // CRITICAL: Prevent Ghost Trades ($0 or near-zero amounts)
     if (tradeSize < CONFIG.MIN_TRADE_SIZE || botState.capital < CONFIG.MIN_TRADE_SIZE) {
@@ -486,21 +493,21 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
         }
     } else {
         // --- AMM FALLBACK ---
-        // If no CLOB IDs, we trust Gamma API but add an extra "Safety Sliver" for slippage
-        const ammSlippage = 0.03; // Extra 3% buffer for AMM trades
+        // FIX: Reduced from 3% to 1% - Gamma API prices are reliable mid-market
+        const ammSlippage = 0.01; // 1% buffer for AMM trades (down from 3%)
         const originalPrice = entryPrice;
         entryPrice = side === 'YES' ? entryPrice * (1 + ammSlippage) : entryPrice * (1 - ammSlippage);
 
-        const reason = `ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 3% Buffer)`;
+        const reason = `ℹ️ No CLOB IDs - Using AMM Fallback (Gamma API + 1% Buffer)`;
         decisionReasons.push(`⚡ ${reason}: ${originalPrice.toFixed(3)} -> ${entryPrice.toFixed(3)}`);
         if (reasonsCollector) reasonsCollector.push(reason);
         addLog(botState, `⚠️ ${reason} pour "${market.question.substring(0, 30)}..."`, 'info');
     }
 
-    // Simulation de slippage et frais
-    const slippage = 0.01;
-    const fee = 0.00;
-    const executionPrice = entryPrice * (1 + (side === 'YES' ? slippage : -slippage));
+    // FIX: Remove double slippage - CLOB price is already the ask price we pay
+    // Only add minimal network fee buffer (0.3%) instead of 1% slippage
+    const networkFeeBuffer = 0.003;  // 0.3% for gas/network variance
+    const executionPrice = entryPrice * (1 + (side === 'YES' ? networkFeeBuffer : -networkFeeBuffer));
 
     const trade = {
         id: Date.now().toString(36) + Math.random().toString(36).substr(2),
@@ -659,18 +666,21 @@ async function resolveTradeWithRealOutcome(trade) {
         let exitPrice = 0;
 
         if (wonTrade) {
-            const rawReturn = trade.shares * 1.0;
-            const exitFees = rawReturn * 0.001;
+            // Fix: Shares winning = $1 per share in value
+            const finalValue = trade.shares * 1.0;  // 100 shares × $1 = $100
+            const exitFees = finalValue * 0.001;
             const invested = trade.amount || trade.size || 0;
-            profit = (rawReturn - exitFees) - invested;
+            profit = finalValue - exitFees - invested;  // $100 - $0.1 - $50 = $49.9
             exitPrice = 1.0;
             botState.winningTrades++;
+            botState.capital += finalValue - exitFees;  // Add winnings to capital
             addLog(botState, `✅ Trade gagné: ${trade.question.substring(0, 30)}... (+${profit.toFixed(2)} USDC)`, 'success');
         } else {
             const invested = trade.amount || trade.size || 0;
             profit = -invested;
             exitPrice = 0.0;
             botState.losingTrades++;
+            // Capital already deducted on entry, no refund on loss
             addLog(botState, `❌ Trade perdu: ${trade.question.substring(0, 30)}... (${profit.toFixed(2)} USDC)`, 'warning');
         }
 

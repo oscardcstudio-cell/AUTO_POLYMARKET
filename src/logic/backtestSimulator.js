@@ -201,14 +201,18 @@ export async function runBacktestSimulation() {
             decision = await simulateTrade(market, simPizza, false, backtestDependencies);
         } catch (e) {
             ignored++;
-        } finally {
-            // Restore state immediately
-            // But we need decision first
         }
 
-        // Restore state
+        // CRITICAL FIX: Capture the capital deduction BEFORE restoring state
+        // simulateTrade() modified botState.capital via saveNewTrade()
+        const capitalAfterTrade = botState.capital;
+
+        // Restore real bot state (prevents backtest from contaminating production)
         botState.capital = savedCapital;
         botState.activeTrades = savedTrades;
+
+        // Update simulated capital for accurate P&L tracking
+        simCapital.value = capitalAfterTrade;
 
         // If decision was made, undo side effects on the *simulated* state logic (which we just overwrote)
         // Wait. simulateTrade modifies botState.
