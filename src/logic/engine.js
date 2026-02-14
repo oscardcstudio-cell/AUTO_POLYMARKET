@@ -598,7 +598,7 @@ export async function checkAndCloseTrades(getRealMarketPriceFn) {
         // --- 1. GET PRICE & TRACK HISTORY ---
         const currentPrice = getRealMarketPriceFn ? await getRealMarketPriceFn(trade) : (trade.entryPrice || 0.5);
 
-        if (!currentPrice || isNaN(currentPrice)) continue;
+        if (currentPrice === null || currentPrice === undefined || isNaN(currentPrice)) continue;
 
         trade.priceHistory = trade.priceHistory || [];
         trade.priceHistory.push(currentPrice);
@@ -647,19 +647,51 @@ export async function checkAndCloseTrades(getRealMarketPriceFn) {
             continue;
         }
 
-        // Vérifier si le marché a expiré (reuse 'now' from above)
-        const marketEndDate = new Date(trade.endDate);
-        if (now > marketEndDate) {
+        // --- 6. RESOLVED MARKET CHECK (price at 0 or 1 = market settled) ---
+        if (currentPrice <= 0.01 || currentPrice >= 0.99) {
             try {
                 const resolution = await resolveTradeWithRealOutcome(trade);
                 if (resolution) {
+                    // Track daily PnL
+                    const todayStr = new Date().toISOString().split('T')[0];
+                    if (botState.dailyPnLResetDate !== todayStr) {
+                        botState.dailyPnL = 0;
+                        botState.dailyPnLResetDate = todayStr;
+                    }
+                    botState.dailyPnL += resolution.profit || 0;
+
+                    botState.activeTrades.splice(i, 1);
+                    botState.closedTrades.unshift(resolution);
+                    if (botState.closedTrades.length > 50) botState.closedTrades.pop();
+                    stateManager.save();
+                    await supabaseService.saveTrade(resolution).catch(e => console.error('Supabase resolution save error:', e));
+                    continue;
+                }
+            } catch (e) {
+                console.error(`Error resolving trade ${trade.id} (price=${currentPrice}):`, e.message);
+            }
+        }
+
+        // --- 7. MARKET EXPIRY CHECK (endDate based) ---
+        const marketEndDate = new Date(trade.endDate);
+        if (trade.endDate && now > marketEndDate) {
+            try {
+                const resolution = await resolveTradeWithRealOutcome(trade);
+                if (resolution) {
+                    // Track daily PnL
+                    const todayStr2 = new Date().toISOString().split('T')[0];
+                    if (botState.dailyPnLResetDate !== todayStr2) {
+                        botState.dailyPnL = 0;
+                        botState.dailyPnLResetDate = todayStr2;
+                    }
+                    botState.dailyPnL += resolution.profit || 0;
+
                     botState.activeTrades.splice(i, 1);
                     botState.closedTrades.unshift(resolution);
                     if (botState.closedTrades.length > 50) botState.closedTrades.pop();
 
                     stateManager.save();
-                    // Sync to Supabase
-                    await supabaseService.saveTrade(resolution);
+                    await supabaseService.saveTrade(resolution).catch(e => console.error('Supabase resolution save error:', e));
                 }
             } catch (e) {
                 console.error(`Error resolving trade ${trade.id}:`, e.message);
