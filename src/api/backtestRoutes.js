@@ -22,16 +22,21 @@ router.post('/run-backtest', async (req, res) => {
         // Log results to Supabase asynchronously
         if (supabase && metrics) {
             supabase.from('simulation_runs').insert({
-                run_type: 'MANUAL',
-                markets_tested: summary.tradesCount + summary.ignored,
-                trades_count: summary.tradesCount,
-                win_rate: parseFloat(summary.winrate),
+                trade_count: summary.tradesCount,
                 result_pnl: summary.totalPnL,
                 result_roi: metrics.roi,
                 initial_capital: summary.initialCapital,
                 final_capital: summary.finalCapital,
                 sharpe_ratio: metrics.sharpeRatio,
                 max_drawdown: metrics.maxDrawdown,
+                strategy_config: {
+                    runType: 'MANUAL',
+                    winrate: parseFloat(summary.winrate),
+                    marketsScanned: summary.tradesCount + summary.ignored,
+                    sharpeRatio: metrics.sharpeRatio,
+                    maxDrawdown: metrics.maxDrawdown,
+                    avgReturnPerTrade: metrics.avgReturnPerTrade
+                },
                 metrics: {
                     combined: metrics,
                     trainMetrics: trainMetrics || null,
@@ -68,7 +73,7 @@ router.get('/backtest-results', async (req, res) => {
     const { data, error } = await supabase
         .from('simulation_runs')
         .select('*')
-        .order('created_at', { ascending: false })
+        .order('run_at', { ascending: false })
         .limit(20);
 
     if (error) {

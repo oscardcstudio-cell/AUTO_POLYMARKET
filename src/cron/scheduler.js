@@ -83,19 +83,24 @@ async function runAutoTraining() {
         console.log(msg);
         addLog(botState, msg, 'success');
 
-        // Save to Supabase
+        // Save to Supabase (matching actual table schema)
         if (supabase && baselineMetrics) {
             const { error } = await supabase.from('simulation_runs').insert({
-                run_type: 'AUTO',
-                markets_tested: baselineResult.summary.tradesCount + baselineResult.summary.ignored,
-                trades_count: baselineResult.summary.tradesCount,
-                win_rate: parseFloat(baselineResult.summary.winrate),
+                trade_count: baselineResult.summary.tradesCount,
                 result_pnl: baselineResult.summary.totalPnL,
                 result_roi: baselineMetrics.roi,
                 initial_capital: baselineResult.summary.initialCapital,
                 final_capital: baselineResult.summary.finalCapital,
                 sharpe_ratio: baselineMetrics.sharpeRatio,
                 max_drawdown: baselineMetrics.maxDrawdown,
+                strategy_config: {
+                    runType: 'AUTO',
+                    winrate: parseFloat(baselineResult.summary.winrate),
+                    marketsScanned: baselineResult.summary.tradesCount + baselineResult.summary.ignored,
+                    sharpeRatio: baselineMetrics.sharpeRatio,
+                    maxDrawdown: baselineMetrics.maxDrawdown,
+                    avgReturnPerTrade: baselineMetrics.avgReturnPerTrade
+                },
                 metrics: {
                     baseline: baselineMetrics,
                     current: currentResult?.metrics || null,
