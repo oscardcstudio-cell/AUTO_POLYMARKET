@@ -324,8 +324,7 @@ export const supabaseService = {
             const { data: lastSim } = await supabase
                 .from('simulation_runs')
                 .select('metrics')
-                //.eq('run_type', 'AUTO') // Removed filter to allow manual runs to count too
-                .order('created_at', { ascending: false })
+                .order('run_at', { ascending: false })
                 .limit(1)
                 .single();
 
