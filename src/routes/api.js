@@ -378,4 +378,49 @@ router.get('/trade-archive', async (req, res) => {
     }
 });
 
+/**
+ * POST /api/force-resync
+ * Forces the bot to rebuild its state from Supabase trades table.
+ * Useful after wallet resets or state corruption.
+ */
+router.post('/force-resync', async (req, res) => {
+    try {
+        addLog(botState, '🔄 Force resync requested via API...', 'warning');
+        const recovered = await stateManager.tryRecovery();
+
+        if (!recovered) {
+            // tryRecovery didn't trigger (local state not default and no desync)
+            // Force it by directly calling recoverState
+            const { supabaseService } = await import('../services/supabaseService.js');
+            const recoveredData = await supabaseService.recoverState();
+
+            if (recoveredData && (recoveredData.activeTrades.length >= 0 || recoveredData.totalTrades > 0)) {
+                Object.assign(botState, recoveredData);
+                stateManager.save();
+                addLog(botState, '✅ FORCE RESYNC: État restauré depuis Supabase !', 'success');
+                return res.json({
+                    success: true,
+                    message: 'State resynced from Supabase',
+                    capital: botState.capital,
+                    activeTrades: botState.activeTrades.length,
+                    totalTrades: botState.totalTrades
+                });
+            } else {
+                return res.json({ success: false, message: 'No data found in Supabase' });
+            }
+        }
+
+        res.json({
+            success: true,
+            message: 'Recovery triggered successfully',
+            capital: botState.capital,
+            activeTrades: botState.activeTrades.length,
+            totalTrades: botState.totalTrades
+        });
+    } catch (error) {
+        console.error('Force resync error:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
 export default router;
