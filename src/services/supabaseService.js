@@ -81,7 +81,9 @@ export const supabaseService = {
                     eventSlug: trade.eventSlug,
                     partialExit: trade.partialExit || false,
                     originalTP: trade.originalTP || null,
-                    convictionScore: trade.convictionScore || null
+                    convictionScore: trade.convictionScore || null,
+                    clobTokenIds: trade.clobTokenIds || [],
+                    endDate: trade.endDate || null
                 }
             };
 
@@ -214,7 +216,10 @@ export const supabaseService = {
                         decisionReasons: trade.metadata?.reasons || [],
                         category: trade.metadata?.marketData?.category || 'unknown',
                         supabase_id: trade.id,
-                        startTime: trade.created_at
+                        startTime: trade.created_at,
+                        clobTokenIds: trade.metadata?.clobTokenIds || [],
+                        endDate: trade.metadata?.endDate || null,
+                        convictionScore: trade.metadata?.convictionScore || 0
                     });
                 } else {
                     // Closed trades: Capital reflects PnL (Start + PnL - ActiveCost, but here we just Add PnL to base? 

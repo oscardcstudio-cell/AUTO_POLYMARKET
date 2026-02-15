@@ -164,10 +164,14 @@ async function mainLoop() {
             // Inject Real Price Fetcher (CLOB with Gamma Fallback)
             await checkAndCloseTrades(async (trade) => {
                 try {
-                    // a) Try CLOB first
-                    if (trade.clobTokenIds && trade.clobTokenIds.length === 2) {
-                        const tokenId = trade.side === 'YES' ? trade.clobTokenIds[0] : trade.clobTokenIds[1];
-                        if (tokenId) {
+                    // a) Try CLOB first — parse clobTokenIds if it's a JSON string
+                    let tokenIds = trade.clobTokenIds;
+                    if (typeof tokenIds === 'string') {
+                        try { tokenIds = JSON.parse(tokenIds); } catch { tokenIds = null; }
+                    }
+                    if (Array.isArray(tokenIds) && tokenIds.length >= 2) {
+                        const tokenId = trade.side === 'YES' ? tokenIds[0] : tokenIds[1];
+                        if (tokenId && typeof tokenId === 'string' && tokenId.length > 10) {
                             const clobPrice = await getMidPrice(tokenId);
                             if (clobPrice) return clobPrice;
                         }
