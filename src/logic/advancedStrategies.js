@@ -581,9 +581,9 @@ export function getDrawdownRecoveryState() {
     if (drawdownPercent >= 0.03 || onLosingStreak) {
         return {
             tier: 1,
-            sizeMultiplier: 0.75,
-            minConviction: 40,
-            reason: `MINOR drawdown ${(drawdownPercent * 100).toFixed(1)}%${onLosingStreak ? ' + losing streak' : ''} — moderate caution`
+            sizeMultiplier: 0.85,
+            minConviction: 25,
+            reason: `MINOR drawdown ${(drawdownPercent * 100).toFixed(1)}%${onLosingStreak ? ' + losing streak' : ''} — light caution`
         };
     }
 

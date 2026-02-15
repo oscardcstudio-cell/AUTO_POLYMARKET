@@ -835,7 +835,21 @@ export async function checkAndCloseTrades(getRealMarketPriceFn) {
         // --- 1. GET PRICE & TRACK HISTORY ---
         const currentPrice = getRealMarketPriceFn ? await getRealMarketPriceFn(trade) : (trade.entryPrice || 0.5);
 
-        if (currentPrice === null || currentPrice === undefined || isNaN(currentPrice)) continue;
+        if (currentPrice === null || currentPrice === undefined || isNaN(currentPrice)) {
+            // Price unavailable — check if trade is stale (>48h with no price = force close)
+            const tradeAgeMs = Date.now() - new Date(trade.startTime).getTime();
+            const tradeAgeHours = tradeAgeMs / (1000 * 60 * 60);
+            const lastUpdate = trade.lastPriceUpdate ? (Date.now() - new Date(trade.lastPriceUpdate).getTime()) / (1000 * 60 * 60) : tradeAgeHours;
+
+            if (tradeAgeHours >= (CONFIG.TRADE_TIMEOUT_HOURS || 48) || lastUpdate >= 6) {
+                // Force close at entry price (assume total loss if no price available)
+                const fallbackPrice = trade.entryPrice || 0.5;
+                const reason = `STALE TRADE: No price for ${lastUpdate.toFixed(1)}h (age: ${tradeAgeHours.toFixed(1)}h) — force closing`;
+                addLog(botState, `⚠️ ${reason}`, 'warning');
+                await closeTrade(i, fallbackPrice, reason);
+            }
+            continue;
+        }
 
         trade.priceHistory = trade.priceHistory || [];
         trade.priceHistory.push(currentPrice);

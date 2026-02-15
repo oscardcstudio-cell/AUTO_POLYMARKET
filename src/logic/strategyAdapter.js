@@ -25,16 +25,17 @@ export const strategyAdapter = {
         const drawdown = metrics.maxDrawdown; // Percentage (positive number)
 
         // 1. DEFENSIVE MODE (Negative Performance)
+        // Soft defense: reduce by ~20% (not 37%) so bot keeps trading
         if (roi < -2.0) {
             params.mode = 'DEFENSIVE';
             params.reason = `Sim ROI negative (${roi.toFixed(2)}%)`;
 
-            params.sizeMultiplier = 0.7;
-            params.confidenceMultiplier = 0.9;
+            params.sizeMultiplier = 0.85;
+            params.confidenceMultiplier = 0.95;
 
             if (drawdown > 15) {
                 params.reason += ` & High Drawdown (${drawdown.toFixed(1)}%)`;
-                params.sizeMultiplier = 0.5; // Very defensive
+                params.sizeMultiplier = 0.65;
             }
         }
         // 2. AGGRESSIVE MODE (Strong Performance)
