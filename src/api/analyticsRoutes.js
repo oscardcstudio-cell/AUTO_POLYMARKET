@@ -41,22 +41,31 @@ function computeLocalAnalytics() {
         if ((t.pnl || t.profit || 0) > 0) months[month].wins++;
     });
 
-    // Strategy breakdown (from reasons)
+    // Strategy breakdown (from reasons) — tracks all signal types including advanced strategies
     const strategies = {};
     allTrades.forEach(t => {
         let strategy = 'standard';
         const reasons = t.reasons || t.decisionReasons || [];
         const reasonStr = Array.isArray(reasons) ? reasons.join(' ') : String(reasons);
-        if (reasonStr.includes('Wizard')) strategy = 'wizard';
+        if (reasonStr.includes('Arbitrage')) strategy = 'arbitrage';
+        else if (reasonStr.includes('Wizard')) strategy = 'wizard';
         else if (reasonStr.includes('Whale')) strategy = 'whale';
-        else if (reasonStr.includes('Arbitrage')) strategy = 'arbitrage';
-        else if (reasonStr.includes('Momentum')) strategy = 'momentum';
+        else if (reasonStr.includes('DCA')) strategy = 'dca';
+        else if (reasonStr.includes('DEFCON')) strategy = 'defcon';
+        else if (reasonStr.includes('Memory') || reasonStr.includes('momentum')) strategy = 'memory';
+        else if (reasonStr.includes('Catalyst') || reasonStr.includes('Event')) strategy = 'event_driven';
+        else if (reasonStr.includes('Momentum') || reasonStr.includes('High Momentum')) strategy = 'momentum';
         else if (reasonStr.includes('Fresh')) strategy = 'fresh_market';
 
-        if (!strategies[strategy]) strategies[strategy] = { wins: 0, losses: 0, pnl: 0, count: 0, invested: 0 };
+        // Track conviction level as secondary tag
+        const convScore = t.convictionScore || 0;
+
+        if (!strategies[strategy]) strategies[strategy] = { wins: 0, losses: 0, pnl: 0, count: 0, invested: 0, avgConviction: 0, totalConviction: 0 };
         strategies[strategy].count++;
         strategies[strategy].pnl += (t.pnl || t.profit || 0);
         strategies[strategy].invested += (t.amount || 0);
+        strategies[strategy].totalConviction += convScore;
+        strategies[strategy].avgConviction = strategies[strategy].totalConviction / strategies[strategy].count;
         if ((t.pnl || t.profit || 0) > 0) strategies[strategy].wins++;
         else strategies[strategy].losses++;
     });
@@ -76,6 +85,7 @@ function computeLocalAnalytics() {
             total_trades: allTrades.length,
             active_trades: active.length,
             win_rate: winRate,
+            win_rate_percent: winRate,
             roi_percent: roi,
             avg_trade_pnl: allTrades.length > 0 ? totalPnl / allTrades.length : 0,
             best_trade: allTrades.length > 0 ? Math.max(...allTrades.map(t => t.pnl || t.profit || 0)) : 0,
@@ -99,7 +109,8 @@ function computeLocalAnalytics() {
             trade_count: data.count,
             total_pnl: data.pnl,
             avg_roi_percent: data.invested > 0 ? (data.pnl / data.invested) * 100 : 0,
-            win_rate_percent: data.count > 0 ? (data.wins / data.count) * 100 : 0
+            win_rate_percent: data.count > 0 ? (data.wins / data.count) * 100 : 0,
+            avg_conviction: Math.round(data.avgConviction || 0)
         })).sort((a, b) => b.total_pnl - a.total_pnl)
     };
 }
