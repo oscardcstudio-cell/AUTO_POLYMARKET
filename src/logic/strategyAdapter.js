@@ -19,10 +19,10 @@ export const strategyAdapter = {
             reason: 'Baseline performance'
         };
 
-        if (!metrics) return params;
+        if (!metrics || typeof metrics.roi !== 'number') return params;
 
         const roi = metrics.roi; // Percentage (e.g., 5.0 for 5%)
-        const drawdown = metrics.maxDrawdown; // Percentage (positive number)
+        const drawdown = metrics.maxDrawdown || 0; // Percentage (positive number)
 
         // 1. DEFENSIVE MODE (Negative Performance)
         // Soft defense: reduce by ~20% (not 37%) so bot keeps trading

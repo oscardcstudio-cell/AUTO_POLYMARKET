@@ -340,16 +340,23 @@ export const supabaseService = {
 
             // Recover AI Strategy from last simulation
             let recoveredParams = null;
-            const { data: lastSim } = await supabase
-                .from('simulation_runs')
-                .select('metrics')
-                .order('run_at', { ascending: false })
-                .limit(1)
-                .single();
+            try {
+                const { data: lastSim } = await supabase
+                    .from('simulation_runs')
+                    .select('metrics')
+                    .order('run_at', { ascending: false })
+                    .limit(1)
+                    .single();
 
-            if (lastSim && lastSim.metrics) {
-                recoveredParams = strategyAdapter.adapt(lastSim.metrics);
-                console.log(`🧠 AI Strategy Restored: ${recoveredParams.mode}`);
+                // metrics.baseline contains the actual metrics (roi, sharpeRatio, maxDrawdown)
+                const simMetrics = lastSim?.metrics?.baseline || lastSim?.metrics?.combined || lastSim?.metrics;
+                if (simMetrics && typeof simMetrics.roi === 'number') {
+                    recoveredParams = strategyAdapter.adapt(simMetrics);
+                    console.log(`🧠 AI Strategy Restored: ${recoveredParams.mode}`);
+                }
+            } catch (simErr) {
+                console.warn('⚠️ Could not recover AI strategy (non-fatal):', simErr.message);
+                // Non-fatal: continue with null params (will default to NEUTRAL)
             }
 
             return {
