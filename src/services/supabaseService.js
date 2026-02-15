@@ -50,6 +50,25 @@ export const supabaseService = {
     },
 
     /**
+     * Count OPEN trades in the DB (used for desync detection at startup)
+     * @returns {number} count of OPEN trades, or -1 on error
+     */
+    async countOpenTrades() {
+        if (!supabase) return -1;
+        try {
+            const { count, error } = await supabase
+                .from('trades')
+                .select('*', { count: 'exact', head: true })
+                .eq('status', 'OPEN');
+            if (error) throw error;
+            return count || 0;
+        } catch (e) {
+            console.error('countOpenTrades error:', e.message);
+            return -1;
+        }
+    },
+
+    /**
      * Save or update a trade in Supabase
      * @param {Object} trade - The trade object from botState
      */

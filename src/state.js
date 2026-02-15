@@ -191,22 +191,41 @@ export class StateManager {
     }
 
     /**
-     * Attempts to recover state from Supabase if local state seems empty or reset.
+     * Attempts to recover state from Supabase if local state seems empty, reset,
+     * or desynchronized from the database (e.g. after wallet reset).
      * Should be called on server startup.
      */
     async tryRecovery() {
-        // Only try recovery if we are effectively at INITIAL_STATE (no trades, default capital)
+        // Case 1: Default state (fresh deploy or reset)
         const isDefault = this.data.totalTrades === 0 && this.data.capital === CONFIG.STARTING_CAPITAL;
 
-        if (isDefault || !fs.existsSync(this.filePath)) {
-            addLog(this.data, "⚠️ État local vide/par défaut. Tentative de récupération Cloud...", 'warning');
+        // Case 2: Check for desync — local state has active trades but DB might not
+        let isDesync = false;
+        const localActiveCount = this.data.activeTrades ? this.data.activeTrades.length : 0;
+
+        if (localActiveCount > 0 && supabaseService && supabaseService.countOpenTrades) {
+            try {
+                const dbOpenCount = await supabaseService.countOpenTrades();
+                if (dbOpenCount === 0) {
+                    isDesync = true;
+                    console.log(`⚠️ DESYNC DETECTED: Local has ${localActiveCount} active trades, DB has 0. Forcing recovery.`);
+                    addLog(this.data, `⚠️ DESYNC: ${localActiveCount} trades locaux vs 0 en DB. Resync forcé.`, 'warning');
+                }
+            } catch (e) {
+                console.error('Desync check failed:', e.message);
+            }
+        }
+
+        if (isDefault || isDesync || !fs.existsSync(this.filePath)) {
+            const reason = isDefault ? 'État local par défaut' : isDesync ? 'Désynchronisation détectée' : 'Fichier manquant';
+            addLog(this.data, `⚠️ ${reason}. Tentative de récupération Cloud...`, 'warning');
             const recovered = await supabaseService.recoverState();
 
-            if (recovered && recovered.activeTrades.length > 0 || recovered && recovered.totalTrades > 0) {
+            if (recovered && (recovered.activeTrades.length > 0 || recovered.totalTrades > 0)) {
                 // PRESERVE REFERENCE
                 Object.assign(this.data, recovered);
                 this.save();
-                addLog(this.data, "✅ ÉTAT RESTAURÉ DEPUIS SUPABASE !", 'success');
+                addLog(this.data, `✅ ÉTAT RESTAURÉ DEPUIS SUPABASE ! (${reason})`, 'success');
                 return true;
             } else {
                 addLog(this.data, "ℹ️ Aucune donnée trouvée sur Supabase ou échec récupération.", 'info');
