@@ -1,28 +1,109 @@
 
 import { simulateTrade } from './engine.js';
 import { botState } from '../state.js';
-// Removed explicit supabase import if not used directly, or keep if needed for archiving results here?
-// Actually, backtestRoutes handles the response. 
-// But if we run this from scheduler, we might want to save results here or in the caller.
-// Let's return the results and let the caller handle saving/logging.
+import { CONFIG } from '../config.js';
+import {
+    recordMarketSnapshot,
+    buildCorrelationMap,
+    detectCatalysts,
+    clearMarketMemory,
+    clearEventCatalysts
+} from './advancedStrategies.js';
+import { categorizeMarket } from './signals.js';
 
 // REALISTIC COSTS
 const SLIPPAGE = 0.015;
 const POLYMARKET_FEES = 0.02;
 
+// Rate limiting for CLOB API
+const CLOB_DELAY_MS = 200;
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+/**
+ * Fetch historical price data from Polymarket CLOB API.
+ * Returns array of {t, p} sorted by time, or null on failure.
+ */
+async function fetchHistoricalPrices(clobTokenId) {
+    if (!clobTokenId) return null;
+
+    try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+        const url = `https://clob.polymarket.com/prices-history?market=${clobTokenId}&interval=max&fidelity=60`;
+        const response = await fetch(url, {
+            signal: controller.signal,
+            headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' }
+        });
+        clearTimeout(timeoutId);
+
+        if (!response.ok) return null;
+
+        const data = await response.json();
+        if (!data?.history || !Array.isArray(data.history) || data.history.length < 5) return null;
+
+        return data.history
+            .map(point => ({ t: point.t, p: parseFloat(point.p) }))
+            .filter(point => !isNaN(point.p) && point.p > 0 && point.p < 1)
+            .sort((a, b) => a.t - b.t);
+    } catch {
+        return null;
+    }
+}
+
+/**
+ * Pick a realistic entry price from historical data.
+ * Selects from the middle 50% of the timeline (not too early, not near resolution).
+ */
+function pickEntryFromHistory(priceHistory, actualWinner) {
+    const len = priceHistory.length;
+    const start = Math.floor(len * 0.25);
+    const end = Math.floor(len * 0.75);
+    const idx = start + Math.floor(Math.random() * (end - start));
+    return priceHistory[idx].p;
+}
+
+/**
+ * Generate a weighted DEFCON value (1-5).
+ * Distribution: 1 (5%), 2 (10%), 3 (35%), 4 (30%), 5 (20%)
+ */
+function generateWeightedDEFCON() {
+    const r = Math.random();
+    if (r < 0.05) return 1;
+    if (r < 0.15) return 2;
+    if (r < 0.50) return 3;
+    if (r < 0.80) return 4;
+    return 5;
+}
+
 /**
  * Fetch real resolved markets from Polymarket's public API.
+ * Fetches multiple pages for a larger sample (Fix C).
+ * Attempts to get historical prices for each market (Fix A).
  */
-async function fetchResolvedMarkets(limit = 50, offset = 0) {
+async function fetchResolvedMarkets(log) {
     try {
-        const url = `https://gamma-api.polymarket.com/events?closed=true&limit=${limit}&offset=${offset}&order=volume24hr&ascending=false`;
-        const response = await fetch(url);
-        if (!response.ok) throw new Error(`API returned ${response.status}`);
-        const events = await response.json();
+        log('Fetching resolved markets (3 pages)...');
+        const allEvents = [];
+
+        // Fetch 3 pages of 50 for a larger pool
+        for (const offset of [0, 50, 100]) {
+            try {
+                const url = `https://gamma-api.polymarket.com/events?closed=true&limit=50&offset=${offset}&order=volume24hr&ascending=false`;
+                const response = await fetch(url);
+                if (!response.ok) continue;
+                const events = await response.json();
+                allEvents.push(...events);
+            } catch {
+                // Skip failed pages
+            }
+        }
+
+        if (allEvents.length === 0) return [];
 
         const resolvedMarkets = [];
 
-        for (const event of events) {
+        for (const event of allEvents) {
             if (!event.markets || event.markets.length === 0) continue;
 
             for (const market of event.markets) {
@@ -33,7 +114,7 @@ async function fetchResolvedMarkets(limit = 50, offset = 0) {
                     prices = typeof market.outcomePrices === 'string'
                         ? JSON.parse(market.outcomePrices)
                         : market.outcomePrices;
-                } catch (e) { continue; }
+                } catch { continue; }
 
                 if (!Array.isArray(prices) || prices.length < 2) continue;
 
@@ -47,26 +128,12 @@ async function fetchResolvedMarkets(limit = 50, offset = 0) {
 
                 const preResolutionSnapshot = {
                     ...market,
-                    outcomePrices: market.outcomePrices, // Keep as-is, engine will parse
+                    outcomePrices: market.outcomePrices,
                     _isBacktestMarket: true
                 };
 
                 const volume = parseFloat(market.volume || market.volumeNum || 0);
                 const liquidity = parseFloat(market.liquidityNum || 0);
-
-                let simYesPrice, simNoPrice;
-                if (actualWinner === 'YES') {
-                    simYesPrice = 0.40 + Math.random() * 0.40; // 0.40-0.80
-                    simNoPrice = 1 - simYesPrice;
-                } else {
-                    simNoPrice = 0.40 + Math.random() * 0.40;
-                    simYesPrice = 1 - simNoPrice;
-                }
-
-                preResolutionSnapshot.outcomePrices = [
-                    simYesPrice.toFixed(4),
-                    simNoPrice.toFixed(4)
-                ];
 
                 preResolutionSnapshot.volume24hr = volume || Math.random() * 50000;
                 preResolutionSnapshot.liquidityNum = liquidity || Math.random() * 10000;
@@ -74,10 +141,59 @@ async function fetchResolvedMarkets(limit = 50, offset = 0) {
                 resolvedMarkets.push({
                     market: preResolutionSnapshot,
                     actualWinner,
-                    originalQuestion: market.question
+                    originalQuestion: market.question,
+                    _priceHistory: null // Will be populated below
                 });
             }
         }
+
+        // Fetch historical prices for each market (rate limited)
+        let historicalCount = 0;
+        let fallbackCount = 0;
+
+        for (const entry of resolvedMarkets) {
+            let tokenIds = entry.market.clobTokenIds;
+            if (typeof tokenIds === 'string') {
+                try { tokenIds = JSON.parse(tokenIds); } catch { tokenIds = null; }
+            }
+            const tokenId = Array.isArray(tokenIds) && tokenIds.length >= 1 && typeof tokenIds[0] === 'string' && tokenIds[0].length > 10
+                ? tokenIds[0] : null;
+
+            if (tokenId) {
+                const history = await fetchHistoricalPrices(tokenId);
+                if (history && history.length >= 10) {
+                    entry._priceHistory = history;
+
+                    // Use a real historical price as the entry price
+                    const simYesPrice = pickEntryFromHistory(history, entry.actualWinner);
+                    entry.market.outcomePrices = [
+                        simYesPrice.toFixed(4),
+                        (1 - simYesPrice).toFixed(4)
+                    ];
+                    historicalCount++;
+                    await sleep(CLOB_DELAY_MS);
+                    continue;
+                }
+                await sleep(CLOB_DELAY_MS);
+            }
+
+            // Fallback: synthetic price (old behavior)
+            let simYesPrice, simNoPrice;
+            if (entry.actualWinner === 'YES') {
+                simYesPrice = 0.40 + Math.random() * 0.40;
+                simNoPrice = 1 - simYesPrice;
+            } else {
+                simNoPrice = 0.40 + Math.random() * 0.40;
+                simYesPrice = 1 - simNoPrice;
+            }
+            entry.market.outcomePrices = [
+                simYesPrice.toFixed(4),
+                simNoPrice.toFixed(4)
+            ];
+            fallbackCount++;
+        }
+
+        log(`Prices: ${historicalCount} historical, ${fallbackCount} synthetic fallback`);
         return resolvedMarkets;
     } catch (error) {
         console.error('Failed to fetch resolved markets:', error.message);
@@ -100,11 +216,9 @@ function calculateRealPnL(betAmount, betPrice, actualWinner, betSide) {
 function calculateMetrics(tradeResults, initialCapital) {
     if (tradeResults.length === 0) {
         return {
-            sharpeRatio: 0,
-            maxDrawdown: 0,
-            roi: 0,
-            avgReturnPerTrade: 0,
-            stdDev: 0
+            sharpeRatio: 0, maxDrawdown: 0, roi: 0,
+            avgReturnPerTrade: 0, stdDev: 0,
+            sampleSize: 0, isReliable: false
         };
     }
 
@@ -126,37 +240,26 @@ function calculateMetrics(tradeResults, initialCapital) {
     const totalReturn = returns.reduce((a, b) => a + b, 0);
     const roi = (totalReturn / initialCapital) * 100;
 
-    return { sharpeRatio, maxDrawdown: maxDrawdown * 100, roi, avgReturnPerTrade: avgReturn, stdDev };
+    return {
+        sharpeRatio, maxDrawdown: maxDrawdown * 100, roi,
+        avgReturnPerTrade: avgReturn, stdDev,
+        sampleSize: tradeResults.length,
+        isReliable: tradeResults.length >= 50
+    };
 }
 
 /**
- * Runs the backtest simulation.
- * @returns {Promise<Object>} { metrics, logs, trades, summary }
+ * Run the backtest on a set of markets.
+ * Separated from runBacktestSimulation to allow train/test split (Fix G).
  */
-export async function runBacktestSimulation() {
-    const outputLog = [];
-    const log = (...args) => {
-        const msg = args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ');
-        outputLog.push(msg);
-        console.log(...args); // Keep console logging for server debug
-    };
-
-    const initialCapital = 1000;
+async function runBacktestOnSet(marketSet, initialCapital, log) {
     const simCapital = { value: initialCapital };
-
-    log('📡 Fetching resolved markets...');
-    const randomOffset = Math.floor(Math.random() * 200);
-    const resolvedMarkets = await fetchResolvedMarkets(50, randomOffset);
-
-    if (resolvedMarkets.length === 0) {
-        return { error: 'No resolved markets found', logs: outputLog };
-    }
-
-    const shuffled = resolvedMarkets.sort(() => Math.random() - 0.5);
-    const sample = shuffled.slice(0, 30);
-
     let wins = 0, losses = 0, ignored = 0;
     const tradeResults = [];
+
+    // Simulated portfolio state (Fix E: accumulate across iterations)
+    const simActiveTrades = [];
+    const simClosedTrades = [];
 
     const backtestDependencies = {
         checkLiquidityDepthFn: async (market) => {
@@ -177,74 +280,48 @@ export async function runBacktestSimulation() {
         reasonsCollector: []
     };
 
-    const simPizza = {
-        index: 30 + Math.floor(Math.random() * 40),
-        defcon: 3 + Math.floor(Math.random() * 3)
-    };
-
-    for (const { market, actualWinner, originalQuestion } of sample) {
+    for (const { market, actualWinner, originalQuestion } of marketSet) {
         backtestDependencies.reasonsCollector = [];
 
-        // Save state
-        const savedCapital = botState.capital;
-        const savedTrades = [...botState.activeTrades]; // Shallow copy array
-        // We need to protect the actual botState object, not just the reference
-        // But engine modifies botState properties.
-        // Best approach: Mock botState entirely? No, engine imports it.
-        // We must swap values.
+        // Fix B: Generate DEFCON per market (not once for entire backtest)
+        const simPizza = {
+            index: 30 + Math.floor(Math.random() * 40),
+            defcon: generateWeightedDEFCON(),
+            trends: [] // Base empty, catalysts handled by warmup
+        };
 
+        // Save real bot state
+        const savedCapital = botState.capital;
+        const savedTrades = [...botState.activeTrades];
+        const savedClosedTrades = botState.closedTrades ? [...botState.closedTrades] : [];
+        const savedCorrelationMap = botState._correlationMap;
+        const savedStartingCapital = botState.startingCapital;
+
+        // Set simulated state (Fix E: use accumulated portfolio)
         botState.capital = simCapital.value;
-        botState.activeTrades = [];
+        botState.startingCapital = initialCapital;
+        botState.activeTrades = [...simActiveTrades]; // Copy to avoid engine mutation issues
+        botState.closedTrades = [...simClosedTrades]; // For Anti-Fragility
 
         let decision = null;
         try {
             decision = await simulateTrade(market, simPizza, false, backtestDependencies);
-        } catch (e) {
+        } catch {
             ignored++;
         }
 
-        // CRITICAL FIX: Capture the capital deduction BEFORE restoring state
-        // simulateTrade() modified botState.capital via saveNewTrade()
+        // Capture simulated capital change
         const capitalAfterTrade = botState.capital;
 
-        // Restore real bot state (prevents backtest from contaminating production)
+        // Restore real bot state
         botState.capital = savedCapital;
         botState.activeTrades = savedTrades;
+        botState.closedTrades = savedClosedTrades;
+        botState._correlationMap = savedCorrelationMap;
+        botState.startingCapital = savedStartingCapital;
 
-        // Update simulated capital for accurate P&L tracking
+        // Update simulated capital
         simCapital.value = capitalAfterTrade;
-
-        // If decision was made, undo side effects on the *simulated* state logic (which we just overwrote)
-        // Wait. simulateTrade modifies botState.
-        // We set botState to sim values, run simulateTrade, then restore.
-        // So sim state changes (capital deduction) happened on botState.
-        // But we overwrote botState.capital with simCapital.value.
-        // So simCapital.value was NOT updated by simulateTrade because simulateTrade reads/writes botState.capital.
-        // Actually, `simulateTrade` does `botState.capital -= trade.amount`.
-        // So `simCapital.value` which we assigned to `botState.capital` is a primitive number.
-        // `botState.capital` became that number.
-        // `simulateTrade` modified `botState.capital`.
-        // But `simCapital.value` variable itself is untouched because numbers are by value.
-        // So we need to capture the *new* `botState.capital` before restoring!
-
-        // Correct logic:
-        // 1. Save Real State
-        // 2. Set Bot State to Sim State
-        // 3. Run Engine
-        // 4. Capture Resulting Sim State (optional, if we want to track cash flow accurately)
-        // 5. Restore Real State
-
-        // But `simulateTrade` returns the trade decision. We calculate PnL manually here.
-        // So we don't strictly *need* the engine's capital modification, 
-        // as long as we don't let it leak to real bot.
-        // And we restore `botState.capital = savedCapital` so we are safe.
-
-        // Undo internal array mutations if any?
-        // `botState.activeTrades` was set to empty array [], then modified.
-        // detailed `savedTrades` is safe because we made a copy?
-        // `const savedTrades = botState.activeTrades` -> checks reference.
-        // If `botState.activeTrades` is replaced `botState.activeTrades = []`, `savedTrades` still points to old array.
-        // So we are good.
 
         if (!decision || Array.isArray(decision)) {
             ignored++;
@@ -253,12 +330,12 @@ export async function runBacktestSimulation() {
 
         const betSide = decision.side;
         const betPrice = decision.entryPrice;
-        const betAmount = Math.min(decision.amount, simCapital.value * 0.15); // Cap sim bets
+        const betAmount = Math.min(decision.amount, simCapital.value * 0.15);
 
         const pnl = calculateRealPnL(betAmount, betPrice, actualWinner, betSide);
         simCapital.value += pnl;
 
-        tradeResults.push({
+        const tradeResult = {
             pnl,
             side: betSide,
             price: betPrice,
@@ -266,15 +343,42 @@ export async function runBacktestSimulation() {
             question: originalQuestion,
             actualWinner,
             confidence: decision.confidence,
-            reasons: decision.reasons || []
-        });
+            reasons: decision.reasons || [],
+            category: categorizeMarket(originalQuestion),
+            marketId: market.id
+        };
+        tradeResults.push(tradeResult);
+
+        // Fix E: Add to simulated portfolio, then immediately "resolve"
+        const simTrade = {
+            marketId: market.id,
+            side: betSide,
+            entryPrice: betPrice,
+            amount: betAmount,
+            category: tradeResult.category,
+            question: originalQuestion,
+            convictionScore: decision.convictionScore || 0
+        };
+
+        // Add to active trades (portfolio constraint simulation)
+        if (simActiveTrades.length < (CONFIG.BASE_MAX_TRADES || 10)) {
+            simActiveTrades.push(simTrade);
+        }
+
+        // Resolve immediately (all backtest markets are resolved) -> move to closed
+        const closedTrade = { ...simTrade, pnl, profit: pnl };
+        simClosedTrades.unshift(closedTrade); // Most recent first
+
+        // Remove from active after resolution
+        const idx = simActiveTrades.findIndex(t => t.marketId === market.id);
+        if (idx !== -1) simActiveTrades.splice(idx, 1);
 
         if (betSide === actualWinner) {
             wins++;
-            log(`✅ WIN  | ${originalQuestion.substring(0, 45)}... | ${betSide} @ ${betPrice.toFixed(3)} | +$${pnl.toFixed(2)}`);
+            log(`WIN  | ${originalQuestion.substring(0, 45)}... | ${betSide} @ ${betPrice.toFixed(3)} | +$${pnl.toFixed(2)} | DEFCON ${simPizza.defcon}`);
         } else {
             losses++;
-            log(`❌ LOSS | ${originalQuestion.substring(0, 45)}... | ${betSide} @ ${betPrice.toFixed(3)} | -$${Math.abs(pnl).toFixed(2)}`);
+            log(`LOSS | ${originalQuestion.substring(0, 45)}... | ${betSide} @ ${betPrice.toFixed(3)} | -$${Math.abs(pnl).toFixed(2)} | DEFCON ${simPizza.defcon}`);
         }
     }
 
@@ -283,21 +387,150 @@ export async function runBacktestSimulation() {
     const finalCapital = initialCapital + totalPnL;
     const winrate = (wins + losses) > 0 ? (wins / (wins + losses) * 100).toFixed(1) : '0';
 
-    const summary = {
-        initialCapital,
-        finalCapital,
-        totalPnL,
-        wins,
-        losses,
-        ignored,
-        winrate,
-        tradesCount: wins + losses
-    };
-
     return {
         metrics,
-        summary,
-        logs: outputLog,
+        summary: {
+            initialCapital, finalCapital, totalPnL,
+            wins, losses, ignored, winrate,
+            tradesCount: wins + losses
+        },
         tradeResults
+    };
+}
+
+/**
+ * Warm up advanced strategies with historical data before the trade loop (Fix D).
+ * Populates Market Memory, Correlation Map, and Event Catalysts.
+ */
+function warmUpStrategies(marketSet, log) {
+    // Clear previous backtest state
+    clearMarketMemory();
+    clearEventCatalysts();
+
+    let memoryWarmed = 0;
+
+    // Warm Market Memory with real price histories
+    for (const { market, _priceHistory } of marketSet) {
+        if (!_priceHistory || _priceHistory.length < 5) continue;
+
+        // Feed price snapshots into Market Memory
+        for (const point of _priceHistory) {
+            const snapshot = {
+                id: market.id,
+                outcomePrices: [point.p.toFixed(4), (1 - point.p).toFixed(4)],
+                volume24hr: market.volume24hr || 0
+            };
+            recordMarketSnapshot(snapshot);
+        }
+        memoryWarmed++;
+    }
+
+    // Build correlation map from all markets in the set
+    const allMarkets = marketSet.map(entry => entry.market);
+    const correlationMap = buildCorrelationMap(allMarkets);
+
+    // Save to botState temporarily (will be restored per iteration)
+    botState._correlationMap = correlationMap;
+
+    // Seed event catalysts with synthetic PizzINT trends
+    const syntheticPizza = {
+        defcon: 3,
+        trends: [
+            'Trump tariffs trade war economy',
+            'Ukraine Russia ceasefire negotiations',
+            'Bitcoin ETF SEC approval crypto',
+            'Federal Reserve interest rate decision'
+        ]
+    };
+    detectCatalysts(syntheticPizza, allMarkets);
+
+    log(`Strategy warmup: ${memoryWarmed} markets with price history, ${correlationMap.size} correlation entries`);
+}
+
+/**
+ * Runs the full backtest simulation with walk-forward analysis (Fix G).
+ * @returns {Promise<Object>} { metrics, logs, trades, summary, trainMetrics, testMetrics }
+ */
+export async function runBacktestSimulation() {
+    const outputLog = [];
+    const log = (...args) => {
+        const msg = args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ');
+        outputLog.push(msg);
+        console.log(...args);
+    };
+
+    const initialCapital = 1000;
+
+    log('Fetching resolved markets...');
+    const resolvedMarkets = await fetchResolvedMarkets(log);
+
+    if (resolvedMarkets.length === 0) {
+        return { error: 'No resolved markets found', logs: outputLog };
+    }
+
+    // Shuffle and take up to 100 markets (Fix C)
+    const shuffled = resolvedMarkets.sort(() => Math.random() - 0.5);
+    const sample = shuffled.slice(0, 100);
+
+    log(`Sample: ${sample.length} markets (${resolvedMarkets.length} total fetched)`);
+
+    if (sample.length < 20) {
+        log('WARNING: Low sample size, metrics may be unreliable');
+    }
+
+    // Warm up advanced strategies (Fix D)
+    warmUpStrategies(sample, log);
+
+    // Walk-Forward split: 70% train, 30% test (Fix G)
+    const splitIdx = Math.floor(sample.length * 0.7);
+    const trainSet = sample.slice(0, splitIdx);
+    const testSet = sample.slice(splitIdx);
+
+    log(`Walk-Forward: ${trainSet.length} train / ${testSet.length} test`);
+
+    // Run training set
+    log('--- TRAIN SET ---');
+    const trainResult = await runBacktestOnSet(trainSet, initialCapital, log);
+
+    // Run test set (validates generalization)
+    log('--- TEST SET ---');
+    // Re-warm strategies for test set too (they need memory)
+    warmUpStrategies(testSet, log);
+    const testResult = await runBacktestOnSet(testSet, initialCapital, log);
+
+    // Combined metrics (for backward compatibility)
+    const allTradeResults = [...trainResult.tradeResults, ...testResult.tradeResults];
+    const combinedMetrics = calculateMetrics(allTradeResults, initialCapital);
+    const totalPnL = allTradeResults.reduce((sum, t) => sum + t.pnl, 0);
+    const finalCapital = initialCapital + totalPnL;
+    const totalWins = trainResult.summary.wins + testResult.summary.wins;
+    const totalLosses = trainResult.summary.losses + testResult.summary.losses;
+    const totalIgnored = trainResult.summary.ignored + testResult.summary.ignored;
+    const winrate = (totalWins + totalLosses) > 0
+        ? (totalWins / (totalWins + totalLosses) * 100).toFixed(1) : '0';
+
+    log('--- RESULTS ---');
+    log(`Train: ROI ${trainResult.metrics.roi.toFixed(2)}% | Sharpe ${trainResult.metrics.sharpeRatio.toFixed(2)} | WR ${trainResult.summary.winrate}%`);
+    log(`Test:  ROI ${testResult.metrics.roi.toFixed(2)}% | Sharpe ${testResult.metrics.sharpeRatio.toFixed(2)} | WR ${testResult.summary.winrate}%`);
+    log(`Combined: ${totalWins}W ${totalLosses}L ${totalIgnored}I | ROI ${combinedMetrics.roi.toFixed(2)}% | $${initialCapital} -> $${finalCapital.toFixed(2)}`);
+
+    // Cleanup: clear backtest strategy state
+    clearMarketMemory();
+    clearEventCatalysts();
+
+    return {
+        metrics: combinedMetrics,
+        trainMetrics: trainResult.metrics,
+        testMetrics: testResult.metrics,
+        summary: {
+            initialCapital, finalCapital, totalPnL,
+            wins: totalWins, losses: totalLosses,
+            ignored: totalIgnored, winrate,
+            tradesCount: totalWins + totalLosses,
+            trainSize: trainSet.length,
+            testSize: testSet.length
+        },
+        logs: outputLog,
+        tradeResults: allTradeResults
     };
 }

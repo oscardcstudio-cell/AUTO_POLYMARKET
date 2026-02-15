@@ -29,13 +29,7 @@ export const strategyAdapter = {
             params.mode = 'DEFENSIVE';
             params.reason = `Sim ROI negative (${roi.toFixed(2)}%)`;
 
-            // reduce sizing significantly
             params.sizeMultiplier = 0.7;
-            // increase confidence threshold (require higher confidence to trade)
-            // Implementation note: we MULTIPLY the threshold by this? No, usually we multiply the *score*.
-            // If we multiply the required threshold by 1.1, it's harder to trade.
-            // If we multiply the score by 0.9, it's harder to trade.
-            // Let's assume we multiply the SCORE.
             params.confidenceMultiplier = 0.9;
 
             if (drawdown > 15) {
@@ -48,16 +42,16 @@ export const strategyAdapter = {
             params.mode = 'AGGRESSIVE';
             params.reason = `Sim ROI strong (${roi.toFixed(2)}%)`;
 
-            params.sizeMultiplier = 1.25; // Increase sizing
-            params.confidenceMultiplier = 1.05; // Boost confidence score slightly
+            params.sizeMultiplier = 1.25;
+            params.confidenceMultiplier = 1.05;
         }
         // 3. CONSERVATIVE MODE (Positive but risky)
         else if (roi > 0 && drawdown > 10) {
             params.mode = 'CONSERVATIVE';
             params.reason = `Profitable but high volatility`;
 
-            params.sizeMultiplier = 0.8; // Reduce size to manage risk
-            params.confidenceMultiplier = 1.0; // Keep confidence normal
+            params.sizeMultiplier = 0.8;
+            params.confidenceMultiplier = 1.0;
         }
         // 4. NEUTRAL (Flat or minor positive)
         else {
@@ -68,5 +62,47 @@ export const strategyAdapter = {
         }
 
         return params;
+    },
+
+    /**
+     * Compare baseline metrics vs current-params metrics (Fix F).
+     * Decides whether to keep the current adapted params or reset to baseline.
+     * @param {Object} baselineMetrics - metrics from neutral params run
+     * @param {Object} currentMetrics - metrics from adapted params run
+     * @returns {{ keepCurrent: boolean, reason: string }}
+     */
+    compare(baselineMetrics, currentMetrics) {
+        if (!baselineMetrics || !currentMetrics) {
+            return { keepCurrent: false, reason: 'Missing metrics for comparison' };
+        }
+
+        const roiDiff = currentMetrics.roi - baselineMetrics.roi;
+        const drawdownDiff = currentMetrics.maxDrawdown - baselineMetrics.maxDrawdown;
+        const sharpeDiff = currentMetrics.sharpeRatio - baselineMetrics.sharpeRatio;
+
+        // Current params are better if:
+        // 1. ROI is higher, AND
+        // 2. Drawdown didn't increase by more than 50%
+        const roiBetter = roiDiff > 0;
+        const drawdownAcceptable = drawdownDiff < baselineMetrics.maxDrawdown * 0.5;
+
+        if (roiBetter && drawdownAcceptable) {
+            return {
+                keepCurrent: true,
+                reason: `ROI +${roiDiff.toFixed(2)}%, Drawdown ${drawdownDiff > 0 ? '+' : ''}${drawdownDiff.toFixed(1)}%, Sharpe ${sharpeDiff > 0 ? '+' : ''}${sharpeDiff.toFixed(2)}`
+            };
+        }
+
+        if (roiBetter && !drawdownAcceptable) {
+            return {
+                keepCurrent: false,
+                reason: `ROI improved +${roiDiff.toFixed(2)}% but drawdown too high (+${drawdownDiff.toFixed(1)}%)`
+            };
+        }
+
+        return {
+            keepCurrent: false,
+            reason: `Baseline outperformed: ROI ${roiDiff.toFixed(2)}%, Sharpe ${sharpeDiff.toFixed(2)}`
+        };
     }
 };

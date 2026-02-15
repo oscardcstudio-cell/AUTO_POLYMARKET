@@ -17,7 +17,7 @@ router.post('/run-backtest', async (req, res) => {
             return res.json({ success: false, error: result.error, output: result.logs.join('\n') });
         }
 
-        const { metrics, summary, logs, tradeResults } = result;
+        const { metrics, summary, logs, tradeResults, trainMetrics, testMetrics } = result;
 
         // Log results to Supabase asynchronously
         if (supabase && metrics) {
@@ -32,7 +32,13 @@ router.post('/run-backtest', async (req, res) => {
                 final_capital: summary.finalCapital,
                 sharpe_ratio: metrics.sharpeRatio,
                 max_drawdown: metrics.maxDrawdown,
-                metrics: metrics,
+                metrics: {
+                    combined: metrics,
+                    trainMetrics: trainMetrics || null,
+                    testMetrics: testMetrics || null,
+                    sampleSize: metrics.sampleSize,
+                    isReliable: metrics.isReliable
+                },
                 logs: logs
             }).then(({ error }) => {
                 if (error) console.error('Failed to save manual backtest run:', error);

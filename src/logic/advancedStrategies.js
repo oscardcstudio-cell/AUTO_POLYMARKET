@@ -26,6 +26,15 @@ const marketMemory = {};
 const MEMORY_MAX_ENTRIES = 200; // ~3h at 1min intervals
 
 /**
+ * Clear all market memory entries (used by backtest to avoid state leaks between runs)
+ */
+export function clearMarketMemory() {
+    for (const key of Object.keys(marketMemory)) {
+        delete marketMemory[key];
+    }
+}
+
+/**
  * Record a price snapshot for a market
  */
 export function recordMarketSnapshot(market) {
@@ -406,6 +415,13 @@ export function executeDCA(existingTrade, currentPrice) {
 // Track recent events that should boost certain market categories
 const eventCatalysts = [];
 const MAX_CATALYSTS = 20;
+
+/**
+ * Clear all event catalysts (used by backtest to avoid state leaks between runs)
+ */
+export function clearEventCatalysts() {
+    eventCatalysts.length = 0;
+}
 
 /**
  * Detect catalysts from PizzINT trends and market volume spikes

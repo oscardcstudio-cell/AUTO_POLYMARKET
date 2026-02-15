@@ -9,7 +9,7 @@ import { supabase } from '../services/supabaseService.js';
 const INTERVAL_MS = 6 * 60 * 60 * 1000;
 
 export function startScheduler() {
-    console.log('🕒 AI Self-Training Scheduler started (Every 6h)');
+    console.log('AI Self-Training Scheduler started (Every 6h)');
 
     // Initial run after 30 seconds to allow server to settle and not block startup
     setTimeout(runAutoTraining, 30000);
@@ -18,54 +18,101 @@ export function startScheduler() {
 }
 
 async function runAutoTraining() {
-    console.log('🎓 Starting Automated Training Simulation...');
-    addLog(botState, '🎓 Lancement de l\'auto-entraînement IA...', 'info');
+    console.log('Starting Automated Training Simulation...');
+    addLog(botState, 'Lancement de l\'auto-entrainement IA...', 'info');
 
     try {
-        // Run with default parameters
-        const result = await runBacktestSimulation();
+        // --- DUAL-RUN FEEDBACK LOOP (Fix F) ---
+        // Run 1: Baseline (neutral params) to establish a reference
+        const savedParams = botState.learningParams ? { ...botState.learningParams } : null;
+        botState.learningParams = { confidenceMultiplier: 1.0, sizeMultiplier: 1.0, mode: 'NEUTRAL', reason: 'Baseline run' };
 
-        if (result.error) {
-            console.error('Auto-Training error:', result.error);
-            addLog(botState, `❌ Erreur Auto-Training: ${result.error}`, 'error');
+        const baselineResult = await runBacktestSimulation();
+        if (baselineResult.error) {
+            console.error('Auto-Training baseline error:', baselineResult.error);
+            addLog(botState, `Erreur Auto-Training baseline: ${baselineResult.error}`, 'error');
+            botState.learningParams = savedParams;
             return;
         }
 
-        const { metrics, summary, logs } = result;
+        // Run 2: With current adapted params (if they exist)
+        let currentResult = null;
+        if (savedParams && savedParams.mode !== 'NEUTRAL') {
+            botState.learningParams = savedParams;
+            currentResult = await runBacktestSimulation();
+        }
 
-        // Adapt Strategy
-        const newParams = strategyAdapter.adapt(metrics);
+        // Compare and decide
+        const baselineMetrics = baselineResult.metrics;
+        const baselineTestMetrics = baselineResult.testMetrics;
+        let finalParams;
+        let comparisonMsg;
 
-        // Apply to Bot State
-        botState.learningParams = newParams;
-        stateManager.save(); // Persist changes
+        if (currentResult && !currentResult.error) {
+            const currentMetrics = currentResult.metrics;
+            const comparison = strategyAdapter.compare(baselineMetrics, currentMetrics);
 
-        // Log result to Console & Bot Logs
-        const msg = `AI Adaptation: Mode=${newParams.mode} (ROI: ${metrics.roi.toFixed(2)}%)`;
+            if (comparison.keepCurrent) {
+                // Current params are better, refine from current metrics
+                finalParams = strategyAdapter.adapt(currentMetrics);
+                comparisonMsg = `KEEP current params (${comparison.reason})`;
+            } else {
+                // Baseline is better, adapt from baseline
+                finalParams = strategyAdapter.adapt(baselineMetrics);
+                comparisonMsg = `RESET to baseline (${comparison.reason})`;
+            }
+        } else {
+            // No previous params or error — adapt from baseline
+            finalParams = strategyAdapter.adapt(baselineMetrics);
+            comparisonMsg = 'First run — adapting from baseline';
+        }
+
+        // Walk-forward validation gate (Fix G)
+        // If the test set shows very negative ROI, reject the adapted params
+        if (baselineTestMetrics && baselineTestMetrics.roi < -5) {
+            finalParams = { confidenceMultiplier: 1.0, sizeMultiplier: 1.0, mode: 'NEUTRAL', reason: 'Test set failed validation (overfitting detected)' };
+            comparisonMsg += ' | OVERFIT DETECTED: test ROI < -5%, reset to NEUTRAL';
+        }
+
+        // Apply to bot state
+        botState.learningParams = finalParams;
+        stateManager.save();
+
+        // Log
+        const msg = `AI Adaptation: Mode=${finalParams.mode} | ${comparisonMsg} | Baseline ROI: ${baselineMetrics.roi.toFixed(2)}%`;
         console.log(msg);
-        addLog(botState, `🧠 ${msg}`, 'success');
+        addLog(botState, msg, 'success');
 
-        // Save run to Supabase (AUTO type)
-        if (supabase && metrics) {
+        // Save to Supabase
+        if (supabase && baselineMetrics) {
             const { error } = await supabase.from('simulation_runs').insert({
                 run_type: 'AUTO',
-                markets_tested: summary.tradesCount + summary.ignored,
-                trades_count: summary.tradesCount,
-                win_rate: parseFloat(summary.winrate),
-                result_pnl: summary.totalPnL,
-                result_roi: metrics.roi,
-                initial_capital: summary.initialCapital,
-                final_capital: summary.finalCapital,
-                sharpe_ratio: metrics.sharpeRatio,
-                max_drawdown: metrics.maxDrawdown,
-                metrics: metrics,
-                logs: logs // Store logs for analysis
+                markets_tested: baselineResult.summary.tradesCount + baselineResult.summary.ignored,
+                trades_count: baselineResult.summary.tradesCount,
+                win_rate: parseFloat(baselineResult.summary.winrate),
+                result_pnl: baselineResult.summary.totalPnL,
+                result_roi: baselineMetrics.roi,
+                initial_capital: baselineResult.summary.initialCapital,
+                final_capital: baselineResult.summary.finalCapital,
+                sharpe_ratio: baselineMetrics.sharpeRatio,
+                max_drawdown: baselineMetrics.maxDrawdown,
+                metrics: {
+                    baseline: baselineMetrics,
+                    current: currentResult?.metrics || null,
+                    trainMetrics: baselineResult.trainMetrics,
+                    testMetrics: baselineResult.testMetrics,
+                    comparison: comparisonMsg,
+                    appliedParams: finalParams,
+                    sampleSize: baselineMetrics.sampleSize,
+                    isReliable: baselineMetrics.isReliable
+                },
+                logs: baselineResult.logs
             });
             if (error) console.error('Failed to save AUTO backtest run:', error);
         }
 
     } catch (e) {
         console.error('Auto-Training failed:', e);
-        addLog(botState, `❌ Echec Auto-Training: ${e.message}`, 'error');
+        addLog(botState, `Echec Auto-Training: ${e.message}`, 'error');
     }
 }
