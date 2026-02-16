@@ -66,10 +66,15 @@ export class StateManager {
 
     reset() {
         console.log("☢️ NUCLEAR RESET TRIGGERED");
-        // Deep copy initial state
-        this.data = JSON.parse(JSON.stringify(INITIAL_STATE));
-        this.data.startTime = new Date().toISOString();
-        this.data.lastUpdate = new Date().toISOString();
+        // Deep copy initial state — PRESERVE REFERENCE with Object.assign
+        const fresh = JSON.parse(JSON.stringify(INITIAL_STATE));
+        fresh.startTime = new Date().toISOString();
+        fresh.lastUpdate = new Date().toISOString();
+        // Clear arrays that might have old data
+        Object.keys(this.data).forEach(key => {
+            if (!(key in fresh)) delete this.data[key];
+        });
+        Object.assign(this.data, fresh);
         this.save();
     }
 
