@@ -389,25 +389,16 @@ router.post('/force-resync', async (req, res) => {
         const recovered = await stateManager.tryRecovery();
 
         if (!recovered) {
-            // tryRecovery didn't trigger (local state not default and no desync)
-            // Force it by directly calling recoverState
-            const { supabaseService } = await import('../services/supabaseService.js');
-            const recoveredData = await supabaseService.recoverState();
-
-            if (recoveredData && (recoveredData.activeTrades.length >= 0 || recoveredData.totalTrades > 0)) {
-                Object.assign(botState, recoveredData);
-                stateManager.save();
-                addLog(botState, '✅ FORCE RESYNC: État restauré depuis Supabase !', 'success');
-                return res.json({
-                    success: true,
-                    message: 'State resynced from Supabase',
-                    capital: botState.capital,
-                    activeTrades: botState.activeTrades.length,
-                    totalTrades: botState.totalTrades
-                });
-            } else {
-                return res.json({ success: false, message: 'No data found in Supabase' });
-            }
+            // tryRecovery didn't trigger — force a full reset to $1000
+            stateManager.reset();
+            addLog(botState, '✅ FORCE RESYNC: Reset complet à $1000', 'success');
+            return res.json({
+                success: true,
+                message: 'Full reset to $1000',
+                capital: botState.capital,
+                activeTrades: botState.activeTrades.length,
+                totalTrades: botState.totalTrades
+            });
         }
 
         res.json({

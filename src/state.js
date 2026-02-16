@@ -227,6 +227,12 @@ export class StateManager {
                 this.save();
                 addLog(this.data, `✅ ÉTAT RESTAURÉ DEPUIS SUPABASE ! (${reason})`, 'success');
                 return true;
+            } else if (isDesync) {
+                // DB has 0 trades but local has stale trades → full reset to initial state
+                console.log('⚠️ DB empty + desync → resetting to initial state ($1000, 0 trades)');
+                this.reset();
+                addLog(this.data, `✅ RESET COMPLET: DB vide, état local réinitialisé à $1000`, 'success');
+                return true;
             } else {
                 addLog(this.data, "ℹ️ Aucune donnée trouvée sur Supabase ou échec récupération.", 'info');
             }
