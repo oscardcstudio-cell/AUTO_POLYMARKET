@@ -124,9 +124,12 @@ function computeLocalAnalytics() {
 }
 
 // 1. GLOBAL PERFORMANCE
+// Priority: local state (source of truth when bot is running) → Supabase fallback (cold start)
 router.get('/global', async (req, res) => {
     try {
-        // Try Supabase first
+        const local = computeLocalAnalytics();
+        if (local.global.total_trades > 0) return res.json(local.global);
+        // Supabase fallback only if local has no trades (cold start / fresh deploy)
         if (supabase) {
             const { data, error } = await supabase
                 .from('view_global_performance')
@@ -134,10 +137,8 @@ router.get('/global', async (req, res) => {
                 .single();
             if (!error && data) return res.json(data);
         }
-        // Fallback: local data
-        res.json(computeLocalAnalytics().global);
+        res.json(local.global);
     } catch (err) {
-        // Final fallback
         res.json(computeLocalAnalytics().global);
     }
 });
@@ -145,6 +146,8 @@ router.get('/global', async (req, res) => {
 // 2. CATEGORY PERFORMANCE
 router.get('/category', async (req, res) => {
     try {
+        const local = computeLocalAnalytics();
+        if (local.categories.length > 0) return res.json(local.categories);
         if (supabase) {
             const { data, error } = await supabase
                 .from('view_category_performance')
@@ -152,7 +155,7 @@ router.get('/category', async (req, res) => {
                 .order('total_pnl', { ascending: false });
             if (!error && data && data.length > 0) return res.json(data);
         }
-        res.json(computeLocalAnalytics().categories);
+        res.json(local.categories);
     } catch (err) {
         res.json(computeLocalAnalytics().categories);
     }
@@ -161,6 +164,8 @@ router.get('/category', async (req, res) => {
 // 3. STRATEGY PERFORMANCE
 router.get('/strategy', async (req, res) => {
     try {
+        const local = computeLocalAnalytics();
+        if (local.strategies.length > 0) return res.json(local.strategies);
         if (supabase) {
             const { data, error } = await supabase
                 .from('view_strategy_performance')
@@ -168,7 +173,7 @@ router.get('/strategy', async (req, res) => {
                 .order('total_pnl', { ascending: false });
             if (!error && data && data.length > 0) return res.json(data);
         }
-        res.json(computeLocalAnalytics().strategies);
+        res.json(local.strategies);
     } catch (err) {
         res.json(computeLocalAnalytics().strategies);
     }
@@ -177,6 +182,8 @@ router.get('/strategy', async (req, res) => {
 // 4. MONTHLY PNL
 router.get('/monthly', async (req, res) => {
     try {
+        const local = computeLocalAnalytics();
+        if (local.monthly.length > 0) return res.json(local.monthly);
         if (supabase) {
             const { data, error } = await supabase
                 .from('view_monthly_pnl')
@@ -184,7 +191,7 @@ router.get('/monthly', async (req, res) => {
                 .order('month', { ascending: true });
             if (!error && data && data.length > 0) return res.json(data);
         }
-        res.json(computeLocalAnalytics().monthly);
+        res.json(local.monthly);
     } catch (err) {
         res.json(computeLocalAnalytics().monthly);
     }
