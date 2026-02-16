@@ -22,9 +22,10 @@ function computeLocalAnalytics() {
     const categories = {};
     allTrades.forEach(t => {
         const cat = t.category || 'other';
-        if (!categories[cat]) categories[cat] = { wins: 0, losses: 0, pnl: 0, count: 0 };
+        if (!categories[cat]) categories[cat] = { wins: 0, losses: 0, pnl: 0, count: 0, invested: 0 };
         categories[cat].count++;
         categories[cat].pnl += (t.pnl || t.profit || 0);
+        categories[cat].invested += (t.amount || 0);
         if ((t.pnl || t.profit || 0) > 0) categories[cat].wins++;
         else categories[cat].losses++;
     });
@@ -41,21 +42,27 @@ function computeLocalAnalytics() {
         if ((t.pnl || t.profit || 0) > 0) months[month].wins++;
     });
 
-    // Strategy breakdown (from reasons) — tracks all signal types including advanced strategies
+    // Strategy breakdown — use explicit trade.strategy field, fallback to reasons parsing
     const strategies = {};
     allTrades.forEach(t => {
-        let strategy = 'standard';
-        const reasons = t.reasons || t.decisionReasons || [];
-        const reasonStr = Array.isArray(reasons) ? reasons.join(' ') : String(reasons);
-        if (reasonStr.includes('Arbitrage')) strategy = 'arbitrage';
-        else if (reasonStr.includes('Wizard')) strategy = 'wizard';
-        else if (reasonStr.includes('Whale')) strategy = 'whale';
-        else if (reasonStr.includes('DCA')) strategy = 'dca';
-        else if (reasonStr.includes('DEFCON')) strategy = 'defcon';
-        else if (reasonStr.includes('Memory') || reasonStr.includes('momentum')) strategy = 'memory';
-        else if (reasonStr.includes('Catalyst') || reasonStr.includes('Event')) strategy = 'event_driven';
-        else if (reasonStr.includes('Momentum') || reasonStr.includes('High Momentum')) strategy = 'momentum';
-        else if (reasonStr.includes('Fresh')) strategy = 'fresh_market';
+        let strategy = t.strategy || 'standard';
+        if (strategy === 'standard') {
+            // Fallback: parse from reasons for older trades without strategy field
+            const reasons = t.reasons || t.decisionReasons || [];
+            const reasonStr = Array.isArray(reasons) ? reasons.join(' ') : String(reasons);
+            if (reasonStr.includes('Arbitrage')) strategy = 'arbitrage';
+            else if (reasonStr.includes('Wizard')) strategy = 'wizard';
+            else if (reasonStr.includes('Whale')) strategy = 'whale';
+            else if (reasonStr.includes('DCA')) strategy = 'dca';
+            else if (reasonStr.includes('DEFCON')) strategy = 'defcon';
+            else if (reasonStr.includes('Memory') || reasonStr.includes('momentum')) strategy = 'memory';
+            else if (reasonStr.includes('Catalyst') || reasonStr.includes('Event')) strategy = 'event_driven';
+            else if (reasonStr.includes('Hype Fader')) strategy = 'hype_fader';
+            else if (reasonStr.includes('Smart Momentum')) strategy = 'smart_momentum';
+            else if (reasonStr.includes('Trend Following')) strategy = 'trend_following';
+            else if (reasonStr.includes('Fresh')) strategy = 'fresh_market';
+            else if (reasonStr.includes('Contrarian')) strategy = 'contrarian';
+        }
 
         // Track conviction level as secondary tag
         const convScore = t.convictionScore || 0;
@@ -96,6 +103,7 @@ function computeLocalAnalytics() {
             category: cat,
             trade_count: data.count,
             total_pnl: data.pnl,
+            avg_roi_percent: data.invested > 0 ? (data.pnl / data.invested) * 100 : 0,
             win_rate_percent: data.count > 0 ? (data.wins / data.count) * 100 : 0
         })).sort((a, b) => b.total_pnl - a.total_pnl),
         monthly: Object.entries(months).map(([month, data]) => ({

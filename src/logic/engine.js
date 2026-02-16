@@ -759,6 +759,22 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
     const networkFeeBuffer = 0.003;  // 0.3% for gas/network variance
     const executionPrice = entryPrice * (1 + (side === 'YES' ? networkFeeBuffer : -networkFeeBuffer));
 
+    // Derive primary strategy from decision reasons
+    const reasonStr = decisionReasons.join(' ');
+    let strategy = 'standard';
+    if (reasonStr.includes('Arbitrage')) strategy = 'arbitrage';
+    else if (reasonStr.includes('Wizard')) strategy = 'wizard';
+    else if (reasonStr.includes('Whale')) strategy = 'whale';
+    else if (reasonStr.includes('DCA')) strategy = 'dca';
+    else if (reasonStr.includes('DEFCON')) strategy = 'defcon';
+    else if (reasonStr.includes('Memory') || reasonStr.includes('momentum')) strategy = 'memory';
+    else if (reasonStr.includes('Catalyst') || reasonStr.includes('Event')) strategy = 'event_driven';
+    else if (reasonStr.includes('Hype Fader')) strategy = 'hype_fader';
+    else if (reasonStr.includes('Smart Momentum')) strategy = 'smart_momentum';
+    else if (reasonStr.includes('Trend Following')) strategy = 'trend_following';
+    else if (reasonStr.includes('Fresh')) strategy = 'fresh_market';
+    else if (reasonStr.includes('Contrarian')) strategy = 'contrarian';
+
     const trade = {
         id: Date.now().toString(36) + Math.random().toString(36).substr(2),
         marketId: market.id,
@@ -773,6 +789,7 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
         confidence: confidence,
         reasons: decisionReasons,
         category: category,
+        strategy: strategy,
         isFresh: isFreshMarket,
         clobTokenIds: market.clobTokenIds || [],
         endDate: market.endDate || market.end_date_iso || null,
@@ -796,10 +813,11 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
 function saveNewTrade(trade, skipPersistence = false) {
     botState.capital -= trade.amount;
     botState.activeTrades.unshift(trade);
-    botState.totalTrades += 1;
 
-    // In backtest mode, skip all persistence (Supabase + disk)
+    // In backtest mode, skip all persistence (Supabase + disk) and counter increment
     if (skipPersistence) return;
+
+    botState.totalTrades += 1;
 
     stateManager.save();
     supabaseService.saveTrade(trade).catch(err => console.error('Supabase Save Error:', err));
@@ -891,9 +909,8 @@ export async function checkAndCloseTrades(getRealMarketPriceFn) {
                 const partialInvested = trade.amount * exitRatio;
                 const partialPnl = partialValue - partialInvested;
 
-                // Credit partial profit to capital
+                // Credit partial profit to capital (don't increment win counter — trade not fully closed)
                 botState.capital += partialValue;
-                if (partialPnl > 0) botState.winningTrades++;
 
                 // Update trade in-place for remainder
                 trade.shares -= partialShares;

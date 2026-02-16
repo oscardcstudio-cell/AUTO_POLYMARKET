@@ -92,6 +92,15 @@ export class StateManager {
                     if (!this.data.apiStatus) this.data.apiStatus = { ...INITIAL_STATE.apiStatus };
                     if (!this.data.sectorActivity) this.data.sectorActivity = { ...INITIAL_STATE.sectorActivity };
 
+                    // Sync win/loss counters from actual closed trades (prevents desync across restarts)
+                    const closed = this.data.closedTrades || [];
+                    const closedWithProfit = closed.filter(t => t.profit !== undefined && t.profit !== null);
+                    if (closedWithProfit.length > 0) {
+                        this.data.winningTrades = closedWithProfit.filter(t => t.profit > 0).length;
+                        this.data.losingTrades = closedWithProfit.filter(t => t.profit <= 0).length;
+                        this.data.totalTrades = closed.length + (this.data.activeTrades || []).length;
+                    }
+
                     addLog(this.data, `Chargement des données réussi ($${this.data.capital.toFixed(2)})`, 'success');
                 }
             } catch (err) {

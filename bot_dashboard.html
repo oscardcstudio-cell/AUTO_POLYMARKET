@@ -666,6 +666,7 @@
                 <div class="stat-card">
                     <div class="stat-label">Net Realized PnL</div>
                     <div class="stat-value" id="profit">$0.00</div>
+                    <div style="font-size: 0.7em; color: #64748b; margin-top: 4px;" id="unrealizedHint"></div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-label">Win Strategy</div>
@@ -1221,19 +1222,26 @@
                             | OPEN: $${activeValue.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                         </div>`;
 
-                        // Update Profit based on EQUITY, not just realized Cash
+                        // Net Realized PnL = sum of closed trade profits only
                         const startingCap = botData.startingCapital || 1000;
-                        const totalProfit = totalEquity - startingCap;
+                        const realizedPnL = (botData.closedTrades || []).reduce((sum, t) => sum + (t.pnl || t.profit || 0), 0);
+                        const totalProfit = totalEquity - startingCap; // total (realized + unrealized)
                         const profitPercent = (totalProfit / startingCap) * 100;
 
-                        document.getElementById('profit').textContent = `${totalProfit >= 0 ? '+' : ''}$${totalProfit.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
-                        document.getElementById('profit').className = 'stat-value ' + (totalProfit >= 0 ? 'positive' : 'negative');
-                        document.getElementById('profitPercent').textContent = (profitPercent || 0).toFixed(2) + '%';
+                        document.getElementById('profit').textContent = `${realizedPnL >= 0 ? '+' : ''}$${realizedPnL.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+                        document.getElementById('profit').className = 'stat-value ' + (realizedPnL >= 0 ? 'positive' : 'negative');
+                        const unrealizedHint = document.getElementById('unrealizedHint');
+                        if (unrealizedHint) unrealizedHint.textContent = `Total (incl. open): ${totalProfit >= 0 ? '+' : ''}$${totalProfit.toFixed(0)}`;
+                        document.getElementById('profitPercent').textContent = (profitPercent || 0).toFixed(2);
 
-                        const winRate = ((botData.winningTrades / (botData.winningTrades + botData.losingTrades)) * 100) || 0;
+                        // Win rate from actual closed trades (not cumulative counters which can desync)
+                        const closedForWinRate = (botData.closedTrades || []).filter(t => t.profit !== undefined && t.profit !== null);
+                        const realWins = closedForWinRate.filter(t => t.profit > 0).length;
+                        const realLosses = closedForWinRate.filter(t => t.profit <= 0).length;
+                        const winRate = closedForWinRate.length > 0 ? (realWins / closedForWinRate.length) * 100 : 0;
                         document.getElementById('winRate').textContent = `${winRate.toFixed(1)}%`;
-                        document.getElementById('winningTrades').textContent = botData.winningTrades || 0;
-                        document.getElementById('losingTrades').textContent = botData.losingTrades || 0;
+                        document.getElementById('winningTrades').textContent = realWins;
+                        document.getElementById('losingTrades').textContent = realLosses;
 
                         // Calculate Open Risk (money invested in active trades, not current value)
                         const moneySpent = (botData.activeTrades || []).reduce((sum, t) => {
