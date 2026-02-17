@@ -80,6 +80,25 @@ async function calculateConviction(market, pizzaData, dependencies) {
         }
     }
 
+    // 2b. Copy trade signal — top leaderboard wallets holding positions
+    const CT = CONFIG.COPY_TRADING || {};
+    const copyMatch = market._copyMatch;
+    if (copyMatch && CT.ENABLED) {
+        const tradeDirection = yesPrice > 0.5 ? 'Yes' : 'No';
+        if (copyMatch.outcome === tradeDirection) {
+            convictionPoints += (CT.COPY_CONVICTION_ALIGNED || 12);
+            signals.push(`CopyAlign: ${copyMatch.topTrader} #${copyMatch.topRank} (+${CT.COPY_CONVICTION_ALIGNED || 12})`);
+        }
+        if (copyMatch.topRank <= 5) {
+            convictionPoints += (CT.COPY_CONVICTION_STRONG || 8);
+            signals.push(`CopyTop5: #${copyMatch.topRank} (+${CT.COPY_CONVICTION_STRONG || 8})`);
+        }
+        if (copyMatch.count >= 2) {
+            convictionPoints += 5;
+            signals.push(`CopyMulti: ${copyMatch.count} wallets (+5)`);
+        }
+    }
+
     // 3. Fresh market with volume (+20)
     const isFresh = botState.freshMarkets?.some(f => f.id === market.id);
     if (isFresh && volume24h > 2000) {
@@ -508,6 +527,28 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
     } else if (whaleAlert) {
         decisionReasons.push(`⚠️ Whale Alert: MIXED consensus, no follow`);
     }
+    // COPY TRADE FOLLOW STRATEGY — top leaderboard wallet positions
+    const copyMatch = market._copyMatch;
+    if (!side && copyMatch && (CONFIG.COPY_TRADING?.ENABLED)) {
+        const copyOutcome = copyMatch.outcome; // "Yes" or "No"
+        if (copyOutcome === 'Yes' || copyOutcome === 'YES') {
+            const depthOK = await checkLiquidityDepthFn(market, 'YES', yesPrice, 50);
+            if (depthOK) {
+                side = 'YES';
+                entryPrice = yesPrice;
+                confidence = 0.60;
+                decisionReasons.push(`Copy Follow: ${copyMatch.count} top trader(s) on YES (led by ${copyMatch.topTrader} #${copyMatch.topRank})`);
+            }
+        } else if (copyOutcome === 'No' || copyOutcome === 'NO') {
+            const depthOK = await checkLiquidityDepthFn(market, 'NO', noPrice, 50);
+            if (depthOK) {
+                side = 'NO';
+                entryPrice = noPrice;
+                confidence = 0.60;
+                decisionReasons.push(`Copy Follow: ${copyMatch.count} top trader(s) on NO (led by ${copyMatch.topTrader} #${copyMatch.topRank})`);
+            }
+        }
+    }
     // NOUVEAU: WIZARD FOLLOW STRATEGY (Smart Money / Alpha)
     else if (botState.wizards && botState.wizards.some(w => w.id === market.id)) {
         const wizardSignal = botState.wizards.find(w => w.id === market.id);
@@ -851,6 +892,7 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
     const reasonStr = decisionReasons.join(' ');
     let strategy = 'standard';
     if (reasonStr.includes('Arbitrage')) strategy = 'arbitrage';
+    else if (reasonStr.includes('Copy Follow')) strategy = 'copy_trade';
     else if (reasonStr.includes('Wizard')) strategy = 'wizard';
     else if (reasonStr.includes('Whale')) strategy = 'whale';
     else if (reasonStr.includes('DCA')) strategy = 'dca';

@@ -54,7 +54,9 @@ const INITIAL_STATE = {
     },
     dailyPnL: 0,
     dailyPnLResetDate: new Date().toISOString().split('T')[0],
-    cooldowns: {}
+    cooldowns: {},
+    trackedWallets: [],
+    lastCopySignals: []
 };
 
 export class StateManager {

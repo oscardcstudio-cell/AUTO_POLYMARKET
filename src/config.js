@@ -124,6 +124,23 @@ export const CONFIG = {
         CONVICTION_BONUS: 8,            // +8 conviction if news sentiment aligns with trade
         CONVICTION_CONFLICT_PENALTY: -5, // -5 conviction if news opposes trade
     },
+    // Copy Trading (Leaderboard wallet tracking)
+    COPY_TRADING: {
+        ENABLED: true,
+        MIN_WALLET_PNL_7D: 500,             // Only track wallets with >$500 weekly profit
+        MAX_TRACKED_WALLETS: 20,             // Track top 20 wallets
+        COPY_SIZE_PERCENT: 0.015,            // Copy at 1.5% of our capital per signal
+        POSITION_CHECK_INTERVAL_MS: 5 * 60 * 1000,   // Check positions every 5 min
+        LEADERBOARD_CACHE_TTL_MS: 6 * 60 * 60 * 1000, // Refresh leaderboard every 6h
+        MIN_SOURCE_TRADE_SIZE: 500,          // Only copy trades where source invested >$500
+        CATEGORIES: ['OVERALL'],             // Leaderboard categories to scan
+        // Alpha score bonuses for copy signals
+        COPY_ALPHA_BONUS: 30,                // +30 alpha if top trader is on this market
+        COPY_MULTI_WALLET_BONUS: 15,         // +15 extra if 2+ tracked wallets on same market
+        // Conviction bonuses
+        COPY_CONVICTION_ALIGNED: 12,         // +12 conviction if copy signal aligns with trade
+        COPY_CONVICTION_STRONG: 8,           // +8 extra if source wallet in top 5
+    },
     // Whale Tracking (Polymarket Data API — real trades)
     WHALE_TRACKING: {
         MIN_WHALE_SIZE: 500,            // Min trade size ($) to qualify as whale

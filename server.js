@@ -18,6 +18,7 @@ import { simulateTrade, checkAndCloseTrades } from './src/logic/engine.js';
 import {
     detectWizards,
     detectWhales,
+    detectCopySignals,
     scanArbitrage,
     detectFreshMarkets,
     updateTopSignal,
@@ -27,6 +28,7 @@ import {
     categorizeMarket
 } from './src/logic/signals.js';
 import { getPizzaData } from './src/api/pizzint.js';
+import { refreshTrackedWallets } from './src/api/wallet_tracker.js';
 import { getEventSlug } from './src/api/market_discovery.js';
 import { getMidPrice } from './src/api/clob_api.js';
 import { feedbackLoop } from './src/logic/feedbackLoop.js';
@@ -114,7 +116,15 @@ async function mainLoop() {
     // Start AI Self-Training Scheduler
     startScheduler();
 
+    // Initial wallet tracker refresh (leaderboard)
+    try {
+        await refreshTrackedWallets();
+    } catch (e) {
+        console.warn('Initial wallet tracker refresh failed:', e.message);
+    }
+
     // State for Deep Scan
+    let lastWalletRefresh = Date.now();
     let lastDeepScanTime = 0;
     const DEEP_SCAN_INTERVAL = 30 * 60 * 1000; // 30 minutes
 
@@ -206,9 +216,23 @@ async function mainLoop() {
             await scanArbitrage(relevantMarkets);
             await detectWizards(relevantMarkets);
             await detectWhales(relevantMarkets);
+            await detectCopySignals(relevantMarkets);
             await detectFreshMarkets();
 
-            // 4b. Advanced Strategies: Market Memory + Catalysts + Correlations
+            // 4b. Copy Trading: Refresh leaderboard every 6h
+            if (isDeepScan) {
+                const walletRefreshInterval = CONFIG.COPY_TRADING?.LEADERBOARD_CACHE_TTL_MS || 6 * 60 * 60 * 1000;
+                if (Date.now() - lastWalletRefresh > walletRefreshInterval) {
+                    try {
+                        await refreshTrackedWallets();
+                        lastWalletRefresh = Date.now();
+                    } catch (e) {
+                        console.warn('Wallet tracker refresh failed:', e.message);
+                    }
+                }
+            }
+
+            // 4c. Advanced Strategies: Market Memory + Catalysts + Correlations
             try {
                 recordMarketBatch(relevantMarkets);
                 detectCatalysts(pizzaData, relevantMarkets);
@@ -281,6 +305,17 @@ async function mainLoop() {
                     for (const whale of botState.whaleAlerts) {
                         const m = relevantMarkets.find(x => x.id === whale.id);
                         if (m) candidates.push({ market: m, isFresh: false, priority: 'WHALE' });
+                    }
+                }
+
+                // 2b. Copy Trade Signals (top leaderboard wallets)
+                if (botState.lastCopySignals) {
+                    for (const sig of botState.lastCopySignals) {
+                        const m = relevantMarkets.find(x =>
+                            (x.conditionID || x.conditionId) === sig.position.conditionId ||
+                            x.slug === sig.position.slug
+                        );
+                        if (m) candidates.push({ market: m, isFresh: false, priority: 'COPY' });
                     }
                 }
 

@@ -5,6 +5,7 @@ import { CONFIG } from '../config.js';
 import { getTrendingMarkets, getContextualMarkets, fetchAvailableTags, getAllMarketsWithPagination } from '../api/market_discovery.js';
 import { fetchRealNewsSentiment, matchMarketToNews } from '../api/news.js';
 import { fetchWhaleTrades, matchWhaleToMarket } from '../api/polymarket_data.js';
+import { scanCopySignals, matchCopySignalToMarket } from '../api/wallet_tracker.js';
 
 // Helper for inline fetches in getRelevantMarkets
 async function fetchWithRetry(url, options = {}, retries = 3) {
@@ -282,6 +283,26 @@ function calculateAlphaScore(market, pizzaData) {
         market._whaleMatch = whaleMatch; // Store for engine
     }
 
+    // Copy trade signal match (top wallets holding positions on this market)
+    const CT_CFG = CONFIG.COPY_TRADING || {};
+    const copyMatches = market._copyMatches || [];
+    if (copyMatches.length > 0 && CT_CFG.ENABLED) {
+        score += (CT_CFG.COPY_ALPHA_BONUS || 30);
+        const topCopier = copyMatches[0];
+        reasons.push(`Copy: ${topCopier.username} #${topCopier.walletRank} ($${Math.round(topCopier.walletPnL)}/wk) (+${CT_CFG.COPY_ALPHA_BONUS || 30})`);
+        if (copyMatches.length >= 2) {
+            score += (CT_CFG.COPY_MULTI_WALLET_BONUS || 15);
+            reasons.push(`Multi-copy: ${copyMatches.length} wallets (+${CT_CFG.COPY_MULTI_WALLET_BONUS || 15})`);
+        }
+        market._copyMatch = {
+            wallets: copyMatches.map(c => ({ username: c.username, rank: c.walletRank, pnl: c.walletPnL })),
+            count: copyMatches.length,
+            topTrader: topCopier.username,
+            topRank: topCopier.walletRank,
+            outcome: topCopier.position.outcome,
+        };
+    }
+
     const hasArbitrage = botState.arbitrageOpportunities.some(a => a.id === market.id);
     if (hasArbitrage) { score += 25; reasons.push('Arbitrage (+25)'); }
 
@@ -435,6 +456,47 @@ export async function detectWhales(markets = null) {
             try { addLog(summary); } catch { console.log(summary); }
         }
     } catch (e) { console.error("Whale Scan Error:", e.message); }
+}
+
+// Track last copy trade scan
+let lastCopyScanRefresh = 0;
+
+export async function detectCopySignals(markets = null) {
+    try {
+        const CT = CONFIG.COPY_TRADING || {};
+        if (!CT.ENABLED) return;
+
+        // Only refresh every POSITION_CHECK_INTERVAL_MS (5 min default)
+        const now = Date.now();
+        const refreshInterval = CT.POSITION_CHECK_INTERVAL_MS || 5 * 60 * 1000;
+        if (botState.lastCopySignals?.length > 0 && (now - lastCopyScanRefresh) < refreshInterval) {
+            return; // Keep existing data
+        }
+
+        const signals = await scanCopySignals();
+        botState.lastCopySignals = signals;
+
+        if (signals.length > 0) {
+            lastCopyScanRefresh = now;
+
+            // Match signals to available markets and annotate them
+            if (markets) {
+                for (const signal of signals) {
+                    const matched = matchCopySignalToMarket(signal, markets);
+                    if (matched) {
+                        // Store copy match on market for alpha scoring
+                        if (!matched._copyMatches) matched._copyMatches = [];
+                        matched._copyMatches.push(signal);
+                    }
+                }
+            }
+
+            const summary = `[CopyTrade] ${signals.length} signals detected from ${new Set(signals.map(s => s.wallet)).size} wallets`;
+            try { addLog(botState, summary, 'info'); } catch { console.log(summary); }
+        }
+    } catch (e) {
+        console.error("CopyTrade Scan Error:", e.message);
+    }
 }
 
 export async function scanArbitrage(markets = null) {
