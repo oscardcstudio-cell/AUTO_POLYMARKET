@@ -77,6 +77,52 @@ function generateWeightedDEFCON() {
 }
 
 /**
+ * Generate realistic simulated PizzINT tension data correlated to DEFCON.
+ * Returns full pizza data object compatible with the new enriched format.
+ */
+function generateSimulatedTensionData(defcon) {
+    let baseTension;
+    if (defcon <= 2) baseTension = 60 + Math.floor(Math.random() * 35);
+    else if (defcon === 3) baseTension = 25 + Math.floor(Math.random() * 30);
+    else baseTension = Math.floor(Math.random() * 30);
+
+    const sustained = defcon <= 2 ? Math.random() > 0.5 : false;
+    const sentinel = defcon === 1 ? Math.random() > 0.7 : false;
+
+    return {
+        index: baseTension,
+        defcon,
+        trends: [],
+        tensionScore: baseTension,
+        tensionTrend: Math.random() > 0.6 ? 'RISING' : (Math.random() > 0.5 ? 'STABLE' : 'FALLING'),
+        defconDetails: {
+            severity: defcon <= 2 ? 3 + Math.random() * 2 : Math.random() * 2,
+            rawIndex: baseTension,
+            smoothedIndex: baseTension,
+            intensityScore: baseTension / 100,
+            breadthScore: Math.random() * 0.5,
+            nightMultiplier: 1,
+            persistenceFactor: sustained ? 1.5 : 1,
+            sustained,
+            sentinel,
+            placesAbove150: defcon <= 2 ? Math.floor(Math.random() * 5) : 0,
+            placesAbove200: defcon <= 1 ? Math.floor(Math.random() * 3) : 0,
+            highCount: defcon <= 2 ? Math.floor(Math.random() * 3) : 0,
+            extremeCount: defcon <= 1 ? Math.floor(Math.random() * 2) : 0,
+            maxPct: 0,
+        },
+        spikes: {
+            active: defcon <= 3 ? Math.floor(Math.random() * 3) : 0,
+            hasActive: defcon <= 3,
+            events: [],
+        },
+        venues: [],
+        dataFreshness: 'simulated',
+        history: [],
+    };
+}
+
+/**
  * Fetch real resolved markets from Polymarket's public API.
  * Fetches multiple pages for a larger sample (Fix C).
  * Attempts to get historical prices for each market (Fix A).
@@ -284,11 +330,8 @@ async function runBacktestOnSet(marketSet, initialCapital, log) {
         backtestDependencies.reasonsCollector = [];
 
         // Fix B: Generate DEFCON per market (not once for entire backtest)
-        const simPizza = {
-            index: 30 + Math.floor(Math.random() * 40),
-            defcon: generateWeightedDEFCON(),
-            trends: [] // Base empty, catalysts handled by warmup
-        };
+        const simDefcon = generateWeightedDEFCON();
+        const simPizza = generateSimulatedTensionData(simDefcon);
 
         // SAFE BACKTEST: Temporarily swap botState for simulated values,
         // but use try/finally to GUARANTEE restoration even on crash.
@@ -375,10 +418,10 @@ async function runBacktestOnSet(marketSet, initialCapital, log) {
 
         if (betSide === actualWinner) {
             wins++;
-            log(`WIN  | ${originalQuestion.substring(0, 45)}... | ${betSide} @ ${betPrice.toFixed(3)} | +$${pnl.toFixed(2)} | DEFCON ${simPizza.defcon}`);
+            log(`WIN  | ${originalQuestion.substring(0, 45)}... | ${betSide} @ ${betPrice.toFixed(3)} | +$${pnl.toFixed(2)} | Tension ${simPizza.tensionScore} (DEFCON ${simPizza.defcon})`);
         } else {
             losses++;
-            log(`LOSS | ${originalQuestion.substring(0, 45)}... | ${betSide} @ ${betPrice.toFixed(3)} | -$${Math.abs(pnl).toFixed(2)} | DEFCON ${simPizza.defcon}`);
+            log(`LOSS | ${originalQuestion.substring(0, 45)}... | ${betSide} @ ${betPrice.toFixed(3)} | -$${Math.abs(pnl).toFixed(2)} | Tension ${simPizza.tensionScore} (DEFCON ${simPizza.defcon})`);
         }
     }
 
@@ -432,16 +475,14 @@ function warmUpStrategies(marketSet, log) {
     // Save to botState temporarily (will be restored per iteration)
     botState._correlationMap = correlationMap;
 
-    // Seed event catalysts with synthetic PizzINT trends
-    const syntheticPizza = {
-        defcon: 3,
-        trends: [
-            'Trump tariffs trade war economy',
-            'Ukraine Russia ceasefire negotiations',
-            'Bitcoin ETF SEC approval crypto',
-            'Federal Reserve interest rate decision'
-        ]
-    };
+    // Seed event catalysts with synthetic PizzINT data (full tension format)
+    const syntheticPizza = generateSimulatedTensionData(3);
+    syntheticPizza.trends = [
+        'Trump tariffs trade war economy',
+        'Ukraine Russia ceasefire negotiations',
+        'Bitcoin ETF SEC approval crypto',
+        'Federal Reserve interest rate decision'
+    ];
     detectCatalysts(syntheticPizza, allMarkets);
 
     log(`Strategy warmup: ${memoryWarmed} markets with price history, ${correlationMap.size} correlation entries`);

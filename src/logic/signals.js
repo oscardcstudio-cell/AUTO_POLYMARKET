@@ -3,6 +3,7 @@ import { botState, stateManager } from '../state.js';
 import { addLog } from '../utils.js';
 import { CONFIG } from '../config.js';
 import { getTrendingMarkets, getContextualMarkets, fetchAvailableTags, getAllMarketsWithPagination } from '../api/market_discovery.js';
+import { fetchRealNewsSentiment, matchMarketToNews } from '../api/news.js';
 
 // Helper for inline fetches in getRelevantMarkets
 async function fetchWithRetry(url, options = {}, retries = 3) {
@@ -32,13 +33,19 @@ export async function getRelevantMarkets(useDeepScan = false) {
             return relevantMarketsCache;
         }
 
-        const defconLevel = botState.lastPizzaData?.defcon || 3;
+        const tension = botState.lastPizzaData?.tensionScore || 0;
+        const T = CONFIG.TENSION || {};
 
-        // Crisis Mode
-        if (defconLevel <= 2) {
-            const contextualMarkets = await getContextualMarkets(defconLevel, 100);
-            addLog(botState, `🚨 Crisis mode: Using ${contextualMarkets.length} geo/eco markets`, 'warning');
+        // Crisis Mode: Full lockdown at CRITICAL tension
+        if (tension >= (T.CRITICAL || 80)) {
+            const contextualMarkets = await getContextualMarkets(1, 100);
+            addLog(botState, `🚨 CRISIS MODE (tension ${tension}/100): ${contextualMarkets.length} geo/eco markets only`, 'warning');
             return contextualMarkets;
+        }
+
+        // High tension: log it but keep all markets (scoring handles the bias)
+        if (tension >= (T.HIGH || 55)) {
+            addLog(botState, `HIGH TENSION (${tension}/100): Boosting geo/eco scoring`, 'info');
         }
 
         let mergedMarkets;
@@ -204,23 +211,34 @@ function calculateFreshScore(market, ageHours) {
     else score += 5;
 
     const pizzaData = botState.lastPizzaData;
-    if (pizzaData && pizzaData.defcon <= 2) {
-        const category = categorizeMarket(market.question);
-        if (category === 'geopolitical' || category === 'economic') {
-            score += 30;
-        }
+    const tension = pizzaData?.tensionScore || 0;
+    const T = CONFIG.TENSION || {};
+    const category = categorizeMarket(market.question);
+    if ((category === 'geopolitical' || category === 'economic') && tension > 0) {
+        if (tension >= (T.CRITICAL || 80)) score += (T.FRESH_BONUS_CRITICAL || 30);
+        else if (tension >= (T.HIGH || 55)) score += (T.FRESH_BONUS_HIGH || 20);
+        else if (tension >= (T.ELEVATED || 30)) score += (T.FRESH_BONUS_ELEVATED || 10);
+    }
+    if (pizzaData?.tensionTrend === 'RISING' && (category === 'geopolitical' || category === 'economic')) {
+        score += 5;
     }
 
-    const keywords = extractEntities(market.question);
-    const newsMatch = botState.newsSentiment.some(n =>
-        keywords.some(k => n.title.toLowerCase().includes(k.toLowerCase()))
-    );
-    if (newsMatch) score += 20;
+    // Real news match — use structured matching instead of simple keyword scan
+    const newsResult = matchMarketToNews(market, botState.newsSentiment);
+    if (newsResult?.matched) {
+        const N = CONFIG.NEWS || {};
+        if (newsResult.sentiment === 'bullish') score += (N.BULLISH_MATCH_BONUS || 15);
+        else if (newsResult.sentiment === 'bearish') score += (N.BEARISH_MATCH_BONUS || 15);
+        else score += (N.NEUTRAL_MATCH_BONUS || 5);
+        // Store match on market for engine to use later
+        market._newsMatch = newsResult;
+    }
 
     const vol24h = parseFloat(market.volume24hr || 0);
     if (vol24h > 2000) score += 15;
     else if (vol24h > 500) score += 5;
 
+    const keywords = extractEntities(market.question);
     const relevance = keywords.reduce((sum, kw) => {
         const kwRelevance = getKeywordRelevance(kw);
         return sum + (kwRelevance || 0);
@@ -255,25 +273,52 @@ function calculateAlphaScore(market, pizzaData) {
     if (hasArbitrage) { score += 25; reasons.push('Arbitrage (+25)'); }
 
     if (pizzaData) {
-        if (pizzaData.defcon <= 2) {
+        const tension = pizzaData.tensionScore || 0;
+        const T = CONFIG.TENSION || {};
+
+        if (tension >= (T.CRITICAL || 80)) {
             if (category === 'geopolitical') {
-                score += 60;
-                reasons.push(`🚨 DEFCON ${pizzaData.defcon} + Géopolitique (+60)`);
+                score += (T.GEO_BONUS_CRITICAL || 60);
+                reasons.push(`🚨 CRISIS (tension ${tension}) + Géopolitique (+${T.GEO_BONUS_CRITICAL || 60})`);
             } else if (category === 'economic') {
-                score += 40;
-                reasons.push(`DEFCON ${pizzaData.defcon} + Économique (+40)`);
+                score += (T.ECO_BONUS_CRITICAL || 40);
+                reasons.push(`🚨 CRISIS (tension ${tension}) + Économique (+${T.ECO_BONUS_CRITICAL || 40})`);
             } else if (category === 'sports') {
-                score -= 50;
-                reasons.push('Sports pendant crise (-50)');
+                score += (T.SPORTS_PENALTY_CRITICAL || -50);
+                reasons.push(`Sports pendant crise (${T.SPORTS_PENALTY_CRITICAL || -50})`);
+            }
+        } else if (tension >= (T.HIGH || 55)) {
+            if (category === 'geopolitical') {
+                score += (T.GEO_BONUS_HIGH || 40);
+                reasons.push(`HIGH tension (${tension}) + Géopolitique (+${T.GEO_BONUS_HIGH || 40})`);
+            } else if (category === 'economic') {
+                score += (T.ECO_BONUS_HIGH || 25);
+                reasons.push(`HIGH tension (${tension}) + Économique (+${T.ECO_BONUS_HIGH || 25})`);
+            } else if (category === 'sports') {
+                score += (T.SPORTS_PENALTY_HIGH || -30);
+                reasons.push(`Sports pendant tension haute (${T.SPORTS_PENALTY_HIGH || -30})`);
+            }
+        } else if (tension >= (T.ELEVATED || 30)) {
+            if (category === 'geopolitical') {
+                score += (T.GEO_BONUS_ELEVATED || 15);
+                reasons.push(`ELEVATED tension (${tension}) + Géopolitique (+${T.GEO_BONUS_ELEVATED || 15})`);
+            } else if (category === 'economic') {
+                score += (T.ECO_BONUS_ELEVATED || 10);
+                reasons.push(`ELEVATED tension (${tension}) + Économique (+${T.ECO_BONUS_ELEVATED || 10})`);
             }
         }
 
-        if (pizzaData.index > 80 && category === 'geopolitical') {
-            score *= 1.3;
-            reasons.push(`Index ${pizzaData.index} × 1.3`);
-        } else if (pizzaData.index < 30 && category === 'economic') {
-            score *= 1.2;
-            reasons.push(`Index bas ${pizzaData.index} × 1.2`);
+        // Proportional tension multiplier for geo markets
+        if (tension >= (T.ELEVATED || 30) && category === 'geopolitical') {
+            const multiplier = 1.0 + (tension / 200);
+            score *= multiplier;
+            reasons.push(`Tension ${tension} x${multiplier.toFixed(2)}`);
+        }
+
+        // Rising tension early detection bonus
+        if (pizzaData.tensionTrend === 'RISING' && (category === 'geopolitical' || category === 'economic')) {
+            score += (T.RISING_TREND_BONUS || 10);
+            reasons.push(`Tension RISING (+${T.RISING_TREND_BONUS || 10})`);
         }
     } else {
         if (category === 'geopolitical' || category === 'economic') {
@@ -282,7 +327,7 @@ function calculateAlphaScore(market, pizzaData) {
         }
     }
 
-    if (category === 'sports' && (!pizzaData || pizzaData.defcon > 3)) {
+    if (category === 'sports' && (!pizzaData || (pizzaData.tensionScore || 0) < 30)) {
         score -= 20;
         reasons.push('Catégorie Sports (-20)');
     }
@@ -307,48 +352,37 @@ function calculateAlphaScore(market, pizzaData) {
 
 // --- SIGNAL DETECTORS ---
 
+// Track last news refresh to avoid hammering every cycle
+let lastNewsRefresh = 0;
+
 export async function fetchNewsSentiment() {
     try {
-        const markets = await getRelevantMarkets(false);
-        const keywordMap = {};
-
-        markets.forEach(m => {
-            const words = m.question.split(' ').filter(w => w.length > 4);
-            let prices = m.outcomePrices;
-            if (typeof prices === 'string') { try { prices = JSON.parse(prices); } catch { prices = null; } }
-            const price = (Array.isArray(prices) && prices.length > 0) ? parseFloat(prices[0]) : 0.5;
-            if (isNaN(price)) return; // Skip markets with unparseable prices
-            words.forEach(w => {
-                const clean = w.replace(/[^a-zA-Z]/g, '').toUpperCase();
-                if (['WILL', 'DOES', 'AFTER', 'BEFORE', 'MARKET'].includes(clean)) return;
-
-                if (!keywordMap[clean]) keywordMap[clean] = { count: 0, totalProb: 0 };
-                keywordMap[clean].count++;
-                keywordMap[clean].totalProb += price;
-            });
-        });
-
-        const sortedKeys = Object.keys(keywordMap).sort((a, b) => keywordMap[b].count - keywordMap[a].count).slice(0, 5);
-
-        botState.newsSentiment = sortedKeys.map(k => {
-            const data = keywordMap[k];
-            const avgProb = data.totalProb / data.count;
-            const sentiment = avgProb > 0.60 ? 'bullish' : (avgProb < 0.40 ? 'bearish' : 'neutral');
-
-            return {
-                title: `Trend Alert: "${k}" (Avg Prob: ${(avgProb * 100).toFixed(0)}%)`,
-                sentiment: sentiment,
-                source: `Polymarket Internal (${data.count} mkts)`
-            };
-        });
-
-        if (botState.newsSentiment.length === 0) {
-            botState.newsSentiment = [{ title: "Scanning global markets...", sentiment: "neutral", source: "AlphaMatrix" }];
+        // Only refresh news every NEWS.REFRESH_INTERVAL_MS (15 min default)
+        const now = Date.now();
+        const refreshInterval = CONFIG.NEWS?.REFRESH_INTERVAL_MS || 15 * 60 * 1000;
+        if (botState.newsSentiment?.length > 0 && (now - lastNewsRefresh) < refreshInterval) {
+            return; // Keep existing news data, skip refresh
         }
 
+        const markets = await getRelevantMarkets(false);
+        const sentiments = await fetchRealNewsSentiment(markets);
+
+        if (sentiments.length > 0) {
+            botState.newsSentiment = sentiments;
+            lastNewsRefresh = now;
+            const summary = `[News] Real news updated: ${sentiments.length} topics, ${sentiments.filter(s => s.sentiment === 'bullish').length} bullish / ${sentiments.filter(s => s.sentiment === 'bearish').length} bearish / ${sentiments.filter(s => s.sentiment === 'neutral').length} neutral`;
+            try { addLog(summary); } catch { console.log(summary); }
+        } else {
+            // Fallback: keep old data if fresh fetch returns nothing
+            if (!botState.newsSentiment || botState.newsSentiment.length === 0) {
+                botState.newsSentiment = [{ title: "No news data available", sentiment: "neutral", source: "System" }];
+            }
+        }
     } catch (e) {
-        console.error("AlphaMatrix Error:", e.message);
-        botState.newsSentiment = [{ title: "AlphaStream Disrupted", sentiment: "neutral", source: "System" }];
+        console.error("News fetch error:", e.message);
+        if (!botState.newsSentiment || botState.newsSentiment.length === 0) {
+            botState.newsSentiment = [{ title: "News feed unavailable", sentiment: "neutral", source: "System" }];
+        }
     }
 }
 

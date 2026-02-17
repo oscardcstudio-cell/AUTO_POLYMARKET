@@ -67,17 +67,21 @@ app.get('/dashboard.html', (req, res) => {
     res.redirect('/analytics');
 });
 
-// Helper logic for dynamic capacity
-function calculateMaxTrades(capital, defcon = 5) {
+// Helper logic for dynamic capacity (tension-aware)
+function calculateMaxTrades(capital, pizzaData) {
     let base = CONFIG.BASE_MAX_TRADES || 10;
 
     // Capital bonus: +1 trade per $500 gained above starting $1000
     const profitBonus = Math.floor(Math.max(0, capital - 1000) / 500);
     base += profitBonus;
 
-    // Crisis modifier: Reduce capacity during DEFCON 1-2 to avoid spreading too thin
-    if (defcon <= 2) {
-        base = Math.max(5, Math.floor(base * 0.5));
+    // Tension-based capacity reduction (graduated, replaces binary DEFCON check)
+    const tension = pizzaData?.tensionScore || 0;
+    const T = CONFIG.TENSION || {};
+    if (tension >= (T.CRITICAL || 80)) {
+        base = Math.max(5, Math.floor(base * (T.CAPACITY_MULT_CRITICAL || 0.5)));
+    } else if (tension >= (T.HIGH || 55)) {
+        base = Math.max(5, Math.floor(base * (T.CAPACITY_MULT_HIGH || 0.75)));
     }
 
     // Safety Cap
@@ -156,6 +160,12 @@ async function mainLoop() {
             if (pizzaData) {
                 botState.lastPizzaData = pizzaData;
                 botState.apiStatus.pizzint = 'ONLINE';
+                // Log tension on first fetch or significant changes
+                const prevTension = botState._lastLoggedTension || 0;
+                if (Math.abs(pizzaData.tensionScore - prevTension) >= 10 || !botState._lastLoggedTension) {
+                    addLog(botState, `PizzINT: DEFCON ${pizzaData.defcon} | Tension ${pizzaData.tensionScore}/100 (${pizzaData.tensionTrend}) | Spikes: ${pizzaData.spikes?.active || 0}`, 'info');
+                    botState._lastLoggedTension = pizzaData.tensionScore;
+                }
             } else {
                 botState.apiStatus.pizzint = 'OFFLINE';
             }
@@ -250,7 +260,7 @@ async function mainLoop() {
             }
 
             // 6. DYNAMIC CAPACITY & SCANNING
-            const maxTrades = calculateMaxTrades(botState.capital, pizzaData?.defcon);
+            const maxTrades = calculateMaxTrades(botState.capital, pizzaData);
             const isFull = botState.activeTrades.length >= maxTrades;
 
             if (isFull) {

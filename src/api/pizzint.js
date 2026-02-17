@@ -1,10 +1,9 @@
 
-import { botState } from '../state.js';
 import { addLog } from '../utils.js';
 
-// --- ROBUST FETCH WRAPPER (Inlined for now or move to utils if needed globally) ---
-// Using standard fetch for simplicity as Node 18+ has it.
-// If robust retry is needed, we should export fetchWithRetry from utils.
+// --- Tension history for trend detection ---
+const tensionHistory = []; // Max 60 entries (~1h at 1min intervals)
+const MAX_HISTORY = 60;
 
 async function fetchWithRetry(url, options = {}, retries = 3) {
     const timeout = 20000;
@@ -22,23 +21,180 @@ async function fetchWithRetry(url, options = {}, retries = 3) {
     }
 }
 
+/**
+ * Compute composite tension score (0-100) from PizzINT defcon_details and spike data.
+ * Combines: intensity, breadth, spike severity, sustained/sentinel flags,
+ * night multiplier, multi-site correlation, and persistence.
+ */
+function computeTensionScore(defconDetails, activeSpikes) {
+    if (!defconDetails) return 0;
+
+    const d = defconDetails;
+    let score = 0;
+
+    // Base: intensity + breadth (0-40 points)
+    score += Math.min((d.intensity_score || 0) * 20, 20);
+    score += Math.min((d.breadth_score || 0) * 20, 20);
+
+    // Spike severity (0-25 points)
+    const extremePts = Math.min((d.extreme_count || 0) * 10, 20);
+    const highPts = extremePts > 0 ? 0 : Math.min((d.high_count || 0) * 5, 10);
+    score += extremePts + highPts;
+    // Moderate spikes from active_spikes count (smaller contribution)
+    if (activeSpikes > 0 && extremePts === 0 && highPts === 0) {
+        score += Math.min(activeSpikes * 2, 5);
+    }
+
+    // Sustained / sentinel flags (0-15 points)
+    if (d.sustained) score += 10;
+    if (d.sentinel) score += 15;
+
+    // Multi-site correlation (0-10 points)
+    const above150 = d.places_above_150 || 0;
+    if (above150 >= 3) score += 10;
+    else if (above150 >= 2) score += 5;
+
+    // Persistence factor (0-10 points)
+    const persistence = d.persistence_factor || 1;
+    score += Math.min(Math.max((persistence - 1) * 10, 0), 10);
+
+    // Night multiplier amplification (1.0-1.5x)
+    const nightMult = Math.min(Math.max(d.night_multiplier || 1, 1.0), 1.5);
+    score *= nightMult;
+
+    return Math.round(Math.min(Math.max(score, 0), 100));
+}
+
+/**
+ * Compute tension trend from history.
+ * Compares average of last 5 readings to previous 5.
+ * RISING = last5 avg > prev5 avg + 5
+ * FALLING = last5 avg < prev5 avg - 5
+ * STABLE = otherwise
+ */
+function computeTensionTrend() {
+    if (tensionHistory.length < 10) return 'STABLE';
+
+    const last5 = tensionHistory.slice(-5);
+    const prev5 = tensionHistory.slice(-10, -5);
+
+    const avgLast = last5.reduce((s, h) => s + h.tensionScore, 0) / 5;
+    const avgPrev = prev5.reduce((s, h) => s + h.tensionScore, 0) / 5;
+
+    if (avgLast > avgPrev + 5) return 'RISING';
+    if (avgLast < avgPrev - 5) return 'FALLING';
+    return 'STABLE';
+}
+
+/**
+ * Fetch and parse full PizzINT dashboard data.
+ * Returns enriched object with tension score, spike details, venue data, and trend history.
+ * Maintains backward compatibility: index, defcon, trends fields preserved.
+ */
 export async function getPizzaData() {
     try {
-        // En prod, utiliser l'API réelle. Ici on simule ou on fetch.
-        // URL from legacy code:
         const response = await fetchWithRetry('https://www.pizzint.watch/api/dashboard-data');
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
         const data = await response.json();
 
-        // Data shaping to match legacy expectations
+        // --- Fix field mapping (API returns overall_index / defcon_level, not globalIndex / defconLevel) ---
+        const index = data.overall_index ?? 50;
+        const defcon = data.defcon_level ?? 5;
+        const defconDetails = data.defcon_details || null;
+
+        // --- Parse events into trends (backward compat) ---
+        const events = Array.isArray(data.events) ? data.events : [];
+        const trends = events.map(e => e.place_name
+            ? `${e.spike_magnitude || 'ACTIVITY'} at ${e.place_name} (${e.percentage_of_usual || 0}% of usual)`
+            : ''
+        ).filter(t => t.length > 0);
+
+        // --- Also include any raw trends if the API ever provides them ---
+        if (Array.isArray(data.trends)) {
+            for (const t of data.trends) {
+                const text = typeof t === 'string' ? t : (t.text || '');
+                if (text.length > 5) trends.push(text);
+            }
+        }
+
+        // --- Parse spike data ---
+        const spikes = {
+            active: data.active_spikes || 0,
+            hasActive: data.has_active_spikes || false,
+            events: events.map(e => ({
+                placeName: e.place_name || 'Unknown',
+                magnitude: e.spike_magnitude || 'NONE',
+                percentOfUsual: e.percentage_of_usual || 0,
+                minutesAgo: e.minutes_ago || 0,
+            })),
+        };
+
+        // --- Parse venue data ---
+        const rawVenues = Array.isArray(data.data) ? data.data : [];
+        const venues = rawVenues.map(v => ({
+            name: v.name || 'Unknown',
+            currentPopularity: v.current_popularity || 0,
+            percentOfUsual: v.percentage_of_usual || 0,
+            isSpike: v.is_spike || false,
+            spikeMagnitude: v.spike_magnitude || null,
+            dataFreshness: v.data_freshness || 'unknown',
+            isClosed: v.is_closed_now || false,
+        }));
+
+        // --- Compute tension score ---
+        const tensionScore = computeTensionScore(defconDetails, spikes.active);
+
+        // --- Update history and compute trend ---
+        tensionHistory.push({
+            timestamp: Date.now(),
+            tensionScore,
+            defcon,
+        });
+        while (tensionHistory.length > MAX_HISTORY) tensionHistory.shift();
+        const tensionTrend = computeTensionTrend();
+
         return {
-            index: data.globalIndex || 50,
-            defcon: data.defconLevel || 5,
-            trends: data.trends || []
+            // Legacy fields (backward compatible)
+            index,
+            defcon,
+            trends,
+
+            // Composite tension score (0-100)
+            tensionScore,
+            tensionTrend,
+
+            // Rich DEFCON details
+            defconDetails: defconDetails ? {
+                severity: defconDetails.defcon_severity_decimal || 0,
+                rawIndex: defconDetails.raw_index || 0,
+                smoothedIndex: defconDetails.smoothed_index || 0,
+                intensityScore: defconDetails.intensity_score || 0,
+                breadthScore: defconDetails.breadth_score || 0,
+                nightMultiplier: defconDetails.night_multiplier || 1,
+                persistenceFactor: defconDetails.persistence_factor || 1,
+                sustained: defconDetails.sustained || false,
+                sentinel: defconDetails.sentinel || false,
+                placesAbove150: defconDetails.places_above_150 || 0,
+                placesAbove200: defconDetails.places_above_200 || 0,
+                highCount: defconDetails.high_count || 0,
+                extremeCount: defconDetails.extreme_count || 0,
+                maxPct: defconDetails.max_pct || 0,
+            } : null,
+
+            // Spike intelligence
+            spikes,
+
+            // Venue data
+            venues,
+
+            // Data quality
+            dataFreshness: data.data_freshness || 'unknown',
+
+            // Trend history snapshot (last 10 for consumers)
+            history: tensionHistory.slice(-10).map(h => ({ ...h })),
         };
     } catch (e) {
-        // Return null to indicate failure/offline
         return null;
     }
 }

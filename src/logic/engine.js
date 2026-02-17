@@ -116,11 +116,26 @@ async function calculateConviction(market, pizzaData, dependencies) {
         signals.push('HypeFader (+10)');
     }
 
-    // 8. DEFCON crisis + geo/eco (+25)
-    if (pizzaData && pizzaData.defcon <= 2) {
-        if (category === 'geopolitical' || category === 'economic') {
-            convictionPoints += 25;
-            signals.push(`DEFCON${pizzaData.defcon}+${category} (+25)`);
+    // 8. PizzINT tension + geo/eco (graduated)
+    if (pizzaData) {
+        const tension = pizzaData.tensionScore || 0;
+        const T = CONFIG.TENSION || {};
+        if ((category === 'geopolitical' || category === 'economic') && tension > 0) {
+            if (tension >= (T.CRITICAL || 80)) {
+                convictionPoints += (T.GEO_CONVICTION_CRITICAL || 25);
+                signals.push(`CRISIS(${tension})+${category} (+${T.GEO_CONVICTION_CRITICAL || 25})`);
+            } else if (tension >= (T.HIGH || 55)) {
+                convictionPoints += (T.GEO_CONVICTION_HIGH || 20);
+                signals.push(`HighTension(${tension})+${category} (+${T.GEO_CONVICTION_HIGH || 20})`);
+            } else if (tension >= (T.ELEVATED || 30)) {
+                convictionPoints += (T.GEO_CONVICTION_ELEVATED || 10);
+                signals.push(`ElevatedTension(${tension})+${category} (+${T.GEO_CONVICTION_ELEVATED || 10})`);
+            }
+        }
+        // Rising tension early detection
+        if (pizzaData.tensionTrend === 'RISING') {
+            convictionPoints += 5;
+            signals.push('Tension RISING (+5)');
         }
     }
 
@@ -130,14 +145,24 @@ async function calculateConviction(market, pizzaData, dependencies) {
         signals.push('HighMomentum (+10)');
     }
 
-    // 10. News sentiment match (+5)
-    const keywords = (market.question || '').split(' ').filter(w => w.length > 4);
-    const newsMatch = botState.newsSentiment?.some(n =>
-        keywords.some(k => n.title?.toLowerCase().includes(k.toLowerCase()))
-    );
-    if (newsMatch) {
-        convictionPoints += 5;
-        signals.push('NewsMatch (+5)');
+    // 10. Real news sentiment match (uses structured match from alpha scoring)
+    const N = CONFIG.NEWS || {};
+    const newsMatch = market._newsMatch;
+    if (newsMatch?.matched) {
+        // Check if news sentiment aligns with our trade direction
+        const tradeDirection = yesPrice > 0.5 ? 'bullish' : 'bearish';
+        if (newsMatch.sentiment === tradeDirection) {
+            const bonus = N.CONVICTION_BONUS || 8;
+            convictionPoints += bonus;
+            signals.push(`NewsConfirm:${newsMatch.sentiment} (+${bonus})`);
+        } else if (newsMatch.sentiment !== 'neutral' && newsMatch.sentiment !== tradeDirection) {
+            const penalty = N.CONVICTION_CONFLICT_PENALTY || -5;
+            convictionPoints += penalty;
+            signals.push(`NewsConflict:${newsMatch.sentiment} (${penalty})`);
+        } else {
+            convictionPoints += 3;
+            signals.push('NewsCoverage (+3)');
+        }
     }
 
     // 11. ADVANCED STRATEGIES (Memory, Cross-Market, Timing, Events, Calendar, Anti-Fragility)
@@ -233,8 +258,13 @@ function logTradeDecision(market, trade, reasons, pizzaData) {
         confidence: trade?.confidence || null,
         pizzaData: pizzaData ? {
             index: pizzaData.index,
-            defcon: pizzaData.defcon
+            defcon: pizzaData.defcon,
+            tensionScore: pizzaData.tensionScore,
+            tensionTrend: pizzaData.tensionTrend,
+            sustained: pizzaData.defconDetails?.sustained,
+            sentinel: pizzaData.defconDetails?.sentinel,
         } : null,
+        newsMatch: market._newsMatch || null,
         marketData: {
             yesPrice: market.outcomePrices ? parseFloat(market.outcomePrices[0]) : null,
             noPrice: market.outcomePrices ? parseFloat(market.outcomePrices[1]) : null,
@@ -411,15 +441,19 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
         }
     }
 
-    // LOGIQUE AMÉLIORÉE - Vérifier la catégorie en mode DEFCON critique
-    if (pizzaData && pizzaData.defcon <= 2) {
+    // PizzINT Tension-based trade logic (graduated, replaces binary DEFCON check)
+    const tension = pizzaData?.tensionScore || 0;
+    const T = CONFIG.TENSION || {};
+
+    if (tension >= (T.CRITICAL || 80)) {
+        // Full crisis: force geo/eco YES, reject sports
         if (category === 'geopolitical' || category === 'economic') {
             side = 'YES';
             entryPrice = yesPrice;
             confidence = 0.65;
-            decisionReasons.push(`DEFCON ${pizzaData.defcon} critique + ${category}`);
+            decisionReasons.push(`CRISIS tension ${tension} + ${category}`);
         } else if (category === 'sports') {
-            decisionReasons.push(`Rejeté: Sports pendant DEFCON ${pizzaData.defcon}`);
+            decisionReasons.push(`Rejected: Sports during crisis (tension ${tension})`);
             if (reasonsCollector) reasonsCollector.push(...decisionReasons);
             logTradeDecision(market, null, decisionReasons, pizzaData);
             return null;
@@ -427,7 +461,15 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
             side = 'YES';
             entryPrice = yesPrice;
             confidence = 0.45;
-            decisionReasons.push(`DEFCON ${pizzaData.defcon} + autre catégorie`);
+            decisionReasons.push(`CRISIS tension ${tension} + other category`);
+        }
+    } else if (tension >= (T.HIGH || 55)) {
+        // High tension: nudge geo/eco confidence but don't force-reject sports
+        if (category === 'geopolitical' || category === 'economic') {
+            side = 'YES';
+            entryPrice = yesPrice;
+            confidence = 0.55;
+            decisionReasons.push(`HIGH tension ${tension} + ${category}`);
         }
     }
     // NOUVEAU: WHALE FOLLOW STRATEGY (Priorité Absolue)
@@ -804,7 +846,7 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
     else if (reasonStr.includes('Wizard')) strategy = 'wizard';
     else if (reasonStr.includes('Whale')) strategy = 'whale';
     else if (reasonStr.includes('DCA')) strategy = 'dca';
-    else if (reasonStr.includes('DEFCON')) strategy = 'defcon';
+    else if (reasonStr.includes('DEFCON') || reasonStr.includes('CRISIS') || reasonStr.includes('tension')) strategy = 'tension';
     else if (reasonStr.includes('Memory') || reasonStr.includes('momentum')) strategy = 'memory';
     else if (reasonStr.includes('Catalyst') || reasonStr.includes('Event')) strategy = 'event_driven';
     else if (reasonStr.includes('Hype Fader')) strategy = 'hype_fader';

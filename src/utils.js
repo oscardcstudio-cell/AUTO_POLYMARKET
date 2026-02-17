@@ -13,7 +13,7 @@ export function addLog(botState, message, type = 'info') {
         message,
         type
     };
-    if (!botState.logs) botState.logs = [];
+    if (!Array.isArray(botState.logs)) botState.logs = [];
     botState.logs.unshift(logEntry);
     if (botState.logs.length > 1000) botState.logs.pop();
 

@@ -76,5 +76,52 @@ export const CONFIG = {
         },
         PARTIAL_EXIT_RATIO: 0.5,     // Sell 50% on first TP hit
         EXTENDED_TP_MULTIPLIER: 2.0  // Remainder gets 2x TP target
+    },
+    // PizzINT Tension Thresholds (graduated geopolitical intelligence)
+    TENSION: {
+        // Score thresholds (0-100 composite from PizzINT multi-sensor data)
+        ELEVATED: 30,       // Mild bias toward geo/eco markets
+        HIGH: 55,           // Strong bias, penalize sports, reduce capacity
+        CRITICAL: 80,       // Full crisis mode (replaces old binary DEFCON <= 2)
+
+        // Alpha score modifiers by category and tension level
+        GEO_BONUS_CRITICAL: 60,
+        GEO_BONUS_HIGH: 40,
+        GEO_BONUS_ELEVATED: 15,
+        ECO_BONUS_CRITICAL: 40,
+        ECO_BONUS_HIGH: 25,
+        ECO_BONUS_ELEVATED: 10,
+        SPORTS_PENALTY_HIGH: -30,
+        SPORTS_PENALTY_CRITICAL: -50,
+
+        // Conviction modifiers
+        GEO_CONVICTION_CRITICAL: 25,
+        GEO_CONVICTION_HIGH: 20,
+        GEO_CONVICTION_ELEVATED: 10,
+
+        // Fresh market bonuses
+        FRESH_BONUS_CRITICAL: 30,
+        FRESH_BONUS_HIGH: 20,
+        FRESH_BONUS_ELEVATED: 10,
+
+        // Portfolio capacity reduction
+        CAPACITY_MULT_CRITICAL: 0.5,
+        CAPACITY_MULT_HIGH: 0.75,
+
+        // Rising tension bonus (early detection)
+        RISING_TREND_BONUS: 10,
+    },
+    // Real News Intelligence (Google News RSS)
+    NEWS: {
+        CACHE_TTL_MS: 10 * 60 * 1000,  // Cache news for 10 min
+        MAX_QUERIES: 6,                  // Max keyword groups to search
+        REFRESH_INTERVAL_MS: 15 * 60 * 1000, // Refresh news every 15 min (not every cycle)
+        // Alpha score bonuses when news matches market
+        BULLISH_MATCH_BONUS: 15,        // +15 alpha if bullish news matches YES side
+        BEARISH_MATCH_BONUS: 15,        // +15 alpha if bearish news matches NO side
+        NEUTRAL_MATCH_BONUS: 5,         // +5 alpha for any news coverage (market is "hot")
+        // Conviction bonus when news confirms trade direction
+        CONVICTION_BONUS: 8,            // +8 conviction if news sentiment aligns with trade
+        CONVICTION_CONFLICT_PENALTY: -5, // -5 conviction if news opposes trade
     }
 };

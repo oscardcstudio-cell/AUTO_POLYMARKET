@@ -446,6 +446,41 @@ export function detectCatalysts(pizzaData, markets) {
         }
     }
 
+    // 1b. PizzINT spike catalysts (HIGH/EXTREME venue activity = geopolitical signal)
+    if (pizzaData?.spikes?.events && Array.isArray(pizzaData.spikes.events)) {
+        for (const event of pizzaData.spikes.events) {
+            if (event.magnitude === 'HIGH' || event.magnitude === 'EXTREME') {
+                eventCatalysts.push({
+                    source: 'pizzint_spike',
+                    text: `Unusual activity at ${event.placeName} (${event.percentOfUsual}% of usual, ${event.magnitude})`,
+                    timestamp: now,
+                    categories: ['geopolitical'],
+                    magnitude: event.magnitude,
+                });
+            }
+        }
+    }
+
+    // 1c. PizzINT sustained tension as a catalyst
+    if (pizzaData?.defconDetails?.sustained) {
+        eventCatalysts.push({
+            source: 'pizzint_sustained',
+            text: 'SUSTAINED elevated activity across monitored Pentagon-area venues',
+            timestamp: now,
+            categories: ['geopolitical', 'economic'],
+        });
+    }
+
+    // 1d. PizzINT sentinel flag (highest priority)
+    if (pizzaData?.defconDetails?.sentinel) {
+        eventCatalysts.push({
+            source: 'pizzint_sentinel',
+            text: 'SENTINEL ALERT: Critical activity pattern detected',
+            timestamp: now,
+            categories: ['geopolitical'],
+        });
+    }
+
     // 2. Volume spike catalysts (market volume jumped 3x in recent memory)
     for (const market of markets) {
         const mem = marketMemory[market.id];
@@ -596,6 +631,31 @@ export function getDrawdownRecoveryState() {
     return { tier: 0, sizeMultiplier: 1.0, minConviction: 0, reason: 'Normal operations' };
 }
 
+/**
+ * Enhance anti-fragility with tension awareness.
+ * High geopolitical tension + existing drawdown = more conservative.
+ * Called from getAdvancedSignals as a wrapper.
+ */
+export function getTensionAwareRecoveryState() {
+    const base = getDrawdownRecoveryState();
+
+    // If already in drawdown AND tension is HIGH+, bump up one tier (max 3)
+    const tension = botState.lastPizzaData?.tensionScore || 0;
+    const T = CONFIG.TENSION || {};
+    if (base.tier > 0 && base.tier < 3 && tension >= (T.HIGH || 55)) {
+        const bumpedTier = base.tier + 1;
+        const sizeMap = { 1: 0.85, 2: 0.50, 3: 0.25 };
+        const convMap = { 1: 25, 2: 60, 3: 70 };
+        return {
+            tier: bumpedTier,
+            sizeMultiplier: sizeMap[bumpedTier],
+            minConviction: convMap[bumpedTier],
+            reason: `${base.reason} + HIGH tension (${tension}) → Tier ${bumpedTier}`
+        };
+    }
+
+    return base;
+}
 
 // ============================================================
 // 7. CALENDAR AWARENESS — Time-based trading adjustments
@@ -700,8 +760,8 @@ export async function getAdvancedSignals(market, pizzaData, convictionPoints) {
     totalBonus += eventSignal.bonus;
     allSignals.push(...eventSignal.signals);
 
-    // 6. Anti-Fragility (can reject trades)
-    const recovery = getDrawdownRecoveryState();
+    // 6. Anti-Fragility (tension-aware — tightens during high geopolitical risk)
+    const recovery = getTensionAwareRecoveryState();
     if (recovery.tier > 0) {
         sizeMultiplier *= recovery.sizeMultiplier;
         allSignals.push(`🛡️ Recovery Tier ${recovery.tier}: ${recovery.reason}`);
