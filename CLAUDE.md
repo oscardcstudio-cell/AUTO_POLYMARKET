@@ -105,6 +105,15 @@ node scripts/cleanup_orphan_trades.js
 - **Gap protection** : si prix bouge >30%, attendre 1 cycle
 - **Max loss cap** : -25% max par trade même sur gap
 
+## Gestion de conversation
+- **Alertes tokens** : indiquer l'estimation de consommation tous les 20% (~20%, ~40%, ~60%, ~80%) avec un emoji vert/jaune/rouge
+  - 🟢 0-40% : conversation fraîche
+  - 🟡 40-70% : mi-parcours, prioriser les tâches restantes
+  - 🔴 70-90% : zone critique, finir les tâches en cours et sauvegarder MEMORY.md
+  - ⛔ 90%+ : STOP — sauvegarder MEMORY.md immédiatement, recommander une nouvelle conversation
+- **Avant chaque fix** : mettre à jour MEMORY.md (pas attendre la fin de session)
+- **Si la conversation est longue** : prévenir Oscar proactivement et proposer de continuer dans une nouvelle session
+
 ## Sécurité & garde-fous
 - JAMAIS désactiver SIMULATION_MODE sans confirmation d'Oscar
 - JAMAIS push --force sur main
