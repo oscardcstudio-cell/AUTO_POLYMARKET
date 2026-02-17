@@ -18,10 +18,15 @@ Bot de trading automatisé pour Polymarket (marchés prédictifs).
 
 ### Fichiers critiques (ne pas casser)
 - `server.js` - Boucle principale du bot et serveur Express
-- `src/logic/engine.js` - Moteur de trading (logique d'achat/vente)
+- `src/logic/engine.js` - Moteur de trading (logique d'achat/vente, sizing, stop-loss, take-profit)
+- `src/logic/advancedStrategies.js` - 10 stratégies avancées (conviction, anti-fragility, calendar, DCA...)
+- `src/logic/signals.js` - Scan marchés, détection signaux (wizards, whales, fresh markets)
+- `src/logic/backtestSimulator.js` - Walk-forward backtesting avec train/test split
+- `src/api/market_discovery.js` - Pagination Gamma API, deep scan
 - `src/state.js` - Gestion d'état (JSON local + Supabase)
-- `src/config.js` - Configuration centralisée
+- `src/config.js` - Configuration centralisée (sizing, TP, SL, limites)
 - `src/services/supabaseService.js` - Persistence cloud
+- `src/cron/scheduler.js` - AI self-training toutes les 6h
 
 ### APIs externes
 - **Gamma API** (`gamma-api.polymarket.com`) - Données de marché
@@ -54,8 +59,19 @@ node scripts/diagnose_railway_state.js
 node scripts/audit_system.js
 ```
 
+### Reset complet (wallet + trades)
+```bash
+node scripts/reset_bot.js
+```
+
+### Nettoyer les trades orphelins en Supabase
+```bash
+node scripts/cleanup_orphan_trades.js
+```
+
 ### Voir le dashboard
-Ouvrir http://localhost:3000 après `node server.js`
+- Local : http://localhost:3000 après `node server.js`
+- Production : https://autopolymarket-production.up.railway.app/
 
 ## Conventions de code
 - Node.js avec ES modules (`import`/`export`)
@@ -70,6 +86,24 @@ Ouvrir http://localhost:3000 après `node server.js`
 - **Fallback chains** : CLOB -> AMM -> Gamma pour les prix
 - **Anti-duplicate** : vérifier avant d'insérer un trade dans Supabase
 - **State recovery** : si JSON local corrompu, restaurer depuis Supabase
+- **skipPersistence** : le backtester passe `skipPersistence: true` — ne JAMAIS modifier `botState` (capital, activeTrades) dans ce mode
+
+## Gotchas (pièges connus)
+- `outcomePrices` de Gamma API est souvent un **JSON string**, pas un array — toujours `JSON.parse()` d'abord
+- `clobTokenIds` pareil — JSON string à parser
+- Supabase `trades` table n'a PAS de colonne `updated_at`
+- Le drawdown doit se calculer sur **capital total** (cash + positions ouvertes), pas cash seul — sinon Anti-Fragility bloque tout dès qu'on ouvre des trades
+- Le backtest modifie temporairement `botState` — utiliser `try/finally` pour garantir la restauration
+- Sur Railway, chaque deploy perd l'état local → le bot tente la récupération Supabase
+
+## Money Management (paramètres actuels)
+- **Sizing spéculatif** : max $15 absolu si prix < 0.35, position divisée par 2
+- **Stop-Loss** : 8% base, -15% override si prix < 0.35, trailing à +10% profit
+- **Take-Profit** : 15% (low vol) / 20% (medium) / 30% (high vol), partial exit 50%
+- **Exposition spéculative** : max 20% du capital sur marchés < 0.35
+- **Re-entry** : max 2 entrées par marché
+- **Gap protection** : si prix bouge >30%, attendre 1 cycle
+- **Max loss cap** : -25% max par trade même sur gap
 
 ## Sécurité & garde-fous
 - JAMAIS désactiver SIMULATION_MODE sans confirmation d'Oscar
