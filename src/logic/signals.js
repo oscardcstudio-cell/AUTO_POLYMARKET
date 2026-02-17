@@ -56,19 +56,23 @@ export async function getRelevantMarkets(useDeepScan = false) {
             });
             mergedMarkets = Array.from(uniqueMap.values());
         } else {
-            // Quick scan: trending + 3 category tags
-            const p1 = getTrendingMarkets(50);
-            const p2 = fetchWithRetry('https://gamma-api.polymarket.com/markets?active=true&closed=false&limit=20&tag_id=1').then(r => r.json()).catch(() => []);
-            const p3 = fetchWithRetry('https://gamma-api.polymarket.com/markets?active=true&closed=false&limit=20&tag_id=2').then(r => r.json()).catch(() => []);
-            const p4 = fetchWithRetry('https://gamma-api.polymarket.com/markets?active=true&closed=false&limit=20&tag_id=3').then(r => r.json()).catch(() => []);
+            // Quick scan: 100 trending + 5 category tags (50 each)
+            const p1 = getTrendingMarkets(100);
+            const p2 = fetchWithRetry('https://gamma-api.polymarket.com/markets?active=true&closed=false&limit=50&tag_id=1').then(r => r.json()).catch(() => []); // Politics
+            const p3 = fetchWithRetry('https://gamma-api.polymarket.com/markets?active=true&closed=false&limit=50&tag_id=2').then(r => r.json()).catch(() => []); // Economics
+            const p4 = fetchWithRetry('https://gamma-api.polymarket.com/markets?active=true&closed=false&limit=50&tag_id=3').then(r => r.json()).catch(() => []); // Tech
+            const p5 = fetchWithRetry('https://gamma-api.polymarket.com/markets?active=true&closed=false&limit=50&tag_id=4').then(r => r.json()).catch(() => []); // Sports
+            const p6 = fetchWithRetry('https://gamma-api.polymarket.com/markets?active=true&closed=false&limit=50&tag_id=6').then(r => r.json()).catch(() => []); // Crypto
 
-            const [trending, politics, eco, tech] = await Promise.all([p1, p2, p3, p4]);
+            const [trending, politics, eco, tech, sports, crypto] = await Promise.all([p1, p2, p3, p4, p5, p6]);
 
             const uniqueMap = new Map();
             [...(Array.isArray(trending) ? trending : []),
             ...(Array.isArray(politics) ? politics : []),
             ...(Array.isArray(eco) ? eco : []),
-            ...(Array.isArray(tech) ? tech : [])].forEach(m => {
+            ...(Array.isArray(tech) ? tech : []),
+            ...(Array.isArray(sports) ? sports : []),
+            ...(Array.isArray(crypto) ? crypto : [])].forEach(m => {
                 if (m && m.id) uniqueMap.set(m.id, m);
             });
             mergedMarkets = Array.from(uniqueMap.values());

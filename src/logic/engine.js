@@ -849,11 +849,13 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
 }
 
 function saveNewTrade(trade, skipPersistence = false) {
+    // In backtest mode, skip ALL state mutations — capital and activeTrades are managed
+    // by the backtest simulator's own simulated state. Modifying botState here caused
+    // real capital to temporarily show simulated values (e.g. dipping $130 during backtest).
+    if (skipPersistence) return;
+
     botState.capital -= trade.amount;
     botState.activeTrades.unshift(trade);
-
-    // In backtest mode, skip all persistence (Supabase + disk) and counter increment
-    if (skipPersistence) return;
 
     botState.totalTrades += 1;
 

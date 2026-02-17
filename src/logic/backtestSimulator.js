@@ -290,38 +290,35 @@ async function runBacktestOnSet(marketSet, initialCapital, log) {
             trends: [] // Base empty, catalysts handled by warmup
         };
 
-        // Save real bot state
+        // SAFE BACKTEST: Temporarily swap botState for simulated values,
+        // but use try/finally to GUARANTEE restoration even on crash.
+        // saveNewTrade() no longer modifies botState when skipPersistence=true,
+        // so capital changes are tracked via simCapital only.
         const savedCapital = botState.capital;
-        const savedTrades = [...botState.activeTrades];
-        const savedClosedTrades = botState.closedTrades ? [...botState.closedTrades] : [];
+        const savedTrades = botState.activeTrades;
+        const savedClosedTrades = botState.closedTrades;
         const savedCorrelationMap = botState._correlationMap;
         const savedStartingCapital = botState.startingCapital;
 
-        // Set simulated state (Fix E: use accumulated portfolio)
-        botState.capital = simCapital.value;
-        botState.startingCapital = initialCapital;
-        botState.activeTrades = [...simActiveTrades]; // Copy to avoid engine mutation issues
-        botState.closedTrades = [...simClosedTrades]; // For Anti-Fragility
-
         let decision = null;
         try {
+            // Set simulated state for engine reads (portfolio checks, exposure limits, etc.)
+            botState.capital = simCapital.value;
+            botState.startingCapital = initialCapital;
+            botState.activeTrades = [...simActiveTrades];
+            botState.closedTrades = [...simClosedTrades];
+
             decision = await simulateTrade(market, simPizza, false, backtestDependencies);
         } catch {
             ignored++;
+        } finally {
+            // ALWAYS restore real state, even if simulateTrade crashes
+            botState.capital = savedCapital;
+            botState.activeTrades = savedTrades;
+            botState.closedTrades = savedClosedTrades;
+            botState._correlationMap = savedCorrelationMap;
+            botState.startingCapital = savedStartingCapital;
         }
-
-        // Capture simulated capital change
-        const capitalAfterTrade = botState.capital;
-
-        // Restore real bot state
-        botState.capital = savedCapital;
-        botState.activeTrades = savedTrades;
-        botState.closedTrades = savedClosedTrades;
-        botState._correlationMap = savedCorrelationMap;
-        botState.startingCapital = savedStartingCapital;
-
-        // Update simulated capital
-        simCapital.value = capitalAfterTrade;
 
         if (!decision || Array.isArray(decision)) {
             ignored++;
@@ -332,8 +329,11 @@ async function runBacktestOnSet(marketSet, initialCapital, log) {
         const betPrice = decision.entryPrice;
         const betAmount = Math.min(decision.amount, simCapital.value * 0.15);
 
+        // Deduct trade cost from simulated capital (since saveNewTrade no longer does it)
+        simCapital.value -= betAmount;
+
         const pnl = calculateRealPnL(betAmount, betPrice, actualWinner, betSide);
-        simCapital.value += pnl;
+        simCapital.value += betAmount + pnl; // Return principal + pnl
 
         const tradeResult = {
             pnl,
