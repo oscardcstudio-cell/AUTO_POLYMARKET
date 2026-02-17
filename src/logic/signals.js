@@ -4,6 +4,7 @@ import { addLog } from '../utils.js';
 import { CONFIG } from '../config.js';
 import { getTrendingMarkets, getContextualMarkets, fetchAvailableTags, getAllMarketsWithPagination } from '../api/market_discovery.js';
 import { fetchRealNewsSentiment, matchMarketToNews } from '../api/news.js';
+import { fetchWhaleTrades, matchWhaleToMarket } from '../api/polymarket_data.js';
 
 // Helper for inline fetches in getRelevantMarkets
 async function fetchWithRetry(url, options = {}, retries = 3) {
@@ -266,8 +267,20 @@ function calculateAlphaScore(market, pizzaData) {
     if (momentumRatio > 0.5) { score += 30; reasons.push('Momentum fort (+30)'); }
     else if (momentumRatio > 0.1) { score += 15; reasons.push('Momentum moyen (+15)'); }
 
-    const isWhaleMarket = botState.whaleAlerts.some(w => w.id === market.id);
-    if (isWhaleMarket) { score += 35; reasons.push('🐳 Whale Alert (+35)'); }
+    const W = CONFIG.WHALE_TRACKING || {};
+    // Match via whale data (real trades) or fallback to old conditionId match
+    const whaleMatch = matchWhaleToMarket(market, botState.lastWhaleData) ||
+        botState.whaleAlerts?.find(w => w.slug === market.slug || w.id === (market.conditionID || market.conditionId));
+    if (whaleMatch) {
+        score += (W.WHALE_ALPHA_BONUS || 35);
+        reasons.push(`🐳 Whale $${Math.round(whaleMatch.totalVolume || whaleMatch.volume)} (${whaleMatch.consensus || 'N/A'}) (+${W.WHALE_ALPHA_BONUS || 35})`);
+        // Extra bonus if multiple whales agree
+        if ((whaleMatch.whaleCount || 0) >= 2 && whaleMatch.consensus !== 'MIXED') {
+            score += (W.WHALE_CONSENSUS_BONUS || 15);
+            reasons.push(`Multi-whale consensus (+${W.WHALE_CONSENSUS_BONUS || 15})`);
+        }
+        market._whaleMatch = whaleMatch; // Store for engine
+    }
 
     const hasArbitrage = botState.arbitrageOpportunities.some(a => a.id === market.id);
     if (hasArbitrage) { score += 25; reasons.push('Arbitrage (+25)'); }
@@ -386,23 +399,41 @@ export async function fetchNewsSentiment() {
     }
 }
 
+// Track last whale refresh
+let lastWhaleRefresh = 0;
+
 export async function detectWhales(markets = null) {
-    botState.whaleAlerts = [];
     try {
-        if (!markets) markets = await getRelevantMarkets(false);
-        markets.forEach(m => {
-            const vol = parseFloat(m.volume24hr || 0);
-            if (vol > 50000) {
-                botState.whaleAlerts.push({
-                    id: m.id,
-                    question: m.question,
-                    volume: vol,
-                    slug: m.slug
-                });
-            }
-        });
-        botState.whaleAlerts.sort((a, b) => b.volume - a.volume);
-        botState.whaleAlerts = botState.whaleAlerts.slice(0, 4);
+        // Only refresh every WHALE_TRACKING.REFRESH_INTERVAL_MS (5 min default)
+        const now = Date.now();
+        const refreshInterval = CONFIG.WHALE_TRACKING?.REFRESH_INTERVAL_MS || 5 * 60 * 1000;
+        if (botState.whaleAlerts?.length > 0 && (now - lastWhaleRefresh) < refreshInterval) {
+            return; // Keep existing whale data
+        }
+
+        // Fetch real whale trades from Polymarket Data API
+        const whaleData = await fetchWhaleTrades();
+        botState.lastWhaleData = whaleData; // Store full data for engine use
+
+        // Convert to whaleAlerts format (backwards-compatible with existing code)
+        botState.whaleAlerts = whaleData.markets.slice(0, 10).map(wm => ({
+            id: wm.conditionId,
+            question: wm.title,
+            slug: wm.slug,
+            volume: wm.totalVolume,
+            // New enriched fields
+            whaleCount: wm.whaleCount,
+            consensus: wm.consensus,
+            buyRatio: wm.buyRatio,
+            topTrade: wm.topTrade,
+            trades: wm.trades,
+        }));
+
+        if (whaleData.totalWhaleTrades > 0) {
+            lastWhaleRefresh = now;
+            const summary = `[Whale] ${whaleData.totalWhaleTrades} whale trades ($${Math.round(whaleData.totalVolume)}) across ${whaleData.markets.length} markets`;
+            try { addLog(summary); } catch { console.log(summary); }
+        }
     } catch (e) { console.error("Whale Scan Error:", e.message); }
 }
 

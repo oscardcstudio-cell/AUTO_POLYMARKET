@@ -123,5 +123,18 @@ export const CONFIG = {
         // Conviction bonus when news confirms trade direction
         CONVICTION_BONUS: 8,            // +8 conviction if news sentiment aligns with trade
         CONVICTION_CONFLICT_PENALTY: -5, // -5 conviction if news opposes trade
+    },
+    // Whale Tracking (Polymarket Data API — real trades)
+    WHALE_TRACKING: {
+        MIN_WHALE_SIZE: 500,            // Min trade size ($) to qualify as whale
+        CACHE_TTL_MS: 5 * 60 * 1000,   // Cache whale data for 5 min
+        REFRESH_INTERVAL_MS: 5 * 60 * 1000, // Refresh every 5 min (not every cycle)
+        // Alpha score bonuses
+        WHALE_ALPHA_BONUS: 35,          // +35 alpha if whale activity on market
+        WHALE_CONSENSUS_BONUS: 15,      // +15 extra if whales agree on direction
+        // Conviction bonuses
+        WHALE_CONVICTION_ALIGNED: 15,   // +15 conviction if whale direction matches trade
+        WHALE_CONVICTION_OPPOSED: -10,  // -10 conviction if whales bet opposite
+        WHALE_MULTI_BONUS: 10,          // +10 if multiple whales on same market
     }
 };

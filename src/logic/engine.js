@@ -57,21 +57,26 @@ async function calculateConviction(market, pizzaData, dependencies) {
         signals.push('Arbitrage (+40)');
     }
 
-    // 2. Whale signal + trend (+30 if trending, +10 if flat)
-    const isWhaleMarket = botState.whaleAlerts?.some(w => w.id === market.id);
+    // 2. Whale signal — uses real trade data from Polymarket Data API
+    const W = CONFIG.WHALE_TRACKING || {};
+    const whaleMatch = market._whaleMatch; // Set by calculateAlphaScore in signals.js
+    const isWhaleMarket = !!whaleMatch;
     if (isWhaleMarket) {
-        try {
-            const trend = await calculateIntradayTrendFn(market.id);
-            if (trend === 'UP' || trend === 'DOWN') {
-                convictionPoints += 30;
-                signals.push(`Whale+${trend} (+30)`);
-            } else {
-                convictionPoints += 10;
-                signals.push('Whale(flat) (+10)');
-            }
-        } catch {
-            convictionPoints += 10;
-            signals.push('Whale(no trend) (+10)');
+        // Check if whale direction aligns with our likely trade direction
+        const tradeDirection = yesPrice > 0.5 ? 'BULLISH' : 'BEARISH';
+        if (whaleMatch.consensus === tradeDirection) {
+            convictionPoints += (W.WHALE_CONVICTION_ALIGNED || 15);
+            signals.push(`🐳 WhaleAlign:${whaleMatch.consensus} (+${W.WHALE_CONVICTION_ALIGNED || 15})`);
+        } else if (whaleMatch.consensus !== 'MIXED' && whaleMatch.consensus !== tradeDirection) {
+            convictionPoints += (W.WHALE_CONVICTION_OPPOSED || -10);
+            signals.push(`🐳 WhaleOppose:${whaleMatch.consensus} (${W.WHALE_CONVICTION_OPPOSED || -10})`);
+        } else {
+            convictionPoints += 5;
+            signals.push('🐳 WhaleActivity (+5)');
+        }
+        if ((whaleMatch.whaleCount || 0) >= 3) {
+            convictionPoints += (W.WHALE_MULTI_BONUS || 10);
+            signals.push(`Multi-whale x${whaleMatch.whaleCount} (+${W.WHALE_MULTI_BONUS || 10})`);
         }
     }
 
@@ -265,6 +270,12 @@ function logTradeDecision(market, trade, reasons, pizzaData) {
             sentinel: pizzaData.defconDetails?.sentinel,
         } : null,
         newsMatch: market._newsMatch || null,
+        whaleMatch: market._whaleMatch ? {
+            consensus: market._whaleMatch.consensus,
+            whaleCount: market._whaleMatch.whaleCount,
+            totalVolume: market._whaleMatch.totalVolume,
+            topTrader: market._whaleMatch.topTrade?.name,
+        } : null,
         marketData: {
             yesPrice: market.outcomePrices ? parseFloat(market.outcomePrices[0]) : null,
             noPrice: market.outcomePrices ? parseFloat(market.outcomePrices[1]) : null,
@@ -472,33 +483,30 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
             decisionReasons.push(`HIGH tension ${tension} + ${category}`);
         }
     }
-    // NOUVEAU: WHALE FOLLOW STRATEGY (Priorité Absolue)
-    const whaleAlert = botState.whaleAlerts && botState.whaleAlerts.find(w => w.id === market.id);
-    if (whaleAlert) {
-        const trend = await calculateIntradayTrendFn(market.id);
-        const isHighVolume = parseFloat(market.volume24hr) > 50000;
-
-        if (trend === 'UP') {
-            const depthOK = await checkLiquidityDepthFn(market, 'YES', yesPrice, 50); // Loosened from 100
+    // WHALE FOLLOW STRATEGY — uses real trade data from Data API
+    const whaleAlert = market._whaleMatch || botState.whaleAlerts?.find(w => w.slug === market.slug);
+    if (whaleAlert && whaleAlert.consensus && whaleAlert.consensus !== 'MIXED') {
+        if (whaleAlert.consensus === 'BULLISH') {
+            const depthOK = await checkLiquidityDepthFn(market, 'YES', yesPrice, 50);
             if (depthOK) {
                 side = 'YES';
                 entryPrice = yesPrice;
                 confidence = 0.75;
-                decisionReasons.push(`🐳 Whale Follow: UP Trend Verified (Vol: ${parseInt(market.volume24hr)})`);
+                const topName = whaleAlert.topTrade?.name || 'Unknown';
+                decisionReasons.push(`🐳 Whale Follow: ${whaleAlert.whaleCount || 1} whales BULLISH ($${Math.round(whaleAlert.totalVolume || whaleAlert.volume)}) led by ${topName}`);
             }
-        } else if (trend === 'DOWN') {
-            const depthOK = await checkLiquidityDepthFn(market, 'NO', noPrice, 50); // Loosened from 100
+        } else if (whaleAlert.consensus === 'BEARISH') {
+            const depthOK = await checkLiquidityDepthFn(market, 'NO', noPrice, 50);
             if (depthOK) {
                 side = 'NO';
                 entryPrice = noPrice;
                 confidence = 0.75;
-                decisionReasons.push(`🐳 Whale Follow: DOWN Trend Verified (Vol: ${parseInt(market.volume24hr)})`);
+                const topName = whaleAlert.topTrade?.name || 'Unknown';
+                decisionReasons.push(`🐳 Whale Follow: ${whaleAlert.whaleCount || 1} whales BEARISH ($${Math.round(whaleAlert.totalVolume || whaleAlert.volume)}) led by ${topName}`);
             }
-        } else {
-            // Flat trend but huge volume? Maybe consolidation before pump?
-            // Risky to touch without clear direction.
-            decisionReasons.push(`⚠️ Whale Alert Ignored: Trend is FLAT`);
         }
+    } else if (whaleAlert) {
+        decisionReasons.push(`⚠️ Whale Alert: MIXED consensus, no follow`);
     }
     // NOUVEAU: WIZARD FOLLOW STRATEGY (Smart Money / Alpha)
     else if (botState.wizards && botState.wizards.some(w => w.id === market.id)) {
