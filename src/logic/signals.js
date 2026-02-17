@@ -2,7 +2,7 @@
 import { botState, stateManager } from '../state.js';
 import { addLog } from '../utils.js';
 import { CONFIG } from '../config.js';
-import { getTrendingMarkets, getContextualMarkets, fetchAvailableTags } from '../api/market_discovery.js';
+import { getTrendingMarkets, getContextualMarkets, fetchAvailableTags, getAllMarketsWithPagination } from '../api/market_discovery.js';
 
 // Helper for inline fetches in getRelevantMarkets
 async function fetchWithRetry(url, options = {}, retries = 3) {
@@ -41,36 +41,64 @@ export async function getRelevantMarkets(useDeepScan = false) {
             return contextualMarkets;
         }
 
-        // Diversified Strategy
-        const p1 = getTrendingMarkets(50);
-        const p2 = fetchWithRetry('https://gamma-api.polymarket.com/markets?active=true&closed=false&limit=20&tag_id=1').then(r => r.json()).catch(() => []);
-        const p3 = fetchWithRetry('https://gamma-api.polymarket.com/markets?active=true&closed=false&limit=20&tag_id=2').then(r => r.json()).catch(() => []);
-        const p4 = fetchWithRetry('https://gamma-api.polymarket.com/markets?active=true&closed=false&limit=20&tag_id=3').then(r => r.json()).catch(() => []);
+        let mergedMarkets;
 
-        const [trending, politics, eco, tech] = await Promise.all([p1, p2, p3, p4]);
+        if (useDeepScan) {
+            // REAL DEEP SCAN: paginate up to 600 markets across volume + liquidity sorts
+            const [byVolume, byLiquidity] = await Promise.all([
+                getAllMarketsWithPagination({ active: true, closed: false, order: 'volume24hr', ascending: false }, 400),
+                getAllMarketsWithPagination({ active: true, closed: false, order: 'liquidityNum', ascending: false }, 400)
+            ]);
 
-        // Merge and deduplicate
-        const uniqueMap = new Map();
-        [...(Array.isArray(trending) ? trending : []),
-        ...(Array.isArray(politics) ? politics : []),
-        ...(Array.isArray(eco) ? eco : []),
-        ...(Array.isArray(tech) ? tech : [])].forEach(m => {
-            if (m && m.id) uniqueMap.set(m.id, m);
-        });
-        const mergedMarkets = Array.from(uniqueMap.values());
+            const uniqueMap = new Map();
+            [...byVolume, ...byLiquidity].forEach(m => {
+                if (m && m.id) uniqueMap.set(m.id, m);
+            });
+            mergedMarkets = Array.from(uniqueMap.values());
+        } else {
+            // Quick scan: trending + 3 category tags
+            const p1 = getTrendingMarkets(50);
+            const p2 = fetchWithRetry('https://gamma-api.polymarket.com/markets?active=true&closed=false&limit=20&tag_id=1').then(r => r.json()).catch(() => []);
+            const p3 = fetchWithRetry('https://gamma-api.polymarket.com/markets?active=true&closed=false&limit=20&tag_id=2').then(r => r.json()).catch(() => []);
+            const p4 = fetchWithRetry('https://gamma-api.polymarket.com/markets?active=true&closed=false&limit=20&tag_id=3').then(r => r.json()).catch(() => []);
 
-        // Filter
+            const [trending, politics, eco, tech] = await Promise.all([p1, p2, p3, p4]);
+
+            const uniqueMap = new Map();
+            [...(Array.isArray(trending) ? trending : []),
+            ...(Array.isArray(politics) ? politics : []),
+            ...(Array.isArray(eco) ? eco : []),
+            ...(Array.isArray(tech) ? tech : [])].forEach(m => {
+                if (m && m.id) uniqueMap.set(m.id, m);
+            });
+            mergedMarkets = Array.from(uniqueMap.values());
+        }
+
+        // Filter: liquidity, expiry, AND tradeable price range
         const dateNow = new Date();
         const filtered = mergedMarkets.filter(m => {
-            const text = (m.question + ' ' + (m.description || '')).toLowerCase();
-            const hasKeyword = CONFIG.KEYWORDS.length === 0 ||
-                CONFIG.KEYWORDS.some(kw => text.includes(kw.toLowerCase()));
             const hasLiquidity = parseFloat(m.liquidityNum || 0) > 100;
             const expiry = new Date(m.endDate);
             const daysToExpiry = (expiry - dateNow) / (1000 * 60 * 60 * 24);
             const isRelevantTerm = daysToExpiry < 30 && daysToExpiry > 0;
 
-            return (hasKeyword || hasLiquidity) && isRelevantTerm;
+            // NEW: Tradeable range filter — skip markets already resolved (both sides extreme)
+            let inTradeableRange = true;
+            if (m.outcomePrices) {
+                try {
+                    const prices = typeof m.outcomePrices === 'string' ? JSON.parse(m.outcomePrices) : m.outcomePrices;
+                    if (Array.isArray(prices) && prices.length >= 2) {
+                        const yesP = parseFloat(prices[0]);
+                        const noP = parseFloat(prices[1]);
+                        // Market is untradeable if both sides are outside 5-85% range
+                        const yesOK = yesP >= 0.05 && yesP <= 0.85;
+                        const noOK = noP >= 0.05 && noP <= 0.85;
+                        inTradeableRange = yesOK || noOK;
+                    }
+                } catch { /* keep market if we can't parse prices */ }
+            }
+
+            return hasLiquidity && isRelevantTerm && inTradeableRange;
         });
 
         relevantMarketsCache = filtered;
