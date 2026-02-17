@@ -23,15 +23,20 @@ Bot de trading automatisé pour Polymarket (marchés prédictifs).
 - `src/logic/signals.js` - Scan marchés, détection signaux (wizards, whales, fresh markets)
 - `src/logic/backtestSimulator.js` - Walk-forward backtesting avec train/test split
 - `src/api/market_discovery.js` - Pagination Gamma API, deep scan
+- `src/api/pizzint.js` - Tension score composite (0-100) depuis PizzINT
+- `src/api/news.js` - Google News RSS, sentiment analysis, market matching
+- `src/api/polymarket_data.js` - Whale tracking via Data API (trades réels)
 - `src/state.js` - Gestion d'état (JSON local + Supabase)
-- `src/config.js` - Configuration centralisée (sizing, TP, SL, limites)
+- `src/config.js` - Configuration centralisée (sizing, TP, SL, limites, tension, news, whales)
 - `src/services/supabaseService.js` - Persistence cloud
 - `src/cron/scheduler.js` - AI self-training toutes les 6h
 
 ### APIs externes
 - **Gamma API** (`gamma-api.polymarket.com`) - Données de marché
 - **CLOB API** (`clob.polymarket.com`) - Carnets d'ordres / prix réels
-- **PizzINT** (`pizzint.watch`) - Intelligence géopolitique (DEFCON)
+- **Data API** (`data-api.polymarket.com`) - Trades réels, whale tracking, wallet activity
+- **PizzINT** (`pizzint.watch`) - Intelligence géopolitique (tension score 0-100)
+- **Google News RSS** (`news.google.com/rss`) - Sentiment news en temps réel
 
 ### Flux principal (boucle toutes les ~1 min)
 1. Vérifier connectivité APIs
