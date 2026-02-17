@@ -550,9 +550,15 @@ export function getEventSignal(marketId, market) {
  * Returns: { tier: 0-3, sizeMultiplier: 0.25-1.0, minConviction: 0-70, reason: string }
  */
 export function getDrawdownRecoveryState() {
-    const capital = botState.capital || CONFIG.STARTING_CAPITAL;
+    const cashCapital = botState.capital || CONFIG.STARTING_CAPITAL;
     const startingCapital = botState.startingCapital || CONFIG.STARTING_CAPITAL;
-    const drawdownPercent = (startingCapital - capital) / startingCapital;
+
+    // Use TOTAL capital (cash + invested in open positions) to avoid
+    // false drawdown triggers when capital is simply deployed in trades
+    const investedCapital = (botState.activeTrades || [])
+        .reduce((sum, t) => sum + (t.amount || 0), 0);
+    const totalCapital = cashCapital + investedCapital;
+    const drawdownPercent = (startingCapital - totalCapital) / startingCapital;
 
     // Also check recent performance (last 5 closed trades)
     const recentTrades = (botState.closedTrades || []).slice(0, 5);
