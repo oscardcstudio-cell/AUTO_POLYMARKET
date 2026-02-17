@@ -295,6 +295,18 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
         delete botState.cooldowns[market.id];
     }
 
+    // --- RE-ENTRY LIMIT: Max 2 entries per market (prevents FURIA-style triple-down disasters) ---
+    if (!skipPersistence) {
+        const closedOnSameMarket = (botState.closedTrades || []).filter(t => t.marketId === market.id).length;
+        const activeOnSameMarket = (botState.activeTrades || []).filter(t => t.marketId === market.id).length;
+        const totalEntries = closedOnSameMarket + activeOnSameMarket;
+        if (totalEntries >= 2) {
+            const reason = `Re-entry blocked: Already ${totalEntries} trades on this market (max 2)`;
+            if (reasonsCollector) reasonsCollector.push(reason);
+            return null;
+        }
+    }
+
     if (!market.outcomePrices) {
         if (reasonsCollector) reasonsCollector.push("Missing prices");
         return null;
@@ -674,6 +686,14 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
 
     let tradeSize = dependencies.testSize || calculateTradeSize(confidence, entryPrice);
 
+    // --- SPECULATIVE MARKET SIZE CAP: Reduce size for low-price markets (high-risk) ---
+    // Markets with price < 0.30 are highly speculative (e.g. esports mid-game)
+    // Half the position size to limit gap risk exposure
+    if (entryPrice < 0.30 && !dependencies.testSize) {
+        tradeSize *= 0.5;
+        decisionReasons.push(`⚠️ Speculative Market (price ${entryPrice.toFixed(2)} < 0.30): Size halved`);
+    }
+
     // 2a. Apply Advanced Strategy Size Multiplier (Calendar, Anti-Fragility)
     if (advancedSizeMultiplier !== 1.0) {
         tradeSize *= advancedSizeMultiplier;
@@ -879,13 +899,41 @@ export async function checkAndCloseTrades(getRealMarketPriceFn) {
         const pnlPercent = invested > 0 ? (trade.shares * currentPrice - invested) / invested : 0;
         trade.maxReturn = Math.max(trade.maxReturn || 0, pnlPercent);
 
+        // --- GAP PROTECTION: Detect abnormal price jumps between checks ---
+        // If price moved >30% since last check, flag as suspicious and wait for confirmation
+        const lastPrice = trade.priceHistory.length >= 2
+            ? trade.priceHistory[trade.priceHistory.length - 2]
+            : trade.entryPrice;
+        const priceDelta = lastPrice > 0 ? Math.abs(currentPrice - lastPrice) / lastPrice : 0;
+
+        if (priceDelta > 0.30 && !trade._gapConfirmed) {
+            // First detection: flag and skip this cycle — wait for next check to confirm
+            trade._gapConfirmed = false;
+            trade._gapDetectedAt = Date.now();
+            addLog(botState, `⚠️ GAP DETECTED: ${trade.question.substring(0, 25)}... price moved ${(priceDelta * 100).toFixed(0)}% in one cycle (${lastPrice.toFixed(3)} → ${currentPrice.toFixed(3)}). Waiting for confirmation...`, 'warning');
+            continue;
+        }
+        // Second check after gap: confirm the price is real (gap persists)
+        if (trade._gapDetectedAt && !trade._gapConfirmed) {
+            trade._gapConfirmed = true;
+            addLog(botState, `✅ GAP CONFIRMED: ${trade.question.substring(0, 25)}... price ${currentPrice.toFixed(3)} confirmed after gap. Proceeding with exit logic.`, 'info');
+        }
+
         // --- 2. DYNAMIC STOP LOSS CHECK ---
         const dynamicStopInfo = calculateDynamicStopLoss(trade, pnlPercent, trade.maxReturn);
         const requiredStopPercent = dynamicStopInfo.requiredStopPercent;
 
         if (pnlPercent <= requiredStopPercent) {
-            const reason = `STOP LOSS: ${(pnlPercent * 100).toFixed(1)}% (Limit: ${(requiredStopPercent * 100).toFixed(1)}%)`;
-            await closeTrade(i, currentPrice, reason);
+            // --- MAX LOSS CAP: Never lose more than 25% per trade, even on gaps ---
+            const MAX_LOSS_CAP = -0.25;
+            let effectiveExitPrice = currentPrice;
+            if (pnlPercent < MAX_LOSS_CAP && invested > 0) {
+                // Cap the loss: calculate what price would give -25% loss
+                effectiveExitPrice = (invested * (1 + MAX_LOSS_CAP)) / trade.shares;
+                addLog(botState, `🛡️ MAX LOSS CAP: Limiting loss from ${(pnlPercent * 100).toFixed(1)}% to ${(MAX_LOSS_CAP * 100)}% on ${trade.question.substring(0, 25)}...`, 'warning');
+            }
+            const reason = `STOP LOSS: ${(pnlPercent * 100).toFixed(1)}% (Limit: ${(requiredStopPercent * 100).toFixed(1)}%)${pnlPercent < MAX_LOSS_CAP ? ' [CAPPED at -25%]' : ''}`;
+            await closeTrade(i, effectiveExitPrice, reason);
             continue;
         }
 
