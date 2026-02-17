@@ -314,7 +314,10 @@ export async function fetchNewsSentiment() {
 
         markets.forEach(m => {
             const words = m.question.split(' ').filter(w => w.length > 4);
-            const price = parseFloat(m.outcomePrices ? m.outcomePrices[0] : 0.5);
+            let prices = m.outcomePrices;
+            if (typeof prices === 'string') { try { prices = JSON.parse(prices); } catch { prices = null; } }
+            const price = (Array.isArray(prices) && prices.length > 0) ? parseFloat(prices[0]) : 0.5;
+            if (isNaN(price)) return; // Skip markets with unparseable prices
             words.forEach(w => {
                 const clean = w.replace(/[^a-zA-Z]/g, '').toUpperCase();
                 if (['WILL', 'DOES', 'AFTER', 'BEFORE', 'MARKET'].includes(clean)) return;

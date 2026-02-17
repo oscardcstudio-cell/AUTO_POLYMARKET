@@ -18,8 +18,11 @@ router.get('/bot-data', (req, res) => {
     try {
         res.setHeader('Access-Control-Allow-Origin', '*');
 
-        // Derived stats for dashboard
-        const profit = botState.capital - botState.startingCapital;
+        // Derived stats for dashboard — use TOTAL capital (cash + invested) for accurate P&L
+        const investedInTrades = (botState.activeTrades || [])
+            .reduce((sum, t) => sum + (t.amount || 0), 0);
+        const totalPortfolioValue = botState.capital + investedInTrades;
+        const profit = totalPortfolioValue - botState.startingCapital;
         const profitPercent = ((profit) / botState.startingCapital * 100).toFixed(2);
 
         // Sanitize response: Exclude heavy data that has its own endpoint (marketCache)
