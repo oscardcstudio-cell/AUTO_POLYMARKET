@@ -648,9 +648,23 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
     if (entryPrice < (CONFIG.MIN_PRICE_THRESHOLD || 0.05)) {
         const reason = `Price too low (<${CONFIG.MIN_PRICE_THRESHOLD || 0.05}) - Penny Stock Filter`;
         if (reasonsCollector) reasonsCollector.push(reason);
-        // Optional: log rejected decision 
-        // logTradeDecision(market, null, [...decisionReasons, reason], pizzaData);
         return null;
+    }
+
+    // --- SPECULATIVE EXPOSURE LIMIT: Max 20% of starting capital on speculative bets ---
+    // Prevents the portfolio from being overloaded with high-risk low-price positions
+    if (!skipPersistence && entryPrice < 0.35) {
+        const speculativeExposure = (botState.activeTrades || [])
+            .filter(t => t.entryPrice && t.entryPrice < 0.35)
+            .reduce((sum, t) => sum + (t.amount || 0), 0);
+        const maxSpeculative = (botState.startingCapital || CONFIG.STARTING_CAPITAL) * 0.20;
+        if (speculativeExposure >= maxSpeculative) {
+            const reason = `Speculative exposure limit: $${speculativeExposure.toFixed(0)}/$${maxSpeculative.toFixed(0)} (20% cap)`;
+            if (reasonsCollector) reasonsCollector.push(reason);
+            decisionReasons.push(reason);
+            logTradeDecision(market, null, decisionReasons, pizzaData);
+            return null;
+        }
     }
 
     if (market.volume24hr > 10000 && entryPrice > 0.60 && side === 'YES') {
@@ -686,12 +700,16 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
 
     let tradeSize = dependencies.testSize || calculateTradeSize(confidence, entryPrice);
 
-    // --- SPECULATIVE MARKET SIZE CAP: Reduce size for low-price markets (high-risk) ---
-    // Markets with price < 0.30 are highly speculative (e.g. esports mid-game)
-    // Half the position size to limit gap risk exposure
-    if (entryPrice < 0.30 && !dependencies.testSize) {
+    // --- SPECULATIVE MARKET SIZE CAP: Hard cap for low-price markets (high-risk) ---
+    // Markets with price < 0.35 are highly speculative (e.g. esports mid-game)
+    // Halve the position AND enforce $15 absolute cap to prevent outsized losses
+    if (entryPrice < 0.35 && !dependencies.testSize) {
         tradeSize *= 0.5;
-        decisionReasons.push(`⚠️ Speculative Market (price ${entryPrice.toFixed(2)} < 0.30): Size halved`);
+        const SPECULATIVE_MAX = 15; // Absolute dollar cap on speculative bets
+        if (tradeSize > SPECULATIVE_MAX) {
+            tradeSize = SPECULATIVE_MAX;
+        }
+        decisionReasons.push(`⚠️ Speculative Market (price ${entryPrice.toFixed(2)} < 0.35): Size halved + capped $${tradeSize.toFixed(0)}`);
     }
 
     // 2a. Apply Advanced Strategy Size Multiplier (Calendar, Anti-Fragility)
@@ -1198,7 +1216,12 @@ async function calculateAdaptiveTP(trade) {
 
 function calculateDynamicStopLoss(trade, currentReturn, maxReturn) {
     const volatilityMap = CONFIG.DYNAMIC_SL.VOLATILITY_MAP;
-    const baseStopPercent = volatilityMap[trade.category] || volatilityMap.other;
+    let baseStopPercent = volatilityMap[trade.category] || volatilityMap.other;
+
+    // Tighter stop for speculative markets (low entry price = high gap risk)
+    if (trade.entryPrice && trade.entryPrice < 0.35 && CONFIG.DYNAMIC_SL.SPECULATIVE_SL_OVERRIDE) {
+        baseStopPercent = Math.min(baseStopPercent, CONFIG.DYNAMIC_SL.SPECULATIVE_SL_OVERRIDE);
+    }
 
     // 1. Base Stop: Volatility Adjusted
     let requiredStopPercent = -baseStopPercent;

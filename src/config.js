@@ -36,7 +36,7 @@ export const CONFIG = {
     DATA_FILE: DATA_FILE_PATH,
     PORT: process.env.PORT || 3000,
     KEYWORD_UPDATE_INTERVAL: 60 * 60 * 1000, // 1 heure
-    TAKE_PROFIT_PERCENT: 0.10,  // 10% (research-backed for prediction markets)
+    TAKE_PROFIT_PERCENT: 0.15,  // 15% (raised from 10% — was cutting winners too early)
     STOP_LOSS_PERCENT: 0.08,     // -8% (70% of spikes revert in 24h)
     TRADE_TIMEOUT_HOURS: 48,     // Auto-close after 48h to free capital
     DAILY_LOSS_LIMIT: 0.03,      // -3% daily halt threshold
@@ -49,6 +49,8 @@ export const CONFIG = {
             sports: 0.10,
             other: 0.15
         },
+        // Tighter stops for speculative markets (entry price < 0.35)
+        SPECULATIVE_SL_OVERRIDE: 0.15, // -15% instead of category default
         TRAILING_ACTIVATION: 0.10, // Activate trailing when +10% profit
         TRAILING_DISTANCE: 0.05,   // Trail by 5%
         TIME_DECAY_HOURS: 24,      // Tighten after 24h
@@ -68,9 +70,9 @@ export const CONFIG = {
             HIGH: 0.05     // stddev > 5% = high volatility
         },
         TP_MAP: {
-            LOW: 0.08,     // 8% TP for low volatility markets
-            MEDIUM: 0.12,  // 12% TP for medium volatility
-            HIGH: 0.20     // 20% TP for high volatility
+            LOW: 0.15,     // 15% TP for low volatility (was 8% — too early, killed gains)
+            MEDIUM: 0.20,  // 20% TP for medium volatility (was 12%)
+            HIGH: 0.30     // 30% TP for high volatility (was 20%)
         },
         PARTIAL_EXIT_RATIO: 0.5,     // Sell 50% on first TP hit
         EXTENDED_TP_MULTIPLIER: 2.0  // Remainder gets 2x TP target

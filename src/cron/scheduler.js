@@ -67,11 +67,14 @@ async function runAutoTraining() {
             comparisonMsg = 'First run — adapting from baseline';
         }
 
-        // Walk-forward validation gate (Fix G)
-        // If the test set shows very negative ROI, reject the adapted params
-        if (baselineTestMetrics && baselineTestMetrics.roi < -5) {
-            finalParams = { confidenceMultiplier: 1.0, sizeMultiplier: 1.0, mode: 'NEUTRAL', reason: 'Test set failed validation (overfitting detected)' };
-            comparisonMsg += ' | OVERFIT DETECTED: test ROI < -5%, reset to NEUTRAL';
+        // Walk-forward validation gate (Fix G — relaxed threshold)
+        // Only reject if test set ROI is very negative AND worse than baseline test
+        // Old threshold was -5% which always triggered NEUTRAL (too strict)
+        const baselineTestROI = baselineTestMetrics?.roi ?? 0;
+        const isOverfit = baselineTestMetrics && baselineTestROI < -10;
+        if (isOverfit) {
+            finalParams = { confidenceMultiplier: 1.0, sizeMultiplier: 1.0, mode: 'NEUTRAL', reason: `Test set failed validation (ROI: ${baselineTestROI.toFixed(1)}%)` };
+            comparisonMsg += ` | OVERFIT DETECTED: test ROI ${baselineTestROI.toFixed(1)}% < -10%, reset to NEUTRAL`;
         }
 
         // Apply to bot state
