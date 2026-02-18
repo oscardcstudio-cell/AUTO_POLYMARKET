@@ -1,75 +1,77 @@
 import { fetchWithRetry, addLog } from '../utils.js';
 import { botState } from '../state.js';
+import { getMidPrice } from '../api/clob_api.js';
 
 /**
  * Price Update Service
- * Fetches current prices from Polymarket API with rate limiting protection
+ * Uses CLOB API (real-time) with Gamma API fallback
+ * Respects trade side (YES/NO) for correct pricing
  */
 
 const PRICE_UPDATE_INTERVAL = 5 * 60 * 1000; // 5 minutes
-const PRICE_CACHE_DURATION = 4 * 60 * 1000; // 4 minutes
+const GAMMA_CACHE_DURATION = 4 * 60 * 1000; // 4 minutes
 
-// Cache to avoid redundant API calls
-const priceCache = new Map();
+// Cache for Gamma fallback only (CLOB has its own 30s cache)
+const gammaCache = new Map();
 
 /**
- * Fetch current price for a single market
- * @param {string} marketId - The market ID
+ * Fetch current price for a trade using CLOB first, then Gamma fallback
+ * @param {Object} trade - The trade object (needs clobTokenIds, side, marketId)
  * @returns {Promise<number|null>} Current price or null if error
  */
-async function fetchMarketPrice(marketId) {
-    // Check cache first
-    const cached = priceCache.get(marketId);
-    if (cached && Date.now() - cached.timestamp < PRICE_CACHE_DURATION) {
+async function fetchTradePrice(trade) {
+    // --- 1. Try CLOB API first (most accurate, real-time) ---
+    try {
+        let tokenIds = trade.clobTokenIds;
+        if (typeof tokenIds === 'string') {
+            try { tokenIds = JSON.parse(tokenIds); } catch { tokenIds = null; }
+        }
+        if (Array.isArray(tokenIds) && tokenIds.length >= 2) {
+            const tokenId = trade.side === 'YES' ? tokenIds[0] : tokenIds[1];
+            if (tokenId && typeof tokenId === 'string' && tokenId.length > 10) {
+                const clobPrice = await getMidPrice(tokenId);
+                if (clobPrice && clobPrice > 0 && clobPrice <= 1) {
+                    return clobPrice;
+                }
+            }
+        }
+    } catch (e) {
+        // CLOB failed, try Gamma fallback
+    }
+
+    // --- 2. Fallback to Gamma API (respecting YES/NO side) ---
+    const cacheKey = `${trade.marketId}_${trade.side}`;
+    const cached = gammaCache.get(cacheKey);
+    if (cached && Date.now() - cached.timestamp < GAMMA_CACHE_DURATION) {
         return cached.price;
     }
 
     try {
-        const url = `https://gamma-api.polymarket.com/markets/${marketId}`;
-        // fetchWithRetry handles retries for network errors AND internal logging of attempts
+        const url = `https://gamma-api.polymarket.com/markets/${trade.marketId}`;
         const response = await fetchWithRetry(url);
 
         if (!response.ok) {
-            // If it's 429, fetchWithRetry might have already retried up to MAX_RETRIES.
-            // If we are here, it means even after retries it failed or it's another error (404, 500).
-            addLog(botState, `⚠️ Failed to fetch price for market ${marketId}: ${response.status}`, 'warning');
             return null;
         }
 
         const data = await response.json();
 
-        // Extract current price (usually the YES token price)
-        let currentPrice = null;
         let prices = data.outcomePrices;
-
-        // PARSING FIX: Handle stringified JSON from Gamma API
         if (typeof prices === 'string') {
-            try {
-                prices = JSON.parse(prices);
-            } catch (e) {
-                prices = null;
+            try { prices = JSON.parse(prices); } catch { prices = null; }
+        }
+
+        if (prices && Array.isArray(prices) && prices.length >= 2) {
+            // Pick the correct side: YES = prices[0], NO = prices[1]
+            const price = trade.side === 'YES' ? parseFloat(prices[0]) : parseFloat(prices[1]);
+            if (!isNaN(price) && price >= 0 && price <= 1) {
+                gammaCache.set(cacheKey, { price, timestamp: Date.now() });
+                return price;
             }
         }
 
-        if (prices && Array.isArray(prices) && prices.length > 0) {
-            currentPrice = parseFloat(prices[0]);
-        } else if (data.clobTokenIds && data.clobTokenIds.length > 0) {
-            // Fallback: If we had a CLOB client here we could use it, but for now just fail gracefully
-            // or rely on what we have. If no prices, we can't update.
-            currentPrice = null;
-        }
-
-        // Cache the result
-        if (currentPrice !== null && !isNaN(currentPrice)) {
-            priceCache.set(marketId, {
-                price: currentPrice,
-                timestamp: Date.now()
-            });
-        }
-
-        return (currentPrice !== null && !isNaN(currentPrice)) ? currentPrice : null;
+        return null;
     } catch (error) {
-        addLog(botState, `❌ Error fetching price for market ${marketId}: ${error.message}`, 'error');
         return null;
     }
 }
@@ -84,7 +86,6 @@ export async function updateActiveTradePrices(activeTrades) {
         return 0;
     }
 
-    addLog(botState, `🔄 Updating prices for ${activeTrades.length} active trades...`);
     let updatedCount = 0;
 
     // Process trades in parallel batches of 5 to avoid rate limiting
@@ -95,7 +96,7 @@ export async function updateActiveTradePrices(activeTrades) {
         const batch = tradesToUpdate.slice(i, i + BATCH_SIZE);
 
         const results = await Promise.all(batch.map(async (trade) => {
-            const currentPrice = await fetchMarketPrice(trade.marketId);
+            const currentPrice = await fetchTradePrice(trade);
 
             if (currentPrice !== null) {
                 if (!trade.priceHistory) {
@@ -119,17 +120,18 @@ export async function updateActiveTradePrices(activeTrades) {
         }
     }
 
-    addLog(botState, `✅ Updated ${updatedCount}/${activeTrades.length} trade prices`);
+    if (updatedCount > 0) {
+        addLog(botState, `📊 Price update: ${updatedCount}/${tradesToUpdate.length} trades refreshed`);
+    }
     return updatedCount;
 }
 
 /**
  * Start automatic price updates
- * @param {Object} botState - The bot state object with activeTrades
+ * @param {Object} botStateArg - The bot state object with activeTrades
  * @returns {NodeJS.Timeout} Interval ID for cleanup
  */
 export function startPriceUpdateLoop(botStateArg) {
-    // Use the argument if provided, otherwise fallback to imported botState (though argument is expected)
     const state = botStateArg || botState;
     addLog(state, `🚀 Starting price update loop (every ${PRICE_UPDATE_INTERVAL / 60000} minutes)`);
 
@@ -142,7 +144,7 @@ export function startPriceUpdateLoop(botStateArg) {
     }, PRICE_UPDATE_INTERVAL);
 
     // Initial update
-    updateActiveTradePrices(botState.activeTrades);
+    updateActiveTradePrices(state.activeTrades);
 
     return intervalId;
 }
@@ -151,6 +153,6 @@ export function startPriceUpdateLoop(botStateArg) {
  * Clear price cache (for testing/debugging)
  */
 export function clearPriceCache() {
-    priceCache.clear();
+    gammaCache.clear();
     addLog(botState, '🗑️ Price cache cleared');
 }
