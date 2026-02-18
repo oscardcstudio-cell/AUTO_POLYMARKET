@@ -405,7 +405,7 @@ export async function fetchNewsSentiment() {
             botState.newsSentiment = sentiments;
             lastNewsRefresh = now;
             const summary = `[News] Real news updated: ${sentiments.length} topics, ${sentiments.filter(s => s.sentiment === 'bullish').length} bullish / ${sentiments.filter(s => s.sentiment === 'bearish').length} bearish / ${sentiments.filter(s => s.sentiment === 'neutral').length} neutral`;
-            try { addLog(summary); } catch { console.log(summary); }
+            try { addLog(botState, summary); } catch { console.log(summary); }
         } else {
             // Fallback: keep old data if fresh fetch returns nothing
             if (!botState.newsSentiment || botState.newsSentiment.length === 0) {
@@ -453,7 +453,7 @@ export async function detectWhales(markets = null) {
         if (whaleData.totalWhaleTrades > 0) {
             lastWhaleRefresh = now;
             const summary = `[Whale] ${whaleData.totalWhaleTrades} whale trades ($${Math.round(whaleData.totalVolume)}) across ${whaleData.markets.length} markets`;
-            try { addLog(summary); } catch { console.log(summary); }
+            try { addLog(botState, summary); } catch { console.log(summary); }
         }
     } catch (e) { console.error("Whale Scan Error:", e.message); }
 }

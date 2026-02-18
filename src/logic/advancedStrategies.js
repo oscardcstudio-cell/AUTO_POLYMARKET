@@ -579,7 +579,7 @@ export function getEventSignal(marketId, market) {
  * Calculate the current drawdown state and return trading restrictions.
  * Uses a tiered recovery system:
  * - Tier 0 (Normal): No restrictions
- * - Tier 1 (Minor drawdown -3%): Only high conviction trades (>60pts)
+ * - Tier 1 (Minor drawdown -3%): Only decent conviction trades (>35pts)
  * - Tier 2 (Medium drawdown -5%): Only very high conviction (>70pts) + reduce size 50%
  * - Tier 3 (Severe drawdown -10%): Only arbitrage + reduce size 75%
  * Returns: { tier: 0-3, sizeMultiplier: 0.25-1.0, minConviction: 0-70, reason: string }
@@ -623,7 +623,7 @@ export function getDrawdownRecoveryState() {
         return {
             tier: 1,
             sizeMultiplier: 0.85,
-            minConviction: 25,
+            minConviction: 35,
             reason: `MINOR drawdown ${(drawdownPercent * 100).toFixed(1)}%${onLosingStreak ? ' + losing streak' : ''} — light caution`
         };
     }
@@ -645,7 +645,7 @@ export function getTensionAwareRecoveryState() {
     if (base.tier > 0 && base.tier < 3 && tension >= (T.HIGH || 55)) {
         const bumpedTier = base.tier + 1;
         const sizeMap = { 1: 0.85, 2: 0.50, 3: 0.25 };
-        const convMap = { 1: 25, 2: 60, 3: 70 };
+        const convMap = { 1: 35, 2: 60, 3: 70 };
         return {
             tier: bumpedTier,
             sizeMultiplier: sizeMap[bumpedTier],

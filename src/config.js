@@ -50,7 +50,7 @@ export const CONFIG = {
             other: 0.15
         },
         // Tighter stops for speculative markets (entry price < 0.35)
-        SPECULATIVE_SL_OVERRIDE: 0.15, // -15% instead of category default
+        SPECULATIVE_SL_OVERRIDE: 0.20, // -20% instead of category default (widened to reduce false stop-outs)
         TRAILING_ACTIVATION: 0.10, // Activate trailing when +10% profit
         TRAILING_DISTANCE: 0.05,   // Trail by 5%
         TIME_DECAY_HOURS: 24,      // Tighten after 24h

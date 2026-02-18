@@ -1,10 +1,10 @@
 
-import { addLog } from '../utils.js';
 import { CONFIG } from '../config.js';
 
-// Safe wrapper — addLog can fail outside the full bot context (e.g. in test scripts)
+// Safe wrapper — news module doesn't have direct access to botState,
+// so we use console.log (which is captured by the system logger in utils.js)
 function safeLog(msg) {
-    try { addLog(msg); } catch { console.log(msg); }
+    console.log(msg);
 }
 
 // --- News cache to avoid hammering Google News ---
