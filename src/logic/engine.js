@@ -1044,7 +1044,8 @@ export async function checkAndCloseTrades(getRealMarketPriceFn) {
                 effectiveExitPrice = (invested * (1 + MAX_LOSS_CAP)) / trade.shares;
                 addLog(botState, `🛡️ MAX LOSS CAP: Limiting loss from ${(pnlPercent * 100).toFixed(1)}% to ${(MAX_LOSS_CAP * 100)}% on ${trade.question.substring(0, 25)}...`, 'warning');
             }
-            const reason = `STOP LOSS: ${(pnlPercent * 100).toFixed(1)}% (Limit: ${(requiredStopPercent * 100).toFixed(1)}%)${pnlPercent < MAX_LOSS_CAP ? ' [CAPPED at -25%]' : ''}`;
+            const stopLabel = requiredStopPercent >= 0 ? 'TRAILING STOP' : 'STOP LOSS';
+            const reason = `${stopLabel}: ${(pnlPercent * 100).toFixed(1)}% (Limit: ${(requiredStopPercent * 100).toFixed(1)}%)${pnlPercent < MAX_LOSS_CAP ? ' [CAPPED at -25%]' : ''}`;
             await closeTrade(i, effectiveExitPrice, reason);
             continue;
         }

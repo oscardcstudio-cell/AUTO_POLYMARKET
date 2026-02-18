@@ -124,17 +124,17 @@ export async function getRelevantMarkets(useDeepScan = false) {
 }
 
 export async function checkConnectivity() {
-    // 1. Check Gamma
+    // 1. Check Gamma (root / returns 200 when healthy)
     try {
-        const res = await fetch('https://gamma-api.polymarket.com/health', { signal: AbortSignal.timeout(5000) });
+        const res = await fetch('https://gamma-api.polymarket.com/', { signal: AbortSignal.timeout(5000) });
         botState.apiStatus.gamma = res.ok ? 'ONLINE' : 'DEGRADED';
     } catch (e) {
         botState.apiStatus.gamma = 'OFFLINE';
     }
 
-    // 2. Check CLOB
+    // 2. Check CLOB (correct endpoint is /ok, not /health)
     try {
-        const res = await fetch('https://clob.polymarket.com/health', { signal: AbortSignal.timeout(5000) });
+        const res = await fetch('https://clob.polymarket.com/ok', { signal: AbortSignal.timeout(5000) });
         botState.apiStatus.clob = res.ok ? 'ONLINE' : 'DEGRADED';
     } catch (e) {
         botState.apiStatus.clob = 'OFFLINE';
