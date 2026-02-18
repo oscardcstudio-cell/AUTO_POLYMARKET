@@ -122,15 +122,16 @@ export async function getCLOBOrderBook(tokenId) {
 /**
  * GET /price - Get current price for a token
  * @param {string} tokenId - The token ID
+ * @param {string} side - 'BUY' or 'SELL' (required by CLOB API)
  * @returns {number|null} Current price
  */
-export async function getCLOBPrice(tokenId) {
-    const cacheKey = `price_${tokenId}`;
+export async function getCLOBPrice(tokenId, side = 'BUY') {
+    const cacheKey = `price_${tokenId}_${side}`;
     const cached = getCached(cacheKey, CACHE_TTL_ORDER_BOOK);
     if (cached) return cached;
 
     try {
-        const url = `${CLOB_BASE_URL}/price?token_id=${tokenId}`;
+        const url = `${CLOB_BASE_URL}/price?token_id=${tokenId}&side=${side}`;
         const response = await fetchWithRetry(url);
 
         if (!response.ok) {
@@ -148,7 +149,6 @@ export async function getCLOBPrice(tokenId) {
         return null;
     } catch (error) {
         if (error.message.includes('401') || error.message.includes('403')) return null;
-        console.error(`❌ CLOB Price Error (${tokenId}):`, error.message);
         return null;
     }
 }
@@ -345,8 +345,7 @@ export async function getBestExecutionPrice(tokenId, side = 'buy') {
  */
 export async function checkCLOBHealth() {
     try {
-        // Try to fetch markets endpoint as health check
-        const url = `${CLOB_BASE_URL}/markets`;
+        const url = `${CLOB_BASE_URL}/ok`;
         const response = await fetchWithRetry(url, {}, 1); // Only 1 retry for health check
         return response.ok;
     } catch (error) {
