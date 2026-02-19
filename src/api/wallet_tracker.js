@@ -29,22 +29,31 @@ async function fetchWithTimeout(url, timeoutMs = 15000) {
  * Fetch top traders from Polymarket leaderboard.
  * Returns array of { wallet, username, pnl, volume, rank, category }.
  */
-export async function fetchLeaderboard(category = 'OVERALL', timePeriod = 'WEEK', limit = 50) {
+export async function fetchLeaderboard(category = 'OVERALL', timePeriod = 'WEEK', limit = 150) {
     const CT = CONFIG.COPY_TRADING || {};
     const cacheTTL = CT.LEADERBOARD_CACHE_TTL_MS || 6 * 60 * 60 * 1000; // 6h default
 
-    const cacheKey = `${category}_${timePeriod}`;
+    const cacheKey = `${category}_${timePeriod}_${limit}`;
     if (leaderboardCache.data && leaderboardCache.key === cacheKey && (Date.now() - leaderboardCache.timestamp) < cacheTTL) {
         return leaderboardCache.data;
     }
 
     try {
-        const url = `${DATA_API}/v1/leaderboard?category=${category}&timePeriod=${timePeriod}&orderBy=PNL&limit=${limit}`;
-        const res = await fetchWithTimeout(url);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
+        // API returns max 50 per page, so paginate if we need more
+        const PAGE_SIZE = 50;
+        let allData = [];
 
-        const traders = data.map((t, i) => ({
+        for (let offset = 0; offset < limit; offset += PAGE_SIZE) {
+            const pageLimit = Math.min(PAGE_SIZE, limit - offset);
+            const url = `${DATA_API}/v1/leaderboard?category=${category}&timePeriod=${timePeriod}&orderBy=PNL&limit=${pageLimit}&offset=${offset}`;
+            const res = await fetchWithTimeout(url);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const data = await res.json();
+            allData.push(...data);
+            if (data.length < pageLimit) break; // No more pages
+        }
+
+        const traders = allData.map((t, i) => ({
             wallet: t.proxyWallet,
             username: t.userName || t.pseudonym || `Trader_${i + 1}`,
             pnl: t.pnl || 0,
@@ -231,8 +240,8 @@ export async function scanCopySignals() {
     const copySignals = [];
     const minTradeSize = CT.MIN_SOURCE_TRADE_SIZE || 500;
 
-    // Limit concurrent requests to avoid rate limiting
-    const batchSize = 5;
+    // Limit concurrent requests to avoid rate limiting (10 parallel for 100 wallets)
+    const batchSize = 10;
     for (let i = 0; i < tracked.length; i += batchSize) {
         const batch = tracked.slice(i, i + batchSize);
 

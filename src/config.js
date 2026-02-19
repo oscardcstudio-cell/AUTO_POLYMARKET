@@ -127,8 +127,8 @@ export const CONFIG = {
     // Copy Trading (Leaderboard wallet tracking)
     COPY_TRADING: {
         ENABLED: true,
-        MIN_WALLET_PNL_7D: 500,             // Only track wallets with >$500 weekly profit
-        MAX_TRACKED_WALLETS: 20,             // Track top 20 wallets
+        MIN_WALLET_PNL_7D: 100,             // Only track wallets with >$100 weekly profit (lowered to fill 100 slots)
+        MAX_TRACKED_WALLETS: 100,            // Track top 100 wallets
         COPY_SIZE_PERCENT: 0.015,            // Copy at 1.5% of our capital per signal
         POSITION_CHECK_INTERVAL_MS: 5 * 60 * 1000,   // Check positions every 5 min
         LEADERBOARD_CACHE_TTL_MS: 6 * 60 * 60 * 1000, // Refresh leaderboard every 6h
