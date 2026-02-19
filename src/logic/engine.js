@@ -958,7 +958,7 @@ function saveNewTrade(trade, skipPersistence = false) {
     const convLabel = convPts >= 80 ? 'VERY STRONG' : convPts >= 60 ? 'STRONG' : convPts >= 40 ? 'GOOD' : convPts >= 20 ? 'MEDIUM' : 'LOW';
 
     // Main trade log with conviction
-    addLog(botState, `✅ TRADE OPENED: ${trade.side} sur "${trade.question.substring(0, 30)}..." @ $${trade.entryPrice.toFixed(3)} ($${trade.amount.toFixed(2)}) | Conviction: ${convPts}pts (${convLabel})`, 'trade');
+    addLog(botState, `✅ TRADE OPENED: ${trade.side} sur "${trade.question.substring(0, 30)}..." @ $${trade.entryPrice.toFixed(3)} ($${trade.amount.toFixed(2)}) | Conviction: ${convPts}pts (${convLabel}) [slug:${trade.slug || ''}]`, 'trade');
 
     // Strategy signals breakdown (what triggered the trade)
     const strategySignals = (trade.reasons || []).filter(r =>
@@ -1080,7 +1080,7 @@ export async function checkAndCloseTrades(getRealMarketPriceFn) {
                 trade.originalTP = tpPercent;
                 trade.breakEvenStop = true; // Move stop-loss to break-even
 
-                addLog(botState, `✂️ PARTIAL EXIT: ${(exitRatio * 100)}% sold at +${(pnlPercent * 100).toFixed(1)}% | Remainder targets +${(tpPercent * (smartExit.EXTENDED_TP_MULTIPLIER || 2.0) * 100).toFixed(0)}%`, 'trade');
+                addLog(botState, `✂️ PARTIAL EXIT: ${(exitRatio * 100)}% sold at +${(pnlPercent * 100).toFixed(1)}% | Remainder targets +${(tpPercent * (smartExit.EXTENDED_TP_MULTIPLIER || 2.0) * 100).toFixed(0)}% [slug:${trade.slug || ''}]`, 'trade');
                 stateManager.save();
                 await supabaseService.saveTrade(trade).catch(e => console.error('Supabase partial exit save:', e));
                 continue;
@@ -1266,7 +1266,7 @@ async function closeTrade(index, exitPrice, reason) {
     botState.dailyPnL += pnl;
 
     stateManager.addSectorEvent(trade.category, 'TRADE', `💰 Trade Closed: ${reason}`, { pnl: pnl.toFixed(2) });
-    addLog(botState, `🏁 TRADE CLOSED: ${trade.question.substring(0, 20)}... | PnL: $${pnl.toFixed(2)} (${reason})`, pnl > 0 ? 'success' : 'warning');
+    addLog(botState, `🏁 TRADE CLOSED: ${trade.question.substring(0, 20)}... | PnL: $${pnl.toFixed(2)} (${reason}) [slug:${trade.slug || ''}]`, pnl > 0 ? 'success' : 'warning');
 
     // Save state
     stateManager.save();

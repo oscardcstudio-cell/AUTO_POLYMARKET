@@ -1395,9 +1395,9 @@
                                 const color = diff >= 0 ? '#4ade80' : '#f87171';
                                 const currentValue = shares * current;
 
-                                // Build Polymarket URL
+                                // Build Polymarket URL — /market/{slug} auto-redirects to correct event page
                                 const polymarketUrl = t.slug
-                                    ? `https://polymarket.com/event/${t.slug}`
+                                    ? `https://polymarket.com/market/${t.slug}`
                                     : t.eventSlug
                                         ? `https://polymarket.com/event/${t.eventSlug}`
                                         : t.marketId
@@ -1515,12 +1515,18 @@
                                     else if (isBuy) { color = '#22c55e'; icon = '🟢 BUY'; } // Order matters
                                     else if (isClose) { color = '#f59e0b'; icon = '🏁 CLOSE'; }
 
+                                    // Extract slug if present: [slug:my-market-slug]
+                                    const slugMatch = l.message.match(/\[slug:([^\]]+)\]/);
+                                    const slug = slugMatch ? slugMatch[1] : '';
+                                    const cleanMsg = l.message.replace(/\s*\[slug:[^\]]*\]/, '');
+                                    const linkHtml = slug ? `<a href="https://polymarket.com/event/${slug}" target="_blank" rel="noopener" style="color: #60a5fa; font-size: 0.75em; text-decoration: none; margin-left: 6px; opacity: 0.8;" title="View on Polymarket">🔗</a>` : '';
+
                                     return `<div style="border-left: 3px solid ${color}; padding: 8px 12px; background: rgba(0,0,0,0.2); border-radius: 5px; margin-bottom: 5px;">
                                         <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-                                            <span style="color: ${color}; font-weight: 700; font-size: 0.9em;">${icon}</span>
+                                            <span style="color: ${color}; font-weight: 700; font-size: 0.9em;">${icon}${linkHtml}</span>
                                             <span style="color: #64748b; font-size: 0.75em;">${new Date(l.timestamp).toLocaleTimeString()}</span>
                                         </div>
-                                        <div style="color: #e2e8f0; font-size: 0.85em;">${l.message}</div>
+                                        <div style="color: #e2e8f0; font-size: 0.85em;">${cleanMsg}</div>
                                      </div>`;
                                 }).join('');
                             } else {
