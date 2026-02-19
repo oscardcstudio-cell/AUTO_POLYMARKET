@@ -6,8 +6,8 @@ import { supabaseService, supabase } from '../services/supabaseService.js';
 
 const DATA_API = 'https://data-api.polymarket.com';
 
-// Caches
-let leaderboardCache = { data: null, timestamp: 0 };
+// Caches (leaderboardCache is now a Map to support multiple time periods)
+let leaderboardCache = new Map(); // key -> { data, timestamp }
 let positionsCache = {}; // { walletAddress: { data, timestamp } }
 
 async function fetchWithTimeout(url, timeoutMs = 15000) {
@@ -34,8 +34,9 @@ export async function fetchLeaderboard(category = 'OVERALL', timePeriod = 'WEEK'
     const cacheTTL = CT.LEADERBOARD_CACHE_TTL_MS || 6 * 60 * 60 * 1000; // 6h default
 
     const cacheKey = `${category}_${timePeriod}_${limit}`;
-    if (leaderboardCache.data && leaderboardCache.key === cacheKey && (Date.now() - leaderboardCache.timestamp) < cacheTTL) {
-        return leaderboardCache.data;
+    const cached = leaderboardCache.get(cacheKey);
+    if (cached && (Date.now() - cached.timestamp) < cacheTTL) {
+        return cached.data;
     }
 
     try {
@@ -62,12 +63,12 @@ export async function fetchLeaderboard(category = 'OVERALL', timePeriod = 'WEEK'
             profileImage: t.profileImage || null,
         }));
 
-        leaderboardCache = { data: traders, timestamp: Date.now(), key: cacheKey };
+        leaderboardCache.set(cacheKey, { data: traders, timestamp: Date.now() });
         return traders;
 
     } catch (e) {
         console.error(`[WalletTracker] Leaderboard fetch failed: ${e.message}`);
-        return leaderboardCache.data || [];
+        return leaderboardCache.get(cacheKey)?.data || [];
     }
 }
 
@@ -147,36 +148,50 @@ function detectNewPositions(currentPositions, previousPositions) {
 
 /**
  * Update tracked wallets from leaderboard.
- * Stores top N wallets with their performance metrics.
+ * Uses a MIX strategy: 50 weekly hot traders + 50 all-time legends (deduplicated).
+ * This gives signals from both currently active traders AND proven long-term winners.
  */
 export async function refreshTrackedWallets() {
     const CT = CONFIG.COPY_TRADING || {};
     if (!CT.ENABLED) return;
 
     try {
-        const categories = CT.CATEGORIES || ['OVERALL'];
-        const maxWallets = CT.MAX_TRACKED_WALLETS || 20;
+        const maxWallets = CT.MAX_TRACKED_WALLETS || 100;
+        const halfMax = Math.ceil(maxWallets / 2);
 
-        let allTraders = [];
-        for (const cat of categories) {
-            const traders = await fetchLeaderboard(cat, 'WEEK', 50);
-            allTraders.push(...traders.map(t => ({ ...t, category: cat })));
+        // Fetch BOTH weekly and all-time leaderboards in parallel
+        const [weeklyTraders, alltimeTraders] = await Promise.all([
+            fetchLeaderboard('OVERALL', 'WEEK', halfMax + 20),   // Extra buffer for dedup
+            fetchLeaderboard('OVERALL', 'ALL', halfMax + 20),
+        ]);
+
+        // Tag source so we know where each trader came from
+        const weeklyTagged = weeklyTraders.map(t => ({ ...t, source: 'WEEKLY', category: 'OVERALL' }));
+        const alltimeTagged = alltimeTraders.map(t => ({ ...t, source: 'ALL_TIME', category: 'OVERALL' }));
+
+        // Deduplicate: if a wallet appears in both, keep it and tag as BOTH
+        const walletMap = new Map();
+
+        // Weekly first (priority — they're hot right now)
+        for (const t of weeklyTagged.slice(0, halfMax)) {
+            walletMap.set(t.wallet, t);
         }
 
-        // Deduplicate by wallet, keep best rank
-        const walletMap = new Map();
-        for (const t of allTraders) {
-            if (!walletMap.has(t.wallet) || t.pnl > walletMap.get(t.wallet).pnl) {
+        // Then all-time to fill remaining slots
+        for (const t of alltimeTagged) {
+            if (walletMap.size >= maxWallets) break;
+            if (walletMap.has(t.wallet)) {
+                // Already tracked from weekly — upgrade tag to BOTH
+                walletMap.get(t.wallet).source = 'BOTH';
+            } else {
                 walletMap.set(t.wallet, t);
             }
         }
 
-        // Filter by minimum PnL and sort
-        const minPnL = CT.MIN_WALLET_PNL_7D || 500;
-        const qualified = Array.from(walletMap.values())
-            .filter(t => t.pnl >= minPnL)
-            .sort((a, b) => b.pnl - a.pnl)
-            .slice(0, maxWallets);
+        const qualified = Array.from(walletMap.values()).slice(0, maxWallets);
+        const weeklyCount = qualified.filter(t => t.source === 'WEEKLY').length;
+        const alltimeCount = qualified.filter(t => t.source === 'ALL_TIME').length;
+        const bothCount = qualified.filter(t => t.source === 'BOTH').length;
 
         // Store in botState
         botState.trackedWallets = qualified.map(t => ({
@@ -185,6 +200,7 @@ export async function refreshTrackedWallets() {
             pnl7d: t.pnl,
             volume7d: t.volume,
             rank: t.rank,
+            source: t.source,
             category: t.category,
             lastChecked: null,
             lastPositions: null,
@@ -216,7 +232,7 @@ export async function refreshTrackedWallets() {
             }
         }
 
-        addLog(botState, `[CopyTrade] Tracked ${qualified.length} wallets (min PnL $${minPnL}, top: ${qualified[0]?.username || 'N/A'} $${Math.round(qualified[0]?.pnl || 0)})`, 'info');
+        addLog(botState, `[CopyTrade] Tracked ${qualified.length} wallets (${weeklyCount} weekly + ${alltimeCount} all-time + ${bothCount} both | top: ${qualified[0]?.username || 'N/A'} $${Math.round(qualified[0]?.pnl || 0)})`, 'info');
 
         return qualified;
 
@@ -329,6 +345,6 @@ export function matchCopySignalToMarket(signal, availableMarkets) {
  * Clear all caches (for testing or forced refresh).
  */
 export function clearWalletCaches() {
-    leaderboardCache = { data: null, timestamp: 0 };
+    leaderboardCache.clear();
     positionsCache = {};
 }
