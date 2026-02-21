@@ -143,6 +143,26 @@ export const CONFIG = {
         COPY_CONVICTION_ALIGNED: 12,         // +12 conviction if copy signal aligns with trade
         COPY_CONVICTION_STRONG: 8,           // +8 extra if source wallet in top 5
     },
+    // Backtesting Configuration
+    BACKTEST: {
+        ENABLE_EXIT_SIM: true,           // Simulate SL/TP/trailing exits instead of holding to resolution
+        SYNTHETIC_WALK_POINTS: 80,       // Number of synthetic price points when no CLOB history
+        SYNTHETIC_VOLATILITY: {          // Per-step volatility by category (geometric Brownian motion)
+            crypto: 0.03,
+            economic: 0.02,
+            geopolitical: 0.015,
+            sports: 0.01,
+            other: 0.015
+        },
+        TIMEOUT_STEPS: 48,              // Steps before timeout exit (~48h at 1h fidelity)
+        MONTE_CARLO_PATHS: 1000,
+        MONTE_CARLO_ENABLED: false,      // Off by default (enable via API param)
+        SLIPPAGE_TIERS: {
+            HIGH_LIQUIDITY: { minVolume: 50000, minLiquidity: 20000, slippage: 0.003 },
+            MEDIUM: { minVolume: 5000, minLiquidity: 2000, slippage: 0.015 },
+            LOW: { slippage: 0.03 }
+        }
+    },
     // Whale Tracking (Polymarket Data API — real trades)
     WHALE_TRACKING: {
         MIN_WHALE_SIZE: 500,            // Min trade size ($) to qualify as whale

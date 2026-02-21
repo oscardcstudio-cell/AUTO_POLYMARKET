@@ -369,7 +369,7 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
     }
 
     // --- RE-ENTRY LIMIT: Max 2 entries per market (prevents FURIA-style triple-down disasters) ---
-    if (!skipPersistence) {
+    if (!skipPersistence || dependencies.enforcePortfolioLimits) {
         const closedOnSameMarket = (botState.closedTrades || []).filter(t => t.marketId === market.id).length;
         const activeOnSameMarket = (botState.activeTrades || []).filter(t => t.marketId === market.id).length;
         const totalEntries = closedOnSameMarket + activeOnSameMarket;
@@ -735,7 +735,7 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
     }
 
     // --- PORTFOLIO HEDGING CHECK ---
-    if (!skipPersistence) {
+    if (!skipPersistence || dependencies.enforcePortfolioLimits) {
         const exposure = checkPortfolioExposure(botState.activeTrades, category, side);
         if (!exposure.allowed) {
             if (reasonsCollector) reasonsCollector.push(exposure.reason);
@@ -757,7 +757,7 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
 
     // --- SPECULATIVE EXPOSURE LIMIT: Max 20% of starting capital on speculative bets ---
     // Prevents the portfolio from being overloaded with high-risk low-price positions
-    if (!skipPersistence && entryPrice < 0.35) {
+    if ((!skipPersistence || dependencies.enforcePortfolioLimits) && entryPrice < 0.35) {
         const speculativeExposure = (botState.activeTrades || [])
             .filter(t => t.entryPrice && t.entryPrice < 0.35)
             .reduce((sum, t) => sum + (t.amount || 0), 0);
@@ -935,6 +935,16 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
     else if (reasonStr.includes('Trend Following')) strategy = 'trend_following';
     else if (reasonStr.includes('Fresh')) strategy = 'fresh_market';
     else if (reasonStr.includes('Contrarian')) strategy = 'contrarian';
+
+    // Phase 6: Check if this strategy is disabled by AI auto-training
+    const overrides = botState.strategyOverrides || {};
+    if (overrides.disabledStrategies?.includes(strategy)) {
+        const reason = `Strategy "${strategy}" disabled by AI training (${overrides.reason || 'low WR'})`;
+        if (reasonsCollector) reasonsCollector.push(reason);
+        decisionReasons.push(reason);
+        logTradeDecision(market, null, decisionReasons, pizzaData);
+        return null;
+    }
 
     const trade = {
         id: Date.now().toString(36) + Math.random().toString(36).substr(2),

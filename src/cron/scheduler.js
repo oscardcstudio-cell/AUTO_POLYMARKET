@@ -67,14 +67,46 @@ async function runAutoTraining() {
             comparisonMsg = 'First run — adapting from baseline';
         }
 
-        // Walk-forward validation gate (Fix G — relaxed threshold)
-        // Only reject if test set ROI is very negative AND worse than baseline test
-        // Old threshold was -5% which always triggered NEUTRAL (too strict)
+        // Walk-forward validation gate (Phase 8 — multi-metric overfit detection)
         const baselineTestROI = baselineTestMetrics?.roi ?? 0;
-        const isOverfit = baselineTestMetrics && baselineTestROI < -10;
+        const trainROI = baselineResult.trainMetrics?.roi ?? 0;
+        const trainWR = parseFloat(baselineResult.summary?.winrate || '0');
+        const trainSharpe = baselineResult.trainMetrics?.sharpeRatio ?? 0;
+        const testSharpe = baselineTestMetrics?.sharpeRatio ?? 0;
+
+        // Estimate test WR from test results
+        const testTradeCount = baselineResult.testMetrics?.sampleSize || 0;
+        const testWins = baselineResult.tradeResults?.slice(-(testTradeCount || 0)).filter(t => t.pnl >= 0).length || 0;
+        const testWR = testTradeCount > 0 ? (testWins / testTradeCount * 100) : 0;
+
+        const overfitReasons = [];
+        if (baselineTestMetrics && baselineTestROI < -10) {
+            overfitReasons.push(`ROI ${baselineTestROI.toFixed(1)}% < -10%`);
+        }
+        if (trainSharpe > 0 && testSharpe < trainSharpe * 0.3) {
+            overfitReasons.push(`Sharpe degraded ${trainSharpe.toFixed(2)} -> ${testSharpe.toFixed(2)}`);
+        }
+        if (trainWR > 0 && testWR < trainWR * 0.6 && testTradeCount >= 5) {
+            overfitReasons.push(`WR dropped ${trainWR.toFixed(0)}% -> ${testWR.toFixed(0)}%`);
+        }
+
+        const isOverfit = overfitReasons.length >= 2 || (overfitReasons.length === 1 && baselineTestROI < -10);
         if (isOverfit) {
-            finalParams = { confidenceMultiplier: 1.0, sizeMultiplier: 1.0, mode: 'NEUTRAL', reason: `Test set failed validation (ROI: ${baselineTestROI.toFixed(1)}%)` };
-            comparisonMsg += ` | OVERFIT DETECTED: test ROI ${baselineTestROI.toFixed(1)}% < -10%, reset to NEUTRAL`;
+            finalParams = { confidenceMultiplier: 1.0, sizeMultiplier: 1.0, mode: 'NEUTRAL', reason: `Overfit: ${overfitReasons.join(', ')}` };
+            comparisonMsg += ` | OVERFIT DETECTED: ${overfitReasons.join(', ')} — reset to NEUTRAL`;
+        }
+
+        // Phase 6: Apply per-strategy overrides
+        let strategyOverrides = null;
+        if (baselineResult.strategyPerformance || baselineResult.categoryPerformance) {
+            strategyOverrides = strategyAdapter.adaptStrategies(
+                baselineResult.strategyPerformance,
+                baselineResult.categoryPerformance
+            );
+            botState.strategyOverrides = strategyOverrides;
+            if (strategyOverrides.reason && strategyOverrides.reason !== 'No strategy overrides needed') {
+                comparisonMsg += ` | Strategies: ${strategyOverrides.reason}`;
+            }
         }
 
         // Apply to bot state
@@ -109,6 +141,11 @@ async function runAutoTraining() {
                     current: currentResult?.metrics || null,
                     trainMetrics: baselineResult.trainMetrics,
                     testMetrics: baselineResult.testMetrics,
+                    exitStats: baselineResult.exitStats || null,
+                    strategyPerformance: baselineResult.strategyPerformance || null,
+                    categoryPerformance: baselineResult.categoryPerformance || null,
+                    regimePerformance: baselineResult.regimePerformance || null,
+                    strategyOverrides: strategyOverrides || null,
                     comparison: comparisonMsg,
                     appliedParams: finalParams,
                     sampleSize: baselineMetrics.sampleSize,

@@ -186,6 +186,34 @@ export const supabaseService = {
     },
 
     /**
+     * Save a signal snapshot for backtest replay (Phase 9A).
+     * Stores real PizzINT tension, news headlines, whale trades, and copy signals.
+     */
+    async saveSignalSnapshot(snapshot) {
+        if (!supabase) return;
+
+        try {
+            const { error } = await supabase
+                .from('signal_snapshots')
+                .insert({
+                    tension_score: snapshot.tension_score,
+                    tension_trend: snapshot.tension_trend,
+                    defcon: snapshot.defcon,
+                    news_headlines: snapshot.news_headlines,
+                    whale_trades: snapshot.whale_trades,
+                    copy_signals: snapshot.copy_signals,
+                    market_count: snapshot.market_count
+                });
+
+            if (error) {
+                console.warn('Signal snapshot insert error:', error.message);
+            }
+        } catch (e) {
+            console.warn('Signal snapshot exception:', e.message);
+        }
+    },
+
+    /**
      * Reconstructs the entire bot state from Supabase history.
      * Useful for disaster recovery (e.g. lost local file on Railway).
      */
@@ -227,6 +255,8 @@ export const supabaseService = {
                         id: trade.metadata?.marketData?.id || trade.market_id, // Prefer original ID
                         marketId: trade.market_id,
                         question: trade.question,
+                        slug: trade.metadata?.slug || null,
+                        eventSlug: trade.metadata?.eventSlug || null,
                         side: trade.side,
                         amount: amount,
                         entryPrice: trade.entry_price,

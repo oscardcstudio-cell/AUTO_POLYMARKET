@@ -109,6 +109,19 @@ async function mainLoop() {
         console.error("Recovery failed:", e);
     }
 
+    // Resolve missing slugs for active trades (needed for dashboard links)
+    for (const t of botState.activeTrades) {
+        if (!t.slug && t.marketId) {
+            try {
+                const slug = await getEventSlug(t.marketId, t.question);
+                if (slug) { t.slug = slug; }
+            } catch (e) { /* silent */ }
+        }
+    }
+    if (botState.activeTrades.some(t => t.slug)) {
+        stateManager.save();
+    }
+
     // Start Real-Time Price Tracking Service
     console.log('🔄 Starting real-time price tracking service...');
     startPriceUpdateLoop(botState);
@@ -180,7 +193,21 @@ async function mainLoop() {
                 botState.apiStatus.pizzint = 'OFFLINE';
             }
 
-            // 3. Portfolio Management
+            // 3. Portfolio Management — with auto-revert check (Phase 10)
+            // Check if recent trades are losing badly → revert to NEUTRAL
+            if (botState.learningParams?.mode && botState.learningParams.mode !== 'NEUTRAL') {
+                const recentClosed = (botState.closedTrades || []).slice(0, 5);
+                if (recentClosed.length >= 5) {
+                    const recentPnl = recentClosed.reduce((sum, t) => sum + (t.pnl || t.profit || 0), 0);
+                    const recentPnlPercent = recentPnl / (botState.startingCapital || CONFIG.STARTING_CAPITAL || 1000);
+                    if (recentPnlPercent < -0.05) {
+                        addLog(botState, `AUTO-REVERT: Last 5 trades lost ${(recentPnlPercent * 100).toFixed(1)}% — reverting to NEUTRAL`, 'warning');
+                        botState.learningParams = { confidenceMultiplier: 1.0, sizeMultiplier: 1.0, mode: 'NEUTRAL', reason: 'Auto-revert on drawdown spike' };
+                        stateManager.save();
+                    }
+                }
+            }
+
             // Inject Real Price Fetcher (CLOB with Gamma Fallback)
             await checkAndCloseTrades(async (trade) => {
                 try {
@@ -428,6 +455,24 @@ async function mainLoop() {
             saveToGithub();
 
             stateManager.save();
+
+            // 8. Signal Snapshot (for backtest replay — Phase 9A)
+            try {
+                const snapshot = {
+                    tension_score: pizzaData?.tensionScore || null,
+                    tension_trend: pizzaData?.tensionTrend || null,
+                    defcon: pizzaData?.defcon || null,
+                    news_headlines: (botState.newsSentiment || []).slice(0, 20),
+                    whale_trades: (botState.whaleAlerts || []).slice(0, 20),
+                    copy_signals: (botState.lastCopySignals || []).slice(0, 20),
+                    market_count: relevantMarkets?.length || 0
+                };
+                supabaseService.saveSignalSnapshot(snapshot).catch(e =>
+                    console.warn('Signal snapshot save failed:', e.message)
+                );
+            } catch (e) {
+                // Non-critical — never crash the loop
+            }
 
             // Heartbeat for Health Check
             botState.lastHeartbeat = new Date().toISOString();

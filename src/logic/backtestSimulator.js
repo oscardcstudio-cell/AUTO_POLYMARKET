@@ -12,8 +12,28 @@ import {
 import { categorizeMarket } from './signals.js';
 
 // REALISTIC COSTS
-const SLIPPAGE = 0.015;
+const DEFAULT_SLIPPAGE = 0.015;
 const POLYMARKET_FEES = 0.02;
+
+/**
+ * Estimate slippage based on market liquidity (Phase 5).
+ * High volume/liquidity = tight spread, low = wide spread.
+ */
+function estimateSlippage(market) {
+    const tiers = CONFIG.BACKTEST?.SLIPPAGE_TIERS;
+    if (!tiers) return DEFAULT_SLIPPAGE;
+
+    const volume = parseFloat(market.volume24hr || 0);
+    const liquidity = parseFloat(market.liquidityNum || 0);
+
+    if (volume > tiers.HIGH_LIQUIDITY.minVolume || liquidity > tiers.HIGH_LIQUIDITY.minLiquidity) {
+        return tiers.HIGH_LIQUIDITY.slippage; // 0.3%
+    }
+    if (volume > tiers.MEDIUM.minVolume || liquidity > tiers.MEDIUM.minLiquidity) {
+        return tiers.MEDIUM.slippage; // 1.5%
+    }
+    return tiers.LOW.slippage; // 3%
+}
 
 // Rate limiting for CLOB API
 const CLOB_DELAY_MS = 200;
@@ -247,15 +267,181 @@ async function fetchResolvedMarkets(log) {
     }
 }
 
-function calculateRealPnL(betAmount, betPrice, actualWinner, betSide) {
+/**
+ * Generate a synthetic price path using geometric Brownian motion.
+ * Drift is toward the actual resolution outcome.
+ */
+function generateSyntheticPricePath(entryPrice, actualWinner, betSide, category, steps) {
+    const vol = CONFIG.BACKTEST?.SYNTHETIC_VOLATILITY?.[category] || 0.015;
+    const points = [];
+    let price = entryPrice;
+
+    // Drift toward resolution: if YES wins, price drifts toward 1.0
+    const targetPrice = actualWinner === 'YES' ? 0.95 : 0.05;
+    const drift = (targetPrice - entryPrice) / (steps * 2); // Slow drift
+
+    for (let i = 0; i < steps; i++) {
+        const noise = (Math.random() - 0.5) * 2 * vol;
+        price = price + drift + noise;
+        price = Math.max(0.02, Math.min(0.98, price)); // Clamp
+        points.push(price);
+    }
+
+    return points;
+}
+
+/**
+ * Simulate the exit path for a trade using price history.
+ * Replicates the real bot's SL/TP/trailing/timeout logic from engine.js.
+ *
+ * Returns: { pnl, exitPrice, exitType, exitStep }
+ *   exitType: 'STOP_LOSS' | 'TRAILING_STOP' | 'TAKE_PROFIT' | 'TIMEOUT' | 'MAX_LOSS_CAP' | 'RESOLUTION'
+ */
+function simulateExitPath(betAmount, betPrice, betSide, actualWinner, category, priceHistory, entryIdx, slippage = DEFAULT_SLIPPAGE) {
+    const shares = betAmount / betPrice;
+    const slippageCost = betAmount * slippage;
+    const fees = betAmount * POLYMARKET_FEES;
+
+    // Get the price points after entry
+    let pricePath;
+    if (priceHistory && priceHistory.length > 0 && entryIdx !== undefined) {
+        // Use real CLOB prices after entry point
+        pricePath = priceHistory.slice(entryIdx).map(p => typeof p === 'object' ? p.p : p);
+    } else {
+        // Generate synthetic path
+        const steps = CONFIG.BACKTEST?.SYNTHETIC_WALK_POINTS || 80;
+        pricePath = generateSyntheticPricePath(betPrice, actualWinner, betSide, category, steps);
+    }
+
+    if (!pricePath || pricePath.length < 3) {
+        // Fallback to instant resolution
+        const pnl = calculateRealPnL(betAmount, betPrice, actualWinner, betSide, slippage);
+        return { pnl, exitPrice: betSide === actualWinner ? 1.0 : 0.0, exitType: 'RESOLUTION', exitStep: 0 };
+    }
+
+    // SL config
+    const volatilityMap = CONFIG.DYNAMIC_SL?.VOLATILITY_MAP || {};
+    let baseStopPercent = volatilityMap[category] || volatilityMap.other || 0.15;
+    if (betPrice < 0.35 && CONFIG.DYNAMIC_SL?.SPECULATIVE_SL_OVERRIDE) {
+        baseStopPercent = Math.min(baseStopPercent, CONFIG.DYNAMIC_SL.SPECULATIVE_SL_OVERRIDE);
+    }
+    const stopLossLevel = -baseStopPercent;
+    const maxLossCap = -0.15; // From data-driven tuning
+
+    // TP config — use category-based volatility to pick TP tier
+    const smartExit = CONFIG.SMART_EXIT || {};
+    const tpMap = smartExit.TP_MAP || { LOW: 0.15, MEDIUM: 0.20, HIGH: 0.30 };
+    // Estimate volatility from price path
+    let priceStdDev = 0;
+    if (pricePath.length > 3) {
+        const changes = [];
+        for (let i = 1; i < Math.min(pricePath.length, 20); i++) {
+            if (pricePath[i - 1] > 0) changes.push((pricePath[i] - pricePath[i - 1]) / pricePath[i - 1]);
+        }
+        if (changes.length > 0) {
+            const mean = changes.reduce((a, b) => a + b, 0) / changes.length;
+            priceStdDev = Math.sqrt(changes.reduce((s, c) => s + (c - mean) ** 2, 0) / changes.length);
+        }
+    }
+    const volThresholds = smartExit.VOLATILITY_THRESHOLDS || { LOW: 0.02, HIGH: 0.05 };
+    let tpPercent = priceStdDev < volThresholds.LOW ? tpMap.LOW
+        : priceStdDev > volThresholds.HIGH ? tpMap.HIGH
+        : tpMap.MEDIUM;
+
+    // Trailing config
+    const trailingActivation = CONFIG.DYNAMIC_SL?.TRAILING_ACTIVATION || 0.10;
+    const trailingDistance = CONFIG.DYNAMIC_SL?.TRAILING_DISTANCE || 0.05;
+    const timeoutSteps = CONFIG.BACKTEST?.TIMEOUT_STEPS || 48;
+    const partialExitRatio = smartExit.PARTIAL_EXIT_RATIO || 0.5;
+
+    let maxReturn = 0;
+    let partialExitDone = false;
+    let remainingShares = shares;
+    let realizedPnl = 0;
+
+    for (let step = 0; step < pricePath.length; step++) {
+        const currentPrice = pricePath[step];
+
+        // Calculate current return for the bet side
+        // For YES bet: value = shares * currentPrice, for NO bet: value = shares * (1 - currentPrice)
+        const currentValue = betSide === 'YES'
+            ? remainingShares * currentPrice
+            : remainingShares * (1 - currentPrice);
+        const currentInvested = remainingShares * betPrice;
+        const currentReturn = (currentValue - currentInvested) / currentInvested;
+
+        if (currentReturn > maxReturn) maxReturn = currentReturn;
+
+        // 1. MAX LOSS CAP
+        if (currentReturn <= maxLossCap) {
+            const exitPnl = currentValue - currentInvested - slippageCost - fees;
+            return { pnl: realizedPnl + exitPnl, exitPrice: currentPrice, exitType: 'MAX_LOSS_CAP', exitStep: step };
+        }
+
+        // 2. STOP LOSS (dynamic, category-based)
+        let effectiveSL = stopLossLevel;
+        // Time decay: tighten after half the timeout
+        if (step > timeoutSteps / 2) {
+            effectiveSL += (CONFIG.DYNAMIC_SL?.TIME_DECAY_PENALTY || 0.05);
+        }
+
+        if (currentReturn <= effectiveSL) {
+            const exitPnl = currentValue - currentInvested - slippageCost - fees;
+            return { pnl: realizedPnl + exitPnl, exitPrice: currentPrice, exitType: 'STOP_LOSS', exitStep: step };
+        }
+
+        // 3. TRAILING STOP
+        if (maxReturn >= trailingActivation) {
+            const trailingLevel = maxReturn - trailingDistance;
+            if (currentReturn <= trailingLevel && currentReturn > 0) {
+                const exitPnl = currentValue - currentInvested - slippageCost - fees;
+                return { pnl: realizedPnl + exitPnl, exitPrice: currentPrice, exitType: 'TRAILING_STOP', exitStep: step };
+            }
+        }
+
+        // 4. TAKE PROFIT (partial on first hit, full on extended target)
+        if (!partialExitDone && currentReturn >= tpPercent) {
+            // Partial exit: sell 50%
+            const partialShares = remainingShares * partialExitRatio;
+            const partialValue = betSide === 'YES'
+                ? partialShares * currentPrice
+                : partialShares * (1 - currentPrice);
+            const partialInvested = partialShares * betPrice;
+            realizedPnl += (partialValue - partialInvested) - (slippageCost * partialExitRatio) - (fees * partialExitRatio);
+            remainingShares -= partialShares;
+            partialExitDone = true;
+            // Continue with remainder for extended TP
+            tpPercent *= (smartExit.EXTENDED_TP_MULTIPLIER || 2.0);
+        }
+
+        if (partialExitDone && currentReturn >= tpPercent) {
+            // Full exit on extended target
+            const exitPnl = currentValue - (remainingShares * betPrice) - (slippageCost * (1 - partialExitRatio)) - (fees * (1 - partialExitRatio));
+            return { pnl: realizedPnl + exitPnl, exitPrice: currentPrice, exitType: 'TAKE_PROFIT', exitStep: step };
+        }
+
+        // 5. TIMEOUT
+        if (step >= timeoutSteps) {
+            const exitPnl = currentValue - currentInvested - slippageCost - fees;
+            return { pnl: realizedPnl + exitPnl, exitPrice: currentPrice, exitType: 'TIMEOUT', exitStep: step };
+        }
+    }
+
+    // End of price path: resolve at settlement
+    const finalPnl = calculateRealPnL(remainingShares * betPrice, betPrice, actualWinner, betSide, slippage);
+    return { pnl: realizedPnl + finalPnl, exitPrice: actualWinner === betSide ? 1.0 : 0.0, exitType: 'RESOLUTION', exitStep: pricePath.length };
+}
+
+function calculateRealPnL(betAmount, betPrice, actualWinner, betSide, slippage = DEFAULT_SLIPPAGE) {
+    const slippageCost = betAmount * slippage;
+    const fees = betAmount * POLYMARKET_FEES; // Fees on ALL trades, not just wins
+
     if (betSide === actualWinner) {
         const shares = betAmount / betPrice;
         const grossProfit = shares - betAmount;
-        const slippageCost = betAmount * SLIPPAGE;
-        const fees = Math.max(0, grossProfit) * POLYMARKET_FEES;
         return grossProfit - slippageCost - fees;
     } else {
-        return -(betAmount + betAmount * SLIPPAGE);
+        return -(betAmount + slippageCost + fees);
     }
 }
 
@@ -323,10 +509,20 @@ async function runBacktestOnSet(marketSet, initialCapital, log) {
         testSize: null,
         isTest: false,
         skipPersistence: true,
+        enforcePortfolioLimits: true, // Phase 3: enforce category/direction limits in backtest
         reasonsCollector: []
     };
 
-    for (const { market, actualWinner, originalQuestion } of marketSet) {
+    // Exit simulation stats
+    const exitStats = { STOP_LOSS: 0, TRAILING_STOP: 0, TAKE_PROFIT: 0, TIMEOUT: 0, MAX_LOSS_CAP: 0, RESOLUTION: 0 };
+
+    for (const { market, actualWinner, originalQuestion, _priceHistory } of marketSet) {
+        // Bankruptcy stop: halt if capital too low to trade
+        if (simCapital.value < 50) {
+            log(`💀 BANKRUPT: Capital $${simCapital.value.toFixed(2)} < $50 — halting simulation`);
+            break;
+        }
+
         backtestDependencies.reasonsCollector = [];
 
         // Fix B: Generate DEFCON per market (not once for entire backtest)
@@ -371,12 +567,53 @@ async function runBacktestOnSet(marketSet, initialCapital, log) {
         const betSide = decision.side;
         const betPrice = decision.entryPrice;
         const betAmount = Math.min(decision.amount, simCapital.value * 0.15);
+        const tradeCategory = categorizeMarket(originalQuestion);
+
+        // Phase 5: Variable slippage based on market liquidity
+        const marketSlippage = estimateSlippage(market);
 
         // Deduct trade cost from simulated capital (since saveNewTrade no longer does it)
         simCapital.value -= betAmount;
 
-        const pnl = calculateRealPnL(betAmount, betPrice, actualWinner, betSide);
+        // Phase 4: Exit simulation (SL/TP/trailing) instead of instant resolution
+        let pnl, exitType;
+        if (CONFIG.BACKTEST?.ENABLE_EXIT_SIM) {
+            // Find entry index in price history
+            let entryIdx = undefined;
+            if (_priceHistory && _priceHistory.length > 0) {
+                const len = _priceHistory.length;
+                entryIdx = Math.floor(len * 0.25) + Math.floor(Math.random() * Math.floor(len * 0.5));
+            }
+            const exitResult = simulateExitPath(betAmount, betPrice, betSide, actualWinner, tradeCategory, _priceHistory, entryIdx, marketSlippage);
+            pnl = exitResult.pnl;
+            exitType = exitResult.exitType;
+            exitStats[exitType] = (exitStats[exitType] || 0) + 1;
+        } else {
+            pnl = calculateRealPnL(betAmount, betPrice, actualWinner, betSide, marketSlippage);
+            exitType = 'RESOLUTION';
+            exitStats.RESOLUTION++;
+        }
+
         simCapital.value += betAmount + pnl; // Return principal + pnl
+
+        // Phase 7: Tag with tension regime
+        const tensionRegime = simPizza.tensionScore >= 80 ? 'CRITICAL'
+            : simPizza.tensionScore >= 55 ? 'HIGH'
+            : simPizza.tensionScore >= 30 ? 'ELEVATED'
+            : 'NORMAL';
+
+        // Phase 6: Derive strategy from decision reasons
+        const reasons = decision.reasons || [];
+        const reasonStr = reasons.join(' ').toLowerCase();
+        let strategy = 'standard';
+        if (reasonStr.includes('whale') || reasonStr.includes('🐋')) strategy = 'whale';
+        else if (reasonStr.includes('copy') || reasonStr.includes('leaderboard')) strategy = 'copy';
+        else if (reasonStr.includes('news') || reasonStr.includes('headline')) strategy = 'news';
+        else if (reasonStr.includes('calendar')) strategy = 'calendar';
+        else if (reasonStr.includes('wizard') || reasonStr.includes('trend')) strategy = 'trend';
+        else if (reasonStr.includes('fresh')) strategy = 'fresh';
+        else if (reasonStr.includes('anti-fragility') || reasonStr.includes('recovery')) strategy = 'anti-fragility';
+        else if (reasonStr.includes('hype') || reasonStr.includes('fader')) strategy = 'hype_fader';
 
         const tradeResult = {
             pnl,
@@ -386,9 +623,12 @@ async function runBacktestOnSet(marketSet, initialCapital, log) {
             question: originalQuestion,
             actualWinner,
             confidence: decision.confidence,
-            reasons: decision.reasons || [],
-            category: categorizeMarket(originalQuestion),
-            marketId: market.id
+            reasons,
+            category: tradeCategory,
+            marketId: market.id,
+            exitType,
+            strategy,
+            tensionRegime
         };
         tradeResults.push(tradeResult);
 
@@ -416,12 +656,12 @@ async function runBacktestOnSet(marketSet, initialCapital, log) {
         const idx = simActiveTrades.findIndex(t => t.marketId === market.id);
         if (idx !== -1) simActiveTrades.splice(idx, 1);
 
-        if (betSide === actualWinner) {
+        if (pnl >= 0) {
             wins++;
-            log(`WIN  | ${originalQuestion.substring(0, 45)}... | ${betSide} @ ${betPrice.toFixed(3)} | +$${pnl.toFixed(2)} | Tension ${simPizza.tensionScore} (DEFCON ${simPizza.defcon})`);
+            log(`WIN  | ${originalQuestion.substring(0, 40)}... | ${betSide} @ ${betPrice.toFixed(3)} | +$${pnl.toFixed(2)} | ${exitType} | T${simPizza.tensionScore}`);
         } else {
             losses++;
-            log(`LOSS | ${originalQuestion.substring(0, 45)}... | ${betSide} @ ${betPrice.toFixed(3)} | -$${Math.abs(pnl).toFixed(2)} | Tension ${simPizza.tensionScore} (DEFCON ${simPizza.defcon})`);
+            log(`LOSS | ${originalQuestion.substring(0, 40)}... | ${betSide} @ ${betPrice.toFixed(3)} | -$${Math.abs(pnl).toFixed(2)} | ${exitType} | T${simPizza.tensionScore}`);
         }
     }
 
@@ -430,8 +670,15 @@ async function runBacktestOnSet(marketSet, initialCapital, log) {
     const finalCapital = initialCapital + totalPnL;
     const winrate = (wins + losses) > 0 ? (wins / (wins + losses) * 100).toFixed(1) : '0';
 
+    // Log exit stats
+    const exitEntries = Object.entries(exitStats).filter(([, v]) => v > 0);
+    if (exitEntries.length > 0) {
+        log(`Exit Stats: ${exitEntries.map(([k, v]) => `${k}=${v}`).join(', ')}`);
+    }
+
     return {
         metrics,
+        exitStats,
         summary: {
             initialCapital, finalCapital, totalPnL,
             wins, losses, ignored, winrate,
@@ -445,6 +692,78 @@ async function runBacktestOnSet(marketSet, initialCapital, log) {
  * Warm up advanced strategies with historical data before the trade loop (Fix D).
  * Populates Market Memory, Correlation Map, and Event Catalysts.
  */
+/**
+ * Phase 9: Monte Carlo simulation — resample trades to get confidence intervals.
+ * Shuffles the order of trades 1000+ times to see if results are skill or luck.
+ */
+function runMonteCarloSimulation(tradeResults, initialCapital, nPaths = 1000) {
+    if (!tradeResults || tradeResults.length < 5) return null;
+
+    const pathResults = [];
+
+    for (let i = 0; i < nPaths; i++) {
+        // Resample trades with replacement
+        const resampled = [];
+        for (let j = 0; j < tradeResults.length; j++) {
+            const idx = Math.floor(Math.random() * tradeResults.length);
+            resampled.push(tradeResults[idx]);
+        }
+
+        // Calculate equity curve and metrics for this path
+        let capital = initialCapital;
+        let peak = initialCapital;
+        let maxDrawdown = 0;
+        let totalPnl = 0;
+
+        for (const t of resampled) {
+            capital += t.pnl;
+            totalPnl += t.pnl;
+            if (capital > peak) peak = capital;
+            const dd = (peak - capital) / peak;
+            if (dd > maxDrawdown) maxDrawdown = dd;
+        }
+
+        const roi = (totalPnl / initialCapital) * 100;
+        const returns = resampled.map(t => t.pnl);
+        const avg = returns.reduce((a, b) => a + b, 0) / returns.length;
+        const variance = returns.reduce((s, r) => s + (r - avg) ** 2, 0) / returns.length;
+        const stdDev = Math.sqrt(variance);
+        const sharpe = stdDev > 0 ? avg / stdDev : 0;
+
+        pathResults.push({ roi, maxDrawdown: maxDrawdown * 100, sharpe });
+    }
+
+    // Sort and extract percentiles
+    const percentile = (arr, pct) => arr[Math.floor(arr.length * pct)] || 0;
+
+    const rois = pathResults.map(p => p.roi).sort((a, b) => a - b);
+    const drawdowns = pathResults.map(p => p.maxDrawdown).sort((a, b) => a - b);
+    const sharpes = pathResults.map(p => p.sharpe).sort((a, b) => a - b);
+
+    return {
+        nPaths,
+        roi: {
+            p5: percentile(rois, 0.05).toFixed(2),
+            p25: percentile(rois, 0.25).toFixed(2),
+            median: percentile(rois, 0.5).toFixed(2),
+            p75: percentile(rois, 0.75).toFixed(2),
+            p95: percentile(rois, 0.95).toFixed(2)
+        },
+        maxDrawdown: {
+            p5: percentile(drawdowns, 0.05).toFixed(2),
+            median: percentile(drawdowns, 0.5).toFixed(2),
+            p95: percentile(drawdowns, 0.95).toFixed(2)
+        },
+        sharpe: {
+            p5: percentile(sharpes, 0.05).toFixed(3),
+            median: percentile(sharpes, 0.5).toFixed(3),
+            p95: percentile(sharpes, 0.95).toFixed(3)
+        },
+        probOfProfit: ((rois.filter(r => r > 0).length / nPaths) * 100).toFixed(1),
+        probOfRuin: ((rois.filter(r => r < -30).length / nPaths) * 100).toFixed(1)
+    };
+}
+
 function warmUpStrategies(marketSet, log) {
     // Clear previous backtest state
     clearMarketMemory();
@@ -492,7 +811,7 @@ function warmUpStrategies(marketSet, log) {
  * Runs the full backtest simulation with walk-forward analysis (Fix G).
  * @returns {Promise<Object>} { metrics, logs, trades, summary, trainMetrics, testMetrics }
  */
-export async function runBacktestSimulation() {
+export async function runBacktestSimulation(options = {}) {
     const outputLog = [];
     const log = (...args) => {
         const msg = args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ');
@@ -550,10 +869,86 @@ export async function runBacktestSimulation() {
     const winrate = (totalWins + totalLosses) > 0
         ? (totalWins / (totalWins + totalLosses) * 100).toFixed(1) : '0';
 
+    // Merge exit stats from train + test
+    const combinedExitStats = {};
+    for (const key of Object.keys(trainResult.exitStats || {})) {
+        combinedExitStats[key] = (trainResult.exitStats[key] || 0) + (testResult.exitStats?.[key] || 0);
+    }
+    for (const key of Object.keys(testResult.exitStats || {})) {
+        if (!combinedExitStats[key]) combinedExitStats[key] = testResult.exitStats[key];
+    }
+
+    // Phase 6: Per-strategy performance
+    const strategyPerformance = {};
+    const categoryPerformance = {};
+    // Phase 7: Per-regime performance
+    const regimePerformance = {};
+
+    for (const t of allTradeResults) {
+        // Strategy aggregation
+        const s = t.strategy || 'standard';
+        if (!strategyPerformance[s]) strategyPerformance[s] = { wins: 0, losses: 0, totalPnl: 0, count: 0 };
+        strategyPerformance[s].count++;
+        strategyPerformance[s].totalPnl += t.pnl;
+        if (t.pnl >= 0) strategyPerformance[s].wins++; else strategyPerformance[s].losses++;
+
+        // Category aggregation
+        const c = t.category || 'other';
+        if (!categoryPerformance[c]) categoryPerformance[c] = { wins: 0, losses: 0, totalPnl: 0, count: 0 };
+        categoryPerformance[c].count++;
+        categoryPerformance[c].totalPnl += t.pnl;
+        if (t.pnl >= 0) categoryPerformance[c].wins++; else categoryPerformance[c].losses++;
+
+        // Regime aggregation
+        const r = t.tensionRegime || 'NORMAL';
+        if (!regimePerformance[r]) regimePerformance[r] = { wins: 0, losses: 0, totalPnl: 0, count: 0 };
+        regimePerformance[r].count++;
+        regimePerformance[r].totalPnl += t.pnl;
+        if (t.pnl >= 0) regimePerformance[r].wins++; else regimePerformance[r].losses++;
+    }
+
+    // Compute WR and avg PnL for each group
+    for (const group of [strategyPerformance, categoryPerformance, regimePerformance]) {
+        for (const key of Object.keys(group)) {
+            const g = group[key];
+            g.winRate = g.count > 0 ? ((g.wins / g.count) * 100).toFixed(1) : '0';
+            g.avgPnl = g.count > 0 ? (g.totalPnl / g.count).toFixed(2) : '0';
+        }
+    }
+
     log('--- RESULTS ---');
     log(`Train: ROI ${trainResult.metrics.roi.toFixed(2)}% | Sharpe ${trainResult.metrics.sharpeRatio.toFixed(2)} | WR ${trainResult.summary.winrate}%`);
     log(`Test:  ROI ${testResult.metrics.roi.toFixed(2)}% | Sharpe ${testResult.metrics.sharpeRatio.toFixed(2)} | WR ${testResult.summary.winrate}%`);
     log(`Combined: ${totalWins}W ${totalLosses}L ${totalIgnored}I | ROI ${combinedMetrics.roi.toFixed(2)}% | $${initialCapital} -> $${finalCapital.toFixed(2)}`);
+    const exitSummary = Object.entries(combinedExitStats).filter(([, v]) => v > 0).map(([k, v]) => `${k}=${v}`).join(', ');
+    if (exitSummary) log(`Exit Types: ${exitSummary}`);
+
+    // Log strategy performance
+    const stratKeys = Object.keys(strategyPerformance).filter(k => strategyPerformance[k].count >= 2);
+    if (stratKeys.length > 0) {
+        log(`Strategy Breakdown: ${stratKeys.map(k => `${k}(${strategyPerformance[k].winRate}% WR, n=${strategyPerformance[k].count})`).join(', ')}`);
+    }
+
+    // Log regime performance and flag weak regimes
+    const regimeKeys = Object.keys(regimePerformance).filter(k => regimePerformance[k].count >= 2);
+    if (regimeKeys.length > 0) {
+        log(`Regime Breakdown: ${regimeKeys.map(k => `${k}(${regimePerformance[k].winRate}% WR, n=${regimePerformance[k].count})`).join(', ')}`);
+    }
+    for (const [regime, perf] of Object.entries(regimePerformance)) {
+        if (perf.count >= 5 && perf.totalPnl / initialCapital < -0.20) {
+            log(`REGIME WARNING: ${regime} has ROI ${((perf.totalPnl / initialCapital) * 100).toFixed(1)}% on ${perf.count} trades`);
+        }
+    }
+
+    // Phase 9: Monte Carlo simulation (optional)
+    let monteCarlo = null;
+    if ((CONFIG.BACKTEST?.MONTE_CARLO_ENABLED || options.monteCarlo) && allTradeResults.length >= 10) {
+        const mcPaths = CONFIG.BACKTEST.MONTE_CARLO_PATHS || 1000;
+        monteCarlo = runMonteCarloSimulation(allTradeResults, initialCapital, mcPaths);
+        if (monteCarlo) {
+            log(`Monte Carlo (${mcPaths} paths): P(profit)=${monteCarlo.probOfProfit}% | ROI median=${monteCarlo.roi.median}% [${monteCarlo.roi.p5}% to ${monteCarlo.roi.p95}%] | P(ruin)=${monteCarlo.probOfRuin}%`);
+        }
+    }
 
     // Cleanup: clear backtest strategy state
     clearMarketMemory();
@@ -563,6 +958,11 @@ export async function runBacktestSimulation() {
         metrics: combinedMetrics,
         trainMetrics: trainResult.metrics,
         testMetrics: testResult.metrics,
+        exitStats: combinedExitStats,
+        strategyPerformance,
+        categoryPerformance,
+        regimePerformance,
+        monteCarlo,
         summary: {
             initialCapital, finalCapital, totalPnL,
             wins: totalWins, losses: totalLosses,

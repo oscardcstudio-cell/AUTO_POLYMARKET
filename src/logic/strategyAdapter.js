@@ -105,5 +105,57 @@ export const strategyAdapter = {
             keepCurrent: false,
             reason: `Baseline outperformed: ROI ${roiDiff.toFixed(2)}%, Sharpe ${sharpeDiff.toFixed(2)}`
         };
+    },
+
+    /**
+     * Phase 6: Analyze per-strategy and per-category performance.
+     * Returns overrides to disable losing strategies and boost winners.
+     * @param {Object} strategyPerformance - { whale: { wins, losses, count, winRate }, ... }
+     * @param {Object} categoryPerformance - { sports: { wins, losses, count, winRate }, ... }
+     * @returns {Object} { disabledStrategies: [], categoryMultipliers: {}, reason: string }
+     */
+    adaptStrategies(strategyPerformance, categoryPerformance) {
+        const overrides = {
+            disabledStrategies: [],
+            categoryMultipliers: {},
+            reason: ''
+        };
+
+        if (!strategyPerformance && !categoryPerformance) return overrides;
+
+        const reasons = [];
+
+        // Disable strategies with WR < 30% and at least 5 trades
+        if (strategyPerformance) {
+            for (const [name, perf] of Object.entries(strategyPerformance)) {
+                if (perf.count >= 5 && parseFloat(perf.winRate) < 30) {
+                    overrides.disabledStrategies.push(name);
+                    reasons.push(`Disabled ${name} (${perf.winRate}% WR, n=${perf.count})`);
+                }
+            }
+        }
+
+        // Category multipliers: scale based on WR
+        if (categoryPerformance) {
+            for (const [cat, perf] of Object.entries(categoryPerformance)) {
+                if (perf.count < 3) continue; // Not enough data
+                const wr = parseFloat(perf.winRate);
+                if (wr >= 65) {
+                    overrides.categoryMultipliers[cat] = 1.3; // Boost
+                    reasons.push(`${cat} boosted x1.3 (${wr}% WR)`);
+                } else if (wr >= 50) {
+                    overrides.categoryMultipliers[cat] = 1.1;
+                } else if (wr < 30) {
+                    overrides.categoryMultipliers[cat] = 0.5; // Heavy penalty
+                    reasons.push(`${cat} penalized x0.5 (${wr}% WR)`);
+                } else if (wr < 40) {
+                    overrides.categoryMultipliers[cat] = 0.7;
+                    reasons.push(`${cat} penalized x0.7 (${wr}% WR)`);
+                }
+            }
+        }
+
+        overrides.reason = reasons.length > 0 ? reasons.join('. ') : 'No strategy overrides needed';
+        return overrides;
     }
 };
