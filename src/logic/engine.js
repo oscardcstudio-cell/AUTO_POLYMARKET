@@ -189,6 +189,16 @@ async function calculateConviction(market, pizzaData, dependencies) {
         }
     }
 
+    // 10b. Category-based conviction adjustment
+    // Sports = historically best WR, Economic = worst WR
+    if (category === 'sports') {
+        convictionPoints += 15;
+        signals.push('🏆 Sports Conviction (+15)');
+    } else if (category === 'economic') {
+        convictionPoints -= 10;
+        signals.push('📉 Economic Conviction (-10)');
+    }
+
     // 11. ADVANCED STRATEGIES (Memory, Cross-Market, Timing, Events, Calendar, Anti-Fragility)
     let advancedSizeMultiplier = 1.0;
     try {
@@ -222,13 +232,16 @@ function checkPortfolioExposure(activeTrades, newCategory, newSide) {
     const limits = CONFIG.PORTFOLIO_LIMITS;
     if (!limits) return { allowed: true, adjustment: 0, reason: null };
 
-    // Count trades by category
+    // Count trades by category (with per-category overrides)
     const sameCategoryCount = activeTrades.filter(t => t.category === newCategory).length;
-    if (sameCategoryCount >= limits.MAX_SAME_CATEGORY) {
+    const categoryMax = newCategory === 'sports' ? (limits.MAX_SPORTS_CATEGORY || 5)
+        : newCategory === 'economic' ? (limits.MAX_ECONOMIC_CATEGORY || 2)
+        : limits.MAX_SAME_CATEGORY;
+    if (sameCategoryCount >= categoryMax) {
         return {
             allowed: false,
             adjustment: 0,
-            reason: `Portfolio limit: ${sameCategoryCount}/${limits.MAX_SAME_CATEGORY} ${newCategory} trades`
+            reason: `Portfolio limit: ${sameCategoryCount}/${categoryMax} ${newCategory} trades`
         };
     }
 
@@ -809,6 +822,24 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
         decisionReasons.push(`📅 Advanced Size: x${advancedSizeMultiplier.toFixed(2)}`);
     }
 
+    // 2b. WHALE STRATEGY SIZE CAP: Limit whale-triggered trades to prevent outsized losses
+    // Data shows whale trades cause the 5 worst losses (-$18, -$8, -$4.5, -$4.3, -$4)
+    const isWhaleTriggered = decisionReasons.some(r => r.includes('Whale') || r.includes('🐋'));
+    if (isWhaleTriggered && !dependencies.testSize) {
+        const WHALE_MAX = 12; // $12 max on whale-triggered trades
+        if (tradeSize > WHALE_MAX) {
+            tradeSize = WHALE_MAX;
+            decisionReasons.push(`🐋 Whale Size Cap: capped at $${WHALE_MAX}`);
+        }
+    }
+
+    // 2c. ECONOMIC CATEGORY SIZE PENALTY: 20% WR on economic markets = reduce exposure
+    const tradeCategory = categorizeMarket(market.question);
+    if (tradeCategory === 'economic' && !dependencies.testSize) {
+        tradeSize *= 0.6; // 40% size reduction for economic markets
+        decisionReasons.push(`📉 Economic penalty: size x0.6 (low WR category)`);
+    }
+
     // 2. Adjust Size with Learning Params
     if (botState.learningParams?.sizeMultiplier && botState.learningParams.sizeMultiplier !== 1.0) {
         tradeSize *= botState.learningParams.sizeMultiplier;
@@ -1036,16 +1067,17 @@ export async function checkAndCloseTrades(getRealMarketPriceFn) {
         const requiredStopPercent = dynamicStopInfo.requiredStopPercent;
 
         if (pnlPercent <= requiredStopPercent) {
-            // --- MAX LOSS CAP: Never lose more than 25% per trade, even on gaps ---
-            const MAX_LOSS_CAP = -0.25;
+            // --- MAX LOSS CAP: Never lose more than 15% per trade, even on gaps ---
+            // Reduced from -25% to -15% after Nuggets trade lost $18 in one shot
+            const MAX_LOSS_CAP = -0.15;
             let effectiveExitPrice = currentPrice;
             if (pnlPercent < MAX_LOSS_CAP && invested > 0) {
-                // Cap the loss: calculate what price would give -25% loss
+                // Cap the loss: calculate what price would give -15% loss
                 effectiveExitPrice = (invested * (1 + MAX_LOSS_CAP)) / trade.shares;
                 addLog(botState, `🛡️ MAX LOSS CAP: Limiting loss from ${(pnlPercent * 100).toFixed(1)}% to ${(MAX_LOSS_CAP * 100)}% on ${trade.question.substring(0, 25)}...`, 'warning');
             }
             const stopLabel = requiredStopPercent >= 0 ? 'TRAILING STOP' : 'STOP LOSS';
-            const reason = `${stopLabel}: ${(pnlPercent * 100).toFixed(1)}% (Limit: ${(requiredStopPercent * 100).toFixed(1)}%)${pnlPercent < MAX_LOSS_CAP ? ' [CAPPED at -25%]' : ''}`;
+            const reason = `${stopLabel}: ${(pnlPercent * 100).toFixed(1)}% (Limit: ${(requiredStopPercent * 100).toFixed(1)}%)${pnlPercent < MAX_LOSS_CAP ? ' [CAPPED at -15%]' : ''}`;
             await closeTrade(i, effectiveExitPrice, reason);
             continue;
         }

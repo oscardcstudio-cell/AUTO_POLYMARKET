@@ -59,6 +59,8 @@ export const CONFIG = {
     // Portfolio Hedging Limits
     PORTFOLIO_LIMITS: {
         MAX_SAME_CATEGORY: 3,      // Max trades in same category (e.g., 3 political)
+        MAX_SPORTS_CATEGORY: 5,    // Allow more sports trades (100% WR historically)
+        MAX_ECONOMIC_CATEGORY: 2,  // Fewer economic trades (20% WR historically)
         MAX_SAME_DIRECTION: 6,     // Max trades in same direction (e.g., 6 YES)
         CORRELATION_PENALTY: 0.10, // Confidence reduction for concentrated trades
         DIVERSITY_BONUS: 0.05      // Confidence boost for under-represented categories

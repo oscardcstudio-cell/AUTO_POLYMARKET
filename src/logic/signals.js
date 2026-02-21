@@ -192,12 +192,16 @@ function getKeywordRelevance(keyword) {
 
 export function categorizeMarket(question) {
     const text = question.toLowerCase();
+    // Sports checked FIRST to avoid "counter-strike" matching "strike" in geopolitical
+    // Also added "win on 2026" pattern for sports matches like "Will Real Madrid win on 2026-02-21?"
+    const sportsKeywords = ['nba', 'nfl', 'super bowl', 'sports', 'championship', 'playoff', 'hockey', 'soccer', 'tennis', 'basketball', 'baseball', 'mlb', 'nhl', 'premier league', 'la liga', 'champions league', 'olympics', 'winter olympics', 'gold medal', 'semifinal', 'quarterfinal', 'lol:', 'counter-strike:', 'esports', 'lck', 'bo3)', 'bo5)', 'win on 2026', 'vs.'];
+    if (sportsKeywords.some(kw => text.includes(kw))) return 'sports';
+
     const categories = {
         geopolitical: ['pentagon', 'israel', 'iran', 'hezbollah', 'war', 'strike', 'attack', 'military', 'conflict', 'ukraine', 'russia', 'china', 'taiwan'],
         economic: ['bitcoin', 'crypto', 'gdp', 'economy', 'fed', 'rates', 'inflation', 'recession'],
         political: ['trump', 'election', 'president', 'congress', 'senate'],
         tech: ['spacex', 'elon', 'tesla', 'apple', 'nvidia', 'ai', 'gpt', 'tech'],
-        sports: ['nba', 'nfl', 'super bowl', 'sports', 'championship', 'playoff']
     };
 
     for (const [category, keywords] of Object.entries(categories)) {
@@ -361,12 +365,16 @@ function calculateAlphaScore(market, pizzaData) {
         }
     }
 
-    if (category === 'sports' && (!pizzaData || (pizzaData.tensionScore || 0) < 30)) {
-        score -= 20;
-        reasons.push('Catégorie Sports (-20)');
-    }
-
-    if (category !== 'sports') {
+    // Category performance adjustments (based on 88-trade backtest data)
+    // Sports: 100% WR → boost to get more sports trades
+    // Economic: 20% WR → penalize to reduce exposure
+    if (category === 'sports') {
+        score += 25;
+        reasons.push('🏆 Sports Bonus (+25) — best WR category');
+    } else if (category === 'economic') {
+        score -= 30;
+        reasons.push('📉 Economic Penalty (-30) — worst WR category');
+    } else {
         score += 10;
         reasons.push('Diversification (+10)');
     }
