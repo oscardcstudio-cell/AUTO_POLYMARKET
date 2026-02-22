@@ -1027,7 +1027,31 @@ export async function checkAndCloseTrades(getRealMarketPriceFn) {
         const currentPrice = getRealMarketPriceFn ? await getRealMarketPriceFn(trade) : (trade.entryPrice || 0.5);
 
         if (currentPrice === null || currentPrice === undefined || isNaN(currentPrice)) {
-            // Price unavailable — check if trade is stale (>48h with no price = force close)
+            // Price unavailable — the market may have closed/resolved (no more CLOB data)
+            // Try resolution first before force-closing as stale
+            try {
+                const resolution = await resolveTradeWithRealOutcome(trade);
+                if (resolution) {
+                    // Market resolved! Close with real outcome
+                    const todayStr = new Date().toISOString().split('T')[0];
+                    if (botState.dailyPnLResetDate !== todayStr) {
+                        botState.dailyPnL = 0;
+                        botState.dailyPnLResetDate = todayStr;
+                    }
+                    botState.dailyPnL += resolution.profit || 0;
+
+                    botState.activeTrades.splice(i, 1);
+                    botState.closedTrades.unshift(resolution);
+                    if (botState.closedTrades.length > 50) botState.closedTrades.pop();
+                    stateManager.save(true);
+                    await supabaseService.saveTrade(resolution).catch(e => console.error('Supabase resolution save error:', e));
+                    continue;
+                }
+            } catch (e) {
+                console.error(`Error trying resolution for no-price trade ${trade.marketId}:`, e.message);
+            }
+
+            // If not resolved, check if trade is stale (>48h with no price = force close)
             const tradeAgeMs = Date.now() - new Date(trade.startTime).getTime();
             const tradeAgeHours = tradeAgeMs / (1000 * 60 * 60);
             const lastUpdate = trade.lastPriceUpdate ? (Date.now() - new Date(trade.lastPriceUpdate).getTime()) / (1000 * 60 * 60) : tradeAgeHours;
@@ -1216,19 +1240,35 @@ async function resolveTradeWithRealOutcome(trade) {
         if (!response.ok) throw new Error('Failed to fetch market data');
         const market = await response.json();
 
-        if (!market.closed && !market.enableOrderBook) {
+        // Market must be closed OR not accepting orders to be resolved
+        if (!market.closed && market.acceptingOrders !== false) {
             // Not resolved yet
             return null;
         }
 
+        // Parse outcomePrices — Gamma API returns it as JSON string, not array!
+        let prices = market.outcomePrices;
+        if (!prices) return null;
+        if (typeof prices === 'string') {
+            try { prices = JSON.parse(prices); } catch (e) { return null; }
+        }
+
         let wonTrade = false;
-        if (market.acceptingOrders === false && market.outcomePrices) {
-            const yesPrice = parseFloat(market.outcomePrices[0]);
-            const noPrice = parseFloat(market.outcomePrices[1]);
-            if (yesPrice > 0.99 && trade.side === 'YES') wonTrade = true;
-            if (noPrice > 0.99 && trade.side === 'NO') wonTrade = true;
-        } else {
-            return null; // Still active
+        const yesPrice = parseFloat(prices[0]);
+        const noPrice = parseFloat(prices[1]);
+
+        if (isNaN(yesPrice) || isNaN(noPrice)) {
+            console.warn(`[Resolution] Cannot parse prices for ${trade.marketId}: ${JSON.stringify(market.outcomePrices)}`);
+            return null;
+        }
+
+        // Check if market has settled (prices at 0 or 1)
+        if (yesPrice > 0.99 && trade.side === 'YES') wonTrade = true;
+        if (noPrice > 0.99 && trade.side === 'NO') wonTrade = true;
+
+        // If prices are not at extremes yet, market hasn't fully settled
+        if (yesPrice > 0.01 && yesPrice < 0.99 && noPrice > 0.01 && noPrice < 0.99) {
+            return null; // Prices still mid-range, not resolved
         }
 
         let profit = 0;
