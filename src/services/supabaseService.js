@@ -132,9 +132,10 @@ export const supabaseService = {
                     .select()
                     .single();
             } else {
-                // ANTI-DUPLICATE: Check if trade already exists (by market_id + entry_price + amount)
-                // Don't filter by status so we can find OPEN trades when closing them
-                const { data: existing } = await supabase
+                // ANTI-DUPLICATE: Check if trade already exists
+                // Strategy 1: Match by market_id + entry_price + amount (exact match)
+                let existing = null;
+                const { data: exactMatch } = await supabase
                     .from('trades')
                     .select('id, status')
                     .eq('market_id', dbTrade.market_id)
@@ -143,13 +144,35 @@ export const supabaseService = {
                     .order('created_at', { ascending: false })
                     .limit(1);
 
-                if (existing && existing.length > 0) {
+                if (exactMatch && exactMatch.length > 0) {
+                    existing = exactMatch[0];
+                }
+
+                // Strategy 2: Fallback — find OPEN trade on same market + same entry_price
+                // Handles partial exits where amount changed but it's still the same trade
+                if (!existing && dbTrade.status === 'CLOSED') {
+                    const { data: openMatch } = await supabase
+                        .from('trades')
+                        .select('id, status')
+                        .eq('market_id', dbTrade.market_id)
+                        .eq('entry_price', dbTrade.entry_price)
+                        .eq('status', 'OPEN')
+                        .order('created_at', { ascending: false })
+                        .limit(1);
+
+                    if (openMatch && openMatch.length > 0) {
+                        existing = openMatch[0];
+                        console.log(`[Supabase] Fallback match: found OPEN trade ${existing.id} for ${trade.question?.substring(0, 30)}`);
+                    }
+                }
+
+                if (existing) {
                     // Found existing trade - update it (handles OPEN -> CLOSED transitions)
-                    trade.supabase_id = existing[0].id;
+                    trade.supabase_id = existing.id;
                     result = await supabase
                         .from('trades')
                         .update(dbTrade)
-                        .eq('id', existing[0].id)
+                        .eq('id', existing.id)
                         .select()
                         .single();
                 } else {
