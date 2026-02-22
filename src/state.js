@@ -128,7 +128,7 @@ export class StateManager {
         }
     }
 
-    save() {
+    save(force = false) {
         try {
             // Update derived stats before saving
             this.data.lastUpdate = new Date().toISOString();
@@ -169,10 +169,10 @@ export class StateManager {
                 saveToGithub("Update bot state & backlog");
             }
 
-            // --- SYNC TO SUPABASE (Fix for Persistence/Analytics) ---
+            // --- SYNC TO SUPABASE (Throttled to every 5 min, forced on trade events) ---
             if (supabaseService) {
                 // Fire and forget (don't block main loop)
-                supabaseService.saveState(this.data).catch(err =>
+                supabaseService.saveState(this.data, force).catch(err =>
                     console.error("Background Supabase Save Error:", err)
                 );
             }

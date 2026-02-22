@@ -3,8 +3,6 @@ import fs from 'fs';
 import path from 'path';
 import { exec } from 'child_process';
 import { CONFIG } from './config.js';
-import { supabase } from './services/supabaseService.js';
-
 // --- LOGGING ---
 export function addLog(botState, message, type = 'info') {
     const timestamp = new Date().toISOString();
@@ -109,25 +107,10 @@ function appendToSystemLog(type, args) {
         const msg = args.map(a => (typeof a === 'object' ? JSON.stringify(a) : String(a))).join(' ');
         const timestamp = new Date().toISOString();
 
-        // 1. File Log
+        // File Log only (Supabase system_logs removed — was causing 10k-40k writes/day, maxing CPU)
         const line = `[${timestamp}] [${type}] ${msg}\n`;
         const logFile = path.join(process.cwd(), 'logs.txt');
         fs.appendFileSync(logFile, line);
-
-        // 2. Supabase Log (Async, Fire & Forget)
-        if (supabase) {
-            supabase.from('system_logs').insert({
-                type,
-                message: msg,
-                timestamp: timestamp,
-                metadata: {}
-            }).then(({ error }) => {
-                if (error) {
-                    // Fail silently to avoid infinite loop of error logging
-                    // process.stdout.write(`Supabase Log Error: ${error.message}\n`);
-                }
-            });
-        }
     } catch (e) {
         // Ignored to prevent loop
     }

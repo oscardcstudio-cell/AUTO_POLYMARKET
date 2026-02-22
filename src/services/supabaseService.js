@@ -15,13 +15,21 @@ if (!SUPABASE_URL || !SUPABASE_KEY) {
 
 export const supabase = (SUPABASE_URL && SUPABASE_KEY) ? createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
+// Throttle: only save state to Supabase every 5 min (local JSON saves every cycle)
+let lastStateSaveTime = 0;
+const STATE_SAVE_INTERVAL_MS = 5 * 60 * 1000;
+
 export const supabaseService = {
     /**
      * Save the entire bot state to Supabase (JSON blob)
-     * Limit frequency to avoid rate limits (e.g. only on major updates)
+     * Throttled to every 5 min to reduce Supabase CPU load.
+     * Pass force=true to bypass throttle (e.g. after trade open/close).
      */
-    async saveState(stateData) {
+    async saveState(stateData, force = false) {
         if (!supabase) return;
+
+        // Throttle: skip unless 5 min elapsed or forced
+        if (!force && Date.now() - lastStateSaveTime < STATE_SAVE_INTERVAL_MS) return;
 
         try {
             // Remove heavy log arrays to save bandwidth/storage
@@ -43,6 +51,8 @@ export const supabaseService = {
 
             if (error) {
                 console.error("❌ Supabase State Save Error:", error.message);
+            } else {
+                lastStateSaveTime = Date.now();
             }
         } catch (e) {
             console.error("❌ State Save Exception:", e);

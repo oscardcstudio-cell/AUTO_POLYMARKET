@@ -38,6 +38,10 @@ import { recordMarketBatch, buildCorrelationMap, detectCatalysts, evaluateDCA, e
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Throttle timers (reduce Supabase writes)
+let lastSnapshotTime = 0;
+const SNAPSHOT_INTERVAL_MS = 15 * 60 * 1000; // Save signal snapshots every 15 min (not every cycle)
+
 // --- EXPRESS SERVER ---
 const app = express();
 app.use(express.json());
@@ -456,22 +460,25 @@ async function mainLoop() {
 
             stateManager.save();
 
-            // 8. Signal Snapshot (for backtest replay — Phase 9A)
-            try {
-                const snapshot = {
-                    tension_score: pizzaData?.tensionScore || null,
-                    tension_trend: pizzaData?.tensionTrend || null,
-                    defcon: pizzaData?.defcon || null,
-                    news_headlines: (botState.newsSentiment || []).slice(0, 20),
-                    whale_trades: (botState.whaleAlerts || []).slice(0, 20),
-                    copy_signals: (botState.lastCopySignals || []).slice(0, 20),
-                    market_count: relevantMarkets?.length || 0
-                };
-                supabaseService.saveSignalSnapshot(snapshot).catch(e =>
-                    console.warn('Signal snapshot save failed:', e.message)
-                );
-            } catch (e) {
-                // Non-critical — never crash the loop
+            // 8. Signal Snapshot (for backtest replay — Phase 9A, throttled to every 15 min)
+            if (Date.now() - lastSnapshotTime > SNAPSHOT_INTERVAL_MS) {
+                try {
+                    const snapshot = {
+                        tension_score: pizzaData?.tensionScore || null,
+                        tension_trend: pizzaData?.tensionTrend || null,
+                        defcon: pizzaData?.defcon || null,
+                        news_headlines: (botState.newsSentiment || []).slice(0, 20),
+                        whale_trades: (botState.whaleAlerts || []).slice(0, 20),
+                        copy_signals: (botState.lastCopySignals || []).slice(0, 20),
+                        market_count: relevantMarkets?.length || 0
+                    };
+                    supabaseService.saveSignalSnapshot(snapshot).catch(e =>
+                        console.warn('Signal snapshot save failed:', e.message)
+                    );
+                    lastSnapshotTime = Date.now();
+                } catch (e) {
+                    // Non-critical — never crash the loop
+                }
             }
 
             // Heartbeat for Health Check

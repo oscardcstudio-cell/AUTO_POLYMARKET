@@ -992,7 +992,7 @@ function saveNewTrade(trade, skipPersistence = false) {
 
     botState.totalTrades += 1;
 
-    stateManager.save();
+    stateManager.save(true); // Force Supabase sync on trade open
     supabaseService.saveTrade(trade).catch(err => console.error('Supabase Save Error:', err));
     // --- STRATEGY VISIBILITY LOGS ---
     const convPts = trade.convictionScore || 0;
@@ -1123,7 +1123,7 @@ export async function checkAndCloseTrades(getRealMarketPriceFn) {
                 trade.breakEvenStop = true; // Move stop-loss to break-even
 
                 addLog(botState, `✂️ PARTIAL EXIT: ${(exitRatio * 100)}% sold at +${(pnlPercent * 100).toFixed(1)}% | Remainder targets +${(tpPercent * (smartExit.EXTENDED_TP_MULTIPLIER || 2.0) * 100).toFixed(0)}% [slug:${trade.slug || ''}]`, 'trade');
-                stateManager.save();
+                stateManager.save(true); // Force Supabase sync on partial exit
                 await supabaseService.saveTrade(trade).catch(e => console.error('Supabase partial exit save:', e));
                 continue;
             } else {
@@ -1169,7 +1169,7 @@ export async function checkAndCloseTrades(getRealMarketPriceFn) {
                     botState.activeTrades.splice(i, 1);
                     botState.closedTrades.unshift(resolution);
                     if (botState.closedTrades.length > 50) botState.closedTrades.pop();
-                    stateManager.save();
+                    stateManager.save(true); // Force Supabase sync on trade close
                     await supabaseService.saveTrade(resolution).catch(e => console.error('Supabase resolution save error:', e));
                     continue;
                 }
@@ -1196,7 +1196,7 @@ export async function checkAndCloseTrades(getRealMarketPriceFn) {
                     botState.closedTrades.unshift(resolution);
                     if (botState.closedTrades.length > 50) botState.closedTrades.pop();
 
-                    stateManager.save();
+                    stateManager.save(true); // Force Supabase sync on trade close
                     await supabaseService.saveTrade(resolution).catch(e => console.error('Supabase resolution save error:', e));
                 }
             } catch (e) {
@@ -1310,8 +1310,8 @@ async function closeTrade(index, exitPrice, reason) {
     stateManager.addSectorEvent(trade.category, 'TRADE', `💰 Trade Closed: ${reason}`, { pnl: pnl.toFixed(2) });
     addLog(botState, `🏁 TRADE CLOSED: ${trade.question.substring(0, 20)}... | PnL: $${pnl.toFixed(2)} (${reason}) [slug:${trade.slug || ''}]`, pnl > 0 ? 'success' : 'warning');
 
-    // Save state
-    stateManager.save();
+    // Save state (force Supabase sync on trade close)
+    stateManager.save(true);
 
     // Sync to Supabase
     await supabaseService.saveTrade(trade);
