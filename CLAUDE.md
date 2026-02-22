@@ -1,11 +1,34 @@
 # CLAUDE.md - Auto-Polymarket Trading Bot
 
-## Qui est l'utilisateur
-Oscar ne code pas. Il comprend l'AI et la logique du projet mais pas la syntaxe.
+## Qui sont les utilisateurs
+Deux personnes travaillent sur ce projet. Ni l'un ni l'autre ne code.
+
+| Personne | Branche | Rôle |
+|----------|---------|------|
+| **Oscar** | `oscar/dev` | Owner, décisions finales |
+| **Engue** | `engue/dev` | Collaborateur |
+
 - Toujours expliquer les changements en langage simple AVANT de coder
 - Ne jamais demander "tu veux que je fasse X ou Y ?" avec des choix techniques incompréhensibles
 - Proposer des solutions, pas des options techniques
 - En cas de doute, faire le choix le plus sûr (pas de breaking changes)
+
+## Procédure de début de session (OBLIGATOIRE)
+**À chaque nouvelle conversation Claude Code, faire ceci AVANT tout travail :**
+
+1. **Demander qui travaille** : "Tu es Oscar ou Engue ?"
+2. **Vérifier la branche** : `git branch --show-current`
+3. **Si on est sur `main`** → basculer : `git checkout oscar/dev` (ou `engue/dev`)
+4. **Synchroniser** : `git pull` puis `git merge main`
+5. **S'il y a des conflits** → les montrer et résoudre ensemble AVANT de coder
+
+## Règles Git (STRICTES — ne jamais déroger)
+- **INTERDIT** de push sur `main` — toujours push sur la branche perso
+- **INTERDIT** de `git push --force` sur quelque branche que ce soit
+- **INTERDIT** de merger dans `main` en ligne de commande — utiliser une Pull Request GitHub
+- Avant chaque push : vérifier `git branch --show-current` — si c'est `main`, REFUSER
+- Après le push : proposer de créer une Pull Request si le changement est prêt
+- Voir `CONTRIBUTING.md` pour le guide complet de collaboration
 
 ## Le projet en bref
 Bot de trading automatisé pour Polymarket (marchés prédictifs).
@@ -121,17 +144,22 @@ node scripts/cleanup_orphan_trades.js
 
 ## Sécurité & garde-fous
 - JAMAIS désactiver SIMULATION_MODE sans confirmation d'Oscar
-- JAMAIS push --force sur main
+- JAMAIS push sur `main` — utiliser `oscar/dev` ou `engue/dev`
+- JAMAIS push --force sur quelque branche que ce soit
 - JAMAIS supprimer bot_data.json sans backup
 - JAMAIS modifier les clés API dans le code (utiliser .env)
 - Toujours tester localement avant de proposer un push
+- Toujours vérifier `git branch --show-current` avant de push
 
 ## Workflow de déploiement
-1. Modifier le code
-2. Tester localement (`node server.js`)
-3. Commit avec message clair en anglais
-4. Push sur GitHub -> Railway auto-deploy (~2 min)
-5. Vérifier via `node scripts/diagnose_railway_state.js`
+1. Vérifier qu'on est sur la bonne branche (`oscar/dev` ou `engue/dev`)
+2. Modifier le code
+3. Tester localement (`node server.js`)
+4. Commit avec message clair en anglais
+5. Push sur la branche perso (PAS main)
+6. Créer une Pull Request sur GitHub (branche → main)
+7. L'autre personne valide → Merge → Railway auto-deploy (~2 min)
+8. Vérifier via `node scripts/diagnose_railway_state.js`
 
 ## Référence
 - Protocole de debug : `docs/DEBUG_PROTOCOL.md`
