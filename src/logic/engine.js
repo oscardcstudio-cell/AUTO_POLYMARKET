@@ -972,7 +972,8 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
         isFresh: isFreshMarket,
         clobTokenIds: market.clobTokenIds || [],
         endDate: market.endDate || market.end_date_iso || null,
-        convictionScore: convictionResult?.points || 0
+        convictionScore: convictionResult?.points || 0,
+        originalAmount: tradeSize  // Store initial size for DCA calculations
     };
 
     saveNewTrade(trade, skipPersistence);

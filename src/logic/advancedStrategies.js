@@ -349,8 +349,13 @@ export function evaluateDCA(marketId) {
     if (!existingTrade) return { shouldDCA: false, existingTrade: null, reason: 'No existing position' };
 
     // Only DCA on high-conviction trades
-    if ((existingTrade.convictionScore || 0) < 60) {
-        return { shouldDCA: false, existingTrade, reason: 'Conviction too low for DCA' };
+    if ((existingTrade.convictionScore || 0) < 70) {
+        return { shouldDCA: false, existingTrade, reason: 'Conviction too low for DCA (need 70+)' };
+    }
+
+    // Cap total position size at $30 to prevent outsized losses from DCA stacking
+    if ((existingTrade.amount || 0) >= 30) {
+        return { shouldDCA: false, existingTrade, reason: 'Position already at $30 cap' };
     }
 
     // Max 2 add-ons
@@ -383,7 +388,14 @@ export function evaluateDCA(marketId) {
  * Execute a DCA add-on to an existing trade
  */
 export function executeDCA(existingTrade, currentPrice) {
-    const addOnSize = existingTrade.amount * 0.5; // Half the original size
+    // Use original entry size (not cumulative) to prevent exponential position growth
+    const originalSize = existingTrade.originalAmount || existingTrade.amount / ((existingTrade.dcaCount || 0) + 1);
+    let addOnSize = originalSize * 0.5; // Half the ORIGINAL size
+
+    // Cap so total position stays under $30
+    const maxAdd = 30 - existingTrade.amount;
+    if (maxAdd < CONFIG.MIN_TRADE_SIZE) return null;
+    addOnSize = Math.min(addOnSize, maxAdd);
 
     if (addOnSize < CONFIG.MIN_TRADE_SIZE || addOnSize > botState.capital) return null;
 
@@ -566,8 +578,8 @@ export function getEventSignal(marketId, market) {
         }
     }
 
-    // Cap event bonus at 25
-    return { bonus: Math.min(bonus, 25), signals: signals.slice(0, 3) };
+    // Cap event bonus at 35 (was 25 — event_driven is 79% WR, let it trigger more)
+    return { bonus: Math.min(bonus, 35), signals: signals.slice(0, 3) };
 }
 
 

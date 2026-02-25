@@ -135,14 +135,14 @@ export const CONFIG = {
         COPY_SIZE_PERCENT: 0.015,            // Copy at 1.5% of our capital per signal
         POSITION_CHECK_INTERVAL_MS: 5 * 60 * 1000,   // Check positions every 5 min
         LEADERBOARD_CACHE_TTL_MS: 6 * 60 * 60 * 1000, // Refresh leaderboard every 6h
-        MIN_SOURCE_TRADE_SIZE: 500,          // Only copy trades where source invested >$500
+        MIN_SOURCE_TRADE_SIZE: 300,          // Only copy trades where source invested >$300 (was $500, too selective)
         CATEGORIES: ['OVERALL'],             // Leaderboard categories to scan
         // Alpha score bonuses for copy signals
         COPY_ALPHA_BONUS: 30,                // +30 alpha if top trader is on this market
         COPY_MULTI_WALLET_BONUS: 15,         // +15 extra if 2+ tracked wallets on same market
         // Conviction bonuses
-        COPY_CONVICTION_ALIGNED: 12,         // +12 conviction if copy signal aligns with trade
-        COPY_CONVICTION_STRONG: 8,           // +8 extra if source wallet in top 5
+        COPY_CONVICTION_ALIGNED: 18,         // +18 conviction if copy signal aligns (was 12, 100% WR needs more trades)
+        COPY_CONVICTION_STRONG: 10,          // +10 extra if source wallet in top 5 (was 8)
     },
     // Backtesting Configuration
     BACKTEST: {
