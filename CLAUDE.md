@@ -18,7 +18,7 @@ Deux personnes travaillent sur ce projet. Ni l'un ni l'autre ne code.
 
 1. **Demander qui travaille** : "Tu es Oscar ou Engue ?"
 2. **Vérifier la branche** : `git branch --show-current`
-3. **Si on est sur `main`** → basculer : `git checkout oscar/dev` (ou `engue/dev`)
+3. **Si c'est oscar on peut push sur le main
 4. **Synchroniser** : `git pull` puis `git merge main`
 5. **S'il y a des conflits** → les montrer et résoudre ensemble AVANT de coder
 
