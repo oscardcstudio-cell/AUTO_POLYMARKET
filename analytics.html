@@ -1029,10 +1029,12 @@
                 const data = await res.json();
                 if (!Array.isArray(data) || data.length === 0) return;
 
-                // Update cards
+                // Update cards with data
+                const matched = new Set();
                 data.forEach(s => {
                     const card = document.querySelector(`.strat-card[data-strategy="${s.strategy}"]`);
                     if (!card) return;
+                    matched.add(s.strategy);
                     const trades = card.querySelector('.perf-trades');
                     const wr = card.querySelector('.perf-wr');
                     const pnl = card.querySelector('.perf-pnl');
@@ -1045,6 +1047,18 @@
                         pnl.textContent = (s.total_pnl >= 0 ? '+$' : '-$') + Math.abs(s.total_pnl).toFixed(2);
                         pnl.className = 'perf-value perf-pnl ' + (s.total_pnl >= 0 ? 'text-green' : 'text-red');
                     }
+                });
+
+                // Fill cards with no data: show "0 trades" instead of "—"
+                document.querySelectorAll('.strat-card[data-strategy]').forEach(card => {
+                    const strat = card.getAttribute('data-strategy');
+                    if (matched.has(strat)) return;
+                    const trades = card.querySelector('.perf-trades');
+                    const wr = card.querySelector('.perf-wr');
+                    const pnl = card.querySelector('.perf-pnl');
+                    if (trades) { trades.textContent = '0'; trades.style.opacity = '0.4'; }
+                    if (wr) { wr.textContent = '—'; wr.style.opacity = '0.4'; }
+                    if (pnl) { pnl.textContent = '$0'; pnl.style.opacity = '0.4'; }
                 });
 
                 // Build chart
