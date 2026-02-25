@@ -167,8 +167,11 @@ router.get('/strategy', async (req, res) => {
                 .eq('status', 'CLOSED');
             if (!error && trades && trades.length > 0) {
                 const strategies = {};
+                // Normalize strategy names to match analytics card data-strategy attributes
+                const nameMap = { 'copy_trade': 'copy' };
                 for (const t of trades) {
-                    const s = t.strategy || 'standard';
+                    const raw = t.strategy || 'standard';
+                    const s = nameMap[raw] || raw;
                     if (!strategies[s]) strategies[s] = { wins: 0, count: 0, pnl: 0, invested: 0 };
                     strategies[s].count++;
                     strategies[s].pnl += (t.pnl || 0);
