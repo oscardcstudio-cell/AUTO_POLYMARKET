@@ -118,6 +118,222 @@
         canvas {
             max-height: 300px;
         }
+
+        /* ── Strategies Guide Section ── */
+        .guide-divider {
+            margin: 60px 0 40px;
+            padding-top: 40px;
+            border-top: 2px solid var(--border);
+        }
+
+        .guide-divider h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #60a5fa, #a78bfa, #f472b6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin: 40px 0 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-subtitle {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+        }
+
+        /* Pipeline flow */
+        .pipeline {
+            display: flex;
+            align-items: stretch;
+            gap: 0;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding: 10px 0;
+        }
+
+        .pipeline-step {
+            flex: 1;
+            min-width: 150px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 18px 14px;
+            text-align: center;
+        }
+
+        .pipeline-step .step-emoji { font-size: 1.8rem; display: block; margin-bottom: 6px; }
+        .pipeline-step .step-title { font-weight: 700; font-size: 0.88rem; margin-bottom: 4px; }
+        .pipeline-step .step-desc { font-size: 0.75rem; color: var(--text-muted); line-height: 1.4; }
+
+        .pipeline-arrow {
+            display: flex;
+            align-items: center;
+            padding: 0 5px;
+            font-size: 1.3rem;
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+
+        /* Conviction bar */
+        .conviction-section {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .conviction-bar-container {
+            position: relative;
+            height: 36px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 14px 0;
+        }
+
+        .conviction-segment {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.65rem;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .conviction-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .legend-dot { width: 9px; height: 9px; border-radius: 3px; flex-shrink: 0; }
+
+        .conviction-thresholds {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+        }
+
+        .threshold-item { text-align: center; flex: 1; }
+        .threshold-item .score { font-size: 1rem; font-weight: 700; }
+        .threshold-item .label { font-size: 0.7rem; color: var(--text-muted); margin-top: 2px; }
+        .threshold-item .conf { font-size: 0.7rem; color: var(--primary); font-weight: 600; }
+
+        /* Strategy cards */
+        .strat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        .strat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.2s;
+        }
+
+        .strat-card:hover {
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-1px);
+        }
+
+        .strat-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .strat-card-header .name { display: flex; align-items: center; gap: 8px; }
+        .strat-card-header .emoji { font-size: 1.4rem; }
+        .strat-card-header h3 { font-size: 0.95rem; font-weight: 700; margin: 0; }
+
+        .strat-badge {
+            font-size: 0.65rem;
+            padding: 2px 8px;
+            border-radius: 100px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .badge-signal { background: rgba(59,130,246,0.15); color: #60a5fa; border: 1px solid rgba(59,130,246,0.3); }
+        .badge-intelligence { background: rgba(139,92,246,0.15); color: #a78bfa; border: 1px solid rgba(139,92,246,0.3); }
+        .badge-protection { background: rgba(34,197,94,0.15); color: #4ade80; border: 1px solid rgba(34,197,94,0.3); }
+
+        .strat-desc {
+            font-size: 0.83rem;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+
+        .strat-how { list-style: none; padding: 0; margin: 0; }
+        .strat-how li {
+            font-size: 0.76rem;
+            color: #64748b;
+            padding: 3px 0 3px 16px;
+            position: relative;
+            line-height: 1.4;
+        }
+        .strat-how li::before { content: "→"; position: absolute; left: 0; color: var(--primary); }
+
+        .strat-perf {
+            display: flex;
+            gap: 14px;
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px solid var(--border);
+        }
+
+        .perf-item { display: flex; flex-direction: column; }
+        .perf-label { font-size: 0.65rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
+        .perf-value { font-size: 0.9rem; font-weight: 700; }
+
+        .strat-chart-container {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .strat-chart-container h2 { font-size: 1rem; margin-bottom: 14px; color: var(--text-muted); margin-top: 0; }
+
+        @media (max-width: 768px) {
+            .pipeline { flex-direction: column; align-items: center; }
+            .pipeline-step { min-width: 100%; }
+            .pipeline-arrow { transform: rotate(90deg); padding: 4px 0; }
+            .strat-grid { grid-template-columns: 1fr; }
+            .conviction-thresholds { flex-wrap: wrap; gap: 6px; }
+        }
     </style>
 </head>
 
@@ -189,6 +405,444 @@
             </thead>
             <tbody></tbody>
         </table>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!-- ══════ GUIDE DES STRATÉGIES ══════ -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <div class="guide-divider">
+        <h1>🎯 Guide des Stratégies</h1>
+        <p class="section-subtitle">Comment le bot prend ses décisions, expliqué simplement.</p>
+    </div>
+
+    <!-- Pipeline de décision -->
+    <div class="section-title">Comment le bot décide</div>
+    <p class="section-subtitle">Chaque minute, le bot suit ces 5 étapes pour décider s'il doit acheter ou vendre.</p>
+
+    <div class="pipeline">
+        <div class="pipeline-step">
+            <span class="step-emoji">📡</span>
+            <div class="step-title">Scan marchés</div>
+            <div class="step-desc">Analyse 400+ marchés toutes les 30 min, vérifie les prix chaque minute.</div>
+        </div>
+        <div class="pipeline-arrow">→</div>
+        <div class="pipeline-step">
+            <span class="step-emoji">🔍</span>
+            <div class="step-title">Détection signaux</div>
+            <div class="step-desc">Cherche des opportunités : gros traders, news, arbitrage, tendances...</div>
+        </div>
+        <div class="pipeline-arrow">→</div>
+        <div class="pipeline-step">
+            <span class="step-emoji">🧮</span>
+            <div class="step-title">Score conviction</div>
+            <div class="step-desc">Chaque signal ajoute des points. Plus il y a de signaux alignés, plus le score monte (0 à 100).</div>
+        </div>
+        <div class="pipeline-arrow">→</div>
+        <div class="pipeline-step">
+            <span class="step-emoji">📏</span>
+            <div class="step-title">Sizing & risque</div>
+            <div class="step-desc">Calcule combien miser selon la conviction, le drawdown, et l'heure/jour.</div>
+        </div>
+        <div class="pipeline-arrow">→</div>
+        <div class="pipeline-step">
+            <span class="step-emoji">✅</span>
+            <div class="step-title">Trade exécuté</div>
+            <div class="step-desc">Si tout est OK (limites portfolio, liquidité, pas de doublon), le trade passe.</div>
+        </div>
+    </div>
+
+    <!-- Score de conviction -->
+    <div class="conviction-section">
+        <div class="section-title" style="margin-top:0">🧮 Comment se calcule la conviction</div>
+        <p class="section-subtitle" style="margin-bottom:14px">Chaque source d'info ajoute des points. Le total détermine la confiance du bot.</p>
+
+        <div class="conviction-bar-container">
+            <div class="conviction-segment" style="left:0; width:23.3%; background: linear-gradient(90deg, #8b5cf6, #7c3aed);">Event +35</div>
+            <div class="conviction-segment" style="left:23.3%; width:16.7%; background: linear-gradient(90deg, #3b82f6, #2563eb);">Tension +25</div>
+            <div class="conviction-segment" style="left:40%; width:12%; background: linear-gradient(90deg, #06b6d4, #0891b2);">Copy +18</div>
+            <div class="conviction-segment" style="left:52%; width:10%; background: linear-gradient(90deg, #22c55e, #16a34a);">Whale +15</div>
+            <div class="conviction-segment" style="left:62%; width:10%; background: linear-gradient(90deg, #f59e0b, #d97706);">News +15</div>
+            <div class="conviction-segment" style="left:72%; width:10%; background: linear-gradient(90deg, #ec4899, #db2777);">Memory +15</div>
+            <div class="conviction-segment" style="left:82%; width:8%; background: linear-gradient(90deg, #f97316, #ea580c);">Cross +12</div>
+            <div class="conviction-segment" style="left:90%; width:10%; background: linear-gradient(90deg, #64748b, #475569);">Entry +5 ...</div>
+        </div>
+
+        <div class="conviction-legend">
+            <div class="legend-item"><div class="legend-dot" style="background:#8b5cf6"></div>Event-Driven (max +35)</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div>Tension (max +25)</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#06b6d4"></div>Copy Trading (+18)</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#22c55e"></div>Whale (+15)</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div>News (+15)</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#ec4899"></div>Memory (+15)</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#f97316"></div>Cross-Market (+12)</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#64748b"></div>Smart Entry (+5)</div>
+        </div>
+
+        <div class="conviction-thresholds">
+            <div class="threshold-item"><div class="score" style="color: #64748b">0-19</div><div class="label">Faible</div><div class="conf">35%</div></div>
+            <div class="threshold-item"><div class="score" style="color: #f59e0b">20-39</div><div class="label">Moyen</div><div class="conf">50%</div></div>
+            <div class="threshold-item"><div class="score" style="color: #3b82f6">40-59</div><div class="label">Bon</div><div class="conf">65%</div></div>
+            <div class="threshold-item"><div class="score" style="color: #8b5cf6">60-79</div><div class="label">Fort</div><div class="conf">80%</div></div>
+            <div class="threshold-item"><div class="score" style="color: #22c55e">80+</div><div class="label">Très fort</div><div class="conf">90%</div></div>
+        </div>
+    </div>
+
+    <!-- ══════ STRATÉGIES DE SIGNAL ══════ -->
+    <div class="section-title">📡 Stratégies de Signal</div>
+    <p class="section-subtitle">Ce qui déclenche un trade — le bot détecte une opportunité sur le marché.</p>
+
+    <div class="strat-grid">
+        <div class="strat-card" data-strategy="arbitrage">
+            <div class="strat-card-header">
+                <div class="name"><span class="emoji">⚖️</span><h3>Arbitrage</h3></div>
+                <span class="strat-badge badge-signal">Signal</span>
+            </div>
+            <div class="strat-desc">Profit garanti : quand YES + NO &lt; 99.5%, achète les deux côtés.</div>
+            <ul class="strat-how">
+                <li>Vérifie si prix YES + prix NO &lt; 0.995 (= gap exploitable)</li>
+                <li>Achète YES et NO en même temps, divise la mise en 2</li>
+                <li>Confiance 100% — sans risque si la liquidité est là</li>
+            </ul>
+            <div class="strat-perf">
+                <div class="perf-item"><span class="perf-label">Trades</span><span class="perf-value perf-trades">—</span></div>
+                <div class="perf-item"><span class="perf-label">Win Rate</span><span class="perf-value perf-wr">—</span></div>
+                <div class="perf-item"><span class="perf-label">PnL</span><span class="perf-value perf-pnl">—</span></div>
+            </div>
+        </div>
+
+        <div class="strat-card" data-strategy="whale">
+            <div class="strat-card-header">
+                <div class="name"><span class="emoji">🐋</span><h3>Whale Follow</h3></div>
+                <span class="strat-badge badge-signal">Signal</span>
+            </div>
+            <div class="strat-desc">Copie les gros joueurs ($500+) détectés en temps réel via la Data API.</div>
+            <ul class="strat-how">
+                <li>Surveille les trades &gt;$500 sur la blockchain</li>
+                <li>Calcule la direction consensus (BULLISH / BEARISH)</li>
+                <li>Bonus +20 alpha, taille max $10 (43% WR)</li>
+            </ul>
+            <div class="strat-perf">
+                <div class="perf-item"><span class="perf-label">Trades</span><span class="perf-value perf-trades">—</span></div>
+                <div class="perf-item"><span class="perf-label">Win Rate</span><span class="perf-value perf-wr">—</span></div>
+                <div class="perf-item"><span class="perf-label">PnL</span><span class="perf-value perf-pnl">—</span></div>
+            </div>
+        </div>
+
+        <div class="strat-card" data-strategy="copy">
+            <div class="strat-card-header">
+                <div class="name"><span class="emoji">👥</span><h3>Copy Trading</h3></div>
+                <span class="strat-badge badge-signal">Signal</span>
+            </div>
+            <div class="strat-desc">Suit les 100 meilleurs traders du classement Polymarket (50 top semaine + 50 all-time).</div>
+            <ul class="strat-how">
+                <li>Récupère le top 100 du leaderboard toutes les 6h</li>
+                <li>Vérifie leurs positions toutes les 5 min</li>
+                <li>Si un top trader entre (&gt;$300), le bot suit</li>
+                <li>Bonus +30 alpha, +18 conviction. 100% WR</li>
+            </ul>
+            <div class="strat-perf">
+                <div class="perf-item"><span class="perf-label">Trades</span><span class="perf-value perf-trades">—</span></div>
+                <div class="perf-item"><span class="perf-label">Win Rate</span><span class="perf-value perf-wr">—</span></div>
+                <div class="perf-item"><span class="perf-label">PnL</span><span class="perf-value perf-pnl">—</span></div>
+            </div>
+        </div>
+
+        <div class="strat-card" data-strategy="wizard">
+            <div class="strat-card-header">
+                <div class="name"><span class="emoji">🧙</span><h3>Wizard Follow</h3></div>
+                <span class="strat-badge badge-signal">Signal</span>
+            </div>
+            <div class="strat-desc">Marchés pas chers (&lt;35¢) avec des signaux forts — signe que des "smart money" accumulent.</div>
+            <ul class="strat-how">
+                <li>Prix &lt; 0.35 ET alpha &gt; 30 points</li>
+                <li>Pari contrarian, confiance 60%</li>
+            </ul>
+            <div class="strat-perf">
+                <div class="perf-item"><span class="perf-label">Trades</span><span class="perf-value perf-trades">—</span></div>
+                <div class="perf-item"><span class="perf-label">Win Rate</span><span class="perf-value perf-wr">—</span></div>
+                <div class="perf-item"><span class="perf-label">PnL</span><span class="perf-value perf-pnl">—</span></div>
+            </div>
+        </div>
+
+        <div class="strat-card" data-strategy="trend_following">
+            <div class="strat-card-header">
+                <div class="name"><span class="emoji">🚀</span><h3>Trend Following</h3></div>
+                <span class="strat-badge badge-signal">Signal</span>
+            </div>
+            <div class="strat-desc">Suit la tendance sur les marchés liquides : si ça monte avec du volume, on achète.</div>
+            <ul class="strat-how">
+                <li>Tendance intraday UP + volume &gt; 1000</li>
+                <li>Prix entre 55% et 90%, vérifie le carnet d'ordres</li>
+            </ul>
+            <div class="strat-perf">
+                <div class="perf-item"><span class="perf-label">Trades</span><span class="perf-value perf-trades">—</span></div>
+                <div class="perf-item"><span class="perf-label">Win Rate</span><span class="perf-value perf-wr">—</span></div>
+                <div class="perf-item"><span class="perf-label">PnL</span><span class="perf-value perf-pnl">—</span></div>
+            </div>
+        </div>
+
+        <div class="strat-card" data-strategy="hype_fader">
+            <div class="strat-card-header">
+                <div class="name"><span class="emoji">📉</span><h3>Hype Fader</h3></div>
+                <span class="strat-badge badge-signal">Signal</span>
+            </div>
+            <div class="strat-desc">Parie contre la foule : marché trop haut (&gt;92%), il va probablement redescendre.</div>
+            <ul class="strat-how">
+                <li>YES &gt; 92% → achète NO (retour à la moyenne)</li>
+                <li>NO &gt; 92% → achète YES</li>
+                <li>Confiance 50%</li>
+            </ul>
+            <div class="strat-perf">
+                <div class="perf-item"><span class="perf-label">Trades</span><span class="perf-value perf-trades">—</span></div>
+                <div class="perf-item"><span class="perf-label">Win Rate</span><span class="perf-value perf-wr">—</span></div>
+                <div class="perf-item"><span class="perf-label">PnL</span><span class="perf-value perf-pnl">—</span></div>
+            </div>
+        </div>
+
+        <div class="strat-card" data-strategy="smart_momentum">
+            <div class="strat-card-header">
+                <div class="name"><span class="emoji">🔥</span><h3>Smart Momentum</h3></div>
+                <span class="strat-badge badge-signal">Signal</span>
+            </div>
+            <div class="strat-desc">Suit le favori quand il a beaucoup de volume. Simple et efficace.</div>
+            <ul class="strat-how">
+                <li>Volume &gt; 1000, prix entre 55-85%</li>
+                <li>Confiance 45% — stratégie de base</li>
+            </ul>
+            <div class="strat-perf">
+                <div class="perf-item"><span class="perf-label">Trades</span><span class="perf-value perf-trades">—</span></div>
+                <div class="perf-item"><span class="perf-label">Win Rate</span><span class="perf-value perf-wr">—</span></div>
+                <div class="perf-item"><span class="perf-label">PnL</span><span class="perf-value perf-pnl">—</span></div>
+            </div>
+        </div>
+
+        <div class="strat-card" data-strategy="fresh_market">
+            <div class="strat-card-header">
+                <div class="name"><span class="emoji">🆕</span><h3>Fresh Market</h3></div>
+                <span class="strat-badge badge-signal">Signal</span>
+            </div>
+            <div class="strat-desc">Entre tôt sur les marchés créés il y a moins de 24h, avant tout le monde.</div>
+            <ul class="strat-how">
+                <li>Score fraîcheur : &lt;6h = +25, 6-12h = +15, 12-24h = +10</li>
+                <li>Bonus volume et pertinence par mots-clés</li>
+                <li>Seuil minimum 60 points pour entrer</li>
+            </ul>
+            <div class="strat-perf">
+                <div class="perf-item"><span class="perf-label">Trades</span><span class="perf-value perf-trades">—</span></div>
+                <div class="perf-item"><span class="perf-label">Win Rate</span><span class="perf-value perf-wr">—</span></div>
+                <div class="perf-item"><span class="perf-label">PnL</span><span class="perf-value perf-pnl">—</span></div>
+            </div>
+        </div>
+
+        <div class="strat-card" data-strategy="contrarian">
+            <div class="strat-card-header">
+                <div class="name"><span class="emoji">🎰</span><h3>Low-Price / Spéculatif</h3></div>
+                <span class="strat-badge badge-signal">Signal</span>
+            </div>
+            <div class="strat-desc">Billets de loterie : marchés très pas chers (1-20¢), risque contrôlé, gros potentiel.</div>
+            <ul class="strat-how">
+                <li>Prix entre 1% et 20%, taille divisée par 2, max $15</li>
+                <li>Max 20% du portfolio sur ce type de paris</li>
+                <li>Confiance 35% mais potentiel x5 à x10</li>
+            </ul>
+            <div class="strat-perf">
+                <div class="perf-item"><span class="perf-label">Trades</span><span class="perf-value perf-trades">—</span></div>
+                <div class="perf-item"><span class="perf-label">Win Rate</span><span class="perf-value perf-wr">—</span></div>
+                <div class="perf-item"><span class="perf-label">PnL</span><span class="perf-value perf-pnl">—</span></div>
+            </div>
+        </div>
+
+        <div class="strat-card" data-strategy="standard">
+            <div class="strat-card-header">
+                <div class="name"><span class="emoji">📊</span><h3>Mid-Price / Standard</h3></div>
+                <span class="strat-badge badge-signal">Signal</span>
+            </div>
+            <div class="strat-desc">Paris équilibrés sur marchés à prix moyen (20-40%). Ni trop risqué, ni trop cher.</div>
+            <ul class="strat-how">
+                <li>Prix entre 20% et 40%, taille standard</li>
+                <li>Confiance 40% — le plus basique des signaux</li>
+            </ul>
+            <div class="strat-perf">
+                <div class="perf-item"><span class="perf-label">Trades</span><span class="perf-value perf-trades">—</span></div>
+                <div class="perf-item"><span class="perf-label">Win Rate</span><span class="perf-value perf-wr">—</span></div>
+                <div class="perf-item"><span class="perf-label">PnL</span><span class="perf-value perf-pnl">—</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════ STRATÉGIES D'INTELLIGENCE ══════ -->
+    <div class="section-title">🧠 Stratégies d'Intelligence</div>
+    <p class="section-subtitle">Ce qui affine les décisions — ajoutent ou retirent des points de conviction.</p>
+
+    <div class="strat-grid">
+        <div class="strat-card" data-strategy="memory">
+            <div class="strat-card-header">
+                <div class="name"><span class="emoji">🧠</span><h3>Market Memory</h3></div>
+                <span class="strat-badge badge-intelligence">Intelligence</span>
+            </div>
+            <div class="strat-desc">Mémorise les 200 derniers prix pour repérer des patterns qui se répètent.</div>
+            <ul class="strat-how">
+                <li>Détecte les supports (prix plancher, rebond → +15)</li>
+                <li>Détecte les résistances (prix plafond → -5)</li>
+                <li>Identifie les accélérations de momentum → +10</li>
+            </ul>
+            <div class="strat-perf">
+                <div class="perf-item"><span class="perf-label">Trades</span><span class="perf-value perf-trades">—</span></div>
+                <div class="perf-item"><span class="perf-label">Win Rate</span><span class="perf-value perf-wr">—</span></div>
+                <div class="perf-item"><span class="perf-label">PnL</span><span class="perf-value perf-pnl">—</span></div>
+            </div>
+        </div>
+
+        <div class="strat-card">
+            <div class="strat-card-header">
+                <div class="name"><span class="emoji">🔗</span><h3>Cross-Market Intelligence</h3></div>
+                <span class="strat-badge badge-intelligence">Intelligence</span>
+            </div>
+            <div class="strat-desc">Relie les marchés du même sujet. Si l'un bouge et pas l'autre, c'est une opportunité.</div>
+            <ul class="strat-how">
+                <li>Trouve les marchés liés par mots-clés communs</li>
+                <li>Si un marché lié monte et celui-ci est à la traîne → +12</li>
+            </ul>
+        </div>
+
+        <div class="strat-card">
+            <div class="strat-card-header">
+                <div class="name"><span class="emoji">⏱️</span><h3>Smart Entry Timing</h3></div>
+                <span class="strat-badge badge-intelligence">Intelligence</span>
+            </div>
+            <div class="strat-desc">Achète les baisses, évite les pics. Attend que le prix soit sous sa moyenne récente.</div>
+            <ul class="strat-how">
+                <li>Prix &gt; +2% au-dessus de la moyenne → attend</li>
+                <li>Prix en dessous → bonus +5% de confiance</li>
+            </ul>
+        </div>
+
+        <div class="strat-card" data-strategy="event_driven">
+            <div class="strat-card-header">
+                <div class="name"><span class="emoji">⚡</span><h3>Event-Driven</h3></div>
+                <span class="strat-badge badge-intelligence">Intelligence</span>
+            </div>
+            <div class="strat-desc">Boost massif quand un événement survient : grosse news, volume x3, alerte PizzINT.</div>
+            <ul class="strat-how">
+                <li>Détecte les tendances PizzINT et spikes de volume (x3)</li>
+                <li>Match les événements avec les marchés par mots-clés</li>
+                <li>Bonus max +35 — meilleur WR du bot (79%)</li>
+            </ul>
+            <div class="strat-perf">
+                <div class="perf-item"><span class="perf-label">Trades</span><span class="perf-value perf-trades">—</span></div>
+                <div class="perf-item"><span class="perf-label">Win Rate</span><span class="perf-value perf-wr">—</span></div>
+                <div class="perf-item"><span class="perf-label">PnL</span><span class="perf-value perf-pnl">—</span></div>
+            </div>
+        </div>
+
+        <div class="strat-card" data-strategy="defcon">
+            <div class="strat-card-header">
+                <div class="name"><span class="emoji">🌍</span><h3>Tension-Based (PizzINT)</h3></div>
+                <span class="strat-badge badge-intelligence">Intelligence</span>
+            </div>
+            <div class="strat-desc">Ajuste tout le bot selon la tension géopolitique mondiale (score 0-100).</div>
+            <ul class="strat-how">
+                <li>NORMAL (&lt;30) : standard</li>
+                <li>ELEVATED (30-54) : léger boost géo/éco</li>
+                <li>HIGH (55-79) : gros boost géo, sports pénalisé</li>
+                <li>CRITICAL (80+) : force géo/éco, rejette le sport</li>
+            </ul>
+            <div class="strat-perf">
+                <div class="perf-item"><span class="perf-label">Trades</span><span class="perf-value perf-trades">—</span></div>
+                <div class="perf-item"><span class="perf-label">Win Rate</span><span class="perf-value perf-wr">—</span></div>
+                <div class="perf-item"><span class="perf-label">PnL</span><span class="perf-value perf-pnl">—</span></div>
+            </div>
+        </div>
+
+        <div class="strat-card">
+            <div class="strat-card-header">
+                <div class="name"><span class="emoji">📰</span><h3>News Sentiment</h3></div>
+                <span class="strat-badge badge-intelligence">Intelligence</span>
+            </div>
+            <div class="strat-desc">Analyse les titres Google News pour confirmer ou invalider un signal.</div>
+            <ul class="strat-how">
+                <li>Google News RSS toutes les 15 min</li>
+                <li>News confirme → +15 conviction</li>
+                <li>News contredit → -5 (avertissement)</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ══════ STRATÉGIES DE PROTECTION ══════ -->
+    <div class="section-title">🛡️ Stratégies de Protection</div>
+    <p class="section-subtitle">Ce qui protège le capital — le bot ajuste sa prise de risque automatiquement.</p>
+
+    <div class="strat-grid">
+        <div class="strat-card">
+            <div class="strat-card-header">
+                <div class="name"><span class="emoji">🛡️</span><h3>Anti-Fragility</h3></div>
+                <span class="strat-badge badge-protection">Protection</span>
+            </div>
+            <div class="strat-desc">Quand le bot perd, il réduit ses mises. 4 niveaux de protection progressifs.</div>
+            <ul class="strat-how">
+                <li><strong>Niveau 0</strong> (normal) : pas de restriction</li>
+                <li><strong>Niveau 1</strong> (-3% drawdown) : conviction min 35, taille x0.85</li>
+                <li><strong>Niveau 2</strong> (-5% drawdown) : conviction min 60, taille x0.50</li>
+                <li><strong>Niveau 3</strong> (-10% drawdown) : conviction min 70, taille x0.25</li>
+            </ul>
+        </div>
+
+        <div class="strat-card" data-strategy="dca">
+            <div class="strat-card-header">
+                <div class="name"><span class="emoji">📐</span><h3>DCA (Dollar Cost Averaging)</h3></div>
+                <span class="strat-badge badge-protection">Protection</span>
+            </div>
+            <div class="strat-desc">Renforce les positions à haute conviction quand le prix baisse.</div>
+            <ul class="strat-how">
+                <li>Conviction ≥ 70, prix baissé de 3%+</li>
+                <li>Ajoute 50% de la mise initiale, max 2 ajouts ($30 total)</li>
+            </ul>
+            <div class="strat-perf">
+                <div class="perf-item"><span class="perf-label">Trades</span><span class="perf-value perf-trades">—</span></div>
+                <div class="perf-item"><span class="perf-label">Win Rate</span><span class="perf-value perf-wr">—</span></div>
+                <div class="perf-item"><span class="perf-label">PnL</span><span class="perf-value perf-pnl">—</span></div>
+            </div>
+        </div>
+
+        <div class="strat-card">
+            <div class="strat-card-header">
+                <div class="name"><span class="emoji">📅</span><h3>Calendar Awareness</h3></div>
+                <span class="strat-badge badge-protection">Protection</span>
+            </div>
+            <div class="strat-desc">Ajuste les mises selon le jour et l'heure.</div>
+            <ul class="strat-how">
+                <li>Week-end : -30% taille</li>
+                <li>Nuit (00-06h UTC) : -20%</li>
+                <li>Heures US (14-21h UTC) : +10%</li>
+                <li>Fin de mois : -10%</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Auto-apprentissage -->
+    <div class="section-title">🤖 Auto-apprentissage</div>
+    <p class="section-subtitle">Toutes les 6h, le bot analyse ses résultats et s'ajuste automatiquement.</p>
+
+    <div class="strat-grid">
+        <div class="strat-card" style="grid-column: 1 / -1;">
+            <div class="strat-card-header">
+                <div class="name"><span class="emoji">🤖</span><h3>AI Self-Training (toutes les 6h)</h3></div>
+                <span class="strat-badge badge-intelligence">Auto</span>
+            </div>
+            <div class="strat-desc">Le bot backtest ses résultats récents et désactive ce qui perd de l'argent.</div>
+            <ul class="strat-how">
+                <li>Stratégie &lt;30% WR sur 8+ trades → désactivée 6h</li>
+                <li>Ajuste les multiplicateurs par catégorie (sports boost, economic penalty...)</li>
+                <li>Si 5 derniers trades perdent &gt;5% du capital → mode NEUTRAL auto</li>
+                <li>Utilise le PnL (pas juste le WR) pour juger la rentabilité</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Chart comparatif stratégies -->
+    <div class="strat-chart-container">
+        <h2>📊 Performance comparée des stratégies</h2>
+        <canvas id="stratPerfChart" height="300"></canvas>
     </div>
 
     <script>
@@ -322,6 +976,107 @@
         }
 
         loadAnalytics();
+
+        // ── Strategy Guide: live performance on cards + chart ──
+        const STRATEGY_NAMES = {
+            'arbitrage': '⚖️ Arbitrage',
+            'whale': '🐋 Whale',
+            'copy': '👥 Copy',
+            'wizard': '🧙 Wizard',
+            'trend_following': '🚀 Trend',
+            'hype_fader': '📉 Hype Fader',
+            'smart_momentum': '🔥 Momentum',
+            'fresh_market': '🆕 Fresh',
+            'contrarian': '🎰 Low-Price',
+            'standard': '📊 Standard',
+            'memory': '🧠 Memory',
+            'event_driven': '⚡ Event',
+            'defcon': '🌍 Tension',
+            'dca': '📐 DCA',
+        };
+
+        let stratPerfChart = null;
+
+        async function loadStrategyGuideData() {
+            try {
+                const res = await fetch('/api/analytics/strategy');
+                if (!res.ok) return;
+                const data = await res.json();
+                if (!Array.isArray(data) || data.length === 0) return;
+
+                // Update cards
+                data.forEach(s => {
+                    const card = document.querySelector(`.strat-card[data-strategy="${s.strategy}"]`);
+                    if (!card) return;
+                    const trades = card.querySelector('.perf-trades');
+                    const wr = card.querySelector('.perf-wr');
+                    const pnl = card.querySelector('.perf-pnl');
+                    if (trades) trades.textContent = s.trade_count;
+                    if (wr) {
+                        wr.textContent = s.win_rate_percent.toFixed(1) + '%';
+                        wr.className = 'perf-value perf-wr ' + (s.win_rate_percent >= 50 ? 'text-green' : s.win_rate_percent >= 40 ? '' : 'text-red');
+                    }
+                    if (pnl) {
+                        pnl.textContent = (s.total_pnl >= 0 ? '+$' : '-$') + Math.abs(s.total_pnl).toFixed(2);
+                        pnl.className = 'perf-value perf-pnl ' + (s.total_pnl >= 0 ? 'text-green' : 'text-red');
+                    }
+                });
+
+                // Build chart
+                const ctx = document.getElementById('stratPerfChart');
+                if (!ctx) return;
+                const labels = data.map(s => STRATEGY_NAMES[s.strategy] || s.strategy);
+                const pnlData = data.map(s => s.total_pnl);
+                const wrData = data.map(s => s.win_rate_percent);
+
+                if (stratPerfChart) stratPerfChart.destroy();
+                stratPerfChart = new Chart(ctx.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels,
+                        datasets: [
+                            {
+                                label: 'PnL ($)',
+                                data: pnlData,
+                                backgroundColor: pnlData.map(v => v >= 0 ? 'rgba(34,197,94,0.7)' : 'rgba(239,68,68,0.7)'),
+                                borderColor: pnlData.map(v => v >= 0 ? '#22c55e' : '#ef4444'),
+                                borderWidth: 1,
+                                yAxisID: 'y',
+                                borderRadius: 4,
+                            },
+                            {
+                                label: 'Win Rate (%)',
+                                data: wrData,
+                                type: 'line',
+                                borderColor: '#3b82f6',
+                                backgroundColor: 'rgba(59,130,246,0.1)',
+                                borderWidth: 2,
+                                pointRadius: 4,
+                                pointBackgroundColor: '#3b82f6',
+                                yAxisID: 'y1',
+                                tension: 0.3,
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: { mode: 'index', intersect: false },
+                        plugins: { legend: { labels: { color: '#94a3b8', font: { size: 12 } } } },
+                        scales: {
+                            x: { ticks: { color: '#64748b', font: { size: 10 }, maxRotation: 45 }, grid: { color: 'rgba(255,255,255,0.03)' } },
+                            y: { position: 'left', title: { display: true, text: 'PnL ($)', color: '#94a3b8' }, ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                            y1: { position: 'right', title: { display: true, text: 'Win Rate (%)', color: '#3b82f6' }, ticks: { color: '#3b82f6' }, grid: { display: false }, min: 0, max: 100 }
+                        }
+                    }
+                });
+            } catch (err) {
+                console.error('Strategy guide data error:', err);
+            }
+        }
+
+        loadStrategyGuideData();
+        setInterval(loadStrategyGuideData, 60000);
     </script>
 </body>
 
