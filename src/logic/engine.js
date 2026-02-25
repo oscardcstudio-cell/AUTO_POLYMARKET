@@ -236,6 +236,7 @@ function checkPortfolioExposure(activeTrades, newCategory, newSide) {
     const sameCategoryCount = activeTrades.filter(t => t.category === newCategory).length;
     const categoryMax = newCategory === 'sports' ? (limits.MAX_SPORTS_CATEGORY || 5)
         : newCategory === 'economic' ? (limits.MAX_ECONOMIC_CATEGORY || 2)
+        : newCategory === 'tech' ? (limits.MAX_TECH_CATEGORY || 2)
         : limits.MAX_SAME_CATEGORY;
     if (sameCategoryCount >= categoryMax) {
         return {
@@ -355,6 +356,13 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
             addLog(botState, `🛑 DAILY LOSS LIMIT: Trading halted ($${botState.dailyPnL.toFixed(2)} today)`, 'warning');
             return null;
         }
+    }
+
+    // BLACKLIST: Elon Musk tweet-counting markets (37% WR, -$20 since Feb 21)
+    const questionLower = (market.question || '').toLowerCase();
+    if (questionLower.includes('elon musk') && (questionLower.includes('tweet') || questionLower.includes('post'))) {
+        if (reasonsCollector) reasonsCollector.push(`Blacklisted: Elon tweet-counting market`);
+        return null;
     }
 
     // Market re-entry cooldown (30 min after closing a trade on same market)
@@ -823,10 +831,10 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
     }
 
     // 2b. WHALE STRATEGY SIZE CAP: Limit whale-triggered trades to prevent outsized losses
-    // Data shows whale trades cause the 5 worst losses (-$18, -$8, -$4.5, -$4.3, -$4)
+    // 124 trades data: whale 43% WR, -$16.21 PnL — losses bigger than wins
     const isWhaleTriggered = decisionReasons.some(r => r.includes('Whale') || r.includes('🐋'));
     if (isWhaleTriggered && !dependencies.testSize) {
-        const WHALE_MAX = 12; // $12 max on whale-triggered trades
+        const WHALE_MAX = 10; // $10 max on whale-triggered trades (was $12, still losing)
         if (tradeSize > WHALE_MAX) {
             tradeSize = WHALE_MAX;
             decisionReasons.push(`🐋 Whale Size Cap: capped at $${WHALE_MAX}`);

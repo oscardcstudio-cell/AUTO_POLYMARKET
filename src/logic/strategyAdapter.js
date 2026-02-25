@@ -135,22 +135,26 @@ export const strategyAdapter = {
             }
         }
 
-        // Category multipliers: scale based on WR
+        // Category multipliers: scale based on WR + PnL (need enough data to decide)
         if (categoryPerformance) {
             for (const [cat, perf] of Object.entries(categoryPerformance)) {
-                if (perf.count < 3) continue; // Not enough data
+                if (perf.count < 8) continue; // Need 8+ trades to judge (was 3 — too few caused false penalties)
                 const wr = parseFloat(perf.winRate);
+                const pnl = parseFloat(perf.totalPnl || perf.pnl || 0);
+
+                // Don't penalize a category that's actually profitable
                 if (wr >= 65) {
                     overrides.categoryMultipliers[cat] = 1.3; // Boost
                     reasons.push(`${cat} boosted x1.3 (${wr}% WR)`);
-                } else if (wr >= 50) {
-                    overrides.categoryMultipliers[cat] = 1.1;
-                } else if (wr < 30) {
-                    overrides.categoryMultipliers[cat] = 0.5; // Heavy penalty
-                    reasons.push(`${cat} penalized x0.5 (${wr}% WR)`);
-                } else if (wr < 40) {
+                } else if (wr >= 50 || pnl > 0) {
+                    overrides.categoryMultipliers[cat] = 1.1; // Mild boost if profitable despite lower WR
+                    if (pnl > 0 && wr < 50) reasons.push(`${cat} x1.1 (${wr}% WR but +$${pnl.toFixed(0)} PnL)`);
+                } else if (wr < 30 && pnl < -5) {
+                    overrides.categoryMultipliers[cat] = 0.5; // Heavy penalty only if both WR bad AND losing money
+                    reasons.push(`${cat} penalized x0.5 (${wr}% WR, $${pnl.toFixed(0)})`);
+                } else if (wr < 40 && pnl < 0) {
                     overrides.categoryMultipliers[cat] = 0.7;
-                    reasons.push(`${cat} penalized x0.7 (${wr}% WR)`);
+                    reasons.push(`${cat} penalized x0.7 (${wr}% WR, $${pnl.toFixed(0)})`);
                 }
             }
         }

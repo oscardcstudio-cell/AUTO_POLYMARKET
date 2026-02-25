@@ -59,8 +59,9 @@ export const CONFIG = {
     // Portfolio Hedging Limits
     PORTFOLIO_LIMITS: {
         MAX_SAME_CATEGORY: 3,      // Max trades in same category (e.g., 3 political)
-        MAX_SPORTS_CATEGORY: 5,    // Allow more sports trades (100% WR historically)
+        MAX_SPORTS_CATEGORY: 5,    // Allow more sports trades (55% WR, +$46 since Feb 21)
         MAX_ECONOMIC_CATEGORY: 2,  // Fewer economic trades (20% WR historically)
+        MAX_TECH_CATEGORY: 2,      // Limit tech trades (37% WR, -$20 since Feb 21 — mostly Elon tweets)
         MAX_SAME_DIRECTION: 6,     // Max trades in same direction (e.g., 6 YES)
         CORRELATION_PENALTY: 0.10, // Confidence reduction for concentrated trades
         DIVERSITY_BONUS: 0.05      // Confidence boost for under-represented categories
@@ -169,8 +170,8 @@ export const CONFIG = {
         CACHE_TTL_MS: 5 * 60 * 1000,   // Cache whale data for 5 min
         REFRESH_INTERVAL_MS: 5 * 60 * 1000, // Refresh every 5 min (not every cycle)
         // Alpha score bonuses
-        WHALE_ALPHA_BONUS: 35,          // +35 alpha if whale activity on market
-        WHALE_CONSENSUS_BONUS: 15,      // +15 extra if whales agree on direction
+        WHALE_ALPHA_BONUS: 20,          // +20 alpha if whale activity (was 35, caused outsized losses -$16)
+        WHALE_CONSENSUS_BONUS: 10,      // +10 extra if whales agree on direction (was 15)
         // Conviction bonuses
         WHALE_CONVICTION_ALIGNED: 15,   // +15 conviction if whale direction matches trade
         WHALE_CONVICTION_OPPOSED: -10,  // -10 conviction if whales bet opposite
