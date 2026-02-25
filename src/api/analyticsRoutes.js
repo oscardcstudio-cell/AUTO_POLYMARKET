@@ -124,12 +124,9 @@ function computeLocalAnalytics() {
 }
 
 // 1. GLOBAL PERFORMANCE
-// Priority: local state (source of truth when bot is running) → Supabase fallback (cold start)
+// Priority: Supabase (has full history) → local fallback
 router.get('/global', async (req, res) => {
     try {
-        const local = computeLocalAnalytics();
-        if (local.global.total_trades > 0) return res.json(local.global);
-        // Supabase fallback only if local has no trades (cold start / fresh deploy)
         if (supabase) {
             const { data, error } = await supabase
                 .from('view_global_performance')
@@ -137,7 +134,7 @@ router.get('/global', async (req, res) => {
                 .single();
             if (!error && data) return res.json(data);
         }
-        res.json(local.global);
+        res.json(computeLocalAnalytics().global);
     } catch (err) {
         res.json(computeLocalAnalytics().global);
     }
@@ -146,8 +143,6 @@ router.get('/global', async (req, res) => {
 // 2. CATEGORY PERFORMANCE
 router.get('/category', async (req, res) => {
     try {
-        const local = computeLocalAnalytics();
-        if (local.categories.length > 0) return res.json(local.categories);
         if (supabase) {
             const { data, error } = await supabase
                 .from('view_category_performance')
@@ -155,25 +150,43 @@ router.get('/category', async (req, res) => {
                 .order('total_pnl', { ascending: false });
             if (!error && data && data.length > 0) return res.json(data);
         }
-        res.json(local.categories);
+        res.json(computeLocalAnalytics().categories);
     } catch (err) {
         res.json(computeLocalAnalytics().categories);
     }
 });
 
 // 3. STRATEGY PERFORMANCE
+// Compute from raw trades since view_strategy_performance doesn't exist in Supabase
 router.get('/strategy', async (req, res) => {
     try {
-        const local = computeLocalAnalytics();
-        if (local.strategies.length > 0) return res.json(local.strategies);
         if (supabase) {
-            const { data, error } = await supabase
-                .from('view_strategy_performance')
-                .select('*')
-                .order('total_pnl', { ascending: false });
-            if (!error && data && data.length > 0) return res.json(data);
+            const { data: trades, error } = await supabase
+                .from('trades')
+                .select('strategy, pnl, amount')
+                .eq('status', 'CLOSED');
+            if (!error && trades && trades.length > 0) {
+                const strategies = {};
+                for (const t of trades) {
+                    const s = t.strategy || 'standard';
+                    if (!strategies[s]) strategies[s] = { wins: 0, count: 0, pnl: 0, invested: 0 };
+                    strategies[s].count++;
+                    strategies[s].pnl += (t.pnl || 0);
+                    strategies[s].invested += (t.amount || 0);
+                    if ((t.pnl || 0) > 0) strategies[s].wins++;
+                }
+                const result = Object.entries(strategies).map(([strat, d]) => ({
+                    strategy: strat,
+                    trade_count: d.count,
+                    total_pnl: d.pnl,
+                    avg_roi_percent: d.invested > 0 ? (d.pnl / d.invested) * 100 : 0,
+                    win_rate_percent: d.count > 0 ? (d.wins / d.count) * 100 : 0,
+                    avg_conviction: 0
+                })).sort((a, b) => b.total_pnl - a.total_pnl);
+                return res.json(result);
+            }
         }
-        res.json(local.strategies);
+        res.json(computeLocalAnalytics().strategies);
     } catch (err) {
         res.json(computeLocalAnalytics().strategies);
     }
@@ -182,8 +195,6 @@ router.get('/strategy', async (req, res) => {
 // 4. MONTHLY PNL
 router.get('/monthly', async (req, res) => {
     try {
-        const local = computeLocalAnalytics();
-        if (local.monthly.length > 0) return res.json(local.monthly);
         if (supabase) {
             const { data, error } = await supabase
                 .from('view_monthly_pnl')
@@ -191,7 +202,7 @@ router.get('/monthly', async (req, res) => {
                 .order('month', { ascending: true });
             if (!error && data && data.length > 0) return res.json(data);
         }
-        res.json(local.monthly);
+        res.json(computeLocalAnalytics().monthly);
     } catch (err) {
         res.json(computeLocalAnalytics().monthly);
     }
