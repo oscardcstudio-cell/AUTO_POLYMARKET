@@ -211,4 +211,52 @@ router.get('/monthly', async (req, res) => {
     }
 });
 
+// 5. INTELLIGENCE INFLUENCE — how often each intelligence strategy influenced trades
+router.get('/intelligence', async (req, res) => {
+    try {
+        if (supabase) {
+            const { data: trades, error } = await supabase
+                .from('trades')
+                .select('metadata, pnl')
+                .eq('status', 'CLOSED');
+            if (!error && trades && trades.length > 0) {
+                const intel = {
+                    'news':           { patterns: ['News', 'headline', 'sentiment'], count: 0, wins: 0, pnl: 0 },
+                    'cross_market':   { patterns: ['Cross-market', 'Correlation penalty'], count: 0, wins: 0, pnl: 0 },
+                    'smart_entry':    { patterns: ['Smart Entry', 'below average', 'dip buy'], count: 0, wins: 0, pnl: 0 },
+                    'tension':        { patterns: ['DEFCON', 'PizzINT', 'Tension', 'ELEVATED', 'HIGH mode', 'CRITICAL'], count: 0, wins: 0, pnl: 0 },
+                    'memory':         { patterns: ['Memory', 'support detected', 'resistance detected'], count: 0, wins: 0, pnl: 0 },
+                    'event':          { patterns: ['Event:', 'Catalyst', 'volume_spike'], count: 0, wins: 0, pnl: 0 },
+                    'calendar':       { patterns: ['Calendar', 'off-hours', 'weekend', 'Advanced Size'], count: 0, wins: 0, pnl: 0 },
+                    'anti_fragility': { patterns: ['Anti-Fragility', 'Drawdown', 'fragility'], count: 0, wins: 0, pnl: 0 },
+                    'ai_adapt':       { patterns: ['AI Adaptation', 'Self-Training'], count: 0, wins: 0, pnl: 0 },
+                };
+                for (const t of trades) {
+                    const reasons = Array.isArray((t.metadata || {}).reasons) ? t.metadata.reasons.join(' ') : '';
+                    for (const [, cfg] of Object.entries(intel)) {
+                        if (cfg.patterns.some(p => reasons.includes(p))) {
+                            cfg.count++;
+                            cfg.pnl += (t.pnl || 0);
+                            if ((t.pnl || 0) > 0) cfg.wins++;
+                        }
+                    }
+                }
+                const total = trades.length;
+                const result = Object.entries(intel).map(([key, d]) => ({
+                    strategy: key,
+                    influenced_trades: d.count,
+                    total_trades: total,
+                    influence_percent: total > 0 ? (d.count / total * 100) : 0,
+                    win_rate_percent: d.count > 0 ? (d.wins / d.count * 100) : 0,
+                    total_pnl: d.pnl,
+                })).sort((a, b) => b.influenced_trades - a.influenced_trades);
+                return res.json(result);
+            }
+        }
+        res.json([]);
+    } catch (err) {
+        res.json([]);
+    }
+});
+
 export default router;

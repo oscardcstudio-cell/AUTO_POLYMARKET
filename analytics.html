@@ -693,7 +693,7 @@
             </div>
         </div>
 
-        <div class="strat-card">
+        <div class="strat-card" data-intel="cross_market">
             <div class="strat-card-header">
                 <div class="name"><span class="emoji">🔗</span><h3>Cross-Market Intelligence</h3></div>
                 <span class="strat-badge badge-intelligence">Intelligence</span>
@@ -703,9 +703,14 @@
                 <li>Trouve les marchés liés par mots-clés communs</li>
                 <li>Si un marché lié monte et celui-ci est à la traîne → +12</li>
             </ul>
+            <div class="strat-perf">
+                <div class="perf-item"><span class="perf-label">Influence</span><span class="perf-value intel-influence">—</span></div>
+                <div class="perf-item"><span class="perf-label">Win Rate</span><span class="perf-value intel-wr">—</span></div>
+                <div class="perf-item"><span class="perf-label">PnL</span><span class="perf-value intel-pnl">—</span></div>
+            </div>
         </div>
 
-        <div class="strat-card">
+        <div class="strat-card" data-intel="smart_entry">
             <div class="strat-card-header">
                 <div class="name"><span class="emoji">⏱️</span><h3>Smart Entry Timing</h3></div>
                 <span class="strat-badge badge-intelligence">Intelligence</span>
@@ -715,6 +720,11 @@
                 <li>Prix &gt; +2% au-dessus de la moyenne → attend</li>
                 <li>Prix en dessous → bonus +5% de confiance</li>
             </ul>
+            <div class="strat-perf">
+                <div class="perf-item"><span class="perf-label">Influence</span><span class="perf-value intel-influence">—</span></div>
+                <div class="perf-item"><span class="perf-label">Win Rate</span><span class="perf-value intel-wr">—</span></div>
+                <div class="perf-item"><span class="perf-label">PnL</span><span class="perf-value intel-pnl">—</span></div>
+            </div>
         </div>
 
         <div class="strat-card" data-strategy="event_driven">
@@ -754,7 +764,7 @@
             </div>
         </div>
 
-        <div class="strat-card">
+        <div class="strat-card" data-intel="news">
             <div class="strat-card-header">
                 <div class="name"><span class="emoji">📰</span><h3>News Sentiment</h3></div>
                 <span class="strat-badge badge-intelligence">Intelligence</span>
@@ -765,6 +775,11 @@
                 <li>News confirme → +15 conviction</li>
                 <li>News contredit → -5 (avertissement)</li>
             </ul>
+            <div class="strat-perf">
+                <div class="perf-item"><span class="perf-label">Influence</span><span class="perf-value intel-influence">—</span></div>
+                <div class="perf-item"><span class="perf-label">Win Rate</span><span class="perf-value intel-wr">—</span></div>
+                <div class="perf-item"><span class="perf-label">PnL</span><span class="perf-value intel-pnl">—</span></div>
+            </div>
         </div>
     </div>
 
@@ -773,7 +788,7 @@
     <p class="section-subtitle">Ce qui protège le capital — le bot ajuste sa prise de risque automatiquement.</p>
 
     <div class="strat-grid">
-        <div class="strat-card">
+        <div class="strat-card" data-intel="anti_fragility">
             <div class="strat-card-header">
                 <div class="name"><span class="emoji">🛡️</span><h3>Anti-Fragility</h3></div>
                 <span class="strat-badge badge-protection">Protection</span>
@@ -785,6 +800,11 @@
                 <li><strong>Niveau 2</strong> (-5% drawdown) : conviction min 60, taille x0.50</li>
                 <li><strong>Niveau 3</strong> (-10% drawdown) : conviction min 70, taille x0.25</li>
             </ul>
+            <div class="strat-perf">
+                <div class="perf-item"><span class="perf-label">Influence</span><span class="perf-value intel-influence">—</span></div>
+                <div class="perf-item"><span class="perf-label">Win Rate</span><span class="perf-value intel-wr">—</span></div>
+                <div class="perf-item"><span class="perf-label">PnL</span><span class="perf-value intel-pnl">—</span></div>
+            </div>
         </div>
 
         <div class="strat-card" data-strategy="dca">
@@ -804,7 +824,7 @@
             </div>
         </div>
 
-        <div class="strat-card">
+        <div class="strat-card" data-intel="calendar">
             <div class="strat-card-header">
                 <div class="name"><span class="emoji">📅</span><h3>Calendar Awareness</h3></div>
                 <span class="strat-badge badge-protection">Protection</span>
@@ -816,6 +836,11 @@
                 <li>Heures US (14-21h UTC) : +10%</li>
                 <li>Fin de mois : -10%</li>
             </ul>
+            <div class="strat-perf">
+                <div class="perf-item"><span class="perf-label">Influence</span><span class="perf-value intel-influence">—</span></div>
+                <div class="perf-item"><span class="perf-label">Win Rate</span><span class="perf-value intel-wr">—</span></div>
+                <div class="perf-item"><span class="perf-label">PnL</span><span class="perf-value intel-pnl">—</span></div>
+            </div>
         </div>
     </div>
 
@@ -1077,6 +1102,53 @@
 
         loadStrategyGuideData();
         setInterval(loadStrategyGuideData, 60000);
+
+        // ── Intelligence influence stats on cards ──
+        async function loadIntelligenceData() {
+            try {
+                const res = await fetch('/api/analytics/intelligence');
+                if (!res.ok) return;
+                const data = await res.json();
+                if (!Array.isArray(data) || data.length === 0) return;
+
+                data.forEach(s => {
+                    const card = document.querySelector(`.strat-card[data-intel="${s.strategy}"]`);
+                    if (!card) return;
+                    const inf = card.querySelector('.intel-influence');
+                    const wr = card.querySelector('.intel-wr');
+                    const pnl = card.querySelector('.intel-pnl');
+                    if (inf) {
+                        if (s.influenced_trades > 0) {
+                            inf.textContent = s.influenced_trades + '/' + s.total_trades + ' (' + s.influence_percent.toFixed(0) + '%)';
+                        } else {
+                            inf.textContent = 'Inactive';
+                            inf.className = 'perf-value intel-influence text-muted';
+                        }
+                    }
+                    if (wr) {
+                        if (s.influenced_trades > 0) {
+                            wr.textContent = s.win_rate_percent.toFixed(1) + '%';
+                            wr.className = 'perf-value intel-wr ' + (s.win_rate_percent >= 50 ? 'text-green' : s.win_rate_percent >= 40 ? '' : 'text-red');
+                        } else {
+                            wr.textContent = '—';
+                        }
+                    }
+                    if (pnl) {
+                        if (s.influenced_trades > 0) {
+                            pnl.textContent = (s.total_pnl >= 0 ? '+$' : '-$') + Math.abs(s.total_pnl).toFixed(2);
+                            pnl.className = 'perf-value intel-pnl ' + (s.total_pnl >= 0 ? 'text-green' : 'text-red');
+                        } else {
+                            pnl.textContent = '—';
+                        }
+                    }
+                });
+            } catch (err) {
+                console.error('Intelligence data error:', err);
+            }
+        }
+
+        loadIntelligenceData();
+        setInterval(loadIntelligenceData, 60000);
     </script>
 </body>
 
