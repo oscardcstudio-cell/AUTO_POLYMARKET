@@ -221,15 +221,15 @@ router.get('/intelligence', async (req, res) => {
                 .eq('status', 'CLOSED');
             if (!error && trades && trades.length > 0) {
                 const intel = {
-                    'news':           { patterns: ['News', 'headline', 'sentiment'], count: 0, wins: 0, pnl: 0 },
-                    'cross_market':   { patterns: ['Cross-market', 'Correlation penalty'], count: 0, wins: 0, pnl: 0 },
-                    'smart_entry':    { patterns: ['Smart Entry', 'below average', 'dip buy'], count: 0, wins: 0, pnl: 0 },
-                    'tension':        { patterns: ['DEFCON', 'PizzINT', 'Tension', 'ELEVATED', 'HIGH mode', 'CRITICAL'], count: 0, wins: 0, pnl: 0 },
-                    'memory':         { patterns: ['Memory', 'support detected', 'resistance detected'], count: 0, wins: 0, pnl: 0 },
-                    'event':          { patterns: ['Event:', 'Catalyst', 'volume_spike'], count: 0, wins: 0, pnl: 0 },
-                    'calendar':       { patterns: ['Calendar', 'off-hours', 'weekend', 'Advanced Size'], count: 0, wins: 0, pnl: 0 },
-                    'anti_fragility': { patterns: ['Anti-Fragility', 'Drawdown', 'fragility'], count: 0, wins: 0, pnl: 0 },
-                    'ai_adapt':       { patterns: ['AI Adaptation', 'Self-Training'], count: 0, wins: 0, pnl: 0 },
+                    'news':           { patterns: ['NewsMatch', 'News', 'headline', 'sentiment'], count: 0, wins: 0, pnl: 0 },
+                    'cross_market':   { patterns: ['CrossMarket', 'Correlation penalty', 'Diversity bonus'], count: 0, wins: 0, pnl: 0 },
+                    'smart_entry':    { patterns: ['Timing: Price', 'below avg', 'above recent avg'], count: 0, wins: 0, pnl: 0 },
+                    'tension':        { patterns: ['pizzint', 'DEFCON', 'PizzINT', 'ELEVATED', 'HIGH mode', 'CRITICAL'], count: 0, wins: 0, pnl: 0 },
+                    'memory':         { patterns: ['Memory:', 'accelerating', 'support detected', 'resistance detected'], count: 0, wins: 0, pnl: 0 },
+                    'event':          { patterns: ['Event:', 'Catalyst', 'volume_spike', 'volume spike'], count: 0, wins: 0, pnl: 0 },
+                    'calendar':       { patterns: ['Calendar:', 'off-hours', 'weekend', 'Advanced Size'], count: 0, wins: 0, pnl: 0 },
+                    'anti_fragility': { patterns: ['Recovery Tier', 'Anti-Fragility', 'fragility', 'drawdown'], count: 0, wins: 0, pnl: 0 },
+                    'ai_adapt':       { patterns: ['AI Adaptation', 'AI Feedback', 'Self-Training'], count: 0, wins: 0, pnl: 0 },
                 };
                 for (const t of trades) {
                     const reasons = Array.isArray((t.metadata || {}).reasons) ? t.metadata.reasons.join(' ') : '';
