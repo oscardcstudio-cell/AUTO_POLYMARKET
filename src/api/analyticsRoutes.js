@@ -230,6 +230,7 @@ router.get('/intelligence', async (req, res) => {
                     'calendar':       { patterns: ['Calendar:', 'off-hours', 'weekend', 'Advanced Size'], count: 0, wins: 0, pnl: 0 },
                     'anti_fragility': { patterns: ['Recovery Tier', 'Anti-Fragility', 'fragility', 'drawdown'], count: 0, wins: 0, pnl: 0 },
                     'ai_adapt':       { patterns: ['AI Adaptation', 'AI Feedback', 'Self-Training'], count: 0, wins: 0, pnl: 0 },
+                    'dca':            { patterns: ['DCA', 'dollar cost', 'reinforce'], count: 0, wins: 0, pnl: 0 },
                 };
                 for (const t of trades) {
                     const reasons = Array.isArray((t.metadata || {}).reasons) ? t.metadata.reasons.join(' ') : '';
