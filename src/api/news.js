@@ -1,5 +1,7 @@
 
 import { CONFIG } from '../config.js';
+import { addLog } from '../utils.js';
+import { botState } from '../state.js';
 
 // Safe wrapper — news module doesn't have direct access to botState,
 // so we use console.log (which is captured by the system logger in utils.js)
@@ -222,9 +224,9 @@ async function fetchOSINTNews(maxPerSource = 5) {
     }).filter(Boolean).join(' | ');
 
     if (allArticles.length > 0) {
-        safeLog(`[OSINT] ✅ ${allArticles.length} articles chargés — ${bySource}`);
+        addLog(botState, `[OSINT] ✅ ${allArticles.length} articles chargés — ${bySource}`, 'info');
     } else {
-        safeLog(`[OSINT] ⚠️ Aucun article récupéré (sources indisponibles)`);
+        addLog(botState, `[OSINT] ⚠️ Aucun article récupéré (sources indisponibles)`, 'warning');
     }
 
     return allArticles;

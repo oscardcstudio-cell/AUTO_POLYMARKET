@@ -1,5 +1,6 @@
 
 import { addLog } from '../utils.js';
+import { botState } from '../state.js';
 
 // --- Tension history for trend detection ---
 const tensionHistory = []; // Max 60 entries (~1h at 1min intervals)
@@ -76,9 +77,9 @@ async function fetchOSINTScore() {
     osintCache = { score: finalScore, timestamp: Date.now() };
 
     if (totalWeight > 0) {
-        addLog(`[OSINT] ✅ Score géopolitique: +${finalScore}/10 (ISW + Bellingcat)`);
+        addLog(botState, `[OSINT] ✅ Score géopolitique: +${finalScore}/10 (ISW + Bellingcat)`, 'info');
     } else {
-        addLog(`[OSINT] ⚠️ Flux ISW/Bellingcat indisponibles — score: 0`);
+        addLog(botState, `[OSINT] ⚠️ Flux ISW/Bellingcat indisponibles — score: 0`, 'warning');
     }
 
     return finalScore;
