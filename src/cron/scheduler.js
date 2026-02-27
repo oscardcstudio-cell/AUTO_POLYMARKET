@@ -23,23 +23,59 @@ export function startScheduler() {
     setInterval(runModifReport, INTERVAL_MS);
 }
 
+function computeOSINTTradeStats() {
+    const closed = botState.closedTrades || [];
+    const osintTrades = closed.filter(t => {
+        const reasons = t.decisionReasons || t.reasons || [];
+        return (
+            t.category === 'geopolitical' ||
+            reasons.some(r => {
+                const lower = r.toLowerCase();
+                return lower.includes('pizzint') || lower.includes('geopolit') || lower.includes('news');
+            })
+        );
+    });
+
+    const count      = osintTrades.length;
+    const totalPnl   = osintTrades.reduce((sum, t) => sum + (t.profit ?? t.pnl ?? 0), 0);
+    const wins       = osintTrades.filter(t => (t.profit ?? t.pnl ?? 0) > 0).length;
+    const losses     = osintTrades.filter(t => (t.profit ?? t.pnl ?? 0) < 0).length;
+    const winRate    = count > 0 ? Math.round((wins / count) * 100) : 0;
+    const avgPnl     = count > 0 ? totalPnl / count : 0;
+    const isProfit   = totalPnl > 0;
+
+    return { count, totalPnl, wins, losses, winRate, avgPnl, isProfit };
+}
+
 function runModifReport() {
     try {
-        const tension = getOSINTTensionStats();
-        const news    = getOSINTNewsStats();
-        const now     = new Date().toLocaleString('fr-FR', { timeZone: 'Europe/Paris' });
+        const tension    = getOSINTTensionStats();
+        const news       = getOSINTNewsStats();
+        const tradeStats = computeOSINTTradeStats();
+        const now        = new Date().toLocaleString('fr-FR', { timeZone: 'Europe/Paris' });
 
         const sourcesActive = news.bySource.filter(s => s.count > 0);
         const sourcesDown   = news.bySource.filter(s => s.count === 0);
         const ageMin        = tension.lastFetch ? Math.round((Date.now() - tension.lastFetch) / 60000) : null;
 
-        const isOk = sourcesActive.length >= 1;
-        const type = isOk ? 'success' : 'warning';
+        const isOk     = sourcesActive.length >= 1;
+        const type     = isOk ? 'success' : 'warning';
         const cacheAge = ageMin !== null ? `(cache: ${ageMin}min)` : '';
 
-        const conclusion = isOk
+        // Conclusion OSINT sources
+        const conclusionSources = isOk
             ? `✅ CONCLUANT — ${sourcesActive.map(s => s.name).join(', ')} opérationnel(s)${sourcesDown.length > 0 ? ` | ⚠️ À relancer: ${sourcesDown.map(s => s.name).join(', ')}` : ''}`
             : `⚠️ À SURVEILLER — aucune source OSINT active, vérifier les flux RSS`;
+
+        // Conclusion trades
+        let conclusionTrades;
+        if (tradeStats.count === 0) {
+            conclusionTrades = `⏳ Pas encore de trades géopolitiques fermés`;
+        } else if (tradeStats.isProfit) {
+            conclusionTrades = `✅ PROFITABLE — +$${tradeStats.totalPnl.toFixed(2)} sur ${tradeStats.count} trades (WR: ${tradeStats.winRate}%)`;
+        } else {
+            conclusionTrades = `🔴 EN PERTE — $${tradeStats.totalPnl.toFixed(2)} sur ${tradeStats.count} trades (WR: ${tradeStats.winRate}%)`;
+        }
 
         // Store structured data for the dashboard panel
         botState.lastRapportModif = {
@@ -50,7 +86,9 @@ function runModifReport() {
             cacheAge,
             totalArticles: news.totalArticles,
             sources: news.bySource,
-            conclusion,
+            conclusion: conclusionSources,
+            tradeStats,
+            conclusionTrades,
         };
 
         // Also log to Live System Logs
@@ -64,7 +102,8 @@ function runModifReport() {
             ? `5 groupes actifs dont 1 OSINT (${news.totalArticles} articles)`
             : `4 groupes — OSINT inactif (0 article)`;
         addLog(botState, `📰 News: ${groupsMsg}`, type);
-        addLog(botState, conclusion, type);
+        addLog(botState, conclusionSources, type);
+        addLog(botState, `💰 Trades OSINT: ${conclusionTrades}`, type);
 
     } catch (e) {
         addLog(botState, `[RapportModif] Erreur: ${e.message}`, 'error');

@@ -1652,10 +1652,41 @@
                                 ${articlesLabel}
                             </div>`);
 
-                            // Conclusion row
+                            // Conclusion sources row
                             rows.push(`<div style="border-left: 3px solid ${statusColor}; padding: 8px 12px; background: rgba(255,255,255,0.03); border-radius: 4px; color:${statusColor}; font-weight:bold;">
                                 ${rapport.conclusion}
                             </div>`);
+
+                            // Separator
+                            rows.push(`<div style="border-top: 1px solid rgba(255,255,255,0.07); margin: 4px 0;"></div>`);
+
+                            // Trades OSINT stats
+                            const ts = rapport.tradeStats;
+                            if (ts && ts.count > 0) {
+                                const pnlColor  = ts.isProfit ? '#4ade80' : '#ef4444';
+                                const pnlSign   = ts.isProfit ? '+' : '';
+                                const wrColor   = ts.winRate >= 50 ? '#4ade80' : '#f87171';
+
+                                rows.push(`<div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+                                    <span style="color:#94a3b8; min-width:120px;">💰 Trades OSINT</span>
+                                    <span style="color:#cbd5e1;">${ts.count} trades fermés</span>
+                                    <span style="color:#64748b;">✅ ${ts.wins}W / 🔴 ${ts.losses}L</span>
+                                    <span style="color:${wrColor}; font-weight:bold;">WR ${ts.winRate}%</span>
+                                </div>`);
+
+                                rows.push(`<div style="display:flex; gap:8px; align-items:center;">
+                                    <span style="color:#94a3b8; min-width:120px;">📊 P&L OSINT</span>
+                                    <span style="color:${pnlColor}; font-weight:bold; font-size:1.1em;">${pnlSign}$${ts.totalPnl.toFixed(2)}</span>
+                                    <span style="color:#64748b; font-size:0.85em;">(moy. ${pnlSign}$${ts.avgPnl.toFixed(2)}/trade)</span>
+                                </div>`);
+
+                                const tradeConclColor = ts.isProfit ? '#4ade80' : '#ef4444';
+                                rows.push(`<div style="border-left: 3px solid ${tradeConclColor}; padding: 8px 12px; background: rgba(255,255,255,0.03); border-radius: 4px; color:${tradeConclColor}; font-weight:bold;">
+                                    ${rapport.conclusionTrades}
+                                </div>`);
+                            } else if (ts) {
+                                rows.push(`<div style="color:#64748b; font-style:italic;">⏳ Aucun trade géopolitique fermé pour l'instant</div>`);
+                            }
 
                             rapportContent.innerHTML = rows.join('');
                         }
