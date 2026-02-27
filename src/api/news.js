@@ -15,21 +15,31 @@ const CACHE_TTL = CONFIG.NEWS?.CACHE_TTL_MS || 10 * 60 * 1000; // 10 min default
 
 // --- OSINT reliable sources (RSS) ---
 const OSINT_NEWS_SOURCES = [
-    { name: 'ISW',        url: 'https://www.understandingwar.org/rss.xml' },
-    { name: 'Bellingcat', url: 'https://www.bellingcat.com/feed/' },
-    { name: 'RUSI',       url: 'https://rusi.org/rss/commentary' },
-    { name: 'IISS',       url: 'https://www.iiss.org/rss/analysis' },
+    { name: 'Bellingcat',       url: 'https://www.bellingcat.com/feed/' },
+    { name: 'RUSI',             url: 'https://www.rusi.org/rss/latest-commentary.xml' },
+    { name: 'Breaking Defense', url: 'https://breakingdefense.com/feed/' },
+    { name: 'Al Jazeera',       url: 'https://www.aljazeera.com/xml/rss/all.xml' },
 ];
+
+// User-Agent that RSS feeds accept (mimic a real RSS reader)
+const RSS_USER_AGENT = 'Feedly/1.0 (+http://www.feedly.com/fetcher.html; 6 subscribers)';
 
 // Cache OSINT articles 15 minutes
 let osintNewsCache = { articles: [], timestamp: 0 };
 const OSINT_NEWS_CACHE_TTL = 15 * 60 * 1000;
 
-async function fetchWithTimeout(url, timeoutMs = 15000) {
+async function fetchWithTimeout(url, timeoutMs = 15000, extraHeaders = {}) {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
     try {
-        const response = await fetch(url, { signal: controller.signal });
+        const response = await fetch(url, {
+            signal: controller.signal,
+            headers: {
+                'User-Agent': RSS_USER_AGENT,
+                'Accept': 'application/rss+xml, application/xml, text/xml, */*',
+                ...extraHeaders,
+            },
+        });
         clearTimeout(timeoutId);
         return response;
     } catch (e) {

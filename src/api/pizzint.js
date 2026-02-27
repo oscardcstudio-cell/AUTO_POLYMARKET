@@ -8,9 +8,13 @@ const MAX_HISTORY = 60;
 
 // --- OSINT sources for supplementary geopolitical intelligence ---
 const OSINT_SOURCES = [
-    { name: 'ISW',        url: 'https://www.understandingwar.org/rss.xml', weight: 1.5 },
-    { name: 'Bellingcat', url: 'https://www.bellingcat.com/feed/',         weight: 1.2 },
+    { name: 'Bellingcat',       url: 'https://www.bellingcat.com/feed/',                          weight: 1.5 },
+    { name: 'Breaking Defense', url: 'https://breakingdefense.com/feed/',                         weight: 1.3 },
+    { name: 'RUSI',             url: 'https://www.rusi.org/rss/latest-commentary.xml',            weight: 1.2 },
 ];
+
+// User-Agent that RSS feeds accept (mimic Feedly RSS reader)
+const RSS_USER_AGENT = 'Feedly/1.0 (+http://www.feedly.com/fetcher.html; 6 subscribers)';
 
 const OSINT_ESCALATION_KEYWORDS = [
     'attack', 'offensive', 'assault', 'invasion', 'conflict', 'escalat',
@@ -37,6 +41,7 @@ async function fetchOSINTScore() {
 
     let totalScore = 0;
     let totalWeight = 0;
+    const activeSourceNames = [];
 
     for (const source of OSINT_SOURCES) {
         try {
@@ -70,6 +75,7 @@ async function fetchOSINTScore() {
             const normalized = Math.min((sourceScore / items.length) * 2, 10);
             totalScore  += normalized * source.weight;
             totalWeight += source.weight;
+            activeSourceNames.push(source.name);
         } catch { /* fail silently — OSINT is supplementary */ }
     }
 
@@ -77,9 +83,9 @@ async function fetchOSINTScore() {
     osintCache = { score: finalScore, timestamp: Date.now() };
 
     if (totalWeight > 0) {
-        addLog(botState, `[OSINT] ✅ Score géopolitique: +${finalScore}/10 (ISW + Bellingcat)`, 'info');
+        addLog(botState, `[OSINT] ✅ Score géopolitique: +${finalScore}/10 (${activeSourceNames.join(' + ')})`, 'info');
     } else {
-        addLog(botState, `[OSINT] ⚠️ Flux ISW/Bellingcat indisponibles — score: 0`, 'warning');
+        addLog(botState, `[OSINT] ⚠️ Flux OSINT indisponibles — score: 0`, 'warning');
     }
 
     return finalScore;
@@ -91,7 +97,15 @@ async function fetchWithRetry(url, options = {}, retries = 3) {
         try {
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), timeout);
-            const response = await fetch(url, { ...options, signal: controller.signal });
+            const response = await fetch(url, {
+                ...options,
+                signal: controller.signal,
+                headers: {
+                    'User-Agent': RSS_USER_AGENT,
+                    'Accept': 'application/rss+xml, application/xml, text/xml, */*',
+                    ...(options.headers || {}),
+                },
+            });
             clearTimeout(timeoutId);
             return response;
         } catch (error) {
