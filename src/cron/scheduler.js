@@ -35,30 +35,35 @@ function runModifReport() {
 
         const isOk = sourcesActive.length >= 1;
         const type = isOk ? 'success' : 'warning';
+        const cacheAge = ageMin !== null ? `(cache: ${ageMin}min)` : '';
 
-        // Ligne d'en-tête
+        const conclusion = isOk
+            ? `✅ CONCLUANT — ${sourcesActive.map(s => s.name).join(', ')} opérationnel(s)${sourcesDown.length > 0 ? ` | ⚠️ À relancer: ${sourcesDown.map(s => s.name).join(', ')}` : ''}`
+            : `⚠️ À SURVEILLER — aucune source OSINT active, vérifier les flux RSS`;
+
+        // Store structured data for the dashboard panel
+        botState.lastRapportModif = {
+            timestamp: Date.now(),
+            date: now,
+            isOk,
+            tensionScore: tension.score,
+            cacheAge,
+            totalArticles: news.totalArticles,
+            sources: news.bySource,
+            conclusion,
+        };
+
+        // Also log to Live System Logs
         addLog(botState, `━━━ 📊 RAPPORT DE MODIF — ${now} ━━━`, type);
-
-        // Sources OSINT
         const sourcesLines = news.bySource.map(s =>
             s.count > 0 ? `✅ ${s.name}: ${s.count} articles` : `❌ ${s.name}: indisponible`
         ).join(' | ');
         addLog(botState, `🔍 Sources OSINT: ${sourcesLines}`, type);
-
-        // Score tension
-        const cacheAge = ageMin !== null ? `(cache: ${ageMin}min)` : '';
         addLog(botState, `📈 Boost tension OSINT: +${tension.score}/10 ${cacheAge}`, type);
-
-        // Groupes news
         const groupsMsg = news.totalArticles > 0
             ? `5 groupes actifs dont 1 OSINT (${news.totalArticles} articles)`
             : `4 groupes — OSINT inactif (0 article)`;
         addLog(botState, `📰 News: ${groupsMsg}`, type);
-
-        // Conclusion
-        const conclusion = isOk
-            ? `✅ CONCLUANT — ${sourcesActive.map(s => s.name).join(', ')} opérationnel(s)${sourcesDown.length > 0 ? ` | ⚠️ À relancer: ${sourcesDown.map(s => s.name).join(', ')}` : ''}`
-            : `⚠️ À SURVEILLER — aucune source OSINT active, vérifier les flux RSS`;
         addLog(botState, conclusion, type);
 
     } catch (e) {
