@@ -5,6 +5,85 @@ import { addLog } from '../utils.js';
 const tensionHistory = []; // Max 60 entries (~1h at 1min intervals)
 const MAX_HISTORY = 60;
 
+// --- OSINT sources for supplementary geopolitical intelligence ---
+const OSINT_SOURCES = [
+    { name: 'ISW',        url: 'https://www.understandingwar.org/rss.xml', weight: 1.5 },
+    { name: 'Bellingcat', url: 'https://www.bellingcat.com/feed/',         weight: 1.2 },
+];
+
+const OSINT_ESCALATION_KEYWORDS = [
+    'attack', 'offensive', 'assault', 'invasion', 'conflict', 'escalat',
+    'missile', 'airstrike', 'bombing', 'troops', 'military', 'combat',
+    'casualties', 'killed', 'destroyed', 'captured', 'advance', 'war',
+];
+const OSINT_DEESCALATION_KEYWORDS = [
+    'ceasefire', 'peace', 'negotiations', 'withdraw', 'retreat',
+    'agreement', 'diplomacy', 'talks', 'deal', 'truce',
+];
+
+// Cache OSINT score 15 minutes to avoid hammering RSS feeds
+let osintCache = { score: 0, timestamp: 0 };
+const OSINT_CACHE_TTL = 15 * 60 * 1000;
+
+/**
+ * Fetch OSINT geopolitical tension score from ISW and Bellingcat RSS feeds.
+ * Returns a supplementary score (0-10) that boosts the PizzINT tension score.
+ */
+async function fetchOSINTScore() {
+    if (Date.now() - osintCache.timestamp < OSINT_CACHE_TTL) {
+        return osintCache.score;
+    }
+
+    let totalScore = 0;
+    let totalWeight = 0;
+
+    for (const source of OSINT_SOURCES) {
+        try {
+            const response = await fetchWithRetry(source.url);
+            if (!response.ok) continue;
+
+            const xml = await response.text();
+            const itemRegex = /<item>([\s\S]*?)<\/item>/g;
+            const items = [];
+            let match;
+            while ((match = itemRegex.exec(xml)) !== null && items.length < 5) {
+                items.push(match[1]);
+            }
+            if (items.length === 0) continue;
+
+            let sourceScore = 0;
+            for (const item of items) {
+                const titleMatch = item.match(/<title[^>]*>([\s\S]*?)<\/title>/);
+                const descMatch  = item.match(/<description[^>]*>([\s\S]*?)<\/description>/);
+                const rawText = ((titleMatch?.[1] || '') + ' ' + (descMatch?.[1] || ''))
+                    .replace(/<!\[CDATA\[/g, '').replace(/\]\]>/g, '')
+                    .replace(/<[^>]+>/g, ' ').toLowerCase();
+
+                let itemScore = 0;
+                for (const kw of OSINT_ESCALATION_KEYWORDS)   { if (rawText.includes(kw)) itemScore += 2; }
+                for (const kw of OSINT_DEESCALATION_KEYWORDS) { if (rawText.includes(kw)) itemScore -= 1; }
+                sourceScore += Math.max(0, itemScore);
+            }
+
+            // Normalize to 0-10 per source
+            const normalized = Math.min((sourceScore / items.length) * 2, 10);
+            totalScore  += normalized * source.weight;
+            totalWeight += source.weight;
+        } catch { /* fail silently — OSINT is supplementary */ }
+    }
+
+    const finalScore = totalWeight > 0 ? Math.round(totalScore / totalWeight) : 0;
+    osintCache = { score: finalScore, timestamp: Date.now() };
+
+    if (totalWeight > 0) {
+        addLog(`[OSINT] ✅ Score géopolitique: +${finalScore}/10 (ISW + Bellingcat)`);
+    } else {
+        addLog(`[OSINT] ⚠️ Flux ISW/Bellingcat indisponibles — score: 0`);
+    }
+
+    return finalScore;
+}
+
 async function fetchWithRetry(url, options = {}, retries = 3) {
     const timeout = 20000;
     for (let attempt = 1; attempt <= retries; attempt++) {
@@ -145,10 +224,15 @@ export async function getPizzaData() {
         // --- Compute tension score ---
         const tensionScore = computeTensionScore(defconDetails, spikes.active);
 
+        // --- Boost with OSINT supplementary data (ISW + Bellingcat) ---
+        const osintBoost = await fetchOSINTScore();
+        // 90% PizzINT + 10% OSINT boost (capped at +10 pts)
+        const blendedTensionScore = Math.min(100, Math.round(tensionScore * 0.9 + osintBoost));
+
         // --- Update history and compute trend ---
         tensionHistory.push({
             timestamp: Date.now(),
-            tensionScore,
+            tensionScore: blendedTensionScore,
             defcon,
         });
         while (tensionHistory.length > MAX_HISTORY) tensionHistory.shift();
@@ -160,8 +244,10 @@ export async function getPizzaData() {
             defcon,
             trends,
 
-            // Composite tension score (0-100)
-            tensionScore,
+            // Composite tension score (0-100) — blended PizzINT + OSINT
+            tensionScore: blendedTensionScore,
+            tensionScoreRaw: tensionScore,  // PizzINT-only score for reference
+            osintBoost,                     // OSINT contribution (0-10)
             tensionTrend,
 
             // Rich DEFCON details
