@@ -11,6 +11,18 @@ function safeLog(msg) {
 let newsCache = new Map(); // keyword -> { articles, timestamp }
 const CACHE_TTL = CONFIG.NEWS?.CACHE_TTL_MS || 10 * 60 * 1000; // 10 min default
 
+// --- OSINT reliable sources (RSS) ---
+const OSINT_NEWS_SOURCES = [
+    { name: 'ISW',        url: 'https://www.understandingwar.org/rss.xml' },
+    { name: 'Bellingcat', url: 'https://www.bellingcat.com/feed/' },
+    { name: 'RUSI',       url: 'https://rusi.org/rss/commentary' },
+    { name: 'IISS',       url: 'https://www.iiss.org/rss/analysis' },
+];
+
+// Cache OSINT articles 15 minutes
+let osintNewsCache = { articles: [], timestamp: 0 };
+const OSINT_NEWS_CACHE_TTL = 15 * 60 * 1000;
+
 async function fetchWithTimeout(url, timeoutMs = 15000) {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
@@ -151,6 +163,62 @@ async function fetchGoogleNewsRSS(query, maxArticles = 8) {
 }
 
 /**
+ * Fetch articles from OSINT reliable RSS sources (ISW, Bellingcat, RUSI, IISS).
+ * Returns array of { title, source, pubDate, sentiment, sentimentScore, link }
+ */
+async function fetchOSINTNews(maxPerSource = 5) {
+    if (Date.now() - osintNewsCache.timestamp < OSINT_NEWS_CACHE_TTL) {
+        return osintNewsCache.articles;
+    }
+
+    const allArticles = [];
+
+    for (const source of OSINT_NEWS_SOURCES) {
+        try {
+            const response = await fetchWithTimeout(source.url, 10000);
+            if (!response.ok) continue;
+
+            const xml = await response.text();
+            const itemRegex = /<item>([\s\S]*?)<\/item>/g;
+            let match;
+            let count = 0;
+
+            while ((match = itemRegex.exec(xml)) !== null && count < maxPerSource) {
+                const itemXml = match[1];
+                const titleMatch   = itemXml.match(/<title[^>]*>([\s\S]*?)<\/title>/);
+                const linkMatch    = itemXml.match(/<link[^>]*>([\s\S]*?)<\/link>/);
+                const pubDateMatch = itemXml.match(/<pubDate[^>]*>([\s\S]*?)<\/pubDate>/);
+
+                if (!titleMatch?.[1]) continue;
+
+                const rawTitle = titleMatch[1]
+                    .replace(/<!\[CDATA\[/g, '').replace(/\]\]>/g, '')
+                    .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+                    .replace(/&quot;/g, '"').replace(/&#39;/g, "'")
+                    .replace(/<[^>]+>/g, '').trim();
+
+                if (!rawTitle) continue;
+
+                const { sentiment, score } = analyzeHeadlineSentiment(rawTitle);
+
+                allArticles.push({
+                    title: rawTitle,
+                    source: source.name,
+                    pubDate: pubDateMatch?.[1] || null,
+                    sentiment,
+                    sentimentScore: score,
+                    link: (linkMatch?.[1] || '').replace(/<!\[CDATA\[/g, '').replace(/\]\]>/g, '').trim(),
+                });
+                count++;
+            }
+        } catch { /* fail silently per source */ }
+    }
+
+    osintNewsCache = { articles: allArticles, timestamp: Date.now() };
+    return allArticles;
+}
+
+/**
  * Extract search keywords from a market question.
  * Filters out common/useless words and returns top entities.
  */
@@ -282,6 +350,24 @@ export async function fetchRealNewsSentiment(markets) {
             });
         }
     } catch { /* ignore trend fetch failure */ }
+
+    // Add OSINT geopolitical intelligence (ISW, Bellingcat, RUSI, IISS)
+    try {
+        const osintArticles = await fetchOSINTNews(5);
+        if (osintArticles.length > 0) {
+            const agg = aggregateSentiment(osintArticles);
+            results.push({
+                title: agg.topHeadline || 'OSINT Geopolitical Intelligence',
+                sentiment: agg.sentiment,
+                sentimentScore: agg.avgScore,
+                confidence: agg.confidence,
+                articleCount: agg.articleCount,
+                source: 'OSINT (ISW/Bellingcat/RUSI/IISS)',
+                query: 'osint-geopolitical',
+                articles: osintArticles.slice(0, 3),
+            });
+        }
+    } catch { /* ignore OSINT fetch failure */ }
 
     safeLog(`[News] Fetched ${results.length} sentiment groups from ${queries.length} queries (${results.reduce((s, r) => s + r.articleCount, 0)} articles total)`);
 
