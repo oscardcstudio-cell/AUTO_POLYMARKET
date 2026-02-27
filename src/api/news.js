@@ -215,6 +215,18 @@ async function fetchOSINTNews(maxPerSource = 5) {
     }
 
     osintNewsCache = { articles: allArticles, timestamp: Date.now() };
+
+    const bySource = OSINT_NEWS_SOURCES.map(s => {
+        const count = allArticles.filter(a => a.source === s.name).length;
+        return count > 0 ? `${s.name}:${count}` : null;
+    }).filter(Boolean).join(' | ');
+
+    if (allArticles.length > 0) {
+        safeLog(`[OSINT] ✅ ${allArticles.length} articles chargés — ${bySource}`);
+    } else {
+        safeLog(`[OSINT] ⚠️ Aucun article récupéré (sources indisponibles)`);
+    }
+
     return allArticles;
 }
 

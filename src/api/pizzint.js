@@ -74,6 +74,13 @@ async function fetchOSINTScore() {
 
     const finalScore = totalWeight > 0 ? Math.round(totalScore / totalWeight) : 0;
     osintCache = { score: finalScore, timestamp: Date.now() };
+
+    if (totalWeight > 0) {
+        addLog(`[OSINT] ✅ Score géopolitique: +${finalScore}/10 (ISW + Bellingcat)`);
+    } else {
+        addLog(`[OSINT] ⚠️ Flux ISW/Bellingcat indisponibles — score: 0`);
+    }
+
     return finalScore;
 }
 
