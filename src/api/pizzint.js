@@ -285,3 +285,12 @@ export async function getPizzaData() {
         return null;
     }
 }
+
+/** Export OSINT cache stats for the modification report */
+export function getOSINTTensionStats() {
+    return {
+        score: osintCache.score,
+        lastFetch: osintCache.timestamp,
+        sources: OSINT_SOURCES.map(s => s.name),
+    };
+}

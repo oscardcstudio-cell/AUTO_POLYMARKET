@@ -4,6 +4,8 @@ import { strategyAdapter } from '../logic/strategyAdapter.js';
 import { botState, stateManager } from '../state.js';
 import { addLog } from '../utils.js';
 import { supabase } from '../services/supabaseService.js';
+import { getOSINTTensionStats } from '../api/pizzint.js';
+import { getOSINTNewsStats } from '../api/news.js';
 
 // Run every 6 hours
 const INTERVAL_MS = 6 * 60 * 60 * 1000;
@@ -15,6 +17,53 @@ export function startScheduler() {
     setTimeout(runAutoTraining, 30000);
 
     setInterval(runAutoTraining, INTERVAL_MS);
+
+    // Rapport de modif toutes les 6h (décalé de 2 min pour ne pas se chevaucher avec l'auto-training)
+    setTimeout(runModifReport, 2 * 60 * 1000);
+    setInterval(runModifReport, INTERVAL_MS);
+}
+
+function runModifReport() {
+    try {
+        const tension = getOSINTTensionStats();
+        const news    = getOSINTNewsStats();
+        const now     = new Date().toLocaleString('fr-FR', { timeZone: 'Europe/Paris' });
+
+        const sourcesActive = news.bySource.filter(s => s.count > 0);
+        const sourcesDown   = news.bySource.filter(s => s.count === 0);
+        const ageMin        = tension.lastFetch ? Math.round((Date.now() - tension.lastFetch) / 60000) : null;
+
+        const isOk = sourcesActive.length >= 1;
+        const type = isOk ? 'success' : 'warning';
+
+        // Ligne d'en-tête
+        addLog(botState, `━━━ 📊 RAPPORT DE MODIF — ${now} ━━━`, type);
+
+        // Sources OSINT
+        const sourcesLines = news.bySource.map(s =>
+            s.count > 0 ? `✅ ${s.name}: ${s.count} articles` : `❌ ${s.name}: indisponible`
+        ).join(' | ');
+        addLog(botState, `🔍 Sources OSINT: ${sourcesLines}`, type);
+
+        // Score tension
+        const cacheAge = ageMin !== null ? `(cache: ${ageMin}min)` : '';
+        addLog(botState, `📈 Boost tension OSINT: +${tension.score}/10 ${cacheAge}`, type);
+
+        // Groupes news
+        const groupsMsg = news.totalArticles > 0
+            ? `5 groupes actifs dont 1 OSINT (${news.totalArticles} articles)`
+            : `4 groupes — OSINT inactif (0 article)`;
+        addLog(botState, `📰 News: ${groupsMsg}`, type);
+
+        // Conclusion
+        const conclusion = isOk
+            ? `✅ CONCLUANT — ${sourcesActive.map(s => s.name).join(', ')} opérationnel(s)${sourcesDown.length > 0 ? ` | ⚠️ À relancer: ${sourcesDown.map(s => s.name).join(', ')}` : ''}`
+            : `⚠️ À SURVEILLER — aucune source OSINT active, vérifier les flux RSS`;
+        addLog(botState, conclusion, type);
+
+    } catch (e) {
+        addLog(botState, `[RapportModif] Erreur: ${e.message}`, 'error');
+    }
 }
 
 async function runAutoTraining() {

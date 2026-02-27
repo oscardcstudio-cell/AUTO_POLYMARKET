@@ -425,5 +425,18 @@ export function clearNewsCache() {
     newsCache.clear();
 }
 
+/** Export OSINT news cache stats for the modification report */
+export function getOSINTNewsStats() {
+    const bySource = OSINT_NEWS_SOURCES.map(s => ({
+        name: s.name,
+        count: osintNewsCache.articles.filter(a => a.source === s.name).length,
+    }));
+    return {
+        totalArticles: osintNewsCache.articles.length,
+        bySource,
+        lastFetch: osintNewsCache.timestamp,
+    };
+}
+
 // Export for testing
 export { fetchGoogleNewsRSS, analyzeHeadlineSentiment, extractSearchTerms, aggregateSentiment };
