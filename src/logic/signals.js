@@ -6,6 +6,7 @@ import { getTrendingMarkets, getContextualMarkets, fetchAvailableTags, getAllMar
 import { fetchRealNewsSentiment, matchMarketToNews } from '../api/news.js';
 import { fetchWhaleTrades, matchWhaleToMarket } from '../api/polymarket_data.js';
 import { scanCopySignals, matchCopySignalToMarket } from '../api/wallet_tracker.js';
+import { calculateSportsBonus } from '../api/sportsData.js';
 
 // Helper for inline fetches in getRelevantMarkets
 async function fetchWithRetry(url, options = {}, retries = 3) {
@@ -371,6 +372,23 @@ function calculateAlphaScore(market, pizzaData) {
     if (category === 'sports') {
         score += 25;
         reasons.push('🏆 Sports Bonus (+25) — best WR category');
+
+        // ── Sports Intelligence: Home/Away, Form, Value, Motivation ──────────
+        // Uses sportsData.js — no external API, works with news already in memory
+        try {
+            const newsData = botState.newsSentiment || [];
+            const sportsResult = calculateSportsBonus(market, newsData);
+            if (sportsResult.alphaBonus !== 0) {
+                score += sportsResult.alphaBonus;
+                for (const r of sportsResult.reasons) reasons.push(r);
+                // Store on market for engine.js conviction adjustment
+                market._sportsBonus = sportsResult;
+            }
+        } catch (e) {
+            // Silent fail — sports intelligence is a bonus, never a blocker
+        }
+        // ─────────────────────────────────────────────────────────────────────
+
     } else if (category === 'economic') {
         score -= 30;
         reasons.push('📉 Economic Penalty (-30) — worst WR category');

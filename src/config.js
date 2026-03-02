@@ -176,5 +176,55 @@ export const CONFIG = {
         WHALE_CONVICTION_ALIGNED: 15,   // +15 conviction if whale direction matches trade
         WHALE_CONVICTION_OPPOSED: -10,  // -10 conviction if whales bet opposite
         WHALE_MULTI_BONUS: 10,          // +10 if multiple whales on same market
+    },
+    // Sports Intelligence (sportsData.js — no external API required)
+    SPORTS_STRATEGY: {
+        // Base home win rates by sport (historical averages, major leagues)
+        // Used to detect value bets when market price diverges from base rate
+        HOME_WIN_RATES: {
+            soccer: 0.46,      // Premier League / La Liga / Champions League avg
+            football: 0.46,    // alias
+            basketball: 0.60,  // NBA average
+            nba: 0.60,
+            nfl: 0.57,         // NFL regular season
+            baseball: 0.54,    // MLB regular season
+            mlb: 0.54,
+            hockey: 0.55,      // NHL regular season
+            nhl: 0.55,
+            tennis: 0.50,      // No home advantage
+            esports: 0.50,     // No home advantage
+            default: 0.53,     // Generic conservative home advantage
+        },
+        // Fixed alpha bonus for home advantage by sport
+        // Based on home vs away win rate differential (NOT vs 50% which is misleading for soccer)
+        // Soccer: home wins 46% vs away 27% → big real advantage despite 46% < 50%
+        // NBA: home 60% vs away 40% → huge home advantage
+        HOME_ADVANTAGE_ALPHA: {
+            soccer: 9,         // Home wins 70% more often than away teams (46% vs 27%)
+            football: 9,       // alias
+            basketball: 15,    // NBA biggest home advantage in team sports
+            nba: 15,
+            nfl: 11,           // NFL: home 57% vs away 43%
+            baseball: 8,       // MLB: home 54% vs away 46%
+            mlb: 8,
+            hockey: 10,        // NHL: home 55% vs away 45%
+            nhl: 10,
+            tennis: 0,         // No home advantage (neutral venues)
+            esports: 0,        // No home advantage (online)
+            default: 9,        // Generic conservative home advantage
+        },
+        // Home/Away advantage multiplier — kept for value detection only
+        HOME_ADVANTAGE_MULTIPLIER: 1.5,
+        // Value detection: when market price diverges from base home rate
+        VALUE_EDGE_MULTIPLIER: 1.2,    // Multiply the % edge to get alpha bonus
+        MAX_VALUE_BONUS: 20,           // Cap at ±20 alpha for value detection
+        // Injury/suspension signals (from Google News RSS)
+        INJURY_PENALTY_PER_SIGNAL: 10, // -10 alpha per negative news signal found
+        MAX_INJURY_PENALTY: 25,        // Cap at -25 alpha total (injury)
+        // Form/momentum signals (from Google News RSS)
+        FORM_BONUS_PER_SIGNAL: 7,      // +7 alpha per positive news signal found
+        MAX_FORM_BONUS: 18,            // Cap at +18 alpha total (form)
+        // Motivation modifier (derby, elimination, nothing-to-play-for)
+        MOTIVATION_BONUS: 8,           // ±8 alpha per motivation signal
     }
 };

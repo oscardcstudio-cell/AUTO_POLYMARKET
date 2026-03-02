@@ -194,6 +194,20 @@ async function calculateConviction(market, pizzaData, dependencies) {
     if (category === 'sports') {
         convictionPoints += 15;
         signals.push('🏆 Sports Conviction (+15)');
+
+        // Sports intelligence conviction bonus (home/away, form, injuries)
+        // Stored on market._sportsBonus by calculateAlphaScore() in signals.js
+        if (market._sportsBonus?.convictionBonus) {
+            const sportConv = market._sportsBonus.convictionBonus;
+            convictionPoints += sportConv;
+            const venueStatus = market._sportsBonus.meta?.venueStatus || '';
+            const sportType = market._sportsBonus.meta?.sportType || '';
+            if (sportConv > 0) {
+                signals.push(`⚽ Sports Intel +${sportConv} (${venueStatus} ${sportType})`);
+            } else {
+                signals.push(`⚽ Sports Intel ${sportConv} (${venueStatus} ${sportType})`);
+            }
+        }
     } else if (category === 'economic') {
         convictionPoints -= 10;
         signals.push('📉 Economic Conviction (-10)');
