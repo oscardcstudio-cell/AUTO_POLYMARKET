@@ -116,11 +116,11 @@ async function calculateConviction(market, pizzaData, dependencies) {
         signals.push(`MedAlpha ${alphaScore} (+10)`);
     }
 
-    // 5. Wizard signal (+15)
+    // 5. Wizard signal (+20) — best performing strategy (50% of all trades)
     const isWizard = botState.wizards?.some(w => w.id === market.id);
     if (isWizard) {
-        convictionPoints += 15;
-        signals.push('Wizard (+15)');
+        convictionPoints += 20;
+        signals.push('Wizard (+20)');
     }
 
     // 5b. Semantic Arbitrage conviction bonus
@@ -260,6 +260,76 @@ async function calculateConviction(market, pizzaData, dependencies) {
             signals.push(`⚠️ Quant FV surévalué (-8)`);
         }
     }
+
+    // ── SIGNAL STACKING — compound bonuses when 2+ strong signals align ──────
+    // "Smart money consensus" principle: independent signals agreeing = higher edge
+    {
+        const SS = CONFIG.SIGNAL_STACKING || {};
+        let stackCount = 0;
+        const stackSignals = [];
+
+        // Track which MAJOR signals fired
+        const hasWizard    = isWizard;
+        const hasWhale     = !!market._whaleMatch && market._whaleMatch.consensus !== 'MIXED';
+        const hasCopy      = !!market._copyMatch;
+        const hasSemArb    = !!market._semArbMatch;
+        const hasNews      = !!(market._newsMatch?.matched && market._newsMatch.sentiment !== 'neutral');
+        const hasEventDriv = signals.some(s => s.includes('Event') || s.includes('Catalyst') || s.includes('Trend'));
+        const hasPanic     = market._behaviorSignal?.signal === 'panic';
+        const hasCalEdge   = !!market._calendarEdge?.isCalendarEdge;
+        const hasQuantBuy  = market._quantSignal?.signal === 'buy';
+
+        // Combo 1: 🐳 + 📋 Smart Money Consensus (whale AND copy trade agree)
+        if (hasWhale && hasCopy) {
+            const b = SS.SMART_MONEY_BONUS || 20;
+            convictionPoints += b;
+            stackSignals.push(`💰 Smart Money (Whale+Copy) +${b}`);
+            stackCount++;
+        }
+
+        // Combo 2: 🧙 + ⚡ Catalyst Wizard (wizard detected AND event-driven catalyst)
+        if (hasWizard && hasEventDriv) {
+            const b = SS.CATALYST_WIZARD_BONUS || 18;
+            convictionPoints += b;
+            stackSignals.push(`🧙⚡ Catalyst Wizard +${b}`);
+            stackCount++;
+        }
+
+        // Combo 3: 📅 + 😱 Panic Calendar (stagnant market + panic sell near resolution)
+        if (hasCalEdge && hasPanic) {
+            const b = SS.PANIC_CALENDAR_BONUS || 18;
+            convictionPoints += b;
+            stackSignals.push(`📅😱 Panic Calendar +${b}`);
+            stackCount++;
+        }
+
+        // Combo 4: 🔗 + 💡 Quantitative Arb (semantic arb confirmed by quant model)
+        if (hasSemArb && hasQuantBuy) {
+            const b = SS.QUANT_ARB_BONUS || 14;
+            convictionPoints += b;
+            stackSignals.push(`🔗💡 Quant Arb +${b}`);
+            stackCount++;
+        }
+
+        // Combo 5: 🗞️ + 🧙 News Wizard (wizard + news confirmation)
+        if (hasWizard && hasNews) {
+            const b = SS.NEWS_WIZARD_BONUS || 12;
+            convictionPoints += b;
+            stackSignals.push(`🧙🗞️ News Wizard +${b}`);
+            stackCount++;
+        }
+
+        // Combo 6: Triple stack — 3+ independent signals agree → major alpha
+        const majorCount = [hasWizard, hasWhale, hasCopy, hasSemArb, hasQuantBuy, hasEventDriv, hasNews].filter(Boolean).length;
+        if (majorCount >= 3 && stackCount === 0) {
+            const b = SS.TRIPLE_STACK_BONUS || 15;
+            convictionPoints += b;
+            stackSignals.push(`🎯 Triple Stack (${majorCount} signaux) +${b}`);
+        }
+
+        if (stackSignals.length > 0) signals.push(...stackSignals);
+    }
+    // ─────────────────────────────────────────────────────────────────────────
 
     // 11. ADVANCED STRATEGIES (Memory, Cross-Market, Timing, Events, Calendar, Anti-Fragility)
     let advancedSizeMultiplier = 1.0;

@@ -184,6 +184,16 @@ export const CONFIG = {
         CONVICTION_BONUS: 12,          // +12 conviction if semantic arb aligns with trade direction
         MAX_OPPORTUNITIES: 25,         // Keep top 25 opportunities per deep scan cycle
     },
+    // Signal Stacking — compound bonuses when multiple independent signals align
+    // "Smart money consensus": the more independent signals agree, the stronger the edge
+    SIGNAL_STACKING: {
+        SMART_MONEY_BONUS:     20, // Whale + Copy both on same market
+        CATALYST_WIZARD_BONUS: 18, // Wizard + Event-Driven catalyst
+        PANIC_CALENDAR_BONUS:  18, // Calendar Edge v2 + Panic Buy (near resolution)
+        QUANT_ARB_BONUS:       14, // Semantic Arb confirmed by Quant Fair Value
+        NEWS_WIZARD_BONUS:     12, // Wizard + News sentiment match
+        TRIPLE_STACK_BONUS:    15, // 3+ independent signals (fallback when no specific combo)
+    },
     // Behavioral Anomaly Detection (marketBehavior.js — no external API required)
     BEHAVIORAL: {
         // HYPE FADER: penalise alpha when price is high AND accelerating upward

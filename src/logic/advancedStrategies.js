@@ -743,12 +743,8 @@ export async function getAdvancedSignals(market, pizzaData, convictionPoints) {
     totalBonus += memSignal.bonus;
     allSignals.push(...memSignal.signals);
 
-    // 2. Cross-Market Intelligence (uses cached correlation map)
-    if (botState._correlationMap && botState._correlationMap instanceof Map) {
-        const crossSignal = getCrossMarketSignal(market.id, botState._correlationMap);
-        totalBonus += crossSignal.bonus;
-        allSignals.push(...crossSignal.signals);
-    }
+    // 2. Cross-Market Intelligence — DISABLED (no WR data, computationally heavy)
+    // Kept in code for future re-evaluation with sufficient trade data (n >= 30)
 
     // 3. Smart Entry Timing
     const timing = evaluateEntryTiming(market.id);
@@ -791,10 +787,8 @@ export async function getAdvancedSignals(market, pizzaData, convictionPoints) {
         }
     }
 
-    // 7. Calendar Awareness
-    const calendar = getCalendarSignal();
-    sizeMultiplier *= calendar.sizeMultiplier;
-    allSignals.push(...calendar.signals);
+    // 7. Calendar Awareness — DISABLED (18.2% WR, n=11 — auto-disabled by AI training)
+    // Replaced by Calendar Edge v2 in marketBehavior.js (stagnant markets near resolution)
 
     return {
         bonus: totalBonus,
