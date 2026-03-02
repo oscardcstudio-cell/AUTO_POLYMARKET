@@ -10,12 +10,161 @@ import { getOSINTNewsStats } from '../api/news.js';
 // Run every 6 hours
 const INTERVAL_MS     = 6 * 60 * 60 * 1000;
 const WEEK_MS         = 7 * 24 * 60 * 60 * 1000;
+const DAILY_MS        = 24 * 60 * 60 * 1000;
 
 // Date du changement copy size 1.5% → 2% (pour comparer avant/après)
 const COPY_SIZE_CHANGE_DATE = new Date('2026-03-02T00:00:00Z').getTime();
 
+// Seed the initial changelog with already-made changes (first run only)
+function initChangeLog() {
+    if (!botState.changeLog) botState.changeLog = [];
+    // Only seed if empty (first run)
+    if (botState.changeLog.length > 0) return;
+
+    botState.changeLog = [
+        {
+            date: '2026-03-02T00:00:00Z',
+            type: 'module',
+            what: '⚽ Module Sports Intelligence ajouté (7 paramètres : domicile/extérieur, blessures, forme, motivation, valeur)',
+            by: 'Engue',
+        },
+        {
+            date: '2026-03-02T00:00:00Z',
+            type: 'config',
+            what: '📈 COPY_SIZE_PERCENT : 1.5% → 2% (event_driven + copy ont le meilleur WR)',
+            by: 'Engue',
+        },
+        {
+            date: '2026-03-02T00:00:00Z',
+            type: 'strategy',
+            what: '🚫 Désactivation 3 stratégies perdantes (300 trades analysés) : whale (-$18, WR 41%), contrarian (-$9.73, WR 38%), smart_momentum (-$7.91, WR 14%)',
+            by: 'Engue',
+        },
+    ];
+    stateManager.save();
+}
+
+// Track previous state to auto-detect changes at each daily snapshot
+let _prevDisabledStrategies = null;
+let _prevLearningMode = null;
+let _prevCopySize = null;
+
+function runDailyReport() {
+    try {
+        const now    = Date.now();
+        const since  = now - DAILY_MS;
+        const dateLabel = new Date().toLocaleString('fr-FR', {
+            day: '2-digit', month: '2-digit', year: 'numeric',
+            hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Paris'
+        });
+
+        // ── 1. Performance last 24h ──────────────────────────────────────────
+        const closed = botState.closedTrades || [];
+        const recent = closed.filter(t => {
+            const ts = new Date(t.endTime || t.startTime || 0).getTime();
+            return ts >= since;
+        });
+
+        const wins24h   = recent.filter(t => (t.pnl ?? 0) > 0).length;
+        const losses24h = recent.filter(t => (t.pnl ?? 0) <= 0).length;
+        const pnl24h    = recent.reduce((s, t) => s + (t.pnl ?? 0), 0);
+        const wr24h     = recent.length > 0 ? Math.round(wins24h / recent.length * 100) : null;
+
+        // Per-strategy breakdown (last 24h)
+        const byStrategy24h = {};
+        for (const t of recent) {
+            const s = t.strategy || 'unknown';
+            if (!byStrategy24h[s]) byStrategy24h[s] = { count: 0, pnl: 0, wins: 0 };
+            byStrategy24h[s].count++;
+            byStrategy24h[s].pnl += (t.pnl ?? 0);
+            if ((t.pnl ?? 0) > 0) byStrategy24h[s].wins++;
+        }
+
+        // ── 2. Capital evolution ─────────────────────────────────────────────
+        const capitalNow = botState.capital || 0;
+        const prevReport = (botState.dailyReports || [])[0];
+        const capitalDiff24h = prevReport
+            ? parseFloat((capitalNow - prevReport.capitalNow).toFixed(2))
+            : null;
+
+        // ── 3. Auto-detect state changes ─────────────────────────────────────
+        const overrides = botState.strategyOverrides || {};
+        const currentDisabled  = JSON.stringify(overrides.disabledStrategies || []);
+        const currentLearning  = botState.learningParams?.mode || 'NEUTRAL';
+        const currentCopySize  = botState.config?.COPY_SIZE_PERCENT || null;
+
+        const newChanges = [];
+
+        if (_prevDisabledStrategies !== null && _prevDisabledStrategies !== currentDisabled) {
+            newChanges.push({
+                date: new Date().toISOString(),
+                type: 'strategy',
+                what: `🔄 Stratégies désactivées modifiées → ${currentDisabled}`,
+                by: 'Auto',
+            });
+        }
+        if (_prevLearningMode !== null && _prevLearningMode !== currentLearning) {
+            newChanges.push({
+                date: new Date().toISOString(),
+                type: 'ai',
+                what: `🤖 AI Learning mode : ${_prevLearningMode} → ${currentLearning} (${botState.learningParams?.reason || ''})`,
+                by: 'Auto-Training',
+            });
+        }
+
+        // Update trackers
+        _prevDisabledStrategies = currentDisabled;
+        _prevLearningMode       = currentLearning;
+        _prevCopySize           = currentCopySize;
+
+        // Prepend detected changes to changelog
+        if (!botState.changeLog) botState.changeLog = [];
+        for (const c of newChanges.reverse()) {
+            botState.changeLog.unshift(c);
+        }
+        if (botState.changeLog.length > 40) botState.changeLog = botState.changeLog.slice(0, 40);
+
+        // ── 4. Build and store report ────────────────────────────────────────
+        const report = {
+            date:           new Date().toISOString(),
+            dateLabel,
+            capitalNow:     parseFloat(capitalNow.toFixed(2)),
+            capitalDiff24h,
+            tradeCount24h:  recent.length,
+            pnl24h:         parseFloat(pnl24h.toFixed(2)),
+            wins24h,
+            losses24h,
+            wr24h,
+            activeTrades:   (botState.activeTrades || []).length,
+            byStrategy24h,
+            disabledStrategies: [...(overrides.disabledStrategies || [])],
+            learningMode:   currentLearning,
+            changesDetected: newChanges.length,
+        };
+
+        if (!botState.dailyReports) botState.dailyReports = [];
+        botState.dailyReports.unshift(report);
+        if (botState.dailyReports.length > 7) botState.dailyReports = botState.dailyReports.slice(0, 7);
+        botState.lastDailyReport = report;
+
+        stateManager.save();
+
+        const pnlStr = pnl24h >= 0 ? `+$${pnl24h.toFixed(2)}` : `-$${Math.abs(pnl24h).toFixed(2)}`;
+        const capStr = capitalDiff24h !== null
+            ? (capitalDiff24h >= 0 ? `+$${capitalDiff24h.toFixed(2)}` : `-$${Math.abs(capitalDiff24h).toFixed(2)}`)
+            : 'premier snapshot';
+        addLog(botState, `[Rapport 24h] ${recent.length} trades, PnL ${pnlStr}, WR ${wr24h ?? '—'}%, Capital $${capitalNow.toFixed(0)} (${capStr})`, 'info');
+
+    } catch (e) {
+        addLog(botState, `[Rapport24h] Erreur: ${e.message}`, 'error');
+    }
+}
+
 export function startScheduler() {
     console.log('AI Self-Training Scheduler started (Every 6h)');
+
+    // Seed initial changelog if not already done
+    initChangeLog();
 
     // Initial run after 30 seconds to allow server to settle and not block startup
     setTimeout(runAutoTraining, 30000);
@@ -28,6 +177,10 @@ export function startScheduler() {
     // Rapport hebdo copy/wizard — premier run dans 3 min, puis toutes les semaines
     setTimeout(runWeeklyReport, 3 * 60 * 1000);
     setInterval(runWeeklyReport, WEEK_MS);
+
+    // Rapport 24h — premier run dans 4 min, puis toutes les 24h
+    setTimeout(runDailyReport, 4 * 60 * 1000);
+    setInterval(runDailyReport, DAILY_MS);
 }
 
 function computeOSINTTradeStats() {
@@ -235,6 +388,11 @@ function runWeeklyReport() {
                 : `⚠️ À SURVEILLER — résultats insuffisants, reconsidérer le sizing`;
         lines.push(verdict);
 
+        // Modifications faites cette semaine (depuis le changeLog)
+        const changeLogWeek = (botState.changeLog || []).filter(c => {
+            return new Date(c.date).getTime() >= weekAgo;
+        });
+
         // Stocker pour le dashboard
         botState.lastWeeklyReport = {
             timestamp: nowTs,
@@ -244,6 +402,7 @@ function runWeeklyReport() {
             capitalNow,
             capitalDiff,
             verdict,
+            changeLogWeek,  // modifications made this week
         };
 
         // Logger dans le dashboard
