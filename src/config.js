@@ -59,7 +59,7 @@ export const CONFIG = {
     // Portfolio Hedging Limits
     PORTFOLIO_LIMITS: {
         MAX_SAME_CATEGORY: 3,      // Max trades in same category (e.g., 3 political)
-        MAX_SPORTS_CATEGORY: 5,    // Allow more sports trades (55% WR, +$46 since Feb 21)
+        MAX_SPORTS_CATEGORY: 15,   // Allow more sports trades (55% WR, +$46 since Feb 21)
         MAX_ECONOMIC_CATEGORY: 2,  // Fewer economic trades (20% WR historically)
         MAX_TECH_CATEGORY: 2,      // Limit tech trades (37% WR, -$20 since Feb 21 — mostly Elon tweets)
         MAX_SAME_DIRECTION: 6,     // Max trades in same direction (e.g., 6 YES)
