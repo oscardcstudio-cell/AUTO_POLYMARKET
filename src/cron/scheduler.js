@@ -117,23 +117,47 @@ function runModifReport() {
     }
 }
 
-function computeWizardCopyStats(sinceTimestamp = 0) {
+// Stratégies ciblées pour le suivi hebdo
+const TARGET_STRATEGIES = ['event_driven', 'standard', 'copy_trade', 'wizard'];
+
+function computeTargetStrategiesStats(sinceTimestamp = 0) {
     const closed = botState.closedTrades || [];
+    const byStrategy = {};
+
+    for (const strat of TARGET_STRATEGIES) {
+        byStrategy[strat] = { count: 0, totalPnl: 0, wins: 0, losses: 0 };
+    }
+
     const trades = closed.filter(t => {
-        const reasons = t.decisionReasons || t.reasons || [];
-        const isWizardCopy = t.strategy === 'wizard' ||
-            reasons.some(r => r.toLowerCase().includes('wizard') || r.toLowerCase().includes('copy'));
         const inPeriod = sinceTimestamp === 0 || new Date(t.endTime || t.startTime || 0).getTime() >= sinceTimestamp;
-        return isWizardCopy && inPeriod;
+        return TARGET_STRATEGIES.includes(t.strategy) && inPeriod;
     });
 
+    for (const t of trades) {
+        const s   = t.strategy;
+        const pnl = t.profit ?? t.pnl ?? 0;
+        byStrategy[s].count++;
+        byStrategy[s].totalPnl += pnl;
+        if (pnl > 0) byStrategy[s].wins++;
+        else byStrategy[s].losses++;
+    }
+
+    // Agréger toutes stratégies confondues
     const count    = trades.length;
     const totalPnl = trades.reduce((sum, t) => sum + (t.profit ?? t.pnl ?? 0), 0);
     const wins     = trades.filter(t => (t.profit ?? t.pnl ?? 0) > 0).length;
     const losses   = trades.filter(t => (t.profit ?? t.pnl ?? 0) < 0).length;
     const winRate  = count > 0 ? Math.round((wins / count) * 100) : null;
     const avgPnl   = count > 0 ? totalPnl / count : 0;
-    return { count, totalPnl, wins, losses, winRate, avgPnl };
+
+    // Ajouter win rate par stratégie
+    for (const s of TARGET_STRATEGIES) {
+        const d = byStrategy[s];
+        d.winRate = d.count > 0 ? Math.round((d.wins / d.count) * 100) : null;
+        d.avgPnl  = d.count > 0 ? d.totalPnl / d.count : 0;
+    }
+
+    return { count, totalPnl, wins, losses, winRate, avgPnl, byStrategy };
 }
 
 function runWeeklyReport() {
@@ -144,58 +168,54 @@ function runWeeklyReport() {
         const weekAgo  = nowTs - WEEK_MS;
 
         // Stats depuis le changement copy size (2026-03-02)
-        const sinceChange = computeWizardCopyStats(COPY_SIZE_CHANGE_DATE);
+        const sinceChange = computeTargetStrategiesStats(COPY_SIZE_CHANGE_DATE);
         // Stats cette semaine seulement
-        const thisWeek    = computeWizardCopyStats(weekAgo);
-        // Stats semaine précédente
-        const prevWeek    = computeWizardCopyStats(weekAgo - WEEK_MS);
+        const thisWeek    = computeTargetStrategiesStats(weekAgo);
+        // Stats semaine précédente (pour trend)
+        const prevWeek    = computeTargetStrategiesStats(weekAgo - WEEK_MS);
 
-        // Capital évolution (capital actuel vs capital il y a 7 jours)
-        const capitalNow  = botState.capital || 0;
-        const snapshots   = botState.weeklySnapshots || [];
-
-        // Évolution du capital vs snapshot semaine dernière
-        const lastSnap    = snapshots[snapshots.length - 1];
+        // Capital évolution
+        const capitalNow = botState.capital || 0;
+        const snapshots  = botState.weeklySnapshots || [];
+        const lastSnap   = snapshots[snapshots.length - 1];
         const capitalDiff = lastSnap ? capitalNow - lastSnap.capital : null;
-        const capitalSign = capitalDiff >= 0 ? '+' : '';
 
-        // Sauvegarder le snapshot de cette semaine
-        const newSnap = {
-            date: dateStr,
-            timestamp: nowTs,
-            capital: capitalNow,
-            wizardStats: thisWeek,
-        };
+        // Sauvegarder snapshot
         if (!botState.weeklySnapshots) botState.weeklySnapshots = [];
-        botState.weeklySnapshots.push(newSnap);
-        // Garder seulement les 8 dernières semaines
+        botState.weeklySnapshots.push({ date: dateStr, timestamp: nowTs, capital: capitalNow, stats: thisWeek });
         if (botState.weeklySnapshots.length > 8) botState.weeklySnapshots.shift();
 
-        // Construire le rapport
+        // Construire le rapport logs
         const lines = [];
-        lines.push(`━━━ 📅 RAPPORT HEBDO COPY/WIZARD — ${dateStr} ━━━`);
+        lines.push(`━━━ 📅 RAPPORT HEBDO — event_driven / standard / copy — ${dateStr} ━━━`);
 
-        // Depuis le changement 2% (2026-03-02)
-        lines.push(`📌 Depuis passage à 2% copy size (02/03/2026):`);
+        // Détail par stratégie depuis le 02/03
+        lines.push(`📌 Depuis passage à 2% copy (02/03/2026):`);
         if (sinceChange.count === 0) {
-            lines.push(`   ⏳ Pas encore de trades wizard/copy fermés`);
+            lines.push(`   ⏳ Pas encore de trades fermés sur ces stratégies`);
         } else {
             const sc = sinceChange;
+            for (const strat of TARGET_STRATEGIES) {
+                const d = sc.byStrategy[strat];
+                if (d.count === 0) continue;
+                const sign = d.totalPnl >= 0 ? '+' : '';
+                lines.push(`   ${strat.padEnd(14)} | ${d.count} trades | WR: ${d.winRate}% | PnL: ${sign}$${d.totalPnl.toFixed(2)}`);
+            }
             const sign = sc.totalPnl >= 0 ? '+' : '';
-            lines.push(`   ${sc.count} trades | WR: ${sc.winRate}% (${sc.wins}W/${sc.losses}L) | PnL: ${sign}$${sc.totalPnl.toFixed(2)} | moy: ${sign}$${sc.avgPnl.toFixed(2)}/trade`);
+            lines.push(`   TOTAL: ${sc.count} trades | WR: ${sc.winRate}% | PnL: ${sign}$${sc.totalPnl.toFixed(2)}`);
         }
 
-        // Cette semaine vs semaine dernière
+        // Cette semaine
         lines.push(`📊 Cette semaine:`);
         if (thisWeek.count === 0) {
-            lines.push(`   ⏳ Aucun trade wizard/copy fermé cette semaine`);
+            lines.push(`   ⏳ Aucun trade fermé sur ces stratégies cette semaine`);
         } else {
             const tw = thisWeek;
             const sign = tw.totalPnl >= 0 ? '+' : '';
             const trend = prevWeek.count > 0
-                ? (tw.totalPnl > prevWeek.totalPnl ? '📈 En progression vs semaine dernière' : '📉 En recul vs semaine dernière')
+                ? (tw.totalPnl > prevWeek.totalPnl ? ' 📈 progression' : ' 📉 recul')
                 : '';
-            lines.push(`   ${tw.count} trades | WR: ${tw.winRate}% | PnL: ${sign}$${tw.totalPnl.toFixed(2)} ${trend}`);
+            lines.push(`   ${tw.count} trades | WR: ${tw.winRate}% | PnL: ${sign}$${tw.totalPnl.toFixed(2)}${trend}`);
         }
 
         // Capital
@@ -211,8 +231,8 @@ function runWeeklyReport() {
         const verdict = sinceChange.count === 0
             ? `⏳ EN ATTENTE — pas encore assez de données`
             : isGood
-                ? `✅ AJUSTEMENT CONCLUANT — copy 2% génère du profit`
-                : `⚠️ À SURVEILLER — résultats insuffisants, reconsidérer`;
+                ? `✅ CONCLUANT — event_driven/standard/copy génèrent du profit à 2%`
+                : `⚠️ À SURVEILLER — résultats insuffisants, reconsidérer le sizing`;
         lines.push(verdict);
 
         // Stocker pour le dashboard
@@ -229,7 +249,6 @@ function runWeeklyReport() {
         // Logger dans le dashboard
         const type = isGood ? 'success' : (sinceChange.count === 0 ? 'info' : 'warning');
         for (const line of lines) addLog(botState, line, type);
-
         stateManager.save();
 
     } catch (e) {

@@ -898,7 +898,7 @@
 
             <!-- RAPPORT HEBDO COPY/WIZARD SECTION -->
             <div class="chart-section" id="rapportHebdoSection" style="margin-top: 30px; border-color: rgba(139, 92, 246, 0.3); display:none;">
-                <div class="stat-label">📅 Rapport Hebdo Copy/Wizard <span id="rapportHebdoDate" style="font-size:0.75em; opacity:0.6; font-weight:normal; margin-left:8px;"></span></div>
+                <div class="stat-label">📅 Rapport Hebdo — Event / Standard / Copy <span id="rapportHebdoDate" style="font-size:0.75em; opacity:0.6; font-weight:normal; margin-left:8px;"></span></div>
                 <div id="rapportHebdoContent" style="margin-top: 15px; display: flex; flex-direction: column; gap: 10px;"></div>
             </div>
 
@@ -1709,27 +1709,45 @@
 
                             // Depuis changement 2%
                             const sc = hebdo.sinceChange;
-                            hrows.push(`<div style="color:#94a3b8; font-size:0.85em; margin-bottom:2px;">📌 Depuis passage à 2% copy size (02/03/2026)</div>`);
+                            const TARGET_STRATS = ['event_driven', 'standard', 'copy_trade', 'wizard'];
+                            const STRAT_LABELS  = { event_driven: '⚡ Event-driven', standard: '📊 Standard', copy_trade: '🔁 Copy trade', wizard: '🧙 Wizard' };
+                            hrows.push(`<div style="color:#94a3b8; font-size:0.85em; margin-bottom:4px;">📌 Depuis passage à 2% copy size (02/03/2026)</div>`);
                             if (!sc || sc.count === 0) {
-                                hrows.push(`<div style="color:#64748b; font-style:italic;">⏳ Pas encore de trades wizard/copy fermés</div>`);
+                                hrows.push(`<div style="color:#64748b; font-style:italic;">⏳ Pas encore de trades fermés sur ces stratégies</div>`);
                             } else {
-                                const pnlColor = sc.totalPnl >= 0 ? '#4ade80' : '#ef4444';
-                                const wrColor  = sc.winRate >= 50 ? '#4ade80' : '#f87171';
-                                const sign     = sc.totalPnl >= 0 ? '+' : '';
-                                hrows.push(`<div style="display:flex; gap:16px; flex-wrap:wrap;">
+                                // Ligne par stratégie
+                                for (const strat of TARGET_STRATS) {
+                                    const d = sc.byStrategy?.[strat];
+                                    if (!d || d.count === 0) continue;
+                                    const pc = d.totalPnl >= 0 ? '#4ade80' : '#ef4444';
+                                    const wc = d.winRate >= 50 ? '#4ade80' : '#f87171';
+                                    const sg = d.totalPnl >= 0 ? '+' : '';
+                                    hrows.push(`<div style="display:flex; gap:12px; flex-wrap:wrap; padding-left:8px;">
+                                        <span style="color:#cbd5e1; min-width:120px;">${STRAT_LABELS[strat]}</span>
+                                        <span style="color:#64748b;">${d.count} trades</span>
+                                        <span style="color:${wc}; font-weight:bold;">WR ${d.winRate}%</span>
+                                        <span style="color:${pc}; font-weight:bold;">${sg}$${d.totalPnl.toFixed(2)}</span>
+                                        <span style="color:#64748b; font-size:0.85em;">moy ${sg}$${d.avgPnl.toFixed(2)}</span>
+                                    </div>`);
+                                }
+                                // Total
+                                const tpc = sc.totalPnl >= 0 ? '#4ade80' : '#ef4444';
+                                const twc = sc.winRate >= 50 ? '#4ade80' : '#f87171';
+                                const tsg = sc.totalPnl >= 0 ? '+' : '';
+                                hrows.push(`<div style="display:flex; gap:12px; flex-wrap:wrap; border-top:1px solid rgba(255,255,255,0.05); padding-top:4px; margin-top:2px;">
+                                    <span style="color:#94a3b8; min-width:120px; font-weight:bold;">TOTAL</span>
                                     <span style="color:#cbd5e1;">${sc.count} trades</span>
-                                    <span style="color:${wrColor}; font-weight:bold;">WR ${sc.winRate}% (${sc.wins}W / ${sc.losses}L)</span>
-                                    <span style="color:${pnlColor}; font-weight:bold;">${sign}$${sc.totalPnl.toFixed(2)}</span>
-                                    <span style="color:#64748b;">moy ${sign}$${sc.avgPnl.toFixed(2)}/trade</span>
+                                    <span style="color:${twc}; font-weight:bold;">WR ${sc.winRate}%</span>
+                                    <span style="color:${tpc}; font-weight:bold;">${tsg}$${sc.totalPnl.toFixed(2)}</span>
                                 </div>`);
                             }
 
                             // Cette semaine
-                            hrows.push(`<div style="border-top: 1px solid rgba(255,255,255,0.07); margin: 4px 0;"></div>`);
+                            hrows.push(`<div style="border-top: 1px solid rgba(255,255,255,0.07); margin: 6px 0;"></div>`);
                             const tw = hebdo.thisWeek;
                             hrows.push(`<div style="color:#94a3b8; font-size:0.85em; margin-bottom:2px;">📊 Cette semaine</div>`);
                             if (!tw || tw.count === 0) {
-                                hrows.push(`<div style="color:#64748b; font-style:italic;">⏳ Aucun trade wizard/copy cette semaine</div>`);
+                                hrows.push(`<div style="color:#64748b; font-style:italic;">⏳ Aucun trade fermé sur ces stratégies cette semaine</div>`);
                             } else {
                                 const pnlColor = tw.totalPnl >= 0 ? '#4ade80' : '#ef4444';
                                 const wrColor  = tw.winRate >= 50 ? '#4ade80' : '#f87171';
