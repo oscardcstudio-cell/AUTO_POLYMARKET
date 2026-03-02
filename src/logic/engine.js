@@ -247,17 +247,29 @@ async function calculateConviction(market, pizzaData, dependencies) {
         signals.push('📅 Calendar Edge conviction (+12)');
     }
 
-    // 11c. QUANTITATIVE FAIR VALUE conviction
+    // 11c. QUANTITATIVE CONVICTION (Quant Pure élections + Fair Value général)
     if (market._quantSignal) {
-        const qfv = market._quantSignal;
-        if (qfv.signal === 'buy') {
-            const bonus = Math.min(15, Math.round(qfv.nSignals * 4));
+        const qs = market._quantSignal;
+        const isQuantPure = !!qs.applicable; // true = Quant Pure (election model)
+
+        if (qs.signal === 'buy') {
+            let bonus;
+            if (isQuantPure) {
+                // Quant Pure: scale with confidence and edge — up to +22 conviction
+                bonus = Math.min(22, Math.round((qs.edge || 0) * 200 * (qs.confidence || 0.5)));
+                const confPct = Math.round((qs.confidence || 0) * 100);
+                signals.push(`💎 Quant Pure election edge ${((qs.edge||0)*100).toFixed(0)}% conf ${confPct}% (+${bonus})`);
+            } else {
+                // Basic fair value: simpler bonus
+                bonus = Math.min(15, Math.round((qs.nSignals || 0) * 4));
+                signals.push(`💡 Quant FV edge ${((qs.edge||0)*100).toFixed(0)}% (+${bonus})`);
+            }
             convictionPoints += bonus;
-            signals.push(`💡 Quant FV edge ${(qfv.edge * 100).toFixed(0)}% (+${bonus})`);
-        } else if (qfv.signal === 'sell') {
-            // Quant says market is overpriced → reduce conviction for YES trade
-            convictionPoints -= 8;
-            signals.push(`⚠️ Quant FV surévalué (-8)`);
+        } else if (qs.signal === 'sell') {
+            const penalty = isQuantPure ? -Math.min(18, Math.round((Math.abs(qs.edge||0)) * 150)) : -8;
+            convictionPoints += penalty;
+            const label = isQuantPure ? 'Quant Pure surévalué' : 'Quant FV surévalué';
+            signals.push(`⚠️ ${label} (${penalty})`);
         }
     }
 

@@ -9,6 +9,7 @@ import { scanCopySignals, matchCopySignalToMarket } from '../api/wallet_tracker.
 import { calculateSportsBonus } from '../api/sportsData.js';
 import { scanSemanticArbitrage } from '../api/semanticArbitrage.js';
 import { detectBehavioralAnomaly, detectCalendarEdge } from '../api/marketBehavior.js';
+import { runQuantModel } from '../api/quantModel.js';
 
 // Helper for inline fetches in getRelevantMarkets
 async function fetchWithRetry(url, options = {}, retries = 3) {
@@ -567,18 +568,27 @@ function calculateAlphaScore(market, pizzaData) {
         // Silent fail
     }
 
-    // ── QUANTITATIVE FAIR VALUE ───────────────────────────────────────────────
-    // Compares our multi-signal probability estimate P_bot vs market price.
-    // Only fires when ≥ 2 signals agree AND edge is ≥ 4%.
+    // ── QUANTITATIVE PURE (élections) + FAIR VALUE (général) ────────────────
+    // • Election markets → runQuantModel (4-layer probabilistic model)
+    // • All other markets → computeFairValue (multi-signal baseline)
     try {
-        const qfv = computeFairValue(market, pizzaData, category);
-        if (qfv.alphaBonus !== 0) {
-            score += qfv.alphaBonus;
-            for (const r of qfv.reasons) reasons.push(r);
-            market._quantSignal = qfv; // stored for engine.js conviction use
+        const quant = runQuantModel(market, botState.newsSentiment || []);
+        if (quant.applicable && quant.alphaBonus !== 0) {
+            // Quant Pure fired — use its result, skip the basic fair value
+            score += quant.alphaBonus;
+            for (const r of quant.reasons) reasons.push(r);
+            market._quantSignal = quant;
+        } else {
+            // Not an election market (or no signal) → fall back to basic fair value
+            const qfv = computeFairValue(market, pizzaData, category);
+            if (qfv.alphaBonus !== 0) {
+                score += qfv.alphaBonus;
+                for (const r of qfv.reasons) reasons.push(r);
+                market._quantSignal = qfv;
+            }
         }
     } catch (e) {
-        // Silent fail
+        // Silent fail — quant module is additive, never a blocker
     }
 
     const finalScore = Math.max(0, Math.min(100, score));
