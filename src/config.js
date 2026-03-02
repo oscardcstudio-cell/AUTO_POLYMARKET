@@ -281,5 +281,36 @@ export const CONFIG = {
         MAX_FORM_BONUS: 18,            // Cap at +18 alpha total (form)
         // Motivation modifier (derby, elimination, nothing-to-play-for)
         MOTIVATION_BONUS: 8,           // ±8 alpha per motivation signal
-    }
+    },
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // LIQUIDITY-ADJUSTED EDGE REQUIREMENT
+    // Illiquid markets = wider spreads + harder fills → require stronger signal
+    // Liquid markets = easy fills, lower edge acceptable
+    // ─────────────────────────────────────────────────────────────────────────
+    LIQUIDITY_EDGE: {
+        VERY_LOW_LIQ:  500,    // < $500 liquidity = very illiquid
+        LOW_LIQ:      2000,    // < $2k  liquidity = low
+        MEDIUM_LIQ:  10000,    // < $10k liquidity = medium (> $10k = high)
+        // Min conviction points required per tier
+        MIN_CONVICTION_VERY_LOW: 60,   // Very illiquid: only high-conviction trades
+        MIN_CONVICTION_LOW:      50,   // Low liquidity: solid signal needed
+        MIN_CONVICTION_MEDIUM:   35,   // Medium: standard threshold
+        MIN_CONVICTION_HIGH:     25,   // High liquidity: lower edge OK (easy fills)
+    },
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // VOLATILITY-ADJUSTED POSITION SIZING
+    // Volatile markets = gap risk → reduce size
+    // Stable markets = predictable price action → slight size increase
+    // Uses detectPriceRange() intraday range from Market Memory
+    // ─────────────────────────────────────────────────────────────────────────
+    VOLATILITY_SIZING: {
+        HIGH_RANGE:   0.20,   // Range > 20%  = HIGH volatility
+        MEDIUM_RANGE: 0.10,   // Range > 10%  = MEDIUM volatility
+        LOW_RANGE:    0.05,   // Range < 5%   = LOW volatility (stable)
+        HIGH_MULTIPLIER:   0.65,  // Reduce position 35% on highly volatile markets
+        MEDIUM_MULTIPLIER: 0.85,  // Reduce position 15% on medium volatility
+        LOW_MULTIPLIER:    1.10,  // Increase position 10% on stable markets (max 10%)
+    },
 };

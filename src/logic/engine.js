@@ -6,7 +6,7 @@ import { categorizeMarket } from './signals.js';
 import { getBestExecutionPrice, getCLOBOrderBook, getCLOBTradeHistory } from '../api/clob_api.js';
 import { supabaseService } from '../services/supabaseService.js';
 import { sportsService } from '../services/sportsService.js';
-import { getAdvancedSignals, evaluateDCA, executeDCA } from './advancedStrategies.js';
+import { getAdvancedSignals, evaluateDCA, executeDCA, detectPriceRange } from './advancedStrategies.js';
 
 function calculateTradeSize(confidence, price) {
     const capital = botState.capital || CONFIG.STARTING_CAPITAL;
@@ -907,6 +907,39 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
         advancedSizeMultiplier = convictionResult.sizeMultiplier || 1.0;
     }
 
+    // ── LIQUIDITY-ADJUSTED MINIMUM EDGE REQUIREMENT ──────────────────────────
+    // Illiquid markets = wider spreads, harder fills → require stronger conviction
+    // Liquid markets = easy fills, tighter spreads → lower edge acceptable
+    if (!dependencies.testSize && !skipPersistence && convictionResult) {
+        const LE = CONFIG.LIQUIDITY_EDGE || {};
+        const liquidity = parseFloat(market.liquidityNum || 0);
+
+        let minConviction, liquidityTier;
+        if (liquidity < (LE.VERY_LOW_LIQ ?? 500)) {
+            minConviction = LE.MIN_CONVICTION_VERY_LOW ?? 60;
+            liquidityTier = `très faible ($${Math.round(liquidity)})`;
+        } else if (liquidity < (LE.LOW_LIQ ?? 2000)) {
+            minConviction = LE.MIN_CONVICTION_LOW ?? 50;
+            liquidityTier = `faible ($${Math.round(liquidity)})`;
+        } else if (liquidity < (LE.MEDIUM_LIQ ?? 10000)) {
+            minConviction = LE.MIN_CONVICTION_MEDIUM ?? 35;
+            liquidityTier = `moyenne ($${Math.round(liquidity)})`;
+        } else {
+            minConviction = LE.MIN_CONVICTION_HIGH ?? 25;
+            liquidityTier = `élevée ($${Math.round(liquidity)})`;
+        }
+
+        if (convictionResult.points < minConviction) {
+            const reason = `💧 Liquidity gate: liq. ${liquidityTier} → besoin ${minConviction}pts, obtenu ${convictionResult.points}pts`;
+            if (reasonsCollector) reasonsCollector.push(reason);
+            decisionReasons.push(reason);
+            logTradeDecision(market, null, decisionReasons, pizzaData);
+            return null;
+        }
+        decisionReasons.push(`💧 Liq. ${liquidityTier}: ${convictionResult.points}pts ≥ ${minConviction}pts ✓`);
+    }
+    // ─────────────────────────────────────────────────────────────────────────
+
     // --- PORTFOLIO HEDGING CHECK ---
     if (!skipPersistence || dependencies.enforcePortfolioLimits) {
         const exposure = checkPortfolioExposure(botState.activeTrades, category, side);
@@ -976,6 +1009,35 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
     confidence = Math.max(0.01, Math.min(0.99, confidence));
 
     let tradeSize = dependencies.testSize || calculateTradeSize(confidence, entryPrice);
+
+    // ── VOLATILITY-ADJUSTED POSITION SIZING ──────────────────────────────────
+    // Wide intraday range = high gap risk → reduce size to protect capital
+    // Stable price action = predictable fills → slight size boost
+    if (!dependencies.testSize) {
+        const VS = CONFIG.VOLATILITY_SIZING || {};
+        const range = detectPriceRange(market.id);
+        if (range && typeof range.rangePercent === 'number') {
+            let volMultiplier = 1.0;
+            let volTier = null;
+
+            if (range.rangePercent > (VS.HIGH_RANGE ?? 0.20)) {
+                volMultiplier = VS.HIGH_MULTIPLIER ?? 0.65;
+                volTier = `HAUTE ${(range.rangePercent * 100).toFixed(0)}%`;
+            } else if (range.rangePercent > (VS.MEDIUM_RANGE ?? 0.10)) {
+                volMultiplier = VS.MEDIUM_MULTIPLIER ?? 0.85;
+                volTier = `MOYENNE ${(range.rangePercent * 100).toFixed(0)}%`;
+            } else if (range.rangePercent < (VS.LOW_RANGE ?? 0.05)) {
+                volMultiplier = VS.LOW_MULTIPLIER ?? 1.10;
+                volTier = `BASSE ${(range.rangePercent * 100).toFixed(0)}%`;
+            }
+
+            if (volMultiplier !== 1.0 && volTier) {
+                tradeSize *= volMultiplier;
+                decisionReasons.push(`📊 Volatility sizing (${volTier} range): x${volMultiplier}`);
+            }
+        }
+    }
+    // ─────────────────────────────────────────────────────────────────────────
 
     // ── Rule 3: Always keep MIN_LIQUID_PCT (30%) of total capital in cash ────
     if (!dependencies.testSize && !skipPersistence) {
