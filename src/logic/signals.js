@@ -7,6 +7,7 @@ import { fetchRealNewsSentiment, matchMarketToNews } from '../api/news.js';
 import { fetchWhaleTrades, matchWhaleToMarket } from '../api/polymarket_data.js';
 import { scanCopySignals, matchCopySignalToMarket } from '../api/wallet_tracker.js';
 import { calculateSportsBonus } from '../api/sportsData.js';
+import { scanSemanticArbitrage } from '../api/semanticArbitrage.js';
 
 // Helper for inline fetches in getRelevantMarkets
 async function fetchWithRetry(url, options = {}, retries = 3) {
@@ -311,6 +312,16 @@ function calculateAlphaScore(market, pizzaData) {
     const hasArbitrage = botState.arbitrageOpportunities.some(a => a.id === market.id);
     if (hasArbitrage) { score += 25; reasons.push('Arbitrage (+25)'); }
 
+    // Semantic Arbitrage (cross-market inconsistency — runs on deep scan pool)
+    const SA = CONFIG.SEMANTIC_ARB || {};
+    const semArbMatch = (botState.semanticArbOpportunities || []).find(o => o.signal?.id === market.id);
+    if (semArbMatch) {
+        const semBonus = SA.ALPHA_BONUS || 28;
+        score += semBonus;
+        reasons.push(`🔗 Arb Sémantique [${semArbMatch.type}] (${semArbMatch.entity}): +${semBonus}`);
+        market._semArbMatch = semArbMatch; // Stored for engine.js conviction use
+    }
+
     if (pizzaData) {
         const tension = pizzaData.tensionScore || 0;
         const T = CONFIG.TENSION || {};
@@ -546,6 +557,32 @@ export async function scanArbitrage(markets = null) {
             }
         });
     } catch (e) { console.error("Arb Scan Error:", e.message); }
+}
+
+/**
+ * Semantic Arbitrage Scan — cross-market inconsistency detection.
+ * Should be called with the FULL deep-scan market pool (100+ markets).
+ * Results are stored in botState.semanticArbOpportunities and used by calculateAlphaScore.
+ *
+ * @param {Object[]} markets — deep scan market pool (passed from server.js)
+ */
+export function runSemanticArbScan(markets) {
+    try {
+        if (!markets || markets.length < 10) return;
+        const opportunities = scanSemanticArbitrage(markets);
+        botState.semanticArbOpportunities = opportunities;
+
+        if (opportunities.length > 0) {
+            const mutualExcl = opportunities.filter(o => o.type === 'MUTUAL_EXCLUSION').length;
+            const implGap    = opportunities.filter(o => o.type === 'IMPLICATION_GAP').length;
+            addLog(botState,
+                `🔗 Arb Sémantique: ${opportunities.length} signaux (${mutualExcl} exclusion, ${implGap} gap) sur ${markets.length} marchés`,
+                'info'
+            );
+        }
+    } catch (e) {
+        console.error('[SemanticArb] Scan error:', e.message);
+    }
 }
 
 export async function detectWizards(markets = null) {

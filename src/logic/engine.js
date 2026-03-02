@@ -123,6 +123,14 @@ async function calculateConviction(market, pizzaData, dependencies) {
         signals.push('Wizard (+15)');
     }
 
+    // 5b. Semantic Arbitrage conviction bonus
+    if (market._semArbMatch) {
+        const semConvBonus = CONFIG.SEMANTIC_ARB?.CONVICTION_BONUS || 12;
+        convictionPoints += semConvBonus;
+        const arbType = market._semArbMatch.type === 'MUTUAL_EXCLUSION' ? 'Exclusion' : 'Gap';
+        signals.push(`🔗 SemArb ${arbType} [${market._semArbMatch.entity}] (+${semConvBonus})`);
+    }
+
     // 6. Trend confirmation via CLOB (+15)
     if (!isWhaleMarket && volume24h > 1000 && yesPrice > 0.55 && yesPrice < 0.90) {
         try {

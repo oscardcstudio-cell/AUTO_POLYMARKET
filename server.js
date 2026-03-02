@@ -20,6 +20,7 @@ import {
     detectWhales,
     detectCopySignals,
     scanArbitrage,
+    runSemanticArbScan,
     detectFreshMarkets,
     updateTopSignal,
     fetchNewsSentiment,
@@ -250,7 +251,12 @@ async function mainLoop() {
             await detectCopySignals(relevantMarkets);
             await detectFreshMarkets();
 
-            // 4b. Copy Trading: Refresh leaderboard every 6h
+            // 4b. Semantic Arbitrage — runs only on deep scan (100+ markets needed)
+            if (isDeepScan) {
+                runSemanticArbScan(relevantMarkets);
+            }
+
+            // 4c. Copy Trading: Refresh leaderboard every 6h
             if (isDeepScan) {
                 const walletRefreshInterval = CONFIG.COPY_TRADING?.LEADERBOARD_CACHE_TTL_MS || 6 * 60 * 60 * 1000;
                 if (Date.now() - lastWalletRefresh > walletRefreshInterval) {

@@ -177,6 +177,13 @@ export const CONFIG = {
         WHALE_CONVICTION_OPPOSED: -10,  // -10 conviction if whales bet opposite
         WHALE_MULTI_BONUS: 10,          // +10 if multiple whales on same market
     },
+    // Semantic Arbitrage (semanticArbitrage.js — cross-market inconsistency detection)
+    SEMANTIC_ARB: {
+        MIN_GAP_PERCENT: 8,            // Min % gap between A and B prices to flag an opportunity
+        ALPHA_BONUS: 28,               // +28 alpha if semantic arb signal detected on this market
+        CONVICTION_BONUS: 12,          // +12 conviction if semantic arb aligns with trade direction
+        MAX_OPPORTUNITIES: 25,         // Keep top 25 opportunities per deep scan cycle
+    },
     // Sports Intelligence (sportsData.js — no external API required)
     SPORTS_STRATEGY: {
         // Base home win rates by sport (historical averages, major leagues)
