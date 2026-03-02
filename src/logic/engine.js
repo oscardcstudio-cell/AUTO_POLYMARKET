@@ -37,7 +37,11 @@ function calculateTradeSize(confidence, price) {
 
     const calculatedSize = capital * targetPercent;
 
-    return Math.max(CONFIG.MIN_TRADE_SIZE, Math.min(calculatedSize, capital * 0.15));
+    // Hard cap: never exceed MAX_POSITION_PCT of total capital (Rule 1: max 5%)
+    const CM = CONFIG.CAPITAL_MANAGEMENT || {};
+    const maxPositionPct = CM.MAX_POSITION_PCT ?? 0.05;
+    const maxPositionAbs = capital * maxPositionPct;
+    return Math.max(CONFIG.MIN_TRADE_SIZE, Math.min(calculatedSize, maxPositionAbs));
 }
 
 // --- CONVICTION SCORING: Evaluate ALL signals for composite confidence ---
@@ -375,6 +379,23 @@ async function calculateConviction(market, pizzaData, dependencies) {
 function checkPortfolioExposure(activeTrades, newCategory, newSide) {
     const limits = CONFIG.PORTFOLIO_LIMITS;
     if (!limits) return { allowed: true, adjustment: 0, reason: null };
+
+    // ── Rule 2: Max 20% of TOTAL capital on any single theme (dollar-based) ───
+    const CM = CONFIG.CAPITAL_MANAGEMENT || {};
+    const maxThemePct = CM.MAX_THEME_PCT ?? 0.20;
+    const totalCapital = (botState.capital || 0) +
+        activeTrades.reduce((sum, t) => sum + (t.amount || 0), 0);
+    const themeExposure = activeTrades
+        .filter(t => t.category === newCategory)
+        .reduce((sum, t) => sum + (t.amount || 0), 0);
+    const maxThemeAbs = totalCapital * maxThemePct;
+    if (themeExposure >= maxThemeAbs) {
+        return {
+            allowed: false,
+            adjustment: 0,
+            reason: `Theme cap: ${newCategory} $${themeExposure.toFixed(0)}/$${maxThemeAbs.toFixed(0)} (${(maxThemePct * 100).toFixed(0)}% max)`
+        };
+    }
 
     // Count trades by category (with per-category overrides)
     const sameCategoryCount = activeTrades.filter(t => t.category === newCategory).length;
@@ -955,6 +976,29 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
     confidence = Math.max(0.01, Math.min(0.99, confidence));
 
     let tradeSize = dependencies.testSize || calculateTradeSize(confidence, entryPrice);
+
+    // ── Rule 3: Always keep MIN_LIQUID_PCT (30%) of total capital in cash ────
+    if (!dependencies.testSize && !skipPersistence) {
+        const CM = CONFIG.CAPITAL_MANAGEMENT || {};
+        const minLiquidPct = CM.MIN_LIQUID_PCT ?? 0.30;
+        const invested = (botState.activeTrades || []).reduce((sum, t) => sum + (t.amount || 0), 0);
+        const totalCapital = (botState.capital || 0) + invested;
+        const requiredLiquid = totalCapital * minLiquidPct;
+        const availableToInvest = (botState.capital || 0) - requiredLiquid;
+
+        if (availableToInvest < CONFIG.MIN_TRADE_SIZE) {
+            const reason = `Liquidity reserve: keeping ${(minLiquidPct * 100).toFixed(0)}% liquid ($${requiredLiquid.toFixed(0)} reserved, only $${Math.max(0, availableToInvest).toFixed(0)} free)`;
+            if (reasonsCollector) reasonsCollector.push(reason);
+            decisionReasons.push(reason);
+            logTradeDecision(market, null, decisionReasons, pizzaData);
+            return null;
+        }
+        // Cap trade size so we don't break the reserve
+        if (tradeSize > availableToInvest) {
+            tradeSize = availableToInvest;
+            decisionReasons.push(`💧 Size réduit à $${tradeSize.toFixed(0)} (réserve 30% respectée)`);
+        }
+    }
 
     // --- SPECULATIVE MARKET SIZE CAP: Hard cap for low-price markets (high-risk) ---
     // Markets with price < 0.35 are highly speculative (e.g. esports mid-game)
