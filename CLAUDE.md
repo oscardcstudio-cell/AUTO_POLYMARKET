@@ -6,7 +6,7 @@ Deux personnes travaillent sur ce projet. Ni l'un ni l'autre ne code.
 | Personne | Branche | Rôle |
 |----------|---------|------|
 | **Oscar** | `main` (directement) | Owner, décisions finales |
-| **Engue** | `engue/dev` | Collaborateur |
+| **Engue** | `main` (directement) | Collaborateur — accès direct accordé par Oscar |
 
 - Toujours expliquer les changements en langage simple AVANT de coder
 - Ne jamais demander "tu veux que je fasse X ou Y ?" avec des choix techniques incompréhensibles
@@ -18,16 +18,13 @@ Deux personnes travaillent sur ce projet. Ni l'un ni l'autre ne code.
 
 1. **Demander qui travaille** : "Tu es Oscar ou Engue ?"
 2. **Vérifier la branche** : `git branch --show-current`
-3. **Si c'est Oscar** → basculer sur `main`, faire `git pull`
-4. **Si c'est Engue** → basculer sur `engue/dev`, faire `git pull` puis `git merge main`
-5. **S'il y a des conflits** → les montrer et résoudre ensemble AVANT de coder
+3. **Basculer sur `main`** et faire `git pull` (pour Oscar ET Engue)
+4. **S'il y a des conflits** → les montrer et résoudre ensemble AVANT de coder
 
 ## Règles Git (STRICTES — ne jamais déroger)
-- **Oscar** travaille directement sur `main` — il peut commit et push sur `main`
-- **Engue** travaille sur `engue/dev` — INTERDIT de push sur `main` pour Engue
+- **Oscar et Engue** travaillent tous les deux directement sur `main`
 - **INTERDIT** de `git push --force` sur quelque branche que ce soit
-- **Engue** : après le push sur `engue/dev`, proposer de créer une Pull Request (engue/dev → main)
-- Avant chaque push : vérifier `git branch --show-current` pour confirmer la bonne branche
+- Avant chaque push : vérifier `git branch --show-current` pour confirmer qu'on est sur `main`
 - Voir `CONTRIBUTING.md` pour le guide complet de collaboration
 
 ## Le projet en bref
@@ -144,7 +141,7 @@ node scripts/cleanup_orphan_trades.js
 
 ## Sécurité & garde-fous
 - JAMAIS désactiver SIMULATION_MODE sans confirmation d'Oscar
-- **Oscar** peut push sur `main` — **Engue** doit utiliser `engue/dev` uniquement
+- **Oscar et Engue** peuvent tous les deux push sur `main`
 - JAMAIS push --force sur quelque branche que ce soit
 - JAMAIS supprimer bot_data.json sans backup
 - JAMAIS modifier les clés API dans le code (utiliser .env)
@@ -153,7 +150,7 @@ node scripts/cleanup_orphan_trades.js
 
 ## Workflow de déploiement
 
-### Oscar (Owner) — travaille sur `main`
+### Oscar et Engue — travaillent tous les deux sur `main`
 1. Vérifier qu'on est sur `main` (`git branch --show-current`)
 2. `git pull` pour récupérer les derniers changements
 3. Modifier le code
@@ -161,16 +158,6 @@ node scripts/cleanup_orphan_trades.js
 5. Commit avec message clair en anglais
 6. `git push origin main` → Railway auto-deploy (~2 min)
 7. Vérifier via `node scripts/diagnose_railway_state.js`
-
-### Engue (Collaborateur) — travaille sur `engue/dev`
-1. Vérifier qu'on est sur `engue/dev` (`git branch --show-current`)
-2. `git pull` puis `git merge main` pour synchroniser
-3. Modifier le code
-4. Tester localement (`node server.js`)
-5. Commit avec message clair en anglais
-6. Push sur `engue/dev` (PAS main)
-7. Créer une Pull Request sur GitHub (`engue/dev` → `main`)
-8. Oscar valide → Merge → Railway auto-deploy (~2 min)
 
 ## Référence
 - Protocole de debug : `docs/DEBUG_PROTOCOL.md`
