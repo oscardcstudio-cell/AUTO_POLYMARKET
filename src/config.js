@@ -21,7 +21,7 @@ const ENABLE_GITHUB_SYNC = false; // Disabled by default to prevent Railway Infi
 export const CONFIG = {
     ROOT_DIR,
     ENABLE_GITHUB_SYNC,
-    STARTING_CAPITAL: 1000,
+    STARTING_CAPITAL: 7000,
     POLL_INTERVAL_MINUTES: 1,
     DEFCON_THRESHOLD: 5,
     MIN_TRADE_SIZE: 10,
