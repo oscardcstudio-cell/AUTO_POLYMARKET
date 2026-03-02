@@ -30,7 +30,7 @@ export const CONFIG = {
     KELLY_FRACTION: 0.2,          // 20% of full Kelly (conservative)
     MIN_LIQUIDITY: 500,
     MIN_VOLUME: 500,
-    BASE_MAX_TRADES: 10,          // Starting limit for diversification
+    BASE_MAX_TRADES: 50,          // Max simultaneous open trades
     KEYWORDS: [],
     FALLBACK_KEYWORDS: ['War', 'Strike', 'Election', 'Bitcoin', 'Economy'],
     DATA_FILE: DATA_FILE_PATH,
