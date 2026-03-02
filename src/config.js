@@ -296,7 +296,7 @@ export const CONFIG = {
         MIN_CONVICTION_VERY_LOW: 60,   // Very illiquid: only high-conviction trades
         MIN_CONVICTION_LOW:      50,   // Low liquidity: solid signal needed
         MIN_CONVICTION_MEDIUM:   35,   // Medium: standard threshold
-        MIN_CONVICTION_HIGH:     25,   // High liquidity: lower edge OK (easy fills)
+        MIN_CONVICTION_HIGH:     32,   // High liquidity: lower edge OK (easy fills)
     },
 
     // ─────────────────────────────────────────────────────────────────────────
