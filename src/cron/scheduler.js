@@ -8,19 +8,26 @@ import { getOSINTTensionStats } from '../api/pizzint.js';
 import { getOSINTNewsStats } from '../api/news.js';
 
 // Run every 6 hours
-const INTERVAL_MS = 6 * 60 * 60 * 1000;
+const INTERVAL_MS     = 6 * 60 * 60 * 1000;
+const WEEK_MS         = 7 * 24 * 60 * 60 * 1000;
+
+// Date du changement copy size 1.5% → 2% (pour comparer avant/après)
+const COPY_SIZE_CHANGE_DATE = new Date('2026-03-02T00:00:00Z').getTime();
 
 export function startScheduler() {
     console.log('AI Self-Training Scheduler started (Every 6h)');
 
     // Initial run after 30 seconds to allow server to settle and not block startup
     setTimeout(runAutoTraining, 30000);
-
     setInterval(runAutoTraining, INTERVAL_MS);
 
-    // Rapport de modif toutes les 6h (décalé de 2 min pour ne pas se chevaucher avec l'auto-training)
+    // Rapport de modif toutes les 6h (décalé de 2 min)
     setTimeout(runModifReport, 2 * 60 * 1000);
     setInterval(runModifReport, INTERVAL_MS);
+
+    // Rapport hebdo copy/wizard — premier run dans 3 min, puis toutes les semaines
+    setTimeout(runWeeklyReport, 3 * 60 * 1000);
+    setInterval(runWeeklyReport, WEEK_MS);
 }
 
 function computeOSINTTradeStats() {
@@ -107,6 +114,126 @@ function runModifReport() {
 
     } catch (e) {
         addLog(botState, `[RapportModif] Erreur: ${e.message}`, 'error');
+    }
+}
+
+function computeWizardCopyStats(sinceTimestamp = 0) {
+    const closed = botState.closedTrades || [];
+    const trades = closed.filter(t => {
+        const reasons = t.decisionReasons || t.reasons || [];
+        const isWizardCopy = t.strategy === 'wizard' ||
+            reasons.some(r => r.toLowerCase().includes('wizard') || r.toLowerCase().includes('copy'));
+        const inPeriod = sinceTimestamp === 0 || new Date(t.endTime || t.startTime || 0).getTime() >= sinceTimestamp;
+        return isWizardCopy && inPeriod;
+    });
+
+    const count    = trades.length;
+    const totalPnl = trades.reduce((sum, t) => sum + (t.profit ?? t.pnl ?? 0), 0);
+    const wins     = trades.filter(t => (t.profit ?? t.pnl ?? 0) > 0).length;
+    const losses   = trades.filter(t => (t.profit ?? t.pnl ?? 0) < 0).length;
+    const winRate  = count > 0 ? Math.round((wins / count) * 100) : null;
+    const avgPnl   = count > 0 ? totalPnl / count : 0;
+    return { count, totalPnl, wins, losses, winRate, avgPnl };
+}
+
+function runWeeklyReport() {
+    try {
+        const now      = new Date();
+        const nowTs    = now.getTime();
+        const dateStr  = now.toLocaleString('fr-FR', { timeZone: 'Europe/Paris' });
+        const weekAgo  = nowTs - WEEK_MS;
+
+        // Stats depuis le changement copy size (2026-03-02)
+        const sinceChange = computeWizardCopyStats(COPY_SIZE_CHANGE_DATE);
+        // Stats cette semaine seulement
+        const thisWeek    = computeWizardCopyStats(weekAgo);
+        // Stats semaine précédente
+        const prevWeek    = computeWizardCopyStats(weekAgo - WEEK_MS);
+
+        // Capital évolution (capital actuel vs capital il y a 7 jours)
+        const capitalNow  = botState.capital || 0;
+        const snapshots   = botState.weeklySnapshots || [];
+
+        // Évolution du capital vs snapshot semaine dernière
+        const lastSnap    = snapshots[snapshots.length - 1];
+        const capitalDiff = lastSnap ? capitalNow - lastSnap.capital : null;
+        const capitalSign = capitalDiff >= 0 ? '+' : '';
+
+        // Sauvegarder le snapshot de cette semaine
+        const newSnap = {
+            date: dateStr,
+            timestamp: nowTs,
+            capital: capitalNow,
+            wizardStats: thisWeek,
+        };
+        if (!botState.weeklySnapshots) botState.weeklySnapshots = [];
+        botState.weeklySnapshots.push(newSnap);
+        // Garder seulement les 8 dernières semaines
+        if (botState.weeklySnapshots.length > 8) botState.weeklySnapshots.shift();
+
+        // Construire le rapport
+        const lines = [];
+        lines.push(`━━━ 📅 RAPPORT HEBDO COPY/WIZARD — ${dateStr} ━━━`);
+
+        // Depuis le changement 2% (2026-03-02)
+        lines.push(`📌 Depuis passage à 2% copy size (02/03/2026):`);
+        if (sinceChange.count === 0) {
+            lines.push(`   ⏳ Pas encore de trades wizard/copy fermés`);
+        } else {
+            const sc = sinceChange;
+            const sign = sc.totalPnl >= 0 ? '+' : '';
+            lines.push(`   ${sc.count} trades | WR: ${sc.winRate}% (${sc.wins}W/${sc.losses}L) | PnL: ${sign}$${sc.totalPnl.toFixed(2)} | moy: ${sign}$${sc.avgPnl.toFixed(2)}/trade`);
+        }
+
+        // Cette semaine vs semaine dernière
+        lines.push(`📊 Cette semaine:`);
+        if (thisWeek.count === 0) {
+            lines.push(`   ⏳ Aucun trade wizard/copy fermé cette semaine`);
+        } else {
+            const tw = thisWeek;
+            const sign = tw.totalPnl >= 0 ? '+' : '';
+            const trend = prevWeek.count > 0
+                ? (tw.totalPnl > prevWeek.totalPnl ? '📈 En progression vs semaine dernière' : '📉 En recul vs semaine dernière')
+                : '';
+            lines.push(`   ${tw.count} trades | WR: ${tw.winRate}% | PnL: ${sign}$${tw.totalPnl.toFixed(2)} ${trend}`);
+        }
+
+        // Capital
+        if (capitalDiff !== null) {
+            const sign = capitalDiff >= 0 ? '+' : '';
+            lines.push(`💰 Capital: $${capitalNow.toFixed(2)} (${sign}$${capitalDiff.toFixed(2)} vs semaine dernière)`);
+        } else {
+            lines.push(`💰 Capital: $${capitalNow.toFixed(2)} (premier snapshot)`);
+        }
+
+        // Verdict
+        const isGood = sinceChange.count > 0 && sinceChange.totalPnl > 0 && sinceChange.winRate >= 50;
+        const verdict = sinceChange.count === 0
+            ? `⏳ EN ATTENTE — pas encore assez de données`
+            : isGood
+                ? `✅ AJUSTEMENT CONCLUANT — copy 2% génère du profit`
+                : `⚠️ À SURVEILLER — résultats insuffisants, reconsidérer`;
+        lines.push(verdict);
+
+        // Stocker pour le dashboard
+        botState.lastWeeklyReport = {
+            timestamp: nowTs,
+            date: dateStr,
+            sinceChange,
+            thisWeek,
+            capitalNow,
+            capitalDiff,
+            verdict,
+        };
+
+        // Logger dans le dashboard
+        const type = isGood ? 'success' : (sinceChange.count === 0 ? 'info' : 'warning');
+        for (const line of lines) addLog(botState, line, type);
+
+        stateManager.save();
+
+    } catch (e) {
+        addLog(botState, `[RapportHebdo] Erreur: ${e.message}`, 'error');
     }
 }
 

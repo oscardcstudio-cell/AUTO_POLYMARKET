@@ -896,6 +896,12 @@
                 <div id="rapportModifContent" style="margin-top: 15px; display: flex; flex-direction: column; gap: 10px;"></div>
             </div>
 
+            <!-- RAPPORT HEBDO COPY/WIZARD SECTION -->
+            <div class="chart-section" id="rapportHebdoSection" style="margin-top: 30px; border-color: rgba(139, 92, 246, 0.3); display:none;">
+                <div class="stat-label">📅 Rapport Hebdo Copy/Wizard <span id="rapportHebdoDate" style="font-size:0.75em; opacity:0.6; font-weight:normal; margin-left:8px;"></span></div>
+                <div id="rapportHebdoContent" style="margin-top: 15px; display: flex; flex-direction: column; gap: 10px;"></div>
+            </div>
+
             <!-- LIVE LOGS SECTION (Restored) -->
             <div class="chart-section" style="margin-top: 30px; border-color: rgba(255, 255, 255, 0.1);">
                 <div class="stat-label">📜 Live System Logs</div>
@@ -1689,6 +1695,72 @@
                             }
 
                             rapportContent.innerHTML = rows.join('');
+                        }
+
+                        // --- RAPPORT HEBDO PANEL ---
+                        const hebdo = botData.lastWeeklyReport;
+                        const hebdoSection = document.getElementById('rapportHebdoSection');
+                        const hebdoContent = document.getElementById('rapportHebdoContent');
+                        const hebdoDate    = document.getElementById('rapportHebdoDate');
+                        if (hebdo && hebdoSection && hebdoContent) {
+                            hebdoSection.style.display = 'block';
+                            hebdoDate.textContent = hebdo.date || '';
+                            const hrows = [];
+
+                            // Depuis changement 2%
+                            const sc = hebdo.sinceChange;
+                            hrows.push(`<div style="color:#94a3b8; font-size:0.85em; margin-bottom:2px;">📌 Depuis passage à 2% copy size (02/03/2026)</div>`);
+                            if (!sc || sc.count === 0) {
+                                hrows.push(`<div style="color:#64748b; font-style:italic;">⏳ Pas encore de trades wizard/copy fermés</div>`);
+                            } else {
+                                const pnlColor = sc.totalPnl >= 0 ? '#4ade80' : '#ef4444';
+                                const wrColor  = sc.winRate >= 50 ? '#4ade80' : '#f87171';
+                                const sign     = sc.totalPnl >= 0 ? '+' : '';
+                                hrows.push(`<div style="display:flex; gap:16px; flex-wrap:wrap;">
+                                    <span style="color:#cbd5e1;">${sc.count} trades</span>
+                                    <span style="color:${wrColor}; font-weight:bold;">WR ${sc.winRate}% (${sc.wins}W / ${sc.losses}L)</span>
+                                    <span style="color:${pnlColor}; font-weight:bold;">${sign}$${sc.totalPnl.toFixed(2)}</span>
+                                    <span style="color:#64748b;">moy ${sign}$${sc.avgPnl.toFixed(2)}/trade</span>
+                                </div>`);
+                            }
+
+                            // Cette semaine
+                            hrows.push(`<div style="border-top: 1px solid rgba(255,255,255,0.07); margin: 4px 0;"></div>`);
+                            const tw = hebdo.thisWeek;
+                            hrows.push(`<div style="color:#94a3b8; font-size:0.85em; margin-bottom:2px;">📊 Cette semaine</div>`);
+                            if (!tw || tw.count === 0) {
+                                hrows.push(`<div style="color:#64748b; font-style:italic;">⏳ Aucun trade wizard/copy cette semaine</div>`);
+                            } else {
+                                const pnlColor = tw.totalPnl >= 0 ? '#4ade80' : '#ef4444';
+                                const wrColor  = tw.winRate >= 50 ? '#4ade80' : '#f87171';
+                                const sign     = tw.totalPnl >= 0 ? '+' : '';
+                                hrows.push(`<div style="display:flex; gap:16px; flex-wrap:wrap;">
+                                    <span style="color:#cbd5e1;">${tw.count} trades</span>
+                                    <span style="color:${wrColor}; font-weight:bold;">WR ${tw.winRate}%</span>
+                                    <span style="color:${pnlColor}; font-weight:bold;">${sign}$${tw.totalPnl.toFixed(2)}</span>
+                                </div>`);
+                            }
+
+                            // Capital
+                            hrows.push(`<div style="border-top: 1px solid rgba(255,255,255,0.07); margin: 4px 0;"></div>`);
+                            const capColor = (hebdo.capitalDiff ?? 0) >= 0 ? '#4ade80' : '#ef4444';
+                            const capSign  = (hebdo.capitalDiff ?? 0) >= 0 ? '+' : '';
+                            const capDiffStr = hebdo.capitalDiff !== null
+                                ? `<span style="color:${capColor};">(${capSign}$${hebdo.capitalDiff.toFixed(2)} cette semaine)</span>`
+                                : `<span style="color:#64748b;">(premier snapshot)</span>`;
+                            hrows.push(`<div style="display:flex; gap:8px; align-items:center;">
+                                <span style="color:#94a3b8; min-width:80px;">💰 Capital</span>
+                                <span style="color:#cbd5e1; font-weight:bold;">$${hebdo.capitalNow?.toFixed(2)}</span>
+                                ${capDiffStr}
+                            </div>`);
+
+                            // Verdict
+                            const verdictColor = hebdo.verdict?.startsWith('✅') ? '#4ade80' : hebdo.verdict?.startsWith('⏳') ? '#94a3b8' : '#f87171';
+                            hrows.push(`<div style="border-left: 3px solid ${verdictColor}; padding: 8px 12px; background: rgba(255,255,255,0.03); border-radius: 4px; color:${verdictColor}; font-weight:bold;">
+                                ${hebdo.verdict}
+                            </div>`);
+
+                            hebdoContent.innerHTML = hrows.join('');
                         }
 
                         const logsList = document.getElementById('systemLogs');
