@@ -890,6 +890,32 @@
             </div>
 
 
+            <!-- NOUVELLES STRATÉGIES : Behavioral + Calendar Edge -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 30px;">
+
+                <!-- Hype Fader / Panic Buy -->
+                <div class="chart-section" style="border-color: rgba(248, 113, 113, 0.3);">
+                    <div class="stat-label">🔥😱 Hype Fader &amp; Panic Buy</div>
+                    <div style="font-size:0.72em; color:#64748b; margin-bottom:10px; margin-top:4px;">
+                        🔥 Hype = overbought (éviter) · 😱 Panic = dip irrationnel à J-3 (opportunité)
+                    </div>
+                    <div id="behavioralSignalsList" style="margin-top: 10px;">
+                        <div class="empty-state">Scanning behavioral patterns...</div>
+                    </div>
+                </div>
+
+                <!-- Calendar Edge v2 -->
+                <div class="chart-section" style="border-color: rgba(52, 211, 153, 0.3);">
+                    <div class="stat-label">📅 Calendar Edge v2</div>
+                    <div style="font-size:0.72em; color:#64748b; margin-bottom:10px; margin-top:4px;">
+                        Marchés stagnants + incertains à 2-7j de résolution → entrer tôt, sortir à +15%
+                    </div>
+                    <div id="calendarEdgeList" style="margin-top: 10px;">
+                        <div class="empty-state">Scanning calendar patterns...</div>
+                    </div>
+                </div>
+            </div>
+
             <!-- RAPPORT DE MODIF SECTION -->
             <div class="chart-section" id="rapportModifSection" style="margin-top: 30px; border-color: rgba(99, 202, 183, 0.3); display:none;">
                 <div class="stat-label">📊 Rapport de Modif <span id="rapportModifDate" style="font-size:0.75em; opacity:0.6; font-weight:normal; margin-left:8px;"></span></div>
@@ -1602,6 +1628,56 @@
                     </div>`).join('');
                         } else { wizardList.innerHTML = '<div class="empty-state">No wizards detected.</div>'; }
 
+                        // ── Behavioral Signals (Hype Fader / Panic Buy) ───────────────────
+                        const behavList = document.getElementById('behavioralSignalsList');
+                        if (behavList) {
+                            const sigs = botData.behavioralSignals;
+                            if (sigs && sigs.length > 0) {
+                                behavList.innerHTML = sigs.map(s => {
+                                    const isHype  = s.signal === 'hype';
+                                    const color   = isHype ? '#f87171' : '#4ade80';
+                                    const bg      = isHype ? 'rgba(239,68,68,0.08)' : 'rgba(74,222,128,0.08)';
+                                    const border  = isHype ? '#f87171' : '#4ade80';
+                                    const icon    = isHype ? '🔥' : '😱';
+                                    const label   = isHype ? 'HYPE' : 'PANIC BUY';
+                                    const bonus   = s.alphaBonus >= 0 ? `+${s.alphaBonus}` : `${s.alphaBonus}`;
+                                    const pct     = Math.round((s.strength || 0) * 100);
+                                    return `<div style="margin-bottom:8px; padding:9px 11px; background:${bg}; border-radius:9px; border-left:3px solid ${border};">
+                                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                                            <span style="font-weight:700; font-size:0.82em; color:${color};">${icon} ${label}</span>
+                                            <span style="font-size:0.72em; color:${color};">${bonus} alpha · force ${pct}%</span>
+                                        </div>
+                                        <div style="font-size:0.78em; color:#cbd5e1; margin-top:4px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${s.question}">${s.question}</div>
+                                        <div style="font-size:0.72em; color:#64748b; margin-top:2px;">Prix: ${s.price}</div>
+                                    </div>`;
+                                }).join('');
+                            } else {
+                                behavList.innerHTML = '<div class="empty-state">Aucun signal comportemental détecté</div>';
+                            }
+                        }
+
+                        // ── Calendar Edge v2 ──────────────────────────────────────────────
+                        const calList = document.getElementById('calendarEdgeList');
+                        if (calList) {
+                            const edges = botData.calendarEdges;
+                            if (edges && edges.length > 0) {
+                                calList.innerHTML = edges.map(e => {
+                                    const bonus  = e.alphaBonus >= 0 ? `+${e.alphaBonus}` : `${e.alphaBonus}`;
+                                    const target = e.earlyExitTarget ? `${(e.earlyExitTarget * 100).toFixed(1)}%` : '—';
+                                    return `<div style="margin-bottom:8px; padding:9px 11px; background:rgba(52,211,153,0.07); border-radius:9px; border-left:3px solid #34d399;">
+                                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                                            <span style="font-weight:700; font-size:0.82em; color:#34d399;">📅 J-${e.daysLeft}</span>
+                                            <span style="font-size:0.72em; color:#34d399;">${bonus} alpha · cible ${target}</span>
+                                        </div>
+                                        <div style="font-size:0.78em; color:#cbd5e1; margin-top:4px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${e.question}">${e.question}</div>
+                                        <div style="font-size:0.72em; color:#64748b; margin-top:2px;">Prix actuel: ${e.price}</div>
+                                    </div>`;
+                                }).join('');
+                            } else {
+                                calList.innerHTML = '<div class="empty-state">Aucun calendar edge détecté</div>';
+                            }
+                        }
+
                         // --- 4. HISTORY (REMOVED as per user request) ---
 
 
@@ -1730,8 +1806,8 @@
 
                             // Depuis changement 2%
                             const sc = hebdo.sinceChange;
-                            const TARGET_STRATS = ['event_driven', 'standard', 'copy_trade', 'wizard'];
-                            const STRAT_LABELS  = { event_driven: '⚡ Event-driven', standard: '📊 Standard', copy_trade: '🔁 Copy trade', wizard: '🧙 Wizard' };
+                            const TARGET_STRATS = ['event_driven', 'standard', 'copy_trade', 'wizard', 'hype_fader', 'panic_buy', 'calendar_edge', 'semantic_arb', 'quant_fair_value', 'sports'];
+                            const STRAT_LABELS  = { event_driven: '⚡ Event-driven', standard: '📊 Standard', copy_trade: '🔁 Copy trade', wizard: '🧙 Wizard', hype_fader: '🔥 Hype Fader', panic_buy: '😱 Panic Buy', calendar_edge: '📅 Calendar Edge', semantic_arb: '🔗 Arb Sémantique', quant_fair_value: '💡 Quant FV', sports: '🏆 Sports' };
                             hrows.push(`<div style="color:#94a3b8; font-size:0.85em; margin-bottom:4px;">📌 Depuis passage à 2% copy size (02/03/2026)</div>`);
                             if (!sc || sc.count === 0) {
                                 hrows.push(`<div style="color:#64748b; font-style:italic;">⏳ Pas encore de trades fermés sur ces stratégies</div>`);

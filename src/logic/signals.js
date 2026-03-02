@@ -872,6 +872,41 @@ export async function updateTopSignal(pizzaData) {
 
             stateManager.addSectorEvent(top._category, 'SIGNAL', `Top Signal Detected: ${top.score}/100`, { market: top.question });
 
+            // ── Aggregate behavioral signals for dashboard display ─────────
+            const now = new Date().toISOString();
+            botState.behavioralSignals = scoredMarkets
+                .filter(m => m._behaviorSignal && m._behaviorSignal.signal !== 'none')
+                .slice(0, 8)
+                .map(m => ({
+                    id: m.id,
+                    question: (m.question || '').substring(0, 70),
+                    slug: m.slug,
+                    signal: m._behaviorSignal.signal,      // 'hype' | 'panic'
+                    strength: m._behaviorSignal.strength,
+                    alphaBonus: m._behaviorSignal.alphaBonus,
+                    reasons: m._behaviorSignal.reasons,
+                    price: (() => { try { const p = typeof m.outcomePrices === 'string' ? JSON.parse(m.outcomePrices) : m.outcomePrices; return parseFloat(p[0]).toFixed(3); } catch { return '—'; } })(),
+                    detectedAt: now,
+                }));
+
+            // ── Aggregate calendar edge signals for dashboard display ──────
+            botState.calendarEdges = scoredMarkets
+                .filter(m => m._calendarEdge && m._calendarEdge.isCalendarEdge)
+                .slice(0, 8)
+                .map(m => {
+                    const days = m.endDate ? ((new Date(m.endDate) - Date.now()) / (1000 * 60 * 60 * 24)).toFixed(1) : '?';
+                    return {
+                        id: m.id,
+                        question: (m.question || '').substring(0, 70),
+                        slug: m.slug,
+                        alphaBonus: m._calendarEdge.alphaBonus,
+                        earlyExitTarget: m._calendarEdge.earlyExitTarget,
+                        daysLeft: days,
+                        price: (() => { try { const p = typeof m.outcomePrices === 'string' ? JSON.parse(m.outcomePrices) : m.outcomePrices; return parseFloat(p[0]).toFixed(3); } catch { return '—'; } })(),
+                        detectedAt: now,
+                    };
+                });
+
             // getEventSlug is needed here?
             // botState.topSignal.eventSlug = ...
             // Simplify for now until getEventSlug is moved.
