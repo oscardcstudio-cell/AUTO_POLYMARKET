@@ -8,6 +8,7 @@ import { fetchWhaleTrades, matchWhaleToMarket } from '../api/polymarket_data.js'
 import { scanCopySignals, matchCopySignalToMarket } from '../api/wallet_tracker.js';
 import { calculateSportsBonus } from '../api/sportsData.js';
 import { scanSemanticArbitrage } from '../api/semanticArbitrage.js';
+import { detectBehavioralAnomaly, detectCalendarEdge } from '../api/marketBehavior.js';
 
 // Helper for inline fetches in getRelevantMarkets
 async function fetchWithRetry(url, options = {}, retries = 3) {
@@ -256,6 +257,133 @@ function calculateFreshScore(market, ageHours) {
     return Math.min(100, score);
 }
 
+// ──────────────────────────────────────────────────────────────────────────────
+// QUANTITATIVE FAIR VALUE — compare our estimated P(YES) vs market price
+// ──────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Lightweight probabilistic model: combine news, whale, copy-trade, and tension
+ * signals to estimate a fair-value probability P_bot(YES), then compare vs the
+ * current market price. Only signal if edge ≥ MIN_EDGE and ≥ 2 signals agree.
+ *
+ * @param {Object} market    — market with _newsMatch / _whaleMatch / _copyMatch pre-attached
+ * @param {Object} pizzaData — last PizzINT payload (tensionScore, tensionTrend)
+ * @param {string} category  — pre-computed market category
+ * @returns {{
+ *   pBot:      number,   // our estimated YES probability (0-1)
+ *   pMarket:   number,   // current market price
+ *   edge:      number,   // signed delta (positive = YES undervalued)
+ *   signal:    'buy'|'sell'|'neutral',
+ *   alphaBonus: number,
+ *   reasons:   string[]
+ * }}
+ */
+function computeFairValue(market, pizzaData, category) {
+    const QCfg = CONFIG.QUANT_FAIR_VALUE || {};
+    const MIN_EDGE     = QCfg.MIN_EDGE      ?? 0.04; // 4 % minimum to trade
+    const MIN_SIGNALS  = QCfg.MIN_SIGNALS   ?? 2;    // need ≥ 2 agreeing signals
+    const MAX_ADJ      = QCfg.MAX_ADJ       ?? 0.22; // cap total adjustment at ±22%
+
+    const reasons = [];
+
+    // ── Baseline: current market price ───────────────────────────────────────
+    let pMarket = 0.5;
+    try {
+        const prices = typeof market.outcomePrices === 'string'
+            ? JSON.parse(market.outcomePrices)
+            : market.outcomePrices;
+        pMarket = parseFloat(prices[0]);
+        if (isNaN(pMarket)) pMarket = 0.5;
+    } catch {
+        return { pBot: 0.5, pMarket: 0.5, edge: 0, signal: 'neutral', alphaBonus: 0, reasons: [] };
+    }
+
+    let adjustment = 0;
+    let nSignals   = 0;
+
+    // ── 1. News sentiment ─────────────────────────────────────────────────────
+    const newsMatch = market._newsMatch;
+    if (newsMatch?.matched) {
+        if (newsMatch.sentiment === 'bullish') {
+            adjustment += 0.05;
+            nSignals++;
+            reasons.push('Quant: News bullish +5%');
+        } else if (newsMatch.sentiment === 'bearish') {
+            adjustment -= 0.05;
+            nSignals++;
+            reasons.push('Quant: News bearish -5%');
+        }
+    }
+
+    // ── 2. Whale consensus ───────────────────────────────────────────────────
+    const whaleMatch = market._whaleMatch;
+    if (whaleMatch?.consensus && whaleMatch.consensus !== 'MIXED') {
+        const adj = 0.06;
+        if (whaleMatch.consensus === 'YES') {
+            adjustment += adj;
+            reasons.push(`Quant: Whale YES +${(adj * 100).toFixed(0)}%`);
+        } else {
+            adjustment -= adj;
+            reasons.push(`Quant: Whale NO -${(adj * 100).toFixed(0)}%`);
+        }
+        nSignals++;
+    }
+
+    // ── 3. Copy-trade direction ───────────────────────────────────────────────
+    const copyMatch = market._copyMatch;
+    if (copyMatch?.outcome) {
+        const adj = 0.05;
+        if (copyMatch.outcome === 'YES') {
+            adjustment += adj;
+            reasons.push(`Quant: Copy YES +${(adj * 100).toFixed(0)}%`);
+        } else if (copyMatch.outcome === 'NO') {
+            adjustment -= adj;
+            reasons.push(`Quant: Copy NO -${(adj * 100).toFixed(0)}%`);
+        }
+        nSignals++;
+    }
+
+    // ── 4. Geopolitical tension ───────────────────────────────────────────────
+    if (pizzaData && (category === 'geopolitical' || category === 'economic')) {
+        const tension = pizzaData.tensionScore || 0;
+        if (tension >= 55) {
+            const adj = 0.04;
+            adjustment += adj;
+            nSignals++;
+            reasons.push(`Quant: Tension haute +${(adj * 100).toFixed(0)}%`);
+        }
+    }
+
+    // Not enough signals → neutral
+    if (nSignals < MIN_SIGNALS) {
+        return { pBot: pMarket, pMarket, edge: 0, signal: 'neutral', alphaBonus: 0, reasons: [] };
+    }
+
+    // Clamp total adjustment and compute pBot
+    adjustment = Math.max(-MAX_ADJ, Math.min(MAX_ADJ, adjustment));
+    const pBot = Math.max(0.05, Math.min(0.95, pMarket + adjustment));
+    const edge = pBot - pMarket;
+
+    let signal     = 'neutral';
+    let alphaBonus = 0;
+
+    if (edge >= MIN_EDGE) {
+        signal     = 'buy';
+        alphaBonus = Math.round(Math.min(30, edge * 300)); // up to +30 alpha
+        reasons.push(
+            `💡 Quant Fair Value: P_bot=${(pBot * 100).toFixed(0)}% vs marché ${(pMarket * 100).toFixed(0)}% → edge +${(edge * 100).toFixed(0)}% (+${alphaBonus})`
+        );
+    } else if (edge <= -MIN_EDGE) {
+        signal     = 'sell';
+        alphaBonus = -Math.round(Math.min(20, Math.abs(edge) * 200)); // up to -20 alpha
+        reasons.push(
+            `⚠️ Quant Fair Value: P_bot=${(pBot * 100).toFixed(0)}% vs marché ${(pMarket * 100).toFixed(0)}% → surévalué ${(Math.abs(edge) * 100).toFixed(0)}% (${alphaBonus})`
+        );
+    }
+
+    return { pBot, pMarket, edge, signal, alphaBonus, reasons, nSignals };
+}
+
 function calculateAlphaScore(market, pizzaData) {
     let score = 0;
     const reasons = [];
@@ -406,6 +534,51 @@ function calculateAlphaScore(market, pizzaData) {
     } else {
         score += 10;
         reasons.push('Diversification (+10)');
+    }
+
+    // ── BEHAVIORAL ANOMALY DETECTION (Hype / Panic / Intraday Volatility) ────
+    // Exploits crowd emotions: penalise overbought hype, reward panic-sell dips
+    try {
+        const beh = detectBehavioralAnomaly(market);
+        if (beh.alphaBonus !== 0) {
+            score += beh.alphaBonus;
+            for (const r of beh.reasons) reasons.push(r);
+        }
+        if (beh.volatilityBonus > 0) {
+            score += beh.volatilityBonus;
+        }
+        if (beh.signal !== 'none') {
+            market._behaviorSignal = beh; // stored for engine.js conviction use
+        }
+    } catch (e) {
+        // Silent fail — behavioral module is additive, never a blocker
+    }
+
+    // ── CALENDAR EDGE v2 ──────────────────────────────────────────────────────
+    // Stagnant uncertain markets approaching resolution → enter early, exit at +15%
+    try {
+        const cal = detectCalendarEdge(market);
+        if (cal.isCalendarEdge && cal.alphaBonus > 0) {
+            score += cal.alphaBonus;
+            for (const r of cal.reasons) reasons.push(r);
+            market._calendarEdge = cal; // stored for engine.js early-exit target
+        }
+    } catch (e) {
+        // Silent fail
+    }
+
+    // ── QUANTITATIVE FAIR VALUE ───────────────────────────────────────────────
+    // Compares our multi-signal probability estimate P_bot vs market price.
+    // Only fires when ≥ 2 signals agree AND edge is ≥ 4%.
+    try {
+        const qfv = computeFairValue(market, pizzaData, category);
+        if (qfv.alphaBonus !== 0) {
+            score += qfv.alphaBonus;
+            for (const r of qfv.reasons) reasons.push(r);
+            market._quantSignal = qfv; // stored for engine.js conviction use
+        }
+    } catch (e) {
+        // Silent fail
     }
 
     const finalScore = Math.max(0, Math.min(100, score));

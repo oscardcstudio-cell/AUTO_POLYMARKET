@@ -221,6 +221,46 @@ async function calculateConviction(market, pizzaData, dependencies) {
         signals.push('📉 Economic Conviction (-10)');
     }
 
+    // 11a. BEHAVIORAL SIGNAL conviction (Hype Fader / Panic Buy)
+    if (market._behaviorSignal) {
+        const beh = market._behaviorSignal;
+        if (beh.signal === 'panic') {
+            // Panic buy: strong conviction boost when market overreacts near resolution
+            const bonus = Math.round(beh.strength * 18);
+            convictionPoints += bonus;
+            signals.push(`😱 Panic Buy conviction +${bonus}`);
+        } else if (beh.signal === 'hype') {
+            // Hype: reduce conviction (overbought market, likely to revert)
+            const penalty = Math.round(beh.strength * -12);
+            convictionPoints += penalty;
+            signals.push(`🔥 Hype Fader conviction ${penalty}`);
+        }
+        if (beh.volatilityBonus > 0) {
+            convictionPoints += 4;
+            signals.push('📊 Volatilité intraday (+4)');
+        }
+    }
+
+    // 11b. CALENDAR EDGE v2 conviction
+    if (market._calendarEdge?.isCalendarEdge) {
+        convictionPoints += 12;
+        signals.push('📅 Calendar Edge conviction (+12)');
+    }
+
+    // 11c. QUANTITATIVE FAIR VALUE conviction
+    if (market._quantSignal) {
+        const qfv = market._quantSignal;
+        if (qfv.signal === 'buy') {
+            const bonus = Math.min(15, Math.round(qfv.nSignals * 4));
+            convictionPoints += bonus;
+            signals.push(`💡 Quant FV edge ${(qfv.edge * 100).toFixed(0)}% (+${bonus})`);
+        } else if (qfv.signal === 'sell') {
+            // Quant says market is overpriced → reduce conviction for YES trade
+            convictionPoints -= 8;
+            signals.push(`⚠️ Quant FV surévalué (-8)`);
+        }
+    }
+
     // 11. ADVANCED STRATEGIES (Memory, Cross-Market, Timing, Events, Calendar, Anti-Fragility)
     let advancedSizeMultiplier = 1.0;
     try {

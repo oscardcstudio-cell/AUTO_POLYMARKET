@@ -184,6 +184,38 @@ export const CONFIG = {
         CONVICTION_BONUS: 12,          // +12 conviction if semantic arb aligns with trade direction
         MAX_OPPORTUNITIES: 25,         // Keep top 25 opportunities per deep scan cycle
     },
+    // Behavioral Anomaly Detection (marketBehavior.js — no external API required)
+    BEHAVIORAL: {
+        // HYPE FADER: penalise alpha when price is high AND accelerating upward
+        HYPE_PRICE_THRESHOLD: 0.62,   // Above this YES price, start checking for hype
+        HYPE_MAX_PENALTY: -22,        // Max alpha penalty for overbought hype
+        // PANIC BUY: reward when price drops fast near resolution
+        PANIC_MAX_DAYS: 3,            // Only trigger within 3 days of resolution
+        PANIC_MAX_BONUS: 28,          // Max alpha bonus for panic-sell dip
+        // INTRADAY VOLATILITY bonus
+        VOLATILITY_RANGE_THRESHOLD: 0.08, // Min range% to grant volatility bonus
+    },
+    // Calendar Edge v2 (marketBehavior.js — stagnant uncertain markets near resolution)
+    CALENDAR_EDGE: {
+        WINDOW_MIN_DAYS: 2,           // Don't enter if < 2 days (too close to binary)
+        WINDOW_MAX_DAYS: 7,           // Don't enter if > 7 days (too early, capital stuck)
+        PRICE_MIN: 0.28,              // Only target genuinely uncertain markets
+        PRICE_MAX: 0.72,              // (outside this range = not interesting)
+        BASE_BONUS: 16,               // Min alpha bonus at 7 days
+        MAX_BONUS: 32,                // Max alpha bonus at 2 days
+        CONVICTION_BONUS: 12,         // Conviction bonus in engine.js
+        VOL_RATIO_THRESHOLD: 0.25,    // Volume awakening threshold
+        AWAKENING_BONUS: 12,          // Max awakening bonus
+    },
+    // Quantitative Fair Value (computeFairValue in signals.js)
+    QUANT_FAIR_VALUE: {
+        MIN_EDGE: 0.04,               // Minimum 4% edge between P_bot and P_market
+        MIN_SIGNALS: 2,               // At least 2 signals must agree
+        MAX_ADJ: 0.22,                // Cap total probability adjustment at ±22%
+        ALPHA_BUY_MULT: 300,          // edge × MULT = alpha bonus (max 30)
+        ALPHA_SELL_MULT: 200,         // edge × MULT = alpha penalty (max -20)
+        CONVICTION_BONUS: 4,          // Per confirming signal in engine.js
+    },
     // Sports Intelligence (sportsData.js — no external API required)
     SPORTS_STRATEGY: {
         // Base home win rates by sport (historical averages, major leagues)
