@@ -26,11 +26,11 @@ export const CONFIG = {
     DEFCON_THRESHOLD: 5,
     MIN_TRADE_SIZE: 10,
     MIN_PRICE_THRESHOLD: 0.05, // Filter out penny stocks (<5 cents) to avoid realistic fill issues
-    MAX_TRADE_SIZE_PERCENT: 0.05, // 5% maximum of total capital (research-backed)
+    MAX_TRADE_SIZE_PERCENT: 0.20, // 20% maximum of total capital per position
     KELLY_FRACTION: 0.2,          // 20% of full Kelly (conservative)
     // ── Capital Management Rules ──────────────────────────────────────────────
     CAPITAL_MANAGEMENT: {
-        MAX_POSITION_PCT: 0.05,  // Rule 1: never more than 5% of total capital per position
+        MAX_POSITION_PCT: 0.20,  // Rule 1: never more than 20% of total capital per position
         MAX_THEME_PCT:    0.20,  // Rule 2: never more than 20% of total capital on a single theme
         MIN_LIQUID_PCT:   0.30,  // Rule 3: always keep at least 30% of total capital in cash
     },
