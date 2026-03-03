@@ -923,7 +923,7 @@
             </div>
 
             <!-- RAPPORTS & ÉVOLUTION (24h / 7j / Modifications) -->
-            <div class="chart-section" id="rapportHebdoSection" style="margin-top: 30px; border-color: rgba(139, 92, 246, 0.4); display:none;">
+            <div class="chart-section" id="rapportHebdoSection" style="margin-top: 30px; border-color: rgba(139, 92, 246, 0.4);">
                 <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
                     <div class="stat-label" style="margin-bottom:0;">📊 Rapports &amp; Évolution <span id="rapportHebdoDate" style="font-size:0.75em; opacity:0.6; font-weight:normal; margin-left:8px;"></span></div>
                     <div style="display:flex; gap:6px;">
@@ -1729,7 +1729,7 @@
                             const rows = [];
 
                             // Sources row
-                            const sourcesHtml = rapport.sources.map(s =>
+                            const sourcesHtml = (rapport.sources || []).map(s =>
                                 s.count > 0
                                     ? `<span style="color:#4ade80">✅ ${s.name}: ${s.count} art.</span>`
                                     : `<span style="color:#ef4444">❌ ${s.name}</span>`
@@ -1799,8 +1799,9 @@
                         const hebdoSection = document.getElementById('rapportHebdoSection');
                         const hebdoContent = document.getElementById('rapportHebdoContent');
                         const hebdoDate    = document.getElementById('rapportHebdoDate');
-                        if (hebdo && hebdoSection && hebdoContent) {
-                            hebdoSection.style.display = 'block';
+                        // Always show the section — individual tabs handle their own empty states
+                        if (hebdoSection) hebdoSection.style.display = 'block';
+                        if (hebdo && hebdoContent) {
                             hebdoDate.textContent = hebdo.date || '';
                             const hrows = [];
 
@@ -1882,20 +1883,32 @@
                         renderDailyReport(botData);
                         renderChangelog(botData);
 
+                    } catch (e) { console.error("Rapports Error:", e); }
+
+                    // ── LIVE SYSTEM LOGS — try-catch isolé ───────────────
+                    // Séparé du bloc rapports pour éviter qu'une erreur dans
+                    // les rapports empêche l'affichage des logs
+                    try {
                         const logsList = document.getElementById('systemLogs');
-                        if (logsList && botData.logs && botData.logs.length > 0) {
-                            logsList.innerHTML = botData.logs.map(l => {
-                                let color = '#94a3b8'; // info
-                                if (l.type === 'success') color = '#4ade80';
-                                if (l.type === 'warning') color = '#f87171';
-                                if (l.type === 'error') color = '#ef4444';
-                                return `<div style="border-left: 2px solid ${color}; padding-left: 10px;">
-                                <span style="color: #64748b; margin-right: 10px;">[${new Date(l.timestamp).toLocaleTimeString()}]</span>
-                                <span style="color: ${color}">${l.message}</span>
-                             </div>`;
-                            }).join('');
+                        if (logsList) {
+                            if (botData.logs && botData.logs.length > 0) {
+                                // Afficher les 50 derniers logs, du plus récent au plus ancien
+                                logsList.innerHTML = botData.logs.slice(-50).reverse().map(l => {
+                                    let color = '#94a3b8';
+                                    if (l.type === 'success') color = '#4ade80';
+                                    if (l.type === 'warning') color = '#f87171';
+                                    if (l.type === 'error') color = '#ef4444';
+                                    const time = l.timestamp ? new Date(l.timestamp).toLocaleTimeString() : '—';
+                                    return `<div style="border-left: 2px solid ${color}; padding-left: 10px;">
+                                        <span style="color: #64748b; margin-right: 10px;">[${time}]</span>
+                                        <span style="color: ${color}">${l.message}</span>
+                                    </div>`;
+                                }).join('');
+                            } else {
+                                logsList.innerHTML = '<div style="color:#64748b; font-style:italic; padding:8px;">⏳ En attente des logs système...</div>';
+                            }
                         }
-                    } catch (e) { console.error("Logs Error:", e); }
+                    } catch (e) { console.error("Logs Render Error:", e); }
 
                     document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
                 } catch (e) { console.error(e); }
