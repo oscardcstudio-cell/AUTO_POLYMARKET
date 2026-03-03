@@ -160,6 +160,116 @@ function runDailyReport() {
     }
 }
 
+/**
+ * Evaluate rolling win-rate per strategy on closed trades.
+ * Auto-disables strategies that fall below AUTO_DISABLE_WR threshold.
+ * Auto-re-enables strategies that recover above AUTO_REENABLE_WR.
+ * Called every 6h via scheduler AND after each trade close in engine.js.
+ */
+export function evaluateStrategyPerformance() {
+    try {
+        const SP = CONFIG.STRATEGY_PERFORMANCE || {};
+        const minTrades      = SP.MIN_TRADES_TO_EVALUATE ?? 10;
+        const rollingWindow  = SP.ROLLING_WINDOW         ?? 20;
+        const disableWR      = SP.AUTO_DISABLE_WR        ?? 0.30;
+        const warnWR         = SP.AUTO_WARN_WR           ?? 0.40;
+        const reenableWR     = SP.AUTO_REENABLE_WR       ?? 0.55;
+        const reenableMin    = SP.REENABLE_MIN_TRADES    ?? 10;
+        const protected_     = SP.PROTECTED              ?? ['standard'];
+
+        const closed = botState.closedTrades || [];
+        if (closed.length === 0) return;
+
+        // Group by strategy (closedTrades is newest-first via unshift)
+        const byStrategy = {};
+        for (const trade of closed) {
+            const strat = trade.strategy || 'standard';
+            if (!byStrategy[strat]) byStrategy[strat] = [];
+            byStrategy[strat].push(trade);
+        }
+
+        const performance = {};
+        const changes = [];
+
+        for (const [strat, trades] of Object.entries(byStrategy)) {
+            const recent   = trades.slice(0, rollingWindow); // newest N trades
+            const count    = recent.length;
+            const totalPnl = recent.reduce((s, t) => s + (t.profit ?? t.pnl ?? 0), 0);
+            const avgPnl   = count > 0 ? totalPnl / count : 0;
+
+            if (count < minTrades) {
+                performance[strat] = { count, wr: null, status: 'insufficient_data', pnl: totalPnl, avgPnl };
+                continue;
+            }
+
+            const wins = recent.filter(t => (t.profit ?? t.pnl ?? 0) > 0).length;
+            const wr   = wins / count;
+            const wrPct = Math.round(wr * 100);
+
+            const isProtected  = protected_.includes(strat);
+            const isDisabled   = (botState.strategyOverrides?.disabledStrategies || []).includes(strat);
+            let status = 'active';
+
+            if (isDisabled) {
+                // Check for recovery
+                if (!isProtected && wr >= reenableWR && count >= reenableMin) {
+                    botState.strategyOverrides.disabledStrategies =
+                        botState.strategyOverrides.disabledStrategies.filter(s => s !== strat);
+                    status = 'recovered';
+                    changes.push({ type: 'reenable', strat, wr: wrPct, count });
+                    addLog(botState, `✅ AUTO-RÉACTIVATION: ${strat} (WR ${wrPct}% / ${count} trades ≥ ${Math.round(reenableWR*100)}%)`, 'success');
+                } else {
+                    status = 'disabled';
+                }
+            } else if (!isProtected) {
+                if (wr < disableWR) {
+                    // Auto-disable
+                    if (!botState.strategyOverrides) botState.strategyOverrides = { disabledStrategies: [] };
+                    if (!botState.strategyOverrides.disabledStrategies) botState.strategyOverrides.disabledStrategies = [];
+                    if (!botState.strategyOverrides.disabledStrategies.includes(strat)) {
+                        botState.strategyOverrides.disabledStrategies.push(strat);
+                        status = 'auto_disabled';
+                        changes.push({ type: 'disable', strat, wr: wrPct, count });
+                        addLog(botState, `🚫 AUTO-DÉSACTIVATION: ${strat} (WR ${wrPct}% / ${count} trades < ${Math.round(disableWR*100)}%)`, 'warning');
+                    } else {
+                        status = 'disabled';
+                    }
+                } else if (wr < warnWR) {
+                    status = 'warning';
+                    addLog(botState, `⚠️ ATTENTION: ${strat} WR faible (${wrPct}% / ${count} trades) — surveillance renforcée`, 'warning');
+                } else {
+                    status = 'active';
+                }
+            } else {
+                // Protected strategy
+                status = wr < warnWR ? 'warning_protected' : 'active';
+            }
+
+            performance[strat] = { count, wr: wrPct, status, pnl: totalPnl, avgPnl };
+        }
+
+        botState.strategyPerformance = performance;
+
+        // Log changes to changelog
+        for (const change of changes) {
+            if (!botState.changeLog) botState.changeLog = [];
+            botState.changeLog.unshift({
+                date: new Date().toISOString(),
+                type: 'strategy',
+                what: change.type === 'disable'
+                    ? `🚫 Auto-désactivation: ${change.strat} (WR ${change.wr}% sur ${change.count} trades)`
+                    : `✅ Auto-réactivation: ${change.strat} (WR ${change.wr}% → récupération)`,
+                by: 'AutoBot',
+            });
+        }
+
+        if (changes.length > 0) stateManager.save();
+
+    } catch (e) {
+        console.error('evaluateStrategyPerformance error:', e.message);
+    }
+}
+
 export function startScheduler() {
     console.log('AI Self-Training Scheduler started (Every 6h)');
 

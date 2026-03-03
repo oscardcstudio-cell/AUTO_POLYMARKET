@@ -284,6 +284,20 @@ export const CONFIG = {
     },
 
     // ─────────────────────────────────────────────────────────────────────────
+    // STRATEGY PERFORMANCE MONITORING — auto-disable/re-enable by rolling WR
+    // Evaluated after every trade close + every 6h via scheduler
+    // ─────────────────────────────────────────────────────────────────────────
+    STRATEGY_PERFORMANCE: {
+        MIN_TRADES_TO_EVALUATE: 10,  // Need ≥ 10 trades before evaluating a strategy
+        ROLLING_WINDOW:         20,  // Evaluate on the last 20 trades (rolling)
+        AUTO_DISABLE_WR:      0.30,  // WR < 30% on rolling window → auto-disable
+        AUTO_WARN_WR:         0.40,  // WR < 40% → warning (logged, not disabled)
+        AUTO_REENABLE_WR:     0.55,  // WR ≥ 55% on rolling window → re-enable
+        REENABLE_MIN_TRADES:    10,  // Need ≥ 10 trades to consider re-enabling
+        PROTECTED: ['standard'],     // These strategies are NEVER auto-disabled
+    },
+
+    // ─────────────────────────────────────────────────────────────────────────
     // MONTHLY DRAWDOWN PROTECTION — 3-tier automatic risk reduction
     // Resets automatically on the 1st of each month
     // ─────────────────────────────────────────────────────────────────────────

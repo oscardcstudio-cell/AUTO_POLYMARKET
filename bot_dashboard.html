@@ -923,6 +923,16 @@
                 </div>
             </div>
 
+            <!-- STRATEGY HEALTH MONITOR -->
+            <div class="chart-section" style="margin-top: 30px; border-color: rgba(139, 92, 246, 0.3);">
+                <div class="stat-label">🧬 Strategy Health Monitor
+                    <span style="font-size:0.72em; color:#64748b; font-weight:normal; margin-left:8px;">Auto-disable si WR &lt; 30% sur 20 trades · Auto-réactivation si WR ≥ 55%</span>
+                </div>
+                <div id="strategyHealthList" style="margin-top: 14px; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px;">
+                    <div class="empty-state">En attente des données de performance...</div>
+                </div>
+            </div>
+
             <!-- RAPPORT DE MODIF SECTION -->
             <div class="chart-section" id="rapportModifSection" style="margin-top: 30px; border-color: rgba(99, 202, 183, 0.3); display:none;">
                 <div class="stat-label">📊 Rapport de Modif <span id="rapportModifDate" style="font-size:0.75em; opacity:0.6; font-weight:normal; margin-left:8px;"></span></div>
@@ -1647,6 +1657,54 @@
                         </div>
                     </div>`).join('');
                         } else { wizardList.innerHTML = '<div class="empty-state">No wizards detected.</div>'; }
+
+                        // ── Strategy Health Monitor ───────────────────────────────────────
+                        const shList = document.getElementById('strategyHealthList');
+                        if (shList && botData.strategyPerformance) {
+                            const perf = botData.strategyPerformance;
+                            const STRAT_ICONS = {
+                                wizard: '🧙', standard: '📊', copy_trade: '🔁',
+                                event_driven: '⚡', hype_fader: '🔥', panic_buy: '😱',
+                                calendar_edge: '📅', semantic_arb: '🔗',
+                                quant_fair_value: '💡', sports: '🏆',
+                                arbitrage: '⚖️', tension: '🌡️', fresh_market: '✨',
+                                memory: '🧠', dca: '📉', trend_following: '📈'
+                            };
+                            const STATUS_STYLES = {
+                                active:             { bg: 'rgba(74,222,128,0.08)',  border: '#4ade80', label: '✅ ACTIF',      lc: '#4ade80' },
+                                warning:            { bg: 'rgba(251,191,36,0.08)',  border: '#fbbf24', label: '⚠️ WARNING',   lc: '#fbbf24' },
+                                warning_protected:  { bg: 'rgba(251,191,36,0.08)',  border: '#fbbf24', label: '⚠️ PROTÉGÉ',   lc: '#fbbf24' },
+                                disabled:           { bg: 'rgba(100,116,139,0.08)', border: '#475569', label: '🚫 DÉSACTIVÉ', lc: '#64748b' },
+                                auto_disabled:      { bg: 'rgba(239,68,68,0.08)',   border: '#ef4444', label: '🚫 AUTO-OFF',  lc: '#ef4444' },
+                                recovered:          { bg: 'rgba(52,211,153,0.1)',   border: '#34d399', label: '✅ RÉCUPÉRÉ',  lc: '#34d399' },
+                                insufficient_data:  { bg: 'rgba(100,116,139,0.05)', border: '#334155', label: '⏳ PEU DATA', lc: '#64748b' },
+                            };
+                            const entries = Object.entries(perf);
+                            if (entries.length > 0) {
+                                shList.innerHTML = entries.map(([strat, d]) => {
+                                    const icon  = STRAT_ICONS[strat] || '📌';
+                                    const ss    = STATUS_STYLES[d.status] || STATUS_STYLES['active'];
+                                    const wrStr = d.wr !== null ? `${d.wr}%` : '—';
+                                    const wrColor = d.wr === null ? '#64748b' : d.wr >= 55 ? '#4ade80' : d.wr >= 40 ? '#fbbf24' : '#ef4444';
+                                    const pnlColor = (d.pnl || 0) >= 0 ? '#4ade80' : '#ef4444';
+                                    const pnlStr = (d.pnl || 0) >= 0 ? `+$${(d.pnl).toFixed(1)}` : `-$${Math.abs(d.pnl).toFixed(1)}`;
+                                    return `<div style="background:${ss.bg}; border:1px solid ${ss.border}; border-radius:8px; padding:10px 12px;">
+                                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                                            <span style="color:#e2e8f0; font-weight:600; font-size:0.9em;">${icon} ${strat}</span>
+                                            <span style="color:${ss.lc}; font-size:0.72em; font-weight:700;">${ss.label}</span>
+                                        </div>
+                                        <div style="display:flex; gap:12px; font-size:0.8em;">
+                                            <span style="color:#94a3b8;">${d.count} trades</span>
+                                            <span style="color:${wrColor}; font-weight:bold;">WR ${wrStr}</span>
+                                            <span style="color:${pnlColor};">${pnlStr}</span>
+                                        </div>
+                                    </div>`;
+                                }).join('');
+                            } else {
+                                shList.innerHTML = '<div class="empty-state">⏳ En attente des premiers trades...</div>';
+                            }
+                        }
+                        // ─────────────────────────────────────────────────────────────────
 
                         // ── Behavioral Signals (Hype Fader / Panic Buy) ───────────────────
                         const behavList = document.getElementById('behavioralSignalsList');

@@ -7,6 +7,7 @@ import { getBestExecutionPrice, getCLOBOrderBook, getCLOBTradeHistory } from '..
 import { supabaseService } from '../services/supabaseService.js';
 import { sportsService } from '../services/sportsService.js';
 import { getAdvancedSignals, evaluateDCA, executeDCA, detectPriceRange } from './advancedStrategies.js';
+import { evaluateStrategyPerformance } from '../cron/scheduler.js';
 
 function calculateTradeSize(confidence, price) {
     const capital = botState.capital || CONFIG.STARTING_CAPITAL;
@@ -1701,6 +1702,10 @@ async function closeTrade(index, exitPrice, reason) {
 
     stateManager.addSectorEvent(trade.category, 'TRADE', `💰 Trade Closed: ${reason}`, { pnl: pnl.toFixed(2) });
     addLog(botState, `🏁 TRADE CLOSED: ${trade.question.substring(0, 20)}... | PnL: $${pnl.toFixed(2)} (${reason}) [slug:${trade.slug || ''}]`, pnl > 0 ? 'success' : 'warning');
+
+    // Evaluate strategy performance after every trade close
+    // (lightweight — reads closedTrades, no API calls)
+    evaluateStrategyPerformance();
 
     // Save state (force Supabase sync on trade close)
     stateManager.save(true);
