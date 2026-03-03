@@ -443,9 +443,9 @@ function runWeeklyReport() {
         const lastSnap   = snapshots[snapshots.length - 1];
         const capitalDiff = lastSnap ? capitalNow - lastSnap.capital : null;
 
-        // Sauvegarder snapshot
+        // Sauvegarder snapshot — deep copy to avoid [Circular] in JSON serialization
         if (!botState.weeklySnapshots) botState.weeklySnapshots = [];
-        botState.weeklySnapshots.push({ date: dateStr, timestamp: nowTs, capital: capitalNow, stats: thisWeek });
+        botState.weeklySnapshots.push({ date: dateStr, timestamp: nowTs, capital: capitalNow, stats: JSON.parse(JSON.stringify(thisWeek)) });
         if (botState.weeklySnapshots.length > 8) botState.weeklySnapshots.shift();
 
         // Construire le rapport logs
@@ -499,20 +499,22 @@ function runWeeklyReport() {
         lines.push(verdict);
 
         // Modifications faites cette semaine (depuis le changeLog)
-        const changeLogWeek = (botState.changeLog || []).filter(c => {
-            return new Date(c.date).getTime() >= weekAgo;
-        });
+        // Shallow copy each entry to avoid [Circular] from shared changeLog references
+        const changeLogWeek = (botState.changeLog || [])
+            .filter(c => new Date(c.date).getTime() >= weekAgo)
+            .map(c => ({ ...c }));
 
-        // Stocker pour le dashboard
+        // Stocker pour le dashboard — deep copy thisWeek to avoid [Circular]
+        // (thisWeek is already stored in weeklySnapshots above — same reference = circular)
         botState.lastWeeklyReport = {
             timestamp: nowTs,
             date: dateStr,
-            sinceChange,
-            thisWeek,
+            sinceChange: JSON.parse(JSON.stringify(sinceChange)),
+            thisWeek:    JSON.parse(JSON.stringify(thisWeek)),
             capitalNow,
             capitalDiff,
             verdict,
-            changeLogWeek,  // modifications made this week
+            changeLogWeek,
         };
 
         // Logger dans le dashboard

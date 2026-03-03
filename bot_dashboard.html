@@ -1697,6 +1697,35 @@
                         } else { wizardList.innerHTML = '<div class="empty-state">No wizards detected.</div>'; }
 
                         // ── Strategy Health Monitor ───────────────────────────────────────
+                        // Build client-side if server hasn't run evaluateStrategyPerformance yet
+                        if (!botData.strategyPerformance && (botData.closedTrades || []).length > 0) {
+                            const sp = {};
+                            for (const t of (botData.closedTrades || [])) {
+                                const s = t.strategy || 'standard';
+                                if (!sp[s]) sp[s] = { count: 0, wins: 0, pnl: 0 };
+                                sp[s].count++;
+                                const pnl = t.pnl ?? t.profit ?? 0;
+                                sp[s].pnl += pnl;
+                                if (pnl > 0) sp[s].wins++;
+                            }
+                            botData.strategyPerformance = {};
+                            for (const [s, d] of Object.entries(sp)) {
+                                const wr = d.count > 0 ? Math.round((d.wins / d.count) * 100) : null;
+                                const disabled = (botData.strategyOverrides?.disabledStrategies || []).includes(s);
+                                botData.strategyPerformance[s] = {
+                                    count: d.count,
+                                    wr,
+                                    status: disabled ? 'disabled'
+                                          : d.count < 10 ? 'insufficient_data'
+                                          : wr >= 55 ? 'active'
+                                          : wr >= 40 ? 'warning'
+                                          : 'auto_disabled',
+                                    pnl: d.pnl,
+                                    avgPnl: d.count > 0 ? d.pnl / d.count : 0
+                                };
+                            }
+                        }
+
                         const shList = document.getElementById('strategyHealthList');
                         if (shList && botData.strategyPerformance) {
                             const perf = botData.strategyPerformance;
@@ -1917,6 +1946,10 @@
                         const hebdoDate    = document.getElementById('rapportHebdoDate');
                         // Always show the section — individual tabs handle their own empty states
                         if (hebdoSection) hebdoSection.style.display = 'block';
+                        // Guard: thisWeek can be the string "[Circular]" due to a JSON serialization bug (now fixed in scheduler.js)
+                        if (hebdo && typeof hebdo.thisWeek === 'string') hebdo.thisWeek = null;
+                        if (hebdo && typeof hebdo.sinceChange === 'string') hebdo.sinceChange = null;
+
                         if (hebdo && hebdoContent) {
                             hebdoDate.textContent = hebdo.date || '';
                             const hrows = [];
