@@ -1429,6 +1429,15 @@ export async function checkAndCloseTrades(getRealMarketPriceFn) {
         const pnlPercent = invested > 0 ? (trade.shares * currentPrice - invested) / invested : 0;
         trade.maxReturn = Math.max(trade.maxReturn || 0, pnlPercent);
 
+        // --- MANUAL CLOSE (triggered via Dashboard) ---
+        if (trade._manualClose) {
+            const reason = trade._manualCloseReason || '🖐️ Fermeture manuelle';
+            delete trade._manualClose;
+            delete trade._manualCloseReason;
+            await closeTrade(i, currentPrice, reason);
+            continue;
+        }
+
         // --- GAP PROTECTION: Detect abnormal price jumps between checks ---
         // If price moved >30% since last check, flag as suspicious and wait for confirmation
         const lastPrice = trade.priceHistory.length >= 2
@@ -1451,7 +1460,10 @@ export async function checkAndCloseTrades(getRealMarketPriceFn) {
 
         // --- 2. DYNAMIC STOP LOSS CHECK ---
         const dynamicStopInfo = calculateDynamicStopLoss(trade, pnlPercent, trade.maxReturn);
-        const requiredStopPercent = dynamicStopInfo.requiredStopPercent;
+        // Honor manual override from Dashboard (manualSL stored as positive %, e.g. 12 = -12%)
+        const requiredStopPercent = (trade.manualSL !== undefined)
+            ? -(trade.manualSL / 100)
+            : dynamicStopInfo.requiredStopPercent;
 
         if (pnlPercent <= requiredStopPercent) {
             // --- MAX LOSS CAP: Never lose more than 15% per trade, even on gaps ---
@@ -1476,6 +1488,9 @@ export async function checkAndCloseTrades(getRealMarketPriceFn) {
         if (trade.partialExit) {
             // Already took partial profit — use extended target for remainder
             tpPercent = (trade.originalTP || CONFIG.TAKE_PROFIT_PERCENT || 0.10) * (smartExit?.EXTENDED_TP_MULTIPLIER || 2.0);
+        } else if (trade.manualTP !== undefined) {
+            // Honor manual override from Dashboard (manualTP stored as positive %, e.g. 25 = +25%)
+            tpPercent = trade.manualTP / 100;
         } else {
             tpPercent = await calculateAdaptiveTP(trade);
         }

@@ -417,4 +417,120 @@ router.post('/force-resync', async (req, res) => {
     }
 });
 
+// ─────────────────────────────────────────────────────────────────────────────
+// MANUAL TRADE CONTROLS — Dashboard Edit Panel
+// ─────────────────────────────────────────────────────────────────────────────
+
+// POST /api/trades/:id/close — Force close a trade immediately
+router.post('/trades/:id/close', (req, res) => {
+    const { id } = req.params;
+    const trade = botState.activeTrades.find(t => t.id === id);
+    if (!trade) return res.status(404).json({ error: 'Trade non trouvé' });
+
+    trade._manualClose = true;
+    trade._manualCloseReason = '🖐️ Fermeture manuelle via Dashboard';
+    stateManager.save();
+    addLog(botState, `🖐️ Fermeture manuelle déclenchée: ${(trade.question || '').substring(0, 40)}...`, 'warning');
+    res.json({ success: true, message: 'Trade marqué pour fermeture au prochain cycle (~60s)' });
+});
+
+// PATCH /api/trades/:id/resize — Change position size
+router.patch('/trades/:id/resize', (req, res) => {
+    const { id } = req.params;
+    const { newSize } = req.body;
+
+    const idx = botState.activeTrades.findIndex(t => t.id === id);
+    if (idx === -1) return res.status(404).json({ error: 'Trade non trouvé' });
+    const trade = botState.activeTrades[idx];
+
+    const newSizeNum = parseFloat(newSize);
+    if (isNaN(newSizeNum) || newSizeNum <= 0) {
+        return res.status(400).json({ error: 'Montant invalide (doit être > 0)' });
+    }
+
+    const delta = newSizeNum - (trade.amount || 0);
+
+    if (Math.abs(delta) < 0.01) {
+        return res.json({ success: true, message: 'Aucun changement (même montant)' });
+    }
+
+    // Use latest known price (last in priceHistory, or entryPrice as fallback)
+    const currentPrice = (trade.priceHistory && trade.priceHistory.length > 0)
+        ? trade.priceHistory[trade.priceHistory.length - 1]
+        : (trade.entryPrice || 0.5);
+
+    if (delta > 0) {
+        // Increasing — check capital availability
+        if (delta > botState.capital) {
+            return res.status(400).json({ error: `Capital insuffisant — disponible: $${botState.capital.toFixed(2)}` });
+        }
+        const maxPos = botState.capital * (CONFIG.MAX_POSITION_PCT || 0.20);
+        if (newSizeNum > (trade.amount || 0) + maxPos) {
+            return res.status(400).json({ error: `Dépasse le max autorisé par position ($${maxPos.toFixed(0)})` });
+        }
+        // Buy more shares at current price
+        trade.shares += delta / currentPrice;
+        trade.amount = newSizeNum;
+        botState.capital -= delta;
+        addLog(botState, `📈 Position agrandie: ${(trade.question || '').substring(0, 30)}... +$${delta.toFixed(0)} → total $${trade.amount.toFixed(0)}`, 'info');
+
+    } else {
+        // Decreasing — partial close
+        const reduceAmt = Math.abs(delta);
+        const ratio = reduceAmt / (trade.amount || 1);
+        const sharesToSell = trade.shares * ratio;
+        const proceeds = sharesToSell * currentPrice;
+
+        trade.shares -= sharesToSell;
+        trade.amount = newSizeNum;
+        botState.capital += proceeds;
+        addLog(botState, `📉 Position réduite: ${(trade.question || '').substring(0, 30)}... -$${reduceAmt.toFixed(0)} → total $${trade.amount.toFixed(0)}`, 'info');
+    }
+
+    stateManager.save();
+    res.json({
+        success: true,
+        trade: { id: trade.id, amount: trade.amount, shares: trade.shares },
+        capitalRemaining: botState.capital
+    });
+});
+
+// PATCH /api/trades/:id/sl — Set a custom stop-loss override
+router.patch('/trades/:id/sl', (req, res) => {
+    const { id } = req.params;
+    const { stopLossPct } = req.body; // positive number, e.g. 12 = -12%
+
+    const trade = botState.activeTrades.find(t => t.id === id);
+    if (!trade) return res.status(404).json({ error: 'Trade non trouvé' });
+
+    const pct = parseFloat(stopLossPct);
+    if (isNaN(pct) || pct <= 0 || pct > 50) {
+        return res.status(400).json({ error: 'Stop-loss invalide — entrer une valeur entre 1 et 50 (%)' });
+    }
+
+    trade.manualSL = pct;
+    stateManager.save();
+    addLog(botState, `🛡️ Stop-Loss manuel: ${(trade.question || '').substring(0, 30)}... → -${pct}%`, 'info');
+    res.json({ success: true, manualSL: pct });
+});
+
+// PATCH /api/trades/:id/tp — Set a custom take-profit override
+router.patch('/trades/:id/tp', (req, res) => {
+    const { id } = req.params;
+    const { takeProfitPct } = req.body; // positive number, e.g. 25 = +25%
+
+    const trade = botState.activeTrades.find(t => t.id === id);
+    if (!trade) return res.status(404).json({ error: 'Trade non trouvé' });
+
+    const pct = parseFloat(takeProfitPct);
+    if (isNaN(pct) || pct <= 0 || pct > 200) {
+        return res.status(400).json({ error: 'Take-profit invalide — entrer une valeur entre 1 et 200 (%)' });
+    }
+
+    trade.manualTP = pct;
+    stateManager.save();
+    addLog(botState, `🎯 Take-Profit manuel: ${(trade.question || '').substring(0, 30)}... → +${pct}%`, 'info');
+    res.json({ success: true, manualTP: pct });
+});
+
 export default router;

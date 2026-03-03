@@ -1526,6 +1526,11 @@
                                        title="Ouvrir sur Polymarket">
                                         🔗 View
                                     </a>
+                                    <button onclick="openTradeEdit('${t.id}')"
+                                            style="background:rgba(168,85,247,0.15); color:#c084fc; border:1px solid rgba(168,85,247,0.3); padding:4px 10px; border-radius:6px; font-weight:700; font-size:0.75em; cursor:pointer; transition:all 0.2s;"
+                                            onmouseover="this.style.background='rgba(168,85,247,0.3)'"
+                                            onmouseout="this.style.background='rgba(168,85,247,0.15)'"
+                                            title="Modifier ce trade">✏️ Edit</button>
                                     <div style="color:#ffffff; background:#3b82f6; border:none; padding:4px 10px; border-radius:6px; font-weight:700; font-size:0.75em;">${t.side}</div>
                                 </div>
                             </div>
@@ -2034,6 +2039,7 @@
 
                     if (res.ok) {
                         botData = await res.json();
+                        window._lastBotData = botData; // Expose for Trade Edit Modal
                         updateDashboard();
 
                         // Success State
@@ -2696,8 +2702,169 @@
                 // Marketplace listeners
                 document.getElementById('marketSearch')?.addEventListener('input', renderMarketplace);
                 document.getElementById('marketSort')?.addEventListener('change', renderMarketplace);
+
+                // Close trade edit modal when clicking the overlay background
+                document.getElementById('tradeEditModal')?.addEventListener('click', function(e) {
+                    if (e.target === this) closeTradeEdit();
+                });
             };
+
+            // ─────────────────────────────────────────────────────────────────
+            // TRADE EDIT MODAL — JS Logic
+            // ─────────────────────────────────────────────────────────────────
+            let _editTradeId = null;
+
+            function openTradeEdit(tradeId) {
+                _editTradeId = tradeId;
+                // Look up trade from latest botData
+                const trade = (window._lastBotData?.activeTrades || []).find(t => t.id === tradeId);
+                if (!trade) { alert('Trade introuvable'); return; }
+
+                document.getElementById('editTradeTitle').textContent = trade.question || tradeId;
+                document.getElementById('editCurrentSize').textContent = '$' + parseFloat(trade.amount || 0).toFixed(0);
+                document.getElementById('editCurrentSL').textContent = trade.manualSL ? '-' + trade.manualSL + '%' : 'auto';
+                document.getElementById('editCurrentTP').textContent = trade.manualTP ? '+' + trade.manualTP + '%' : 'auto';
+                document.getElementById('editNewSize').value = parseFloat(trade.amount || 0).toFixed(0);
+                document.getElementById('editNewSL').value = trade.manualSL || '';
+                document.getElementById('editNewTP').value = trade.manualTP || '';
+                document.getElementById('editFeedback').textContent = '';
+                document.getElementById('tradeEditModal').style.display = 'flex';
+            }
+
+            function closeTradeEdit() {
+                document.getElementById('tradeEditModal').style.display = 'none';
+                _editTradeId = null;
+            }
+
+            function setEditFeedback(msg, ok) {
+                const el = document.getElementById('editFeedback');
+                el.textContent = msg;
+                el.style.color = ok ? '#4ade80' : '#f87171';
+            }
+
+            async function editAction_close() {
+                if (!_editTradeId) return;
+                if (!confirm('Fermer ce trade maintenant au prix actuel ?')) return;
+                try {
+                    const r = await fetch(`/api/trades/${_editTradeId}/close`, { method: 'POST' });
+                    const data = await r.json();
+                    if (data.success) { setEditFeedback('✅ ' + data.message, true); setTimeout(closeTradeEdit, 2000); }
+                    else setEditFeedback('❌ ' + (data.error || 'Erreur'), false);
+                } catch(e) { setEditFeedback('❌ Erreur réseau', false); }
+            }
+
+            async function editAction_resize() {
+                if (!_editTradeId) return;
+                const newSize = document.getElementById('editNewSize').value;
+                if (!newSize || parseFloat(newSize) <= 0) { setEditFeedback('⚠️ Montant invalide', false); return; }
+                try {
+                    const r = await fetch(`/api/trades/${_editTradeId}/resize`, {
+                        method: 'PATCH', headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({ newSize: parseFloat(newSize) })
+                    });
+                    const data = await r.json();
+                    if (data.success) {
+                        setEditFeedback('✅ Taille modifiée → $' + parseFloat(data.trade?.amount || newSize).toFixed(0), true);
+                        document.getElementById('editCurrentSize').textContent = '$' + parseFloat(data.trade?.amount || newSize).toFixed(0);
+                    } else setEditFeedback('❌ ' + (data.error || 'Erreur'), false);
+                } catch(e) { setEditFeedback('❌ Erreur réseau', false); }
+            }
+
+            async function editAction_sl() {
+                if (!_editTradeId) return;
+                const pct = document.getElementById('editNewSL').value;
+                if (!pct || parseFloat(pct) <= 0) { setEditFeedback('⚠️ Valeur invalide', false); return; }
+                try {
+                    const r = await fetch(`/api/trades/${_editTradeId}/sl`, {
+                        method: 'PATCH', headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({ stopLossPct: parseFloat(pct) })
+                    });
+                    const data = await r.json();
+                    if (data.success) {
+                        setEditFeedback('✅ Stop-Loss → -' + pct + '%', true);
+                        document.getElementById('editCurrentSL').textContent = '-' + pct + '%';
+                    } else setEditFeedback('❌ ' + (data.error || 'Erreur'), false);
+                } catch(e) { setEditFeedback('❌ Erreur réseau', false); }
+            }
+
+            async function editAction_tp() {
+                if (!_editTradeId) return;
+                const pct = document.getElementById('editNewTP').value;
+                if (!pct || parseFloat(pct) <= 0) { setEditFeedback('⚠️ Valeur invalide', false); return; }
+                try {
+                    const r = await fetch(`/api/trades/${_editTradeId}/tp`, {
+                        method: 'PATCH', headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({ takeProfitPct: parseFloat(pct) })
+                    });
+                    const data = await r.json();
+                    if (data.success) {
+                        setEditFeedback('✅ Take-Profit → +' + pct + '%', true);
+                        document.getElementById('editCurrentTP').textContent = '+' + pct + '%';
+                    } else setEditFeedback('❌ ' + (data.error || 'Erreur'), false);
+                } catch(e) { setEditFeedback('❌ Erreur réseau', false); }
+            }
         </script>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- TRADE EDIT MODAL                                                    -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <div id="tradeEditModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.75); z-index:9999; align-items:center; justify-content:center; backdrop-filter:blur(4px);">
+        <div style="background:#1e293b; border:1px solid rgba(255,255,255,0.1); border-radius:18px; padding:24px; width:100%; max-width:400px; margin:20px; position:relative; box-shadow:0 20px 60px rgba(0,0,0,0.5);">
+
+            <!-- Header -->
+            <button onclick="closeTradeEdit()" style="position:absolute; top:14px; right:16px; background:none; border:none; color:#64748b; font-size:1.4em; cursor:pointer; line-height:1; padding:0;" title="Fermer">×</button>
+            <div style="font-weight:700; font-size:1em; color:#f1f5f9; margin-bottom:4px;">✏️ Modifier le trade</div>
+            <div id="editTradeTitle" style="font-size:0.75em; color:#64748b; margin-bottom:20px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"></div>
+
+            <!-- 🔴 Fermer maintenant -->
+            <div style="margin-bottom:12px; padding:14px; background:rgba(239,68,68,0.06); border-radius:12px; border:1px solid rgba(239,68,68,0.15);">
+                <div style="font-size:0.82em; font-weight:700; color:#f87171; margin-bottom:6px;">🔴 Fermer maintenant</div>
+                <div style="font-size:0.72em; color:#94a3b8; margin-bottom:10px;">Clôture immédiatement au prix actuel</div>
+                <button onclick="editAction_close()" style="width:100%; padding:9px; background:rgba(239,68,68,0.12); border:1px solid rgba(239,68,68,0.25); border-radius:8px; color:#f87171; font-weight:700; cursor:pointer; font-size:0.82em;">Fermer ce trade</button>
+            </div>
+
+            <!-- 💰 Modifier la taille -->
+            <div style="margin-bottom:12px; padding:14px; background:rgba(96,165,250,0.05); border-radius:12px; border:1px solid rgba(96,165,250,0.15);">
+                <div style="font-size:0.82em; font-weight:700; color:#60a5fa; margin-bottom:6px;">💰 Modifier la taille</div>
+                <div style="font-size:0.72em; color:#94a3b8; margin-bottom:8px;">Taille actuelle : <span id="editCurrentSize" style="color:#f1f5f9; font-weight:700;">$—</span></div>
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <span style="color:#94a3b8; font-size:0.82em;">$</span>
+                    <input id="editNewSize" type="number" min="1" step="1" placeholder="Nouveau montant"
+                           style="flex:1; padding:8px 10px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#f1f5f9; font-size:0.82em; outline:none;"/>
+                    <button onclick="editAction_resize()" style="padding:8px 16px; background:rgba(96,165,250,0.12); border:1px solid rgba(96,165,250,0.25); border-radius:8px; color:#60a5fa; font-weight:700; cursor:pointer; font-size:0.82em;">OK</button>
+                </div>
+            </div>
+
+            <!-- 🛡️ Stop-Loss -->
+            <div style="margin-bottom:12px; padding:14px; background:rgba(251,191,36,0.05); border-radius:12px; border:1px solid rgba(251,191,36,0.15);">
+                <div style="font-size:0.82em; font-weight:700; color:#fbbf24; margin-bottom:6px;">🛡️ Stop-Loss</div>
+                <div style="font-size:0.72em; color:#94a3b8; margin-bottom:8px;">Actuel : <span id="editCurrentSL" style="color:#f1f5f9; font-weight:700;">auto</span></div>
+                <div style="display:flex; gap:6px; align-items:center;">
+                    <span style="color:#94a3b8; font-size:0.82em; white-space:nowrap;">- </span>
+                    <input id="editNewSL" type="number" min="1" max="50" step="1" placeholder="ex: 12"
+                           style="flex:1; padding:8px 10px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#f1f5f9; font-size:0.82em; outline:none;"/>
+                    <span style="color:#94a3b8; font-size:0.82em;"> %</span>
+                    <button onclick="editAction_sl()" style="padding:8px 16px; background:rgba(251,191,36,0.12); border:1px solid rgba(251,191,36,0.25); border-radius:8px; color:#fbbf24; font-weight:700; cursor:pointer; font-size:0.82em;">OK</button>
+                </div>
+            </div>
+
+            <!-- 🎯 Take-Profit -->
+            <div style="padding:14px; background:rgba(74,222,128,0.05); border-radius:12px; border:1px solid rgba(74,222,128,0.15);">
+                <div style="font-size:0.82em; font-weight:700; color:#4ade80; margin-bottom:6px;">🎯 Take-Profit</div>
+                <div style="font-size:0.72em; color:#94a3b8; margin-bottom:8px;">Actuel : <span id="editCurrentTP" style="color:#f1f5f9; font-weight:700;">auto</span></div>
+                <div style="display:flex; gap:6px; align-items:center;">
+                    <span style="color:#94a3b8; font-size:0.82em; white-space:nowrap;">+ </span>
+                    <input id="editNewTP" type="number" min="1" max="200" step="1" placeholder="ex: 25"
+                           style="flex:1; padding:8px 10px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#f1f5f9; font-size:0.82em; outline:none;"/>
+                    <span style="color:#94a3b8; font-size:0.82em;"> %</span>
+                    <button onclick="editAction_tp()" style="padding:8px 16px; background:rgba(74,222,128,0.12); border:1px solid rgba(74,222,128,0.25); border-radius:8px; color:#4ade80; font-weight:700; cursor:pointer; font-size:0.82em;">OK</button>
+                </div>
+            </div>
+
+            <!-- Feedback message -->
+            <div id="editFeedback" style="margin-top:12px; text-align:center; font-size:0.8em; font-weight:600; min-height:20px;"></div>
+        </div>
+    </div>
 </body>
 
 </html>
