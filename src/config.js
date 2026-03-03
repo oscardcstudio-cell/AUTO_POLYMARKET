@@ -284,6 +284,24 @@ export const CONFIG = {
     },
 
     // ─────────────────────────────────────────────────────────────────────────
+    // MONTHLY DRAWDOWN PROTECTION — 3-tier automatic risk reduction
+    // Resets automatically on the 1st of each month
+    // ─────────────────────────────────────────────────────────────────────────
+    MONTHLY_DRAWDOWN: {
+        // Thresholds (% of capital at month start)
+        DEFENSIVE_PCT:    0.12,  // -12% → Defensive mode
+        CONSERVATION_PCT: 0.20,  // -20% → Conservation mode
+        KILL_PCT:         0.25,  // -25% → Kill switch (no new trades)
+        // Defensive mode restrictions
+        DEFENSIVE_SIZE_MULT:      0.50,  // All positions × 0.5
+        DEFENSIVE_CONVICTION_ADD: 10,    // Need 10 extra conviction pts
+        // Conservation mode restrictions
+        CONSERVATION_MIN_CONVICTION: 80, // Only ≥ 80pts signals
+        CONSERVATION_MAX_SIZE:       50, // Max $50 per trade
+        CONSERVATION_NO_SPECULATIVE: true, // No markets priced < 0.35
+    },
+
+    // ─────────────────────────────────────────────────────────────────────────
     // LIQUIDITY-ADJUSTED EDGE REQUIREMENT
     // Illiquid markets = wider spreads + harder fills → require stronger signal
     // Liquid markets = easy fills, lower edge acceptable

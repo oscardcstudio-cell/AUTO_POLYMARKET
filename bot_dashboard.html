@@ -686,6 +686,13 @@
                         <span id="aiDetails">Conf x1.0 | Size x1.0</span>
                     </div>
                 </div>
+                <div class="stat-card">
+                    <div class="stat-label">🛡️ Monthly Risk</div>
+                    <div class="stat-value" id="mdMode" style="font-size: 1.2em;">NORMAL</div>
+                    <div style="font-size: 0.8em; color: #64748b; margin-top: 10px; font-weight: 600;">
+                        <span id="mdDetails">0.0% drawdown</span>
+                    </div>
+                </div>
             </div>
 
             <!-- TRADE ACTIVITY LOGS -->
@@ -1036,6 +1043,19 @@
                                 aiDetails.innerText = `Conf x${(botData.learningParams.confidenceMultiplier || 1).toFixed(2)} | Size x${(botData.learningParams.sizeMultiplier || 1).toFixed(2)}`;
                             }
                         }
+                        // MONTHLY DRAWDOWN MODE
+                        const mdData = botData.monthlyDrawdown;
+                        const mdModeEl = document.getElementById('mdMode');
+                        const mdDetailsEl = document.getElementById('mdDetails');
+                        if (mdModeEl && mdData) {
+                            const mode = mdData.mode || 'NORMAL';
+                            const lossPct = (mdData.currentLossPct || 0) * 100;
+                            mdModeEl.innerText = mode;
+                            const modeColors = { NORMAL: '#4ade80', DEFENSIVE: '#f59e0b', CONSERVATION: '#ef4444', KILL: '#7f1d1d' };
+                            mdModeEl.style.color = modeColors[mode] || '#e2e8f0';
+                            if (mdDetailsEl) mdDetailsEl.innerText = `${lossPct.toFixed(1)}% vs début du mois`;
+                        }
+
                         document.getElementById('ana-pnl').innerText = '$' + (data.total_pnl || 0).toFixed(2);
                         document.getElementById('ana-pnl').className = 'stat-value ' + (data.total_pnl >= 0 ? 'positive' : 'negative');
                         document.getElementById('ana-winrate').innerText = (data.win_rate_percent || 0).toFixed(1) + '%';

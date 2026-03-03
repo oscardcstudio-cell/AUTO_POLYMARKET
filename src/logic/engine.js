@@ -523,6 +523,54 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
         }
     }
 
+    // ── MONTHLY DRAWDOWN PROTECTION ──────────────────────────────────────────
+    // 3-tier system: NORMAL → DEFENSIVE → CONSERVATION → KILL
+    // Resets on the 1st of each month
+    if (!skipPersistence && CONFIG.MONTHLY_DRAWDOWN) {
+        const MD = CONFIG.MONTHLY_DRAWDOWN;
+        const currentMonth = new Date().toISOString().slice(0, 7); // "YYYY-MM"
+
+        // Init or reset on new month
+        if (!botState.monthlyDrawdown) {
+            botState.monthlyDrawdown = { startCapital: botState.capital, startDate: currentMonth, mode: 'NORMAL', currentLossPct: 0 };
+        }
+        if (botState.monthlyDrawdown.startDate !== currentMonth) {
+            const invested = (botState.activeTrades || []).reduce((s, t) => s + (t.amount || 0), 0);
+            const totalNow = (botState.capital || 0) + invested;
+            botState.monthlyDrawdown = { startCapital: totalNow, startDate: currentMonth, mode: 'NORMAL', currentLossPct: 0 };
+            addLog(botState, `📅 Monthly drawdown reset — New month, startCapital: $${totalNow.toFixed(0)}`, 'info');
+        }
+
+        // Calculate current drawdown vs month start
+        const invested = (botState.activeTrades || []).reduce((s, t) => s + (t.amount || 0), 0);
+        const totalNow = (botState.capital || 0) + invested;
+        const lossPct = (totalNow - botState.monthlyDrawdown.startCapital) / botState.monthlyDrawdown.startCapital;
+        botState.monthlyDrawdown.currentLossPct = lossPct;
+
+        // Determine mode
+        let mdMode = 'NORMAL';
+        if (lossPct <= -(MD.KILL_PCT ?? 0.25))         mdMode = 'KILL';
+        else if (lossPct <= -(MD.CONSERVATION_PCT ?? 0.20)) mdMode = 'CONSERVATION';
+        else if (lossPct <= -(MD.DEFENSIVE_PCT ?? 0.12))    mdMode = 'DEFENSIVE';
+
+        if (mdMode !== botState.monthlyDrawdown.mode) {
+            botState.monthlyDrawdown.mode = mdMode;
+            const emoji = { KILL: '🛑', CONSERVATION: '🔴', DEFENSIVE: '🟡', NORMAL: '🟢' }[mdMode];
+            addLog(botState, `${emoji} Monthly drawdown mode: ${mdMode} (${(lossPct * 100).toFixed(1)}% vs start of month)`, 'warning');
+        } else {
+            botState.monthlyDrawdown.mode = mdMode;
+        }
+
+        // Apply restrictions by mode
+        if (mdMode === 'KILL') {
+            const reason = `🛑 KILL SWITCH: Monthly drawdown ${(lossPct * 100).toFixed(1)}% — No new trades until next month`;
+            if (reasonsCollector) reasonsCollector.push(reason);
+            return null;
+        }
+        // CONSERVATION & DEFENSIVE restrictions are applied later (sizing + conviction)
+    }
+    // ─────────────────────────────────────────────────────────────────────────
+
     // BLACKLIST: Elon Musk tweet-counting markets (37% WR, -$20 since Feb 21)
     const questionLower = (market.question || '').toLowerCase();
     if (questionLower.includes('elon musk') && (questionLower.includes('tweet') || questionLower.includes('post'))) {
@@ -907,6 +955,34 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
         advancedSizeMultiplier = convictionResult.sizeMultiplier || 1.0;
     }
 
+    // ── MONTHLY DRAWDOWN: apply CONSERVATION restrictions on conviction ───────
+    if (!skipPersistence && convictionResult && botState.monthlyDrawdown) {
+        const mdMode = botState.monthlyDrawdown.mode;
+        const MD = CONFIG.MONTHLY_DRAWDOWN || {};
+        if (mdMode === 'CONSERVATION') {
+            const minConv = MD.CONSERVATION_MIN_CONVICTION ?? 80;
+            if (convictionResult.points < minConv) {
+                const reason = `🔴 Conservation mode: besoin ${minConv}pts, obtenu ${convictionResult.points}pts`;
+                if (reasonsCollector) reasonsCollector.push(reason);
+                decisionReasons.push(reason);
+                logTradeDecision(market, null, decisionReasons, pizzaData);
+                return null;
+            }
+            // Block speculative markets in conservation mode
+            if (MD.CONSERVATION_NO_SPECULATIVE && entryPrice < 0.35) {
+                const reason = `🔴 Conservation mode: marchés spéculatifs (prix < 0.35) interdits`;
+                if (reasonsCollector) reasonsCollector.push(reason);
+                return null;
+            }
+            decisionReasons.push(`🔴 Conservation mode actif (${(botState.monthlyDrawdown.currentLossPct * 100).toFixed(1)}% drawdown mensuel)`);
+        } else if (mdMode === 'DEFENSIVE') {
+            const extraPts = MD.DEFENSIVE_CONVICTION_ADD ?? 10;
+            const effectivePoints = convictionResult.points; // just log the mode
+            decisionReasons.push(`🟡 Defensive mode actif (${(botState.monthlyDrawdown.currentLossPct * 100).toFixed(1)}% drawdown mensuel) — conviction requis +${extraPts}pts`);
+        }
+    }
+    // ─────────────────────────────────────────────────────────────────────────
+
     // ── LIQUIDITY-ADJUSTED MINIMUM EDGE REQUIREMENT ──────────────────────────
     // Illiquid markets = wider spreads, harder fills → require stronger conviction
     // Liquid markets = easy fills, tighter spreads → lower edge acceptable
@@ -1009,6 +1085,23 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
     confidence = Math.max(0.01, Math.min(0.99, confidence));
 
     let tradeSize = dependencies.testSize || calculateTradeSize(confidence, entryPrice);
+
+    // ── MONTHLY DRAWDOWN: apply sizing restrictions ───────────────────────────
+    if (!dependencies.testSize && !skipPersistence && botState.monthlyDrawdown) {
+        const mdMode = botState.monthlyDrawdown.mode;
+        const MD = CONFIG.MONTHLY_DRAWDOWN || {};
+        if (mdMode === 'DEFENSIVE') {
+            tradeSize *= (MD.DEFENSIVE_SIZE_MULT ?? 0.5);
+            decisionReasons.push(`🟡 Defensive sizing: x${MD.DEFENSIVE_SIZE_MULT ?? 0.5} (drawdown mensuel ${(botState.monthlyDrawdown.currentLossPct * 100).toFixed(1)}%)`);
+        } else if (mdMode === 'CONSERVATION') {
+            const maxSize = MD.CONSERVATION_MAX_SIZE ?? 50;
+            if (tradeSize > maxSize) {
+                tradeSize = maxSize;
+                decisionReasons.push(`🔴 Conservation max size: capped $${maxSize}`);
+            }
+        }
+    }
+    // ─────────────────────────────────────────────────────────────────────────
 
     // ── VOLATILITY-ADJUSTED POSITION SIZING ──────────────────────────────────
     // Wide intraday range = high gap risk → reduce size to protect capital

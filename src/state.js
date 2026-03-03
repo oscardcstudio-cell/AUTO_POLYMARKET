@@ -56,7 +56,14 @@ const INITIAL_STATE = {
     dailyPnLResetDate: new Date().toISOString().split('T')[0],
     cooldowns: {},
     trackedWallets: [],
-    lastCopySignals: []
+    lastCopySignals: [],
+    // Monthly drawdown protection
+    monthlyDrawdown: {
+        startCapital: CONFIG.STARTING_CAPITAL, // Capital at start of month
+        startDate: new Date().toISOString().slice(0, 7), // "YYYY-MM"
+        mode: 'NORMAL',    // 'NORMAL' | 'DEFENSIVE' | 'CONSERVATION' | 'KILL'
+        currentLossPct: 0, // Current loss % vs startCapital
+    }
 };
 
 export class StateManager {
