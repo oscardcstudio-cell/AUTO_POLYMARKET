@@ -1207,6 +1207,20 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
         if (tradeSize > botState.capital) tradeSize = botState.capital;
     }
 
+    // ── CRYPTO CAP: Never bet more than $75 on crypto price prediction markets ──
+    if (!dependencies.testSize) {
+        const cryptoCap = CONFIG.CRYPTO_CAP;
+        if (cryptoCap && tradeSize > cryptoCap.MAX_SIZE) {
+            const questionLow = (market.question || '').toLowerCase();
+            const isCryptoMarket = (cryptoCap.KEYWORDS || []).some(kw => questionLow.includes(kw));
+            if (isCryptoMarket) {
+                decisionReasons.push(`🔒 Crypto cap: taille ${tradeSize.toFixed(0)}$ → ${cryptoCap.MAX_SIZE}$ (plafond crypto)`);
+                addLog(botState, `🔒 Crypto cap appliqué: ${market.question?.substring(0,40)}... $${tradeSize.toFixed(0)} → $${cryptoCap.MAX_SIZE}`, 'info');
+                tradeSize = cryptoCap.MAX_SIZE;
+            }
+        }
+    }
+
     // CRITICAL: Prevent Ghost Trades ($0 or near-zero amounts)
     if (tradeSize < CONFIG.MIN_TRADE_SIZE || botState.capital < CONFIG.MIN_TRADE_SIZE) {
         const lowCapMsg = `Insufficient capital ($${botState.capital.toFixed(2)}) or size too small ($${tradeSize.toFixed(2)})`;

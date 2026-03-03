@@ -26,13 +26,18 @@ export const CONFIG = {
     DEFCON_THRESHOLD: 5,
     MIN_TRADE_SIZE: 10,
     MIN_PRICE_THRESHOLD: 0.05, // Filter out penny stocks (<5 cents) to avoid realistic fill issues
-    MAX_TRADE_SIZE_PERCENT: 0.20, // 20% maximum of total capital per position
-    KELLY_FRACTION: 0.2,          // 20% of full Kelly (conservative)
+    MAX_TRADE_SIZE_PERCENT: 0.15, // 15% maximum of total capital per position (was 0.20 — reduced 03/03/2026 after $69 crypto loss)
+    KELLY_FRACTION: 0.15,         // 15% of full Kelly (was 0.20 — reduced 03/03/2026 for smaller positions)
     // ── Capital Management Rules ──────────────────────────────────────────────
     CAPITAL_MANAGEMENT: {
-        MAX_POSITION_PCT: 0.20,  // Rule 1: never more than 20% of total capital per position
+        MAX_POSITION_PCT: 0.15,  // Rule 1: never more than 15% of total capital per position (was 0.20)
         MAX_THEME_PCT:    0.20,  // Rule 2: never more than 20% of total capital on a single theme
         MIN_LIQUID_PCT:   0.30,  // Rule 3: always keep at least 30% of total capital in cash
+    },
+    // ── Crypto-specific size cap ──────────────────────────────────────────────
+    CRYPTO_CAP: {
+        KEYWORDS: ['bitcoin', 'ethereum', 'btc', 'eth', 'crypto', 'solana', 'sol '],
+        MAX_SIZE: 75, // Never more than $75 on a crypto price prediction market
     },
     MIN_LIQUIDITY: 500,
     MIN_VOLUME: 500,
