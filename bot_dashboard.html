@@ -1493,6 +1493,25 @@
                                             ? `https://polymarket.com/market/${t.marketId}`
                                             : '#';
 
+                                // --- Countdown to market resolution ---
+                                const endDateRaw = t.endDate || t.endDateIso || null;
+                                let countdownHtml = '';
+                                if (endDateRaw) {
+                                    const msLeft = new Date(endDateRaw) - Date.now();
+                                    if (msLeft <= 0) {
+                                        countdownHtml = `<div style="text-align:center; margin-top:8px; padding:6px 10px; background:rgba(255,255,255,0.03); border-radius:8px; font-size:0.75em; color:#94a3b8; letter-spacing:0.03em;">⏱️ EXPIRÉ — en attente de résolution</div>`;
+                                    } else {
+                                        const totalMinutes = Math.floor(msLeft / 60000);
+                                        const days = Math.floor(totalMinutes / 1440);
+                                        const hours = Math.floor((totalMinutes % 1440) / 60);
+                                        const minutes = totalMinutes % 60;
+                                        const cdColor = days >= 3 ? '#4ade80' : days >= 1 ? '#f59e0b' : '#f87171';
+                                        const cdText = days > 0 ? `${days}j ${hours}h ${minutes}m` : hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
+                                        const cdBg = days >= 3 ? 'rgba(74,222,128,0.05)' : days >= 1 ? 'rgba(245,158,11,0.05)' : 'rgba(248,113,113,0.08)';
+                                        countdownHtml = `<div style="text-align:center; margin-top:8px; padding:6px 10px; background:${cdBg}; border-radius:8px; font-size:0.75em; border:1px solid ${cdColor}22;"><span style="color:#94a3b8;">⏱️ Expire dans </span><span style="font-weight:700; color:${cdColor};">${cdText}</span></div>`;
+                                    }
+                                }
+
                                 return `
                         <div class="trade-card">
                             <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:10px">
@@ -1500,7 +1519,7 @@
                                     ${t.question}
                                 </div>
                                 <div style="display:flex; gap:5px; align-items:center;">
-                                    <a href="${polymarketUrl}" target="_blank" rel="noopener noreferrer" 
+                                    <a href="${polymarketUrl}" target="_blank" rel="noopener noreferrer"
                                        style="background:rgba(59,130,246,0.2); color:#60a5fa; border:1px solid rgba(59,130,246,0.3); padding:4px 10px; border-radius:6px; font-size:0.75em; font-weight:600; text-decoration:none; display:flex; align-items:center; gap:4px; transition:all 0.2s;"
                                        onmouseover="this.style.background='rgba(59,130,246,0.3)'; this.style.transform='translateY(-1px)'"
                                        onmouseout="this.style.background='rgba(59,130,246,0.2)'; this.style.transform='translateY(0)'"
@@ -1518,6 +1537,7 @@
                                 <div><div style="font-size:0.6em; color:#94a3b8; margin-bottom:2px">VALUE</div><div style="font-weight:600; color:${color}">$${currentValue.toFixed(0)}</div></div>
                                 <div><div style="font-size:0.6em; color:#94a3b8; margin-bottom:2px">PnL</div><div style="font-weight:800; color:${color}">${diff >= 0 ? '+' : ''}${diff.toFixed(1)}%</div></div>
                             </div>
+                            ${countdownHtml}
                         </div>`;
                             }).join('');
 
