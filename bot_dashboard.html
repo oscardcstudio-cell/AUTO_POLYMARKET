@@ -1594,15 +1594,28 @@
                                 tradeLogsList.innerHTML = currentLogs.map(l => {
                                     let color = '#64748b';
                                     let icon = '📝 LOG';
-                                    const isBuy = l.message.includes('OPENED') || l.message.includes('BUY') || (l.type === 'trade' && l.message.includes('✅'));
-                                    const isWin = l.message.includes('gagné') || l.message.includes('WIN');
-                                    const isLoss = l.message.includes('perdu') || l.message.includes('LOST');
+                                    const isBuy   = l.message.includes('OPENED') || l.message.includes('BUY') || (l.type === 'trade' && l.message.includes('✅'));
+                                    const isWin   = l.message.includes('gagné') || l.message.includes('WIN');
+                                    const isLoss  = l.message.includes('perdu') || l.message.includes('LOST');
                                     const isClose = l.message.includes('CLOSED') || l.message.includes('SOLD');
 
-                                    if (isWin) { color = '#4ade80'; icon = '🏆 WIN'; }
-                                    else if (isLoss) { color = '#ef4444'; icon = '💀 LOSS'; }
-                                    else if (isBuy) { color = '#22c55e'; icon = '🟢 BUY'; } // Order matters
-                                    else if (isClose) { color = '#f59e0b'; icon = '🏁 CLOSE'; }
+                                    // Parse PnL from "TRADE CLOSED" messages → PnL: $12.34 or PnL: $-5.67
+                                    const pnlMatch = l.message.match(/PnL:\s*\$?([-\d.]+)/);
+                                    const parsedPnl = pnlMatch ? parseFloat(pnlMatch[1]) : null;
+                                    const isClosedWin  = isClose && parsedPnl !== null && parsedPnl > 0;
+                                    const isClosedLoss = isClose && parsedPnl !== null && parsedPnl < 0;
+
+                                    // Border color + icon
+                                    if (isWin || isClosedWin)        { color = '#4ade80'; icon = '🏆 WIN'; }
+                                    else if (isLoss || isClosedLoss) { color = '#ef4444'; icon = '💀 LOSS'; }
+                                    else if (isBuy)                  { color = '#60a5fa'; icon = '🟢 BUY'; }
+                                    else if (isClose)                { color = '#f59e0b'; icon = '🏁 CLOSE'; }
+
+                                    // Background color: vert pour win, rouge pour loss, bleu léger pour buy
+                                    let bgColor = 'rgba(0,0,0,0.2)';
+                                    if (isWin || isClosedWin)        bgColor = 'rgba(74, 222, 128, 0.10)';
+                                    else if (isLoss || isClosedLoss) bgColor = 'rgba(239, 68, 68, 0.10)';
+                                    else if (isBuy)                  bgColor = 'rgba(96, 165, 250, 0.07)';
 
                                     // Extract slug if present: [slug:my-market-slug]
                                     const slugMatch = l.message.match(/\[slug:([^\]]+)\]/);
@@ -1610,7 +1623,7 @@
                                     const cleanMsg = l.message.replace(/\s*\[slug:[^\]]*\]/, '');
                                     const linkHtml = slug ? `<a href="https://polymarket.com/event/${slug}" target="_blank" rel="noopener" style="color: #60a5fa; font-size: 0.75em; text-decoration: none; margin-left: 6px; opacity: 0.8;" title="View on Polymarket">🔗</a>` : '';
 
-                                    return `<div style="border-left: 3px solid ${color}; padding: 8px 12px; background: rgba(0,0,0,0.2); border-radius: 5px; margin-bottom: 5px;">
+                                    return `<div style="border-left: 3px solid ${color}; padding: 8px 12px; background: ${bgColor}; border-radius: 5px; margin-bottom: 5px;">
                                         <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
                                             <span style="color: ${color}; font-weight: 700; font-size: 0.9em;">${icon}${linkHtml}</span>
                                             <span style="color: #64748b; font-size: 0.75em;">${new Date(l.timestamp).toLocaleTimeString()}</span>
