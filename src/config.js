@@ -39,6 +39,12 @@ export const CONFIG = {
         KEYWORDS: ['bitcoin', 'ethereum', 'btc', 'eth', 'crypto', 'solana', 'sol '],
         MAX_SIZE: 75, // Never more than $75 on a crypto price prediction market
     },
+    // ── Geopolitical entity clusters (prevent correlated geo bets) ────────────
+    GEO_CLUSTERS: [
+        { name: 'Iran/Middle East', keywords: ['iran', 'israel', 'hezbollah', 'hamas', 'gulf', 'lebanon', 'liban'], maxUsd: 150 },
+        { name: 'Russia/Ukraine',   keywords: ['russia', 'ukraine', 'putin', 'nato', 'moscow'], maxUsd: 150 },
+        { name: 'China/Taiwan',     keywords: ['china', 'taiwan', 'beijing', 'xi jinping'], maxUsd: 150 },
+    ],
     MIN_LIQUIDITY: 500,
     MIN_VOLUME: 500,
     BASE_MAX_TRADES: 50,          // Max simultaneous open trades

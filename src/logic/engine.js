@@ -377,7 +377,7 @@ async function calculateConviction(market, pizzaData, dependencies) {
 }
 
 // --- PORTFOLIO HEDGING: Check exposure before entering a trade ---
-function checkPortfolioExposure(activeTrades, newCategory, newSide) {
+function checkPortfolioExposure(activeTrades, newCategory, newSide, newQuestion = '') {
     const limits = CONFIG.PORTFOLIO_LIMITS;
     if (!limits) return { allowed: true, adjustment: 0, reason: null };
 
@@ -396,6 +396,26 @@ function checkPortfolioExposure(activeTrades, newCategory, newSide) {
             adjustment: 0,
             reason: `Theme cap: ${newCategory} $${themeExposure.toFixed(0)}/$${maxThemeAbs.toFixed(0)} (${(maxThemePct * 100).toFixed(0)}% max)`
         };
+    }
+
+    // ── Geopolitical entity cluster check (Iran, Russia, China) ──────────────
+    const geoClusters = CONFIG.GEO_CLUSTERS || [];
+    if (newQuestion && geoClusters.length > 0) {
+        const questionLow = newQuestion.toLowerCase();
+        for (const cluster of geoClusters) {
+            const matchesNew = cluster.keywords.some(kw => questionLow.includes(kw));
+            if (!matchesNew) continue;
+            const clusterExposure = activeTrades
+                .filter(t => cluster.keywords.some(kw => (t.question || '').toLowerCase().includes(kw)))
+                .reduce((sum, t) => sum + (t.amount || 0), 0);
+            if (clusterExposure >= (cluster.maxUsd || 150)) {
+                return {
+                    allowed: false,
+                    adjustment: 0,
+                    reason: `Geo cluster cap [${cluster.name}]: $${clusterExposure.toFixed(0)}/$${cluster.maxUsd} max — trop de marchés corrélés`
+                };
+            }
+        }
     }
 
     // Count trades by category (with per-category overrides)
@@ -1019,7 +1039,7 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
 
     // --- PORTFOLIO HEDGING CHECK ---
     if (!skipPersistence || dependencies.enforcePortfolioLimits) {
-        const exposure = checkPortfolioExposure(botState.activeTrades, category, side);
+        const exposure = checkPortfolioExposure(botState.activeTrades, category, side, market.question || '');
         if (!exposure.allowed) {
             if (reasonsCollector) reasonsCollector.push(exposure.reason);
             decisionReasons.push(exposure.reason);
@@ -1221,6 +1241,21 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
         }
     }
 
+    // ── COPY TRADE CAP: enforce COPY_SIZE_PERCENT — was completely ignored before ──
+    if (!dependencies.testSize) {
+        const isCopyTrade = decisionReasons.some(r => (r || '').includes('Copy Follow'));
+        if (isCopyTrade) {
+            const CT = CONFIG.COPY_TRADING || {};
+            const totalCapital = botState.capital + (botState.activeTrades || []).reduce((s, t) => s + (t.amount || 0), 0);
+            const copyMaxSize = totalCapital * (CT.COPY_SIZE_PERCENT || 0.023);
+            if (tradeSize > copyMaxSize) {
+                decisionReasons.push(`📋 Copy cap: $${tradeSize.toFixed(0)} → $${copyMaxSize.toFixed(0)} (${((CT.COPY_SIZE_PERCENT || 0.023) * 100).toFixed(1)}% capital)`);
+                addLog(botState, `📋 Copy cap: ${(market.question || '').substring(0, 35)}... $${tradeSize.toFixed(0)} → $${copyMaxSize.toFixed(0)}`, 'info');
+                tradeSize = copyMaxSize;
+            }
+        }
+    }
+
     // CRITICAL: Prevent Ghost Trades ($0 or near-zero amounts)
     if (tradeSize < CONFIG.MIN_TRADE_SIZE || botState.capital < CONFIG.MIN_TRADE_SIZE) {
         const lowCapMsg = `Insufficient capital ($${botState.capital.toFixed(2)}) or size too small ($${tradeSize.toFixed(2)})`;
@@ -1294,7 +1329,7 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
     else if (reasonStr.includes('Whale')) strategy = 'whale';
     else if (reasonStr.includes('DCA')) strategy = 'dca';
     else if (reasonStr.includes('DEFCON') || reasonStr.includes('CRISIS') || reasonStr.includes('tension')) strategy = 'tension';
-    else if (reasonStr.includes('Memory') || reasonStr.includes('momentum')) strategy = 'memory';
+    else if (reasonStr.includes('Market Memory') || reasonStr.includes('Memory Signal')) strategy = 'memory';
     else if (reasonStr.includes('Catalyst') || reasonStr.includes('Event')) strategy = 'event_driven';
     else if (reasonStr.includes('Hype Fader')) strategy = 'hype_fader';
     else if (reasonStr.includes('Smart Momentum')) strategy = 'smart_momentum';
@@ -1460,10 +1495,17 @@ export async function checkAndCloseTrades(getRealMarketPriceFn) {
         const priceDelta = lastPrice > 0 ? Math.abs(currentPrice - lastPrice) / lastPrice : 0;
 
         if (priceDelta > 0.30 && !trade._gapConfirmed) {
-            // First detection: flag and skip this cycle — wait for next check to confirm
+            // First detection: flag and wait for next check to confirm
             trade._gapConfirmed = false;
             trade._gapDetectedAt = Date.now();
             addLog(botState, `⚠️ GAP DETECTED: ${trade.question.substring(0, 25)}... price moved ${(priceDelta * 100).toFixed(0)}% in one cycle (${lastPrice.toFixed(3)} → ${currentPrice.toFixed(3)}). Waiting for confirmation...`, 'warning');
+            // FIX: Don't skip if already past stop-loss — apply emergency stop NOW
+            const emergencyStop = calculateDynamicStopLoss(trade, pnlPercent, trade.maxReturn);
+            const emergencyStopPct = (trade.manualSL !== undefined) ? -(trade.manualSL / 100) : emergencyStop.requiredStopPercent;
+            if (pnlPercent <= emergencyStopPct) {
+                const reason = `🚨 GAP EMERGENCY STOP: ${(pnlPercent * 100).toFixed(1)}% (gap ${(priceDelta * 100).toFixed(0)}%, limit ${(emergencyStopPct * 100).toFixed(1)}%)`;
+                await closeTrade(i, currentPrice, reason);
+            }
             continue;
         }
         // Second check after gap: confirm the price is real (gap persists)
