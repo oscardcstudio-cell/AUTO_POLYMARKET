@@ -63,6 +63,7 @@ export const CONFIG = {
             crypto: 0.20,
             economic: 0.20,
             geopolitical: 0.15,
+            weather: 0.08,    // Tight SL — weather is science-backed, low volatility
             sports: 0.10,
             other: 0.15
         },
@@ -169,6 +170,7 @@ export const CONFIG = {
             crypto: 0.03,
             economic: 0.02,
             geopolitical: 0.015,
+            weather: 0.008,             // Weather = very low vol (predictable)
             sports: 0.01,
             other: 0.015
         },
@@ -355,5 +357,49 @@ export const CONFIG = {
         HIGH_MULTIPLIER:   0.65,  // Reduce position 35% on highly volatile markets
         MEDIUM_MULTIPLIER: 0.85,  // Reduce position 15% on medium volatility
         LOW_MULTIPLIER:    1.10,  // Increase position 10% on stable markets (max 10%)
+    },
+
+    // Weather Trading (Open-Meteo API — free, no key required)
+    WEATHER: {
+        ENABLED: true,
+        REFRESH_INTERVAL_MS: 15 * 60 * 1000,  // Refresh forecasts every 15 min
+        // Locations to watch (matched against market questions)
+        LOCATIONS: [
+            { name: 'New York', lat: 40.71, lon: -74.01 },
+            { name: 'NYC', lat: 40.71, lon: -74.01 },
+            { name: 'London', lat: 51.51, lon: -0.13 },
+            { name: 'Seoul', lat: 37.57, lon: 126.98 },
+            { name: 'Tokyo', lat: 35.68, lon: 139.69 },
+            { name: 'Los Angeles', lat: 34.05, lon: -118.24 },
+            { name: 'Chicago', lat: 41.88, lon: -87.63 },
+            { name: 'Miami', lat: 25.76, lon: -80.19 },
+            { name: 'Paris', lat: 48.86, lon: 2.35 },
+            { name: 'Berlin', lat: 52.52, lon: 13.41 },
+            { name: 'Sydney', lat: -33.87, lon: 151.21 },
+            { name: 'Dubai', lat: 25.20, lon: 55.27 },
+            { name: 'Mumbai', lat: 19.08, lon: 72.88 },
+            { name: 'São Paulo', lat: -23.55, lon: -46.63 },
+            { name: 'Mexico City', lat: 19.43, lon: -99.13 },
+        ],
+        // Weather keywords to detect weather markets in Polymarket
+        MARKET_KEYWORDS: [
+            'temperature', 'celsius', 'fahrenheit', 'degrees', 'weather',
+            'forecast', 'rain', 'snow', 'heat', 'cold', 'precipitation',
+            'humidity', 'wind', 'high of', 'low of', 'above', 'below',
+            'warmest', 'coldest', 'hottest', 'record high', 'record low',
+        ],
+        // Alpha score bonuses
+        WEATHER_ALPHA_BONUS: 40,             // +40 alpha when forecast matches (science-backed)
+        WEATHER_HIGH_CONFIDENCE_BONUS: 15,   // +15 extra if model confidence >= 85%
+        WEATHER_MULTI_MODEL_BONUS: 10,       // +10 if multiple models agree
+        // Conviction bonuses
+        CONVICTION_BONUS: 20,                // +20 conviction when weather model aligns
+        CONVICTION_HIGH_CONFIDENCE: 10,      // +10 extra for high-confidence forecasts
+        // Thresholds
+        MIN_CONFIDENCE: 0.70,                // Ignore forecasts below 70% certainty
+        MIN_MODEL_AGREEMENT: 0.60,           // At least 60% of models must agree
+        // Sizing
+        SIZE_MULTIPLIER: 1.2,                // Weather trades get +20% size (science edge)
+        MAX_WEATHER_CATEGORY: 4,             // Max 4 weather trades at once
     },
 };

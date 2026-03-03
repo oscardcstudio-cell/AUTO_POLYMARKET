@@ -19,6 +19,7 @@ import {
     detectWizards,
     detectWhales,
     detectCopySignals,
+    detectWeatherSignals,
     scanArbitrage,
     runSemanticArbScan,
     detectFreshMarkets,
@@ -249,6 +250,7 @@ async function mainLoop() {
             await detectWizards(relevantMarkets);
             await detectWhales(relevantMarkets);
             await detectCopySignals(relevantMarkets);
+            await detectWeatherSignals(relevantMarkets);
             await detectFreshMarkets();
 
             // 4b. Semantic Arbitrage — runs only on deep scan (100+ markets needed)

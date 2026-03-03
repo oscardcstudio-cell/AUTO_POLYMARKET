@@ -221,6 +221,22 @@ async function calculateConviction(market, pizzaData, dependencies) {
                 signals.push(`⚽ Sports Intel ${sportConv} (${venueStatus} ${sportType})`);
             }
         }
+    } else if (category === 'weather') {
+        // Weather forecast conviction (science-backed)
+        const WE_CFG = CONFIG.WEATHER || {};
+        const weatherMatch = market._weatherMatch;
+        if (weatherMatch?.matched && WE_CFG.ENABLED) {
+            const bonus = WE_CFG.CONVICTION_BONUS || 20;
+            convictionPoints += bonus;
+            signals.push(`🌡️ Weather Model: ${weatherMatch.location} ${weatherMatch.forecast?.side} (+${bonus})`);
+            if (weatherMatch.confidence >= 0.85) {
+                const extraBonus = WE_CFG.CONVICTION_HIGH_CONFIDENCE || 10;
+                convictionPoints += extraBonus;
+                signals.push(`Weather High Confidence (+${extraBonus})`);
+            }
+        }
+        convictionPoints += 20;
+        signals.push('🌡️ Weather Conviction (+20)');
     } else if (category === 'economic') {
         convictionPoints -= 10;
         signals.push('📉 Economic Conviction (-10)');
@@ -421,6 +437,7 @@ function checkPortfolioExposure(activeTrades, newCategory, newSide, newQuestion 
     // Count trades by category (with per-category overrides)
     const sameCategoryCount = activeTrades.filter(t => t.category === newCategory).length;
     const categoryMax = newCategory === 'sports' ? (limits.MAX_SPORTS_CATEGORY || 5)
+        : newCategory === 'weather' ? (CONFIG.WEATHER?.MAX_WEATHER_CATEGORY || 4)
         : newCategory === 'economic' ? (limits.MAX_ECONOMIC_CATEGORY || 2)
         : newCategory === 'tech' ? (limits.MAX_TECH_CATEGORY || 2)
         : limits.MAX_SAME_CATEGORY;
@@ -1210,6 +1227,10 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
     if (tradeCategory === 'economic' && !dependencies.testSize) {
         tradeSize *= 0.6; // 40% size reduction for economic markets
         decisionReasons.push(`📉 Economic penalty: size x0.6 (low WR category)`);
+    } else if (tradeCategory === 'weather' && !dependencies.testSize) {
+        const weatherMult = CONFIG.WEATHER?.SIZE_MULTIPLIER || 1.2;
+        tradeSize *= weatherMult; // +20% for weather (science-backed edge)
+        decisionReasons.push(`🌡️ Weather boost: size x${weatherMult} (model-backed)`);
     }
 
     // 2. Adjust Size with Learning Params
@@ -1331,6 +1352,7 @@ export async function simulateTrade(market, pizzaData, isFreshMarket = false, de
     else if (reasonStr.includes('DEFCON') || reasonStr.includes('CRISIS') || reasonStr.includes('tension')) strategy = 'tension';
     else if (reasonStr.includes('Market Memory') || reasonStr.includes('Memory Signal')) strategy = 'memory';
     else if (reasonStr.includes('Catalyst') || reasonStr.includes('Event')) strategy = 'event_driven';
+    else if (reasonStr.includes('Weather')) strategy = 'weather';
     else if (reasonStr.includes('Hype Fader')) strategy = 'hype_fader';
     else if (reasonStr.includes('Smart Momentum')) strategy = 'smart_momentum';
     else if (reasonStr.includes('Trend Following')) strategy = 'trend_following';

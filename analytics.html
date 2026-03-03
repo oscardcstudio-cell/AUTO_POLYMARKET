@@ -334,6 +334,113 @@
             .strat-grid { grid-template-columns: 1fr; }
             .conviction-thresholds { flex-wrap: wrap; gap: 6px; }
         }
+
+        /* ── Weather Section ── */
+        .weather-section {
+            margin-bottom: 30px;
+        }
+
+        .weather-section-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .weather-signals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 12px;
+        }
+
+        .weather-signal-card {
+            background: rgba(59, 130, 246, 0.07);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 10px;
+            padding: 14px 16px;
+        }
+
+        .weather-signal-card .ws-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .weather-signal-card .ws-city {
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .weather-signal-card .ws-side {
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 2px 10px;
+            border-radius: 20px;
+        }
+
+        .ws-side.yes { background: rgba(34,197,94,0.15); color: #4ade80; border: 1px solid rgba(34,197,94,0.3); }
+        .ws-side.no  { background: rgba(239,68,68,0.15);  color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+
+        .weather-signal-card .ws-detail {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .weather-signal-card .ws-question {
+            font-size: 0.78rem;
+            color: #64748b;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-top: 6px;
+        }
+
+        .weather-conf-bar {
+            height: 4px;
+            background: rgba(255,255,255,0.07);
+            border-radius: 2px;
+            margin-top: 8px;
+        }
+
+        .weather-conf-fill {
+            height: 100%;
+            border-radius: 2px;
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            transition: width 0.4s;
+        }
+
+        .weather-empty {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            padding: 12px 0;
+        }
+
+        .weather-stat-row {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        .weather-stat-item {
+            text-align: center;
+        }
+
+        .weather-stat-item .wsi-val {
+            font-size: 1.6rem;
+            font-weight: 700;
+        }
+
+        .weather-stat-item .wsi-label {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
     </style>
 </head>
 
@@ -405,6 +512,37 @@
             </thead>
             <tbody></tbody>
         </table>
+    </div>
+
+    <!-- ══════ WEATHER ANALYTICS ══════ -->
+    <div class="card weather-section" style="margin-bottom: 30px;">
+        <h2>🌡️ Météo — Signaux &amp; Statistiques</h2>
+
+        <!-- Stats historiques de la catégorie météo -->
+        <div class="weather-stat-row" id="weather-cat-stats">
+            <div class="weather-stat-item">
+                <div class="wsi-val" id="weather-trades">—</div>
+                <div class="wsi-label">Trades fermés</div>
+            </div>
+            <div class="weather-stat-item">
+                <div class="wsi-val" id="weather-wr">—</div>
+                <div class="wsi-label">Win Rate</div>
+            </div>
+            <div class="weather-stat-item">
+                <div class="wsi-val" id="weather-pnl">—</div>
+                <div class="wsi-label">PnL total</div>
+            </div>
+            <div class="weather-stat-item">
+                <div class="wsi-val" id="weather-live-count" style="color:#60a5fa">—</div>
+                <div class="wsi-label">Signaux actifs</div>
+            </div>
+        </div>
+
+        <!-- Signaux météo en temps réel -->
+        <div class="weather-section-title">Prévisions actuelles matchées sur Polymarket</div>
+        <div id="weather-signals-container" class="weather-signals-grid">
+            <div class="weather-empty">Chargement des signaux météo...</div>
+        </div>
     </div>
 
     <!-- ══════════════════════════════════════════════════════ -->
@@ -626,6 +764,26 @@
                 <li>Score fraîcheur : &lt;6h = +25, 6-12h = +15, 12-24h = +10</li>
                 <li>Bonus volume et pertinence par mots-clés</li>
                 <li>Seuil minimum 60 points pour entrer</li>
+            </ul>
+            <div class="strat-perf">
+                <div class="perf-item"><span class="perf-label">Trades</span><span class="perf-value perf-trades">—</span></div>
+                <div class="perf-item"><span class="perf-label">Win Rate</span><span class="perf-value perf-wr">—</span></div>
+                <div class="perf-item"><span class="perf-label">PnL</span><span class="perf-value perf-pnl">—</span></div>
+            </div>
+        </div>
+
+        <div class="strat-card" data-strategy="weather">
+            <div class="strat-card-header">
+                <div class="name"><span class="emoji">🌡️</span><h3>Weather Trading</h3></div>
+                <span class="strat-badge badge-signal">Signal</span>
+            </div>
+            <div class="strat-desc">Exploite les prévisions météo scientifiques (Open-Meteo) pour trader des marchés climatiques avec un edge quantifiable.</div>
+            <ul class="strat-how">
+                <li>API Open-Meteo gratuite — prévisions 7 jours (GFS + ECMWF)</li>
+                <li>Bonus +40 alpha si la prévision matche le marché</li>
+                <li>+15 extra si confiance ≥ 85%, +10 si multi-modèles d'accord</li>
+                <li>Taille ×1.2, stop-loss tight à -8% (faible volatilité)</li>
+                <li>Max 4 trades météo simultanés</li>
             </ul>
             <div class="strat-perf">
                 <div class="perf-item"><span class="perf-label">Trades</span><span class="perf-value perf-trades">—</span></div>
@@ -1018,7 +1176,85 @@
             'event_driven': '⚡ Event',
             'defcon': '🌍 Tension',
             'dca': '📐 DCA',
+            'weather': '🌡️ Weather',
         };
+
+        // ── Weather Analytics ──
+        const METRIC_LABELS = {
+            temperature: 'Température',
+            precipitation: 'Précipitations',
+            snow: 'Neige',
+            wind: 'Vent',
+        };
+
+        async function loadWeatherData() {
+            try {
+                // Live signals from botState
+                const botRes = await fetch('/api/bot-data');
+                const botData = await botRes.json();
+                const signals = (botData && botData.lastWeatherSignals) || [];
+
+                document.getElementById('weather-live-count').textContent = signals.length;
+
+                const container = document.getElementById('weather-signals-container');
+                if (signals.length === 0) {
+                    container.innerHTML = '<div class="weather-empty">Aucun marché météo actif détecté sur Polymarket pour l\'instant.</div>';
+                } else {
+                    container.innerHTML = signals.map(s => {
+                        const side = s.forecast?.side || '?';
+                        const conf = ((s.confidence || 0) * 100).toFixed(0);
+                        const metric = METRIC_LABELS[s.metric] || s.metric;
+                        const val = s.forecast?.value != null ? s.forecast.value.toFixed(1) : '?';
+                        const unit = s.unit === 'fahrenheit' ? '°F' : s.unit === 'celsius' ? '°C' : '';
+                        const threshold = s.forecast?.threshold != null ? s.forecast.threshold + unit : '';
+                        const daysOut = s.daysOut != null ? (s.daysOut === 0 ? 'Aujourd\'hui' : `J+${s.daysOut}`) : '';
+                        return `
+                            <div class="weather-signal-card">
+                                <div class="ws-header">
+                                    <div class="ws-city">📍 ${s.location}</div>
+                                    <div class="ws-side ${side.toLowerCase()}">${side}</div>
+                                </div>
+                                <div class="ws-detail">${metric} — Prévu : ${val}${unit} / Seuil : ${threshold}</div>
+                                <div class="ws-detail">Confiance : <strong>${conf}%</strong> · Accord modèles : ${((s.modelAgreement || 0) * 100).toFixed(0)}% · ${daysOut}</div>
+                                <div class="weather-conf-bar"><div class="weather-conf-fill" style="width:${conf}%"></div></div>
+                                <div class="ws-question" title="${s.question || ''}">${s.question || ''}</div>
+                            </div>`;
+                    }).join('');
+                }
+
+                // Historical category stats
+                const catRes = await fetch('/api/analytics/category');
+                const catData = await catRes.json();
+                const weatherCat = Array.isArray(catData) && catData.find(c => c.category === 'weather');
+                if (weatherCat) {
+                    const trades = document.getElementById('weather-trades');
+                    const wr = document.getElementById('weather-wr');
+                    const pnl = document.getElementById('weather-pnl');
+                    if (trades) trades.textContent = weatherCat.trade_count;
+                    if (wr) {
+                        wr.textContent = weatherCat.win_rate_percent.toFixed(1) + '%';
+                        wr.style.color = weatherCat.win_rate_percent >= 50 ? '#4ade80' : weatherCat.win_rate_percent >= 40 ? '#f8fafc' : '#f87171';
+                    }
+                    if (pnl) {
+                        const p = parseFloat(weatherCat.total_pnl || 0);
+                        pnl.textContent = (p >= 0 ? '+$' : '-$') + Math.abs(p).toFixed(2);
+                        pnl.style.color = p >= 0 ? '#4ade80' : '#f87171';
+                    }
+                } else {
+                    const trades = document.getElementById('weather-trades');
+                    const wr = document.getElementById('weather-wr');
+                    const pnl = document.getElementById('weather-pnl');
+                    if (trades) { trades.textContent = '0'; trades.style.opacity = '0.4'; }
+                    if (wr) { wr.textContent = '—'; wr.style.opacity = '0.4'; }
+                    if (pnl) { pnl.textContent = '$0'; pnl.style.opacity = '0.4'; }
+                }
+            } catch (err) {
+                console.error('Weather data error:', err);
+            }
+        }
+
+        loadWeatherData();
+        setInterval(loadWeatherData, 60000);
 
         let stratPerfChart = null;
 

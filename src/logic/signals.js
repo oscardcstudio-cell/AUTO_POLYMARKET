@@ -7,6 +7,7 @@ import { fetchRealNewsSentiment, matchMarketToNews } from '../api/news.js';
 import { fetchWhaleTrades, matchWhaleToMarket } from '../api/polymarket_data.js';
 import { scanCopySignals, matchCopySignalToMarket } from '../api/wallet_tracker.js';
 import { calculateSportsBonus } from '../api/sportsData.js';
+import { fetchWeatherSignals, isWeatherMarket } from '../api/weather.js';
 import { scanSemanticArbitrage } from '../api/semanticArbitrage.js';
 import { detectBehavioralAnomaly, detectCalendarEdge } from '../api/marketBehavior.js';
 import { runQuantModel } from '../api/quantModel.js';
@@ -200,6 +201,9 @@ export function categorizeMarket(question) {
     // Also added "win on 2026" pattern for sports matches like "Will Real Madrid win on 2026-02-21?"
     const sportsKeywords = ['nba', 'nfl', 'super bowl', 'sports', 'championship', 'playoff', 'hockey', 'soccer', 'tennis', 'basketball', 'baseball', 'mlb', 'nhl', 'premier league', 'la liga', 'champions league', 'olympics', 'winter olympics', 'gold medal', 'semifinal', 'quarterfinal', 'lol:', 'counter-strike:', 'esports', 'lck', 'bo3)', 'bo5)', 'win on 2026', 'vs.'];
     if (sportsKeywords.some(kw => text.includes(kw))) return 'sports';
+
+    // Weather checked SECOND — weather keywords + location = weather category
+    if (isWeatherMarket(question)) return 'weather';
 
     const categories = {
         geopolitical: ['pentagon', 'israel', 'iran', 'hezbollah', 'war', 'strike', 'attack', 'military', 'conflict', 'ukraine', 'russia', 'china', 'taiwan'],
@@ -529,12 +533,31 @@ function calculateAlphaScore(market, pizzaData) {
         }
         // ─────────────────────────────────────────────────────────────────────
 
+    } else if (category === 'weather') {
+        score += 30;
+        reasons.push('🌡️ Weather Bonus (+30) — science-backed edge');
     } else if (category === 'economic') {
         score -= 30;
         reasons.push('📉 Economic Penalty (-30) — worst WR category');
     } else {
         score += 10;
         reasons.push('Diversification (+10)');
+    }
+
+    // Weather signal scoring (science-backed edge)
+    const WE_CFG = CONFIG.WEATHER || {};
+    const weatherMatch = market._weatherMatch;
+    if (weatherMatch?.matched && WE_CFG.ENABLED) {
+        score += (WE_CFG.WEATHER_ALPHA_BONUS || 40);
+        reasons.push(`🌡️ Weather Forecast: ${weatherMatch.location} ${weatherMatch.forecast?.side} (conf ${(weatherMatch.confidence * 100).toFixed(0)}%) (+${WE_CFG.WEATHER_ALPHA_BONUS || 40})`);
+        if (weatherMatch.confidence >= 0.85) {
+            score += (WE_CFG.WEATHER_HIGH_CONFIDENCE_BONUS || 15);
+            reasons.push(`High confidence weather model (+${WE_CFG.WEATHER_HIGH_CONFIDENCE_BONUS || 15})`);
+        }
+        if ((weatherMatch.modelAgreement || 0) >= (WE_CFG.MIN_MODEL_AGREEMENT || 0.60)) {
+            score += (WE_CFG.WEATHER_MULTI_MODEL_BONUS || 10);
+            reasons.push(`Multi-model agreement (+${WE_CFG.WEATHER_MULTI_MODEL_BONUS || 10})`);
+        }
     }
 
     // ── BEHAVIORAL ANOMALY DETECTION (Hype / Panic / Intraday Volatility) ────
@@ -716,6 +739,45 @@ export async function detectCopySignals(markets = null) {
         }
     } catch (e) {
         console.error("CopyTrade Scan Error:", e.message);
+    }
+}
+
+// Track last weather refresh
+let lastWeatherRefresh = 0;
+
+export async function detectWeatherSignals(markets = null) {
+    try {
+        const WE = CONFIG.WEATHER || {};
+        if (!WE.ENABLED) return;
+
+        // Only refresh every REFRESH_INTERVAL_MS (15 min default)
+        const now = Date.now();
+        const refreshInterval = WE.REFRESH_INTERVAL_MS || 15 * 60 * 1000;
+        if (botState.lastWeatherSignals?.length > 0 && (now - lastWeatherRefresh) < refreshInterval) {
+            return; // Keep existing data
+        }
+
+        if (!markets) markets = await getRelevantMarkets(false);
+
+        const signals = await fetchWeatherSignals(markets);
+        botState.lastWeatherSignals = signals;
+
+        if (signals.length > 0) {
+            lastWeatherRefresh = now;
+
+            // Annotate markets with weather matches
+            for (const signal of signals) {
+                const market = markets.find(m => m.id === signal.marketId);
+                if (market) {
+                    market._weatherMatch = signal;
+                }
+            }
+
+            const summary = `[Weather] ${signals.length} weather signals: ${signals.map(s => `${s.location} ${s.forecast?.side} (${(s.confidence * 100).toFixed(0)}%)`).join(', ')}`;
+            try { addLog(botState, summary, 'info'); } catch { console.log(summary); }
+        }
+    } catch (e) {
+        console.error("Weather Scan Error:", e.message);
     }
 }
 
